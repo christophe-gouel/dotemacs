@@ -138,12 +138,12 @@
 (require 'gams)
 (if mswindows
   (progn
-    (setq gams:process-command-name "C:/Progra~1/GAMS23.6/gams.exe")
-    (setq gams-system-directory "c:/Progra~1/GAMS23.6/")
-    (setq gams-docs-directory "C:/Program Files/GAMS23.6/docs")
+    (setq gams:process-command-name "C:/Progra~1/GAMS23.7/gams.exe")
+    (setq gams-system-directory "c:/Progra~1/GAMS23.7/")
+    (setq gams-docs-directory "C:/Program Files/GAMS23.7/docs")
     (setq gams-docs-view-program "C:/Program Files/Tracker Software/PDF Viewer/PDFXCview.exe")
     (setq load-path
-	  (cons "c:/Program Files/Gams23.6/" ;; Set the installed directory!
+	  (cons "c:/Program Files/Gams23.7/" ;; Set the installed directory!
 		load-path))))
 (setq gams:process-command-option "ll=0 lo=3 pw=153 ps=9999")
 (setq gams-statement-upcase t)
@@ -152,7 +152,6 @@
 (setq gams-statement-name "Parameter")
 (setq gams-dollar-control-name "exit")
 (setq gams-default-pop-window-height 20)
-(setq gams-indent-on nil)
 (setq gams-inlinecom-symbol-start-default "{")
 (setq gams-inlinecom-symbol-end-default "}")
 (defun find-in-gms-files (string)
@@ -160,6 +159,14 @@
   (interactive "sRegular expression to find: ")
   (grep (concat "grep -nH -i -r -e " string " --include=*.gms *" )))
 (define-key gams-mode-map "\C-cf" 'find-in-gms-files)
+
+;; Indent
+(setq gams-indent-on t)
+(setq gams-indent-number 2)
+(setq gams-indent-number-loop 2)
+(setq gams-indent-number-mpsge 2)
+(setq gams-indent-number-equation 2)
+(setq indent-tabs-mode nil) ; Not use tabs for indent
 
 ;;; =========================================================================
 ;;;  Lancer une recherche d'article sous IDEAS ou google-search depuis Emacs
@@ -380,6 +387,8 @@
 ;; Customization:
 (setq matlab-indent-function t)	; if you want function bodies indented
 (setq matlab-verify-on-save-flag nil) ; turn off auto-verify on save
+(setq matlab-indent-level 2)
+(setq matlab-comment-region-s "% ")
 (defun my-matlab-mode-hook ()
   (setq fill-column 80))		; where auto-fill should wrap
 (add-hook 'matlab-mode-hook 'my-matlab-mode-hook)
