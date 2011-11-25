@@ -23,7 +23,7 @@
 (put 'upcase-region 'disabled nil)
 
 (if (display-graphic-p)
-  (server-start)
+    (server-start)
   (xterm-mouse-mode))
 
 ;;; ===============
@@ -125,7 +125,7 @@
 (require 'ispell)
 ;;; Use Aspell for spell checking.
 (if mswindows
-  (setq-default ispell-program-name "C:/Program Files/GNU Emacs 23.3/aspell/bin/aspell.exe")
+    (setq-default ispell-program-name "C:/Program Files/GNU Emacs 23.3/aspell/bin/aspell.exe")
   (setq-default ispell-program-name "aspell"))
 (setq ispell-dictionary "american")
 (setq ispell-list-command "list")
@@ -277,17 +277,20 @@
 (load "auctex.el" nil t t)
 (load "preview-latex.el" nil t t)
 (if mswindows
+    (progn
+      (require 'tex-mik)
+      (eval-after-load "tex"
+	'(add-to-list 'TeX-command-list
+		      '("htlatex" "htlatex %s" TeX-run-command t t :help "Run htlatex") t))
+      (eval-after-load "tex"
+	'(add-to-list 'TeX-command-list
+		      '("htlatexword" "htlatexword %s" TeX-run-command nil t :help "Run htlatex with Word options") t))
+      (eval-after-load "tex"
+	'(add-to-list 'TeX-command-list
+		      '("PDFViewerClose" "PDFXCview-close.bat %s" TeX-run-command nil t :help "Close PDF open in PDF-XChange Viewer") t)))
   (progn
-    (require 'tex-mik)
-    (eval-after-load "tex"
-      '(add-to-list 'TeX-command-list
-		    '("htlatex" "htlatex %s" TeX-run-command t t :help "Run htlatex") t))
-    (eval-after-load "tex"
-      '(add-to-list 'TeX-command-list
-		    '("htlatexword" "htlatexword %s" TeX-run-command nil t :help "Run htlatex with Word options") t))
-    (eval-after-load "tex"
-      '(add-to-list 'TeX-command-list
-		    '("PDFViewerClose" "PDFXCview-close.bat %s" TeX-run-command nil t :help "Close PDF open in PDF-XChange Viewer") t))))
+    (setq TeX-view-program-list '(("Adobe Reader" "acroread /a page=%(outpage) %o ")))
+    (setq TeX-view-program-selection '((output-pdf "Adobe Reader")))))
 
 ;; Beamer
 (defun tex-frame ()
