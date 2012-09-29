@@ -6,15 +6,6 @@
 ;;; My location for external packages.
 (add-to-list 'load-path "~/.emacs.d/site-lisp")
 
-;;; ==========
-;;;  Org mode
-;;; ==========
-(add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
-(global-set-key "\C-cl" 'org-store-link)
-(global-set-key "\C-cb" 'org-iswitchb)
-(setq org-hide-leading-stars t)
-(setq org-export-with-LaTeX-fragments t)       ; Export LaTeX fragment to HTML
-
 (setq backup-directory-alist
      	  '(("." . "~/.emacs.d/backup")))
 
@@ -26,15 +17,37 @@
     (server-start)
   (xterm-mouse-mode))
 
+;;; ==========
+;;;  Org mode
+;;; ==========
+(setq load-path (cons "~/.emacs.d/site-lisp/org-7.8.11/lisp" load-path))
+(require 'org-install)
+(add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
+(global-set-key "\C-cl" 'org-store-link)
+(global-set-key "\C-cc" 'org-capture)
+(global-set-key "\C-ca" 'org-agenda)
+(global-set-key "\C-cb" 'org-iswitchb)
+(setq org-hide-leading-stars t)
+(setq org-export-with-LaTeX-fragments t)       ; Export LaTeX fragment to HTML
+(setq org-todo-keywords '((type "TODO(t)" "STARTED(s)" "WAITING(w)" "|" "DONE(d)")))
+(setq org-tag-alist '(("OFFICE" . ?o) ("COMPUTER" . ?c) ("HOME" . ?h) ("PROJECT" . ?p) ("CALL" . ?a) ("ERRANDS" . ?e) ("TASK" . ?t)))
+(setq org-hide-leading-stars t)
+;;; Configure org mode for MobileOrg
+(setq org-directory "d:/Documents/Dropbox/Org")
+(setq org-mobile-directory "d:/Documents/Dropbox/Org/MobileOrg")
+(setq org-mobile-files '("mygtd.org"))
+(setq org-mobile-inbox-for-pull "d:/Documents/Dropbox/Org/MobileOrg/inbox.org")
+
 ;;; ===============
 ;;;  Look and feel
 ;;; ===============
 (blink-cursor-mode nil)                  ; curseur ne clignote pas
 (setq-default cursor-type 'bar)          ; curseur étroit
 (set-face-background 'cursor "#CC0000")  ; curseur rouge foncé
+(setq jit-lock-chunk-size 50000)
 
 (global-font-lock-mode t)                ; colorisation du texte
-(transient-mark-mode t)                  ; mode de sélection "normal"
+;; (transient-mark-mode t)                  ; mode de sélection "normal"
 (delete-selection-mode t)                ; entrée efface texte sélectionné
 (setq-default mouse-yank-at-point t)     ; coller avec la souris
 (show-paren-mode t)                      ; coupler les parenthèses
@@ -76,6 +89,11 @@
     (set-face-font 'italic "-outline-Consolas-normal-i-normal-normal-*-*-96-96-c-*-iso8859-1")
     (set-face-font 'bold-italic "-outline-Consolas-bold-i-normal-normal-*-*-96-96-c-*-iso8859-1"))
   (set-default-font "DejaVu Sans Mono 10"))
+
+;;; Remove menu bar in terminal mode 
+(if (display-graphic-p)
+    ()
+    (menu-bar-mode -1))
 
 (setq inhibit-startup-screen t)
 
@@ -125,7 +143,7 @@
 (require 'ispell)
 ;;; Use Aspell for spell checking.
 (if mswindows
-    (setq-default ispell-program-name "C:/Program Files/GNU Emacs 23.3/aspell/bin/aspell.exe")
+    (setq-default ispell-program-name "C:/Program Files/GNU Emacs 23.4/aspell/bin/aspell.exe")
   (setq-default ispell-program-name "aspell"))
 (setq ispell-dictionary "american")
 (setq ispell-list-command "list")
@@ -408,6 +426,25 @@
   (grep (concat "grep -nH -i -r -e " string " --include=*.m *" )))
 (define-key matlab-mode-map "\C-cf" 'find-in-m-files)
 
+;;; ========
+;;;  Octave 
+;;; ========
+;; Octave major mode
+(add-hook 'octave-mode-hook
+	  (lambda ()
+	    (abbrev-mode 1)
+	    (auto-fill-mode 1)
+	    (if (eq window-system 'x)
+		(font-lock-mode 1))))
+;; Octave shell
+(add-hook 'inferior-octave-mode-hook
+	  (lambda ()
+	    (turn-on-font-lock)
+	    (define-key inferior-octave-mode-map [up]
+	      'comint-previous-input)
+	    (define-key inferior-octave-mode-map [down]
+	      'comint-next-input)))
+
 ;;; =====================================
 ;;;  Activation du clic droit comme aide
 ;;; =====================================
@@ -557,6 +594,14 @@
 ;; (define-key global-map "\C-c;" 'comment-region)
 ;; (define-key global-map "\C-c:" 'uncomment-region)
 
+;;; ===============
+;;;  auto-complete
+;;; ===============
+;; (add-to-list 'load-path "~/.emacs.d/site-lisp/auto-complete/")
+;; (require 'auto-complete)
+;; (require 'auto-complete-config)
+;; (add-to-list 'ac-dictionary-directories "~/.emacs.d/site-lisp/auto-complete/dict")
+;; (ac-config-default)
 
 
 
