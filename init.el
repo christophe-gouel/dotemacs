@@ -20,8 +20,7 @@
 ;;; ==========
 ;;;  Org mode
 ;;; ==========
-(setq load-path (cons "~/.emacs.d/site-lisp/org-7.8.11/lisp" load-path))
-(require 'org-install)
+(setq load-path (cons "~/.emacs.d/elpa/org-20131028" load-path))
 (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
 (global-set-key "\C-cl" 'org-store-link)
 (global-set-key "\C-cc" 'org-capture)
@@ -90,7 +89,7 @@
     (set-face-font 'bold-italic "-outline-Consolas-bold-i-normal-normal-*-*-96-96-c-*-iso8859-1"))
   (set-default-font "DejaVu Sans Mono 10"))
 
-;;; Remove menu bar in terminal mode 
+;;; Remove menu bar in terminal mode
 (if (display-graphic-p)
     ()
     (menu-bar-mode -1))
@@ -156,12 +155,12 @@
 (require 'gams)
 (if mswindows
   (progn
-    (setq gams:process-command-name "C:/Progra~1/GAMS23.7/gams.exe")
-    (setq gams-system-directory "c:/Progra~1/GAMS23.7/")
-    (setq gams-docs-directory "C:/Program Files/GAMS23.7/docs")
+    (setq gams:process-command-name "c:/Programs/GAMS/win64/23.9/gams.exe")
+    (setq gams-system-directory "c:/Programs/GAMS/win64/23.9/")
+    (setq gams-docs-directory "c:/Programs/GAMS/win64/23.9/docs")
     (setq gams-docs-view-program "C:/Program Files/Tracker Software/PDF Viewer/PDFXCview.exe")
     (setq load-path
-	  (cons "c:/Program Files/Gams23.7/" ;; Set the installed directory!
+	  (cons "c:/Programs/GAMS/win64/23.9/" ;; Set the installed directory!
 		load-path))))
 (setq gams:process-command-option "ll=0 lo=3 pw=153 ps=9999")
 (setq gams-statement-upcase t)
@@ -203,7 +202,7 @@
 ;;; ==================================================
 ;;;  Yaml mode - https://github.com/yoshiki/yaml-mode
 ;;; ==================================================
-(add-to-list 'load-path "~/.emacs.d/site-lisp/yaml")
+(add-to-list 'load-path "~/.emacs.d/elpa/yaml-mode-0.0.9")
 (require 'yaml-mode)
 (setq auto-mode-alist (cons '("\\(\\.yml$\\|\\.yaml$\\)" . yaml-mode) auto-mode-alist))
 (add-hook 'yaml-mode-hook
@@ -224,8 +223,10 @@
 ;;; ===============================================================
 ;;;  Toolbar+ - http://www.emacswiki.org/cgi-bin/wiki/tool-bar+.el
 ;;; ===============================================================
-(require 'tool-bar+)			 ; Activation of the pop-up tool bar
-(tool-bar-pop-up-mode 1)
+;; (require 'tool-bar+)			 ; Activation of the pop-up tool bar
+;; (tool-bar-pop-up-mode 1)
+(if window-system
+    (tool-bar-mode 0))
 
 ;;; ============
 ;;;  LaTeX-mode
@@ -337,14 +338,14 @@
 ;;; ===========================================================
 ;;;  Mode imaxima - http://sites.google.com/site/imaximaimath/
 ;;; ===========================================================
-(if mswindows
-  (load "~/.emacs.d/site-lisp/imaxima-imath-1.0/setup-imaxima-imath.el"))
-;; (require 'setup-imaxima-imath)
-(autoload 'imaxima "imaxima" "Image support for Maxima." t)
-(autoload 'imath-mode "imath" "Interactive Math minor mode." t)
-(autoload 'maxima "maxima" "Original Maxima mode" t)
-(setq imaxima-use-maxima-mode-flag t)
-(setq imaxima-fnt-size "LARGE")
+;; (if mswindows
+;;   (load "~/.emacs.d/site-lisp/imaxima-imath-1.0/setup-imaxima-imath.el"))
+;; ;; (require 'setup-imaxima-imath)
+;; (autoload 'imaxima "imaxima" "Image support for Maxima." t)
+;; (autoload 'imath-mode "imath" "Interactive Math minor mode." t)
+;; (autoload 'maxima "maxima" "Original Maxima mode" t)
+;; (setq imaxima-use-maxima-mode-flag t)
+;; (setq imaxima-fnt-size "LARGE")
 
 ;;; ============================================
 ;;;  LUA - https://github.com/immerrr/lua-mode/
@@ -427,7 +428,7 @@
 (define-key matlab-mode-map "\C-cf" 'find-in-m-files)
 
 ;;; ========
-;;;  Octave 
+;;;  Octave
 ;;; ========
 ;; Octave major mode
 (add-hook 'octave-mode-hook
@@ -597,11 +598,19 @@
 ;;; ===============
 ;;;  auto-complete
 ;;; ===============
-;; (add-to-list 'load-path "~/.emacs.d/site-lisp/auto-complete/")
-;; (require 'auto-complete)
-;; (require 'auto-complete-config)
-;; (add-to-list 'ac-dictionary-directories "~/.emacs.d/site-lisp/auto-complete/dict")
-;; (ac-config-default)
+(add-to-list 'load-path "~/.emacs.d/site-lisp/auto-complete-1.3.1/")
+(require 'auto-complete)
+(require 'auto-complete-config)
+(add-to-list 'ac-dictionary-directories "~/.emacs.d/site-lisp/auto-complete-1.3.1/dict")
+(ac-config-default)
 
+;;; ==================
+;;;  Packages manager
+;;; ==================
+(require 'package)
+(add-to-list 'package-archives
+    '("marmalade" .
+      "http://marmalade-repo.org/packages/"))
+(package-initialize)
 
-
+(require 'vlf)

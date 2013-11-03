@@ -3,4 +3,5 @@ server/
 .org-id-locations
 session.*
 tramp
-*~
+*
+
