@@ -151,7 +151,7 @@
 ;;; ========================================================
 ;;;  Gams - http://shirotakeda.org/home/gams/gams-mode.html
 ;;; ========================================================
-(add-to-list 'load-path "~/.emacs.d/site-lisp/gams-3.6.3")
+(add-to-list 'load-path "~/.emacs.d/site-lisp/gams-4.2")
 (require 'gams)
 (if mswindows
   (progn
