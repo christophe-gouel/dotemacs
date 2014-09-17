@@ -1,4 +1,4 @@
-;; (byte-recompile-directory "c:/Program Files/GNU Emacs 23.3/site-lisp" 1)
+;; (byte-recompile-directory "c:/Program Files (x86)/GNU Emacs 24.2/site-lisp" 1)
 ;; (byte-recompile-directory "~/.emacs.d/site-lisp" 1)
 
 (defconst mswindows (equal window-system 'w32))
@@ -33,9 +33,18 @@
 (setq org-hide-leading-stars t)
 ;;; Configure org mode for MobileOrg
 (setq org-directory "d:/Documents/Dropbox/Org")
-(setq org-mobile-directory "d:/Documents/Dropbox/Org/MobileOrg")
-(setq org-mobile-files '("mygtd.org"))
-(setq org-mobile-inbox-for-pull "d:/Documents/Dropbox/Org/MobileOrg/inbox.org")
+(setq org-agenda-files (quote ("c:/Users/Christophe/Dropbox/Org/mygtd.org")))
+
+;; Integration of RefTeX in org
+(defun org-mode-reftex-setup ()
+  (load-library "reftex")
+  (and (buffer-file-name)
+       (file-exists-p (buffer-file-name))
+        (global-auto-revert-mode t)
+       (reftex-parse-all))
+  (define-key org-mode-map (kbd "C-c )") 'reftex-citation)
+  )
+(add-hook 'org-mode-hook 'org-mode-reftex-setup)
 
 ;;; ===============
 ;;;  Look and feel
@@ -45,6 +54,7 @@
 (set-face-background 'cursor "#CC0000")  ; curseur rouge foncé
 (setq jit-lock-chunk-size 50000)
 
+(require 'font-lock)
 (global-font-lock-mode t)                ; colorisation du texte
 ;; (transient-mark-mode t)                  ; mode de sélection "normal"
 (delete-selection-mode t)                ; entrée efface texte sélectionné
@@ -70,7 +80,7 @@
 ;;; set up unicode
 (set-language-environment "UTF-8")
 (prefer-coding-system       'utf-8)
-(setq locale-coding-system 'utf-8)
+;; (setq locale-coding-system 'utf-8) ; Mess up dired buffer under windows
 (set-selection-coding-system 'utf-8)
 (set-default-coding-systems 'utf-8)
 (set-terminal-coding-system 'utf-8)
@@ -183,7 +193,7 @@
 (setq gams-indent-number-loop 2)
 (setq gams-indent-number-mpsge 2)
 (setq gams-indent-number-equation 2)
-(setq indent-tabs-mode nil) ; Not use tabs for indent
+;; (setq indent-tabs-mode nil) ; Not use tabs for indent
 
 ;;; =========================================================================
 ;;;  Lancer une recherche d'article sous IDEAS ou google-search depuis Emacs
@@ -202,7 +212,7 @@
 ;;; ==================================================
 ;;;  Yaml mode - https://github.com/yoshiki/yaml-mode
 ;;; ==================================================
-(add-to-list 'load-path "~/.emacs.d/elpa/yaml-mode-0.0.9")
+(add-to-list 'load-path "~/.emacs.d/elpa/yaml-mode-20130310.2101")
 (require 'yaml-mode)
 (setq auto-mode-alist (cons '("\\(\\.yml$\\|\\.yaml$\\)" . yaml-mode) auto-mode-alist))
 (add-hook 'yaml-mode-hook
@@ -535,6 +545,8 @@
 (setq comint-scroll-to-bottom-on-input t)
 (setq comint-move-point-for-output t)
 
+(setq inferior-ess-start-args "-j")
+
 (defun my-ess-start-R ()
   (interactive)
   (if (not (member "*R*" (mapcar (function buffer-name) (buffer-list))))
@@ -584,9 +596,6 @@
 (setq TeX-file-extensions
       '("Rnw" "rnw" "Snw" "snw" "tex" "sty" "cls" "ltx" "texi" "texinfo" "dtx"))
 
-(custom-set-variables
- '(inferior-ess-start-args "-j" t))
-
 ;;; ===================================
 ;;;  Définition de touches perso global
 ;;; ===================================
@@ -604,6 +613,16 @@
 (add-to-list 'ac-dictionary-directories "~/.emacs.d/site-lisp/auto-complete-1.3.1/dict")
 (ac-config-default)
 
+;;; ===============
+;;;  Markdown mode
+;;; ===============
+(autoload 'markdown-mode "markdown-mode"
+   "Major mode for editing Markdown files" t)
+(add-to-list 'auto-mode-alist '("\\.text\\'" . markdown-mode))
+(add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
+(add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
+(add-hook 'markdown-mode-hook 'turn-on-pandoc)
+
 ;;; ==================
 ;;;  Packages manager
 ;;; ==================
@@ -611,6 +630,10 @@
 (add-to-list 'package-archives
     '("marmalade" .
       "http://marmalade-repo.org/packages/"))
+(add-to-list 'package-archives
+             '("melpa" . "http://melpa.milkbox.net/packages/") t)
 (package-initialize)
 
 (require 'vlf)
+
+(require 'ein)
