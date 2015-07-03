@@ -1,7 +1,5 @@
 cd site-lisp
 
-wget http://user.it.uu.se/~mic/pager.el
-
 wget http://shirotakeda.org/assets/files/gams/gams-4.2.zip
 unzip gams-4.2.zip
 rm gams-4.2.zip
@@ -18,8 +16,6 @@ rm color-theme-6.6.0.zip
 wget http://www.emacswiki.org/emacs/download/tool-bar%2b.el
 
 wget http://www.emacswiki.org/emacs/download/iswitchb-highlight.el
-
-wget http://centaur.maths.qmul.ac.uk/Emacs/files/csv-mode.el
 
 REM After downloading the archive from http://matlab-emacs.cvs.sourceforge.net/viewvc/matlab-emacs/matlab-emacs/
 7z x matlab-emacs-matlab-emacs.tar.gz

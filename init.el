@@ -1,4 +1,5 @@
-;; (byte-recompile-directory "c:/Program Files (x86)/GNU Emacs 24.2/site-lisp" 1)
+(package-initialize)
+;; (byte-recompile-directory "c:/Program Files (x86)/GNU Emacs 24.3/site-lisp" 1)
 ;; (byte-recompile-directory "~/.emacs.d/site-lisp" 1)
 
 (defconst mswindows (equal window-system 'w32))
@@ -20,7 +21,6 @@
 ;;; ==========
 ;;;  Org mode
 ;;; ==========
-(setq load-path (cons "~/.emacs.d/elpa/org-20131028" load-path))
 (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
 (global-set-key "\C-cl" 'org-store-link)
 (global-set-key "\C-cc" 'org-capture)
@@ -31,8 +31,7 @@
 (setq org-todo-keywords '((type "TODO(t)" "STARTED(s)" "WAITING(w)" "|" "DONE(d)")))
 (setq org-tag-alist '(("OFFICE" . ?o) ("COMPUTER" . ?c) ("HOME" . ?h) ("PROJECT" . ?p) ("CALL" . ?a) ("ERRANDS" . ?e) ("TASK" . ?t)))
 (setq org-hide-leading-stars t)
-;;; Configure org mode for MobileOrg
-(setq org-directory "d:/Documents/Dropbox/Org")
+(setq org-directory "c:/Users/Christophe/Dropbox/Org")
 (setq org-agenda-files (quote ("c:/Users/Christophe/Dropbox/Org/mygtd.org")))
 
 ;; Integration of RefTeX in org
@@ -120,7 +119,7 @@
     (fill-region start end nil)))
 
 ;;; ============================================
-;;;  Pager - http://user.it.uu.se/~mic/pager.el
+;;;  Pager - From ELPA
 ;;; ============================================
 (require 'pager)
 (global-set-key "\C-v"	   'pager-page-down)
@@ -152,7 +151,7 @@
 (require 'ispell)
 ;;; Use Aspell for spell checking.
 (if mswindows
-    (setq-default ispell-program-name "C:/Program Files/GNU Emacs 23.4/aspell/bin/aspell.exe")
+    (setq-default ispell-program-name "c:/Program Files (x86)/GNU Emacs 24.3/aspell/bin/aspell.exe")
   (setq-default ispell-program-name "aspell"))
 (setq ispell-dictionary "american")
 (setq ispell-list-command "list")
@@ -165,12 +164,12 @@
 (require 'gams)
 (if mswindows
   (progn
-    (setq gams:process-command-name "c:/Programs/GAMS/win64/23.9/gams.exe")
-    (setq gams-system-directory "c:/Programs/GAMS/win64/23.9/")
-    (setq gams-docs-directory "c:/Programs/GAMS/win64/23.9/docs")
+    (setq gams:process-command-name "c:/Programs/GAMS/win64/24.3/gams.exe")
+    (setq gams-system-directory "c:/Programs/GAMS/win64/24.3/")
+    (setq gams-docs-directory "c:/Programs/GAMS/win64/24.3/docs")
     (setq gams-docs-view-program "C:/Program Files/Tracker Software/PDF Viewer/PDFXCview.exe")
     (setq load-path
-	  (cons "c:/Programs/GAMS/win64/23.9/" ;; Set the installed directory!
+	  (cons "c:/Programs/GAMS/win64/24.3/" ;; Set the installed directory!
 		load-path))))
 (setq gams:process-command-option "ll=0 lo=3 pw=153 ps=9999")
 (setq gams-statement-upcase t)
@@ -212,7 +211,6 @@
 ;;; ==================================================
 ;;;  Yaml mode - https://github.com/yoshiki/yaml-mode
 ;;; ==================================================
-(add-to-list 'load-path "~/.emacs.d/elpa/yaml-mode-20130310.2101")
 (require 'yaml-mode)
 (setq auto-mode-alist (cons '("\\(\\.yml$\\|\\.yaml$\\)" . yaml-mode) auto-mode-alist))
 (add-hook 'yaml-mode-hook
@@ -252,6 +250,10 @@
 ;; (setq reftex-plug-into-AUCTeX t)
 (setq LaTeX-math-abbrev-prefix "²")
 (setq TeX-source-specials-mode 1)
+(setq TeX-source-correlate-mode t)
+(setq TeX-source-correlate-method (quote synctex))
+(setq TeX-source-correlate-start-server (quote ask))
+(setq TeX-PDF-mode t)
 
 (add-hook 'TeX-mode-hook 'flyspell-mode)
 (add-hook 'TeX-mode-hook 'auto-fill-mode)
@@ -316,10 +318,14 @@
 		      '("htlatexword" "htlatexword %s" TeX-run-command nil t :help "Run htlatex with Word options") t))
       (eval-after-load "tex"
 	'(add-to-list 'TeX-command-list
-		      '("PDFViewerClose" "PDFXCview-close.bat %s" TeX-run-command nil t :help "Close PDF open in PDF-XChange Viewer") t)))
-  (progn
-    (setq TeX-view-program-list '(("Adobe Reader" "acroread /a page=%(outpage) %o ")))
-    (setq TeX-view-program-selection '((output-pdf "Adobe Reader")))))
+		      '("PDFViewerClose" "PDFXCview-close.bat %s" TeX-run-command nil t :help "Close PDF open in PDF-XChange Viewer") t))))
+
+(if mswindows
+    (progn
+      (setq TeX-view-program-list (quote (("Sumatra PDF" ("\"C:/Program Files (x86)/SumatraPDF/SumatraPDF.exe\" -reuse-instance" (mode-io-correlate " -forward-search %b %n") " %o")))))
+      (setq TeX-view-program-selection (quote ((output-pdf "Sumatra PDF"))))))
+
+
 
 ;; Beamer
 (defun tex-frame ()
@@ -371,13 +377,13 @@
 (iswitchb-mode 1)
 (require 'iswitchb-highlight)
 
-;;; ===================================================
-;;;  Mode CSV - http://centaur.maths.qmul.ac.uk/Emacs/
-;;; ===================================================
-(require 'csv-mode)
-(autoload 'csv-mode "csv-mode"
-   "Major mode for editing comma-separated value files." t)
-(setq csv-separators '("," ";"))
+;;; ======================
+;;;  Mode CSV - From ELPA
+;;; ======================
+;; (require 'csv-mode)
+;; (autoload 'csv-mode "csv-mode"
+;;    "Major mode for editing comma-separated value files." t)
+;; (setq csv-separators '("," ";"))
 
 ;;; =====
 ;;;  PDF
@@ -489,13 +495,18 @@
 ;; Set code indentation following the standard in R sources.
 (setq ess-default-style 'C++)
 ;; (setq-default c-default-style "bsd")
-;; (setq-default c-basic-offset 4)
+;(setq-default c-basic-offset 2)
+(setq ess-indent-level 2)
+(setq ess-arg-function-offset 2)
+(setq ess-else-offset 2)
 (add-hook 'ess-mode-hook
 	  '(lambda()
 	     (add-hook 'write-file-functions
-                           (lambda ()
-                             (ess-nuke-trailing-whitespace)))
+		       (lambda ()
+			 (ess-nuke-trailing-whitespace)))
 	     (setq ess-nuke-trailing-whitespace-p t)))
+(setq ess-first-continued-statement-offset 2
+      ess-continued-statement-offset 0)
 
 (autoload 'ess-rdired "ess-rdired" "View *R* objects in a dired-like buffer." t)
 
@@ -524,8 +535,8 @@
 
 ;; call ess-r-args-show automatically
 (define-key ess-mode-map "(" '(lambda nil "" (interactive)
-				  (skeleton-pair-insert-maybe nil)
-				  (ess-r-args-show)))
+				(skeleton-pair-insert-maybe nil)
+				(ess-r-args-show)))
 
 ;; bind ess-r-args-insert to F3
 (define-key ess-mode-map [f3] 'ess-r-args-insert)
@@ -596,6 +607,12 @@
 (setq TeX-file-extensions
       '("Rnw" "rnw" "Snw" "snw" "tex" "sty" "cls" "ltx" "texi" "texinfo" "dtx"))
 
+(defun find-in-R-files (string)
+  "Find a regular expression in R files"
+  (interactive "sRegular expression to find: ")
+  (grep (concat "grep -nH -i -r -e " string " --include=*.{R,r}* *" )))
+(define-key ess-mode-map "\C-cf" 'find-in-R-files)
+
 ;;; ===================================
 ;;;  Définition de touches perso global
 ;;; ===================================
@@ -607,10 +624,9 @@
 ;;; ===============
 ;;;  auto-complete
 ;;; ===============
-(add-to-list 'load-path "~/.emacs.d/site-lisp/auto-complete-1.3.1/")
 (require 'auto-complete)
 (require 'auto-complete-config)
-(add-to-list 'ac-dictionary-directories "~/.emacs.d/site-lisp/auto-complete-1.3.1/dict")
+(add-to-list 'ac-dictionary-directories "~/.emacs.d/elpa/auto-complete-20140824.1658/dict")
 (ac-config-default)
 
 ;;; ===============
@@ -622,6 +638,14 @@
 (add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
 (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
 (add-hook 'markdown-mode-hook 'turn-on-pandoc)
+(add-hook 'markdown-mode-hook 'flyspell-mode)
+
+;;; ==========
+;;;  Polymode
+;;; ==========
+(require 'poly-R)
+(require 'poly-markdown)
+(add-to-list 'auto-mode-alist '("\\.Rmd" . poly-markdown+r-mode))
 
 ;;; ==================
 ;;;  Packages manager
@@ -632,8 +656,18 @@
       "http://marmalade-repo.org/packages/"))
 (add-to-list 'package-archives
              '("melpa" . "http://melpa.milkbox.net/packages/") t)
-(package-initialize)
+(setq package-enable-at-startup nil)
 
 (require 'vlf)
 
 (require 'ein)
+
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(ess-R-font-lock-keywords
+   (quote ((ess-R-fl-keyword:modifiers . t) (ess-R-fl-keyword:fun-defs . t) (ess-R-fl-keyword:keywords . t) (ess-R-fl-keyword:assign-ops . t) (ess-R-fl-keyword:constants . t) (ess-fl-keyword:fun-calls . t) (ess-fl-keyword:numbers . t) (ess-fl-keyword:operators . t) (ess-fl-keyword:delimiters . t) (ess-fl-keyword:= . t) (ess-R-fl-keyword:F&T . t)))))
+
+(setenv "CYGWIN" "nodosfilewarning")

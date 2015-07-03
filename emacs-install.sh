@@ -2,11 +2,9 @@ cd site-lisp
 
 sudo apt-get install emacs-goodies-el texlive texlive-math-extra maxima maxima-emacs ess r-base auctex
 
-wget http://user.it.uu.se/~mic/pager.el
-
-wget http://shirotakeda.org/assets/files/gams/gams-3.6.3.zip
-unzip gams-3.6.3.zip
-rm gams-3.6.3.zip
+wget http://shirotakeda.org/assets/files/gams/gams-4.2.zip
+unzip gams-4.2.zip
+rm gams-4.2.zip
 
 wget http://sourceforge.net/projects/emacs-template/files/template/3.1c/template-3.1c.tar.gz
 tar xvfz template-3.1c.tar.gz
@@ -16,7 +14,7 @@ wget http://www.emacswiki.org/emacs/download/tool-bar%2b.el
 
 wget http://www.emacswiki.org/emacs/download/iswitchb-highlight.el
 
-wget http://stromme.uib.no/home/filer/htmlize-view.el
+# wget http://stromme.uib.no/home/filer/htmlize-view.el
 
 git clone https://github.com/immerrr/lua-mode.git lua
 
