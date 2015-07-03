@@ -1,3 +1,5 @@
+# Need to create site-lisp before:
+# mkdir site-lisp
 cd site-lisp
 
 sudo apt-get install emacs-goodies-el texlive texlive-math-extra maxima maxima-emacs ess r-base auctex
@@ -13,8 +15,6 @@ rm template-3.1c.tar.gz
 wget http://www.emacswiki.org/emacs/download/tool-bar%2b.el
 
 wget http://www.emacswiki.org/emacs/download/iswitchb-highlight.el
-
-# wget http://stromme.uib.no/home/filer/htmlize-view.el
 
 git clone https://github.com/immerrr/lua-mode.git lua
 

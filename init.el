@@ -10,6 +10,17 @@
 (setq backup-directory-alist
      	  '(("." . "~/.emacs.d/backup")))
 
+;;; ==================
+;;;  Packages manager
+;;; ==================
+(require 'package)
+(add-to-list 'package-archives
+    '("marmalade" .
+      "http://marmalade-repo.org/packages/"))
+(add-to-list 'package-archives
+             '("melpa" . "http://melpa.milkbox.net/packages/") t)
+(setq package-enable-at-startup nil)
+
 ;;; Activate lower- and upper-case commands
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
@@ -142,8 +153,6 @@
 ;;; ===================================================
 (add-to-list 'load-path "~/.emacs.d/site-lisp/template/lisp")
 (require 'template)
-(template-initialize)
-;; Rajouter le chemin vers les templates
 
 ;;; ========
 ;;;  Ispell
@@ -472,8 +481,6 @@
 ;;; =================
 (if mswindows
   (require 'w32-winprint))
-(require 'htmlize-view)
-(htmlize-view-add-to-files-menu)
 
 ;;; =====
 ;;;  ESS
@@ -646,17 +653,6 @@
 (require 'poly-R)
 (require 'poly-markdown)
 (add-to-list 'auto-mode-alist '("\\.Rmd" . poly-markdown+r-mode))
-
-;;; ==================
-;;;  Packages manager
-;;; ==================
-(require 'package)
-(add-to-list 'package-archives
-    '("marmalade" .
-      "http://marmalade-repo.org/packages/"))
-(add-to-list 'package-archives
-             '("melpa" . "http://melpa.milkbox.net/packages/") t)
-(setq package-enable-at-startup nil)
 
 (require 'vlf)
 
