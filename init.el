@@ -657,6 +657,12 @@
 (require 'poly-markdown)
 (add-to-list 'auto-mode-alist '("\\.Rmd" . poly-markdown+r-mode))
 
+;;; ========
+;;;  ccrypt
+;;; ========
+(setq load-path (cons "path" load-path))
+(require 'ps-ccrypt "ps-ccrypt.el")
+
 (require 'vlf)
 
 (require 'ein)
