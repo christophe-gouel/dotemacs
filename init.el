@@ -454,7 +454,7 @@
 
 ;; mlint
 (if mswindows
-    (setq mlint-programs (quote ("C:/Program Files/MATLAB/R2015a/bin/win64/mlint.exe")))
+    (setq mlint-programs (quote ("C:/Program Files/MATLAB/R2015b/bin/win64/mlint.exe")))
   (setq mlint-programs (quote ("/usr/local/MATLAB/R2015b/bin/glnxa64/mlint"))))
 
 ;; Matlab shell
