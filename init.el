@@ -3,6 +3,7 @@
 ;; (byte-recompile-directory "~/.emacs.d/site-lisp" 1)
 
 (defconst mswindows (equal window-system 'w32))
+(defconst linuxx (equal window-system 'x))
 
 ;;; My location for external packages.
 (add-to-list 'load-path "~/.emacs.d/site-lisp")
@@ -428,13 +429,16 @@
 ;;;  Matlab - http://matlab-emacs.sourceforge.net/
 ;;; ===============================================
 (add-to-list 'load-path "~/.emacs.d/site-lisp/matlab-emacs")
+(load-library "matlab-load")
 (require 'matlab)
-; Set up matlab-mode to load on .m files
+
+;; Matlab mode
+;;; Set up matlab-mode to load on .m files
 (autoload 'matlab-mode "matlab" "Enter MATLAB mode." t)
 (setq auto-mode-alist (cons '("\\.m\\'" . matlab-mode) auto-mode-alist))
-(autoload 'matlab-shell "matlab" "Interactive MATLAB mode." t)
 
-;; Customization:
+;;; Customization:
+(matlab-cedet-setup)
 (setq matlab-indent-function t)	; if you want function bodies indented
 (setq matlab-verify-on-save-flag nil) ; turn off auto-verify on save
 (setq matlab-indent-level 2)
@@ -442,18 +446,24 @@
 (defun my-matlab-mode-hook ()
   (setq fill-column 80))		; where auto-fill should wrap
 (add-hook 'matlab-mode-hook 'my-matlab-mode-hook)
-(defun my-matlab-shell-mode-hook ()
-  '())
-(add-hook 'matlab-shell-mode-hook 'my-matlab-shell-mode-hook)
-
-;; Turn off Matlab desktop
-(setq matlab-shell-command-switches '("-nojvm"))
 
 (defun find-in-m-files (string)
   "Find a regular expression in m files"
   (interactive "sRegular expression to find: ")
   (grep (concat "grep -nH -i -r -e " string " --include=*.m *" )))
 (define-key matlab-mode-map "\C-cf" 'find-in-m-files)
+
+;; mlint
+(if linuxx
+    (setq mlint-programs (quote ("/usr/local/MATLAB/R2015b/bin/glnxa64/mlint"))))
+
+;; Matlab shell
+(autoload 'matlab-shell "matlab" "Interactive MATLAB mode." t)
+(defun my-matlab-shell-mode-hook ()
+  '())
+(add-hook 'matlab-shell-mode-hook 'my-matlab-shell-mode-hook)
+(setq matlab-shell-command-switches '("-nodesktop -nosplash"))
+
 
 ;;; ========
 ;;;  Octave
@@ -672,7 +682,17 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(ess-R-font-lock-keywords
-   (quote ((ess-R-fl-keyword:modifiers . t) (ess-R-fl-keyword:fun-defs . t) (ess-R-fl-keyword:keywords . t) (ess-R-fl-keyword:assign-ops . t) (ess-R-fl-keyword:constants . t) (ess-fl-keyword:fun-calls . t) (ess-fl-keyword:numbers . t) (ess-fl-keyword:operators . t) (ess-fl-keyword:delimiters . t) (ess-fl-keyword:= . t) (ess-R-fl-keyword:F&T . t)))))
+ '(ess-R-font-lock-keywords (quote (
+				    (ess-R-fl-keyword:modifiers . t)
+				    (ess-R-fl-keyword:fun-defs . t)
+				    (ess-R-fl-keyword:keywords . t)
+				    (ess-R-fl-keyword:assign-ops . t)
+				    (ess-R-fl-keyword:constants . t)
+				    (ess-fl-keyword:fun-calls . t)
+				    (ess-fl-keyword:numbers . t)
+				    (ess-fl-keyword:operators . t)
+				    (ess-fl-keyword:delimiters . t)
+				    (ess-fl-keyword:= . t)
+				    (ess-R-fl-keyword:F&T . t)))))
 
 (setenv "CYGWIN" "nodosfilewarning")
