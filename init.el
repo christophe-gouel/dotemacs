@@ -3,7 +3,6 @@
 ;; (byte-recompile-directory "~/.emacs.d/site-lisp" 1)
 
 (defconst mswindows (equal window-system 'w32))
-(defconst linuxx (equal window-system 'x))
 
 ;;; My location for external packages.
 (add-to-list 'load-path "~/.emacs.d/site-lisp")
@@ -454,8 +453,9 @@
 (define-key matlab-mode-map "\C-cf" 'find-in-m-files)
 
 ;; mlint
-(if linuxx
-    (setq mlint-programs (quote ("/usr/local/MATLAB/R2015b/bin/glnxa64/mlint"))))
+(if mswindows
+    (setq mlint-programs (quote ("C:/Program Files/MATLAB/R2015a/bin/win64/mlint.exe")))
+  (setq mlint-programs (quote ("/usr/local/MATLAB/R2015b/bin/glnxa64/mlint"))))
 
 ;; Matlab shell
 (autoload 'matlab-shell "matlab" "Interactive MATLAB mode." t)
