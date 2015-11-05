@@ -443,7 +443,9 @@
 (setq matlab-indent-level 2)
 (setq matlab-comment-region-s "% ")
 (defun my-matlab-mode-hook ()
-  (setq fill-column 80))		; where auto-fill should wrap
+  (setq fill-column 80) 	        ; where auto-fill should wrap
+  (setq matlab-show-mlint-warnings t)   ; Activate mlint
+  (mlint-minor-mode))                   ; Activate mlint minor mode
 (add-hook 'matlab-mode-hook 'my-matlab-mode-hook)
 
 (defun find-in-m-files (string)
