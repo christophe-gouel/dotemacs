@@ -1,5 +1,4 @@
 (package-initialize)
-;; (byte-recompile-directory "c:/Program Files (x86)/GNU Emacs 24.3/site-lisp" 1)
 ;; (byte-recompile-directory "~/.emacs.d/site-lisp" 1)
 
 (defconst mswindows (equal window-system 'w32))
@@ -160,7 +159,7 @@
 (require 'ispell)
 ;;; Use Aspell for spell checking.
 (if mswindows
-    (setq-default ispell-program-name "c:/Program Files (x86)/GNU Emacs 24.3/aspell/bin/aspell.exe")
+    (setq-default ispell-program-name "C:/Program Files (x86)/Aspell/bin/aspell.exe")
   (setq-default ispell-program-name "aspell"))
 (setq ispell-dictionary "american")
 (setq ispell-list-command "list")
@@ -318,7 +317,6 @@
 (setq preview-auto-cache-preamble t)
 
 (load "auctex.el" nil t t)
-(load "preview-latex.el" nil t t)
 (if mswindows
     (progn
       (require 'tex-mik)
@@ -490,12 +488,6 @@
 ;;;  Activation du clic droit comme aide
 ;;; =====================================
 (define-key global-map [(mouse-3)] 'mouse-me)
-
-;;; =================
-;;;  Easier printing
-;;; =================
-(if mswindows
-  (require 'w32-winprint))
 
 ;;; =====
 ;;;  ESS
