@@ -333,7 +333,10 @@
 (if mswindows
     (progn
       (setq TeX-view-program-list (quote (("Sumatra PDF" ("\"C:/Program Files (x86)/SumatraPDF/SumatraPDF.exe\" -reuse-instance" (mode-io-correlate " -forward-search %b %n") " %o")))))
-      (setq TeX-view-program-selection (quote ((output-pdf "Sumatra PDF"))))))
+      (setq TeX-view-program-selection (quote ((output-pdf "Sumatra PDF")))))
+    (progn
+      (setq TeX-view-program-list '(("qpdfview" "qpdfview --instance emacsauxtex --unique \"%o#src:%b:%n:0\"")))
+      (setq TeX-view-program-selection '((output-pdf "qpdfview")))))
 
 
 
