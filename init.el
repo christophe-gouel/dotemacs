@@ -457,8 +457,8 @@
 
 ;; mlint
 (if mswindows
-    (setq mlint-programs (quote ("C:/Program Files/MATLAB/R2015b/bin/win64/mlint.exe")))
-  (setq mlint-programs (quote ("/usr/local/MATLAB/R2015b/bin/glnxa64/mlint"))))
+    (setq mlint-programs (quote ("C:/Program Files/MATLAB/R2016a/bin/win64/mlint.exe")))
+  (setq mlint-programs (quote ("/usr/local/MATLAB/R2016a/bin/glnxa64/mlint"))))
 
 ;; Matlab shell
 (autoload 'matlab-shell "matlab" "Interactive MATLAB mode." t)
