@@ -1,6 +1,8 @@
 auto-complete
 ein
 pager
+pandoc
+pandoc-mode
 polymode
 ps-ccrypt
 yaml-mode

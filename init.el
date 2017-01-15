@@ -172,12 +172,12 @@
 (require 'gams)
 (if mswindows
   (progn
-    (setq gams:process-command-name "c:/Programs/GAMS/win64/24.3/gams.exe")
-    (setq gams-system-directory "c:/Programs/GAMS/win64/24.3/")
-    (setq gams-docs-directory "c:/Programs/GAMS/win64/24.3/docs")
+    (setq gams:process-command-name "c:/Programs/GAMS/win64/24.7/gams.exe")
+    (setq gams-system-directory "c:/Programs/GAMS/win64/24.7/")
+    (setq gams-docs-directory "c:/Programs/GAMS/win64/24.7/docs")
     (setq gams-docs-view-program "C:/Program Files/Tracker Software/PDF Viewer/PDFXCview.exe")
     (setq load-path
-	  (cons "c:/Programs/GAMS/win64/24.3/" ;; Set the installed directory!
+	  (cons "c:/Programs/GAMS/win64/24.7/" ;; Set the installed directory!
 		load-path)))
   (progn
     (setq gams-docs-directory "/opt/gams/gams24.6_linux_x64_64_sfx/docs")
@@ -315,6 +315,8 @@
 ;; Preview
 (setq preview-scale-function 1.7)      ; Higher preview images in TeX buffers
 (setq preview-auto-cache-preamble t)
+(setq preview-gs-command (executable-find "gswin64c"))
+(setq doc-view-ghostscript-program "C:\\Program Files\\gs\\gs9.20\\bin\\gswin64c.exe")
 
 (load "auctex.el" nil t t)
 (if mswindows
@@ -332,7 +334,7 @@
 
 (if mswindows
     (progn
-      (setq TeX-view-program-list (quote (("Sumatra PDF" ("\"C:/Program Files (x86)/SumatraPDF/SumatraPDF.exe\" -reuse-instance" (mode-io-correlate " -forward-search %b %n") " %o")))))
+      (setq TeX-view-program-list (quote (("Sumatra PDF" ("\"C:/Program Files/SumatraPDF/SumatraPDF.exe\" -reuse-instance" (mode-io-correlate " -forward-search %b %n") " %o")))))
       (setq TeX-view-program-selection (quote ((output-pdf "Sumatra PDF")))))
     (progn
       (setq TeX-view-program-list '(("qpdfview" "qpdfview --instance emacsauxtex --unique \"%o#src:%b:%n:0\"")))
@@ -679,17 +681,21 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(ess-R-font-lock-keywords (quote (
-				    (ess-R-fl-keyword:modifiers . t)
-				    (ess-R-fl-keyword:fun-defs . t)
-				    (ess-R-fl-keyword:keywords . t)
-				    (ess-R-fl-keyword:assign-ops . t)
-				    (ess-R-fl-keyword:constants . t)
-				    (ess-fl-keyword:fun-calls . t)
-				    (ess-fl-keyword:numbers . t)
-				    (ess-fl-keyword:operators . t)
-				    (ess-fl-keyword:delimiters . t)
-				    (ess-fl-keyword:= . t)
-				    (ess-R-fl-keyword:F&T . t)))))
+ '(ess-R-font-lock-keywords
+   (quote
+    ((ess-R-fl-keyword:modifiers . t)
+     (ess-R-fl-keyword:fun-defs . t)
+     (ess-R-fl-keyword:keywords . t)
+     (ess-R-fl-keyword:assign-ops . t)
+     (ess-R-fl-keyword:constants . t)
+     (ess-fl-keyword:fun-calls . t)
+     (ess-fl-keyword:numbers . t)
+     (ess-fl-keyword:operators . t)
+     (ess-fl-keyword:delimiters . t)
+     (ess-fl-keyword:= . t)
+     (ess-R-fl-keyword:F&T . t))))
+ '(package-selected-packages
+   (quote
+    (pandoc pandoc-mode yaml-mode vlf polymode pager ein auto-complete))))
 
 (setenv "CYGWIN" "nodosfilewarning")
