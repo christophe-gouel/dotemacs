@@ -696,6 +696,6 @@
      (ess-R-fl-keyword:F&T . t))))
  '(package-selected-packages
    (quote
-    (pandoc pandoc-mode yaml-mode vlf polymode pager ein auto-complete))))
+    (magit pandoc pandoc-mode yaml-mode vlf polymode pager ein auto-complete))))
 
 (setenv "CYGWIN" "nodosfilewarning")
