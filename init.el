@@ -667,6 +667,11 @@
 (require 'poly-markdown)
 (add-to-list 'auto-mode-alist '("\\.Rmd" . poly-markdown+r-mode))
 
+;;; =======
+;;;  Magit
+;;; =======
+(global-set-key (kbd "C-x g") 'magit-status)
+
 ;;; ========
 ;;;  ccrypt
 ;;; ========
@@ -698,8 +703,10 @@
      (ess-fl-keyword:delimiters . t)
      (ess-fl-keyword:= . t)
      (ess-R-fl-keyword:F&T . t))))
+ '(latex-preview-pane-multifile-mode (quote auctex))
  '(package-selected-packages
    (quote
-    (latex-preview-pane magit pandoc pandoc-mode yaml-mode vlf polymode pager ein auto-complete))))
+    (magit latex-preview-pane latex-pretty-symbols yaml-mode vlf ps-ccrypt polymode pandoc-mode pandoc pager ein auto-complete))))
+
 
 (setenv "CYGWIN" "nodosfilewarning")
