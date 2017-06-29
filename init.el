@@ -672,6 +672,9 @@
 (setq load-path (cons "path" load-path))
 (require 'ps-ccrypt "ps-ccrypt.el")
 
+;;; Sent deleted files to trash
+(setq delete-by-moving-to-trash t)
+
 (require 'vlf)
 
 (require 'ein)
