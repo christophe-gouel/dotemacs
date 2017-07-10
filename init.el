@@ -172,12 +172,12 @@
 (require 'gams-mode)
 (if mswindows
   (progn
-    (setq gams-process-command-name "c:/Programs/GAMS/win64/24.7/gams.exe")
-    (setq gams-system-directory "c:/Programs/GAMS/win64/24.7/")
-    (setq gams-docs-directory "c:/Programs/GAMS/win64/24.7/docs")
+    (setq gams-process-command-name "c:/Programs/GAMS/win64/24.8/gams.exe")
+    (setq gams-system-directory "c:/Programs/GAMS/win64/24.8/")
+    (setq gams-docs-directory "c:/Programs/GAMS/win64/24.8/docs")
     (setq gams-docs-view-program "C:/Program Files/Tracker Software/PDF Viewer/PDFXCview.exe")
     (setq load-path
-	  (cons "c:/Programs/GAMS/win64/24.7/" ;; Set the installed directory!
+	  (cons "c:/Programs/GAMS/win64/24.8/" ;; Set the installed directory!
 		load-path)))
   (progn
     (setq gams-docs-directory "/opt/gams/gams24.6_linux_x64_64_sfx/docs")
