@@ -1,9 +1,9 @@
 md site-lisp
 cd site-lisp
 
-wget http://shirotakeda.org/assets/files/gams/gams-4.2.zip
-unzip gams-4.2.zip
-rm gams-4.2.zip
+wget https://github.com/ShiroTakeda/gams-mode/archive/6.2.zip --no-check-certificate -Ogams-mode-6.2.zip
+unzip gams-mode-6.2.zip
+rm gams-mode-6.2.zip
 
 wget http://sourceforge.net/projects/emacs-template/files/template/3.1c/template-3.1c.tar.gz/download
 7z x template-3.1c.tar.gz

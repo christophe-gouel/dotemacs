@@ -166,13 +166,13 @@
 (setq flyspell-issue-welcome-flag nil)
 
 ;;; ========================================================
-;;;  Gams - http://shirotakeda.org/home/gams/gams-mode.html
+;;;  Gams - http://shirotakeda.org/en/gams/gams-mode/
 ;;; ========================================================
-(add-to-list 'load-path "~/.emacs.d/site-lisp/gams-4.2")
-(require 'gams)
+(add-to-list 'load-path "~/.emacs.d/site-lisp/gams-mode-6.2")
+(require 'gams-mode)
 (if mswindows
   (progn
-    (setq gams:process-command-name "c:/Programs/GAMS/win64/24.7/gams.exe")
+    (setq gams-process-command-name "c:/Programs/GAMS/win64/24.7/gams.exe")
     (setq gams-system-directory "c:/Programs/GAMS/win64/24.7/")
     (setq gams-docs-directory "c:/Programs/GAMS/win64/24.7/docs")
     (setq gams-docs-view-program "C:/Program Files/Tracker Software/PDF Viewer/PDFXCview.exe")
@@ -182,7 +182,7 @@
   (progn
     (setq gams-docs-directory "/opt/gams/gams24.6_linux_x64_64_sfx/docs")
     (setq gams-docs-view-program "qpdfview")))
-(setq gams:process-command-option "ll=0 lo=3 pw=153 ps=9999")
+(setq gams-process-command-option "ll=0 lo=3 pw=153 ps=9999")
 (setq gams-statement-upcase t)
 (setq gams-fill-column 80)
 (setq gams-recenter-font-lock t)
@@ -196,6 +196,9 @@
   (interactive "sRegular expression to find: ")
   (grep (concat "grep -nH -i -r -e " string " --include=*.gms *" )))
 (define-key gams-mode-map "\C-cf" 'find-in-gms-files)
+(setq font-lock-support-mode
+      '((gams-mode . nil)
+	(t . jit-lock-mode)))
 
 ;; Indent
 (setq gams-indent-on t)
