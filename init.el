@@ -180,7 +180,7 @@
 	  (cons "c:/Programs/GAMS/win64/24.8/" ;; Set the installed directory!
 		load-path)))
   (progn
-    (setq gams-docs-directory "/opt/gams/gams24.6_linux_x64_64_sfx/docs")
+    (setq gams-docs-directory "/opt/gams/gams24.8_linux_x64_64_sfx/docs")
     (setq gams-docs-view-program "qpdfview")))
 (setq gams-process-command-option "ll=0 lo=3 pw=153 ps=9999")
 (setq gams-statement-upcase t)
@@ -269,7 +269,8 @@
 (setq TeX-source-correlate-start-server (quote ask))
 (setq TeX-PDF-mode t)
 
-(require 'latex-pretty-symbols)
+(if (display-graphic-p)
+    (require 'latex-pretty-symbols))
 (add-hook 'TeX-mode-hook 'flyspell-mode)
 (add-hook 'TeX-mode-hook 'auto-fill-mode)
 (add-hook 'TeX-mode-hook 'latex-math-mode)
@@ -280,7 +281,9 @@
 			     (auto-fill-mode)
 			     (turn-on-reftex)
 			     (setq reftex-plug-into-AUCTeX t)))
-;; (add-hook 'TeX-mode-hook 'TeX-fold-buffer t)
+(if mswindows
+    ()
+  (add-hook 'TeX-mode-hook 'TeX-fold-buffer t))
 
 (add-hook 'LaTeX-mode-hook
      '(lambda nil
