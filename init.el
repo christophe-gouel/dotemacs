@@ -463,8 +463,8 @@
 
 ;; mlint
 (if mswindows
-    (setq mlint-programs (quote ("C:/Program Files/MATLAB/R2016b/bin/win64/mlint.exe")))
-  (setq mlint-programs (quote ("/usr/local/MATLAB/R2016b/bin/glnxa64/mlint"))))
+    (setq mlint-programs (quote ("C:/Program Files/MATLAB/RLast/bin/win64/mlint.exe")))
+  (setq mlint-programs (quote ("/usr/local/MATLAB/RLast/bin/glnxa64/mlint"))))
 
 ;; Matlab shell
 (autoload 'matlab-shell "matlab" "Interactive MATLAB mode." t)
@@ -710,6 +710,12 @@
  '(latex-preview-pane-multifile-mode (quote auctex))
  '(package-selected-packages
    (quote
-    (magit latex-preview-pane latex-pretty-symbols yaml-mode vlf ps-ccrypt polymode pandoc-mode pandoc pager ein auto-complete))))
+    (auctex magit latex-preview-pane latex-pretty-symbols yaml-mode vlf ps-ccrypt polymode pandoc-mode pandoc pager ein auto-complete))))
 
 (setenv "CYGWIN" "nodosfilewarning")
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
