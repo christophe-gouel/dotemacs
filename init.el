@@ -1,4 +1,3 @@
-(package-initialize)
 ;; (byte-recompile-directory "~/.emacs.d/site-lisp" 1)
 
 (defconst mswindows (equal window-system 'w32))
@@ -17,8 +16,10 @@
     '("marmalade" .
       "http://marmalade-repo.org/packages/"))
 (add-to-list 'package-archives
-             '("melpa" . "http://melpa.milkbox.net/packages/") t)
+             '("melpa" . "https://melpa.org/packages/") t)
 (setq package-enable-at-startup nil)
+
+(package-initialize)
 
 ;;; Activate lower- and upper-case commands
 (put 'downcase-region 'disabled nil)
@@ -194,7 +195,7 @@
 (defun find-in-gms-files (string)
   "Find a regular expression in gms files"
   (interactive "sRegular expression to find: ")
-  (grep (concat "grep -nH -i -r -e " string " --include=*.gms *" )))
+  (grep (concat "grep -nHI -i -r -e " string " --include=*.gms *" )))
 (define-key gams-mode-map "\C-cf" 'find-in-gms-files)
 (setq font-lock-support-mode
       '((gams-mode . nil)
@@ -458,7 +459,7 @@
 (defun find-in-m-files (string)
   "Find a regular expression in m files"
   (interactive "sRegular expression to find: ")
-  (grep (concat "grep -nH -i -r -e " string " --include=*.m *" )))
+  (grep (concat "grep -nHI -i -r -e " string " --include=*.m *" )))
 (define-key matlab-mode-map "\C-cf" 'find-in-m-files)
 
 ;; mlint
@@ -515,10 +516,8 @@
 ;; disabled here.
 (setq-default inferior-R-args "--no-restore-history --no-save ")
 
-;; Set code indentation following the standard in R sources.
-(setq ess-default-style 'C++)
-;; (setq-default c-default-style "bsd")
-;(setq-default c-basic-offset 2)
+;; Set code indentation
+(setq ess-default-style 'DEFAULT)
 (setq ess-indent-level 2)
 (setq ess-arg-function-offset 2)
 (setq ess-else-offset 2)
@@ -633,7 +632,7 @@
 (defun find-in-R-files (string)
   "Find a regular expression in R files"
   (interactive "sRegular expression to find: ")
-  (grep (concat "grep -nH -i -r -e " string " --include=*.{R,r}* *" )))
+  (grep (concat "grep -nHI -i -r -e " string " --include=*.R* *" )))
 (define-key ess-mode-map "\C-cf" 'find-in-R-files)
 
 ;;; ===================================
@@ -682,8 +681,21 @@
 (setq load-path (cons "path" load-path))
 (require 'ps-ccrypt "ps-ccrypt.el")
 
+;;; ==========
+;;;  flycheck
+;;; ==========
+(use-package flycheck
+  :ensure t
+  :init (global-flycheck-mode))
+(setq flycheck-global-modes '(not LaTeX-mode latex-mode))
+
 ;;; Sent deleted files to trash
 (setq delete-by-moving-to-trash t)
+
+;;; =======
+;;;  Julia
+;;; =======
+(setq inferior-julia-program-name "c:/Users/gouel/AppData/Local/Julia-0.6.2/bin/julia.exe")
 
 (require 'vlf)
 
@@ -710,7 +722,7 @@
  '(latex-preview-pane-multifile-mode (quote auctex))
  '(package-selected-packages
    (quote
-    (auctex magit latex-preview-pane latex-pretty-symbols yaml-mode vlf ps-ccrypt polymode pandoc-mode pandoc pager ein auto-complete))))
+    (ess flycheck-julia julia-mode julia-repl julia-shell flycheck auctex magit latex-preview-pane latex-pretty-symbols yaml-mode vlf ps-ccrypt polymode pandoc-mode pandoc pager ein auto-complete))))
 
 (setenv "CYGWIN" "nodosfilewarning")
 (custom-set-faces
