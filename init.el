@@ -270,8 +270,8 @@
 (setq TeX-source-correlate-start-server (quote ask))
 (setq TeX-PDF-mode t)
 
-(if (display-graphic-p)
-    (require 'latex-pretty-symbols))
+;; (if (display-graphic-p)
+;;     (require 'latex-pretty-symbols))
 (add-hook 'TeX-mode-hook 'flyspell-mode)
 (add-hook 'TeX-mode-hook 'auto-fill-mode)
 (add-hook 'TeX-mode-hook 'latex-math-mode)
@@ -725,7 +725,7 @@
  '(latex-preview-pane-multifile-mode (quote auctex))
  '(package-selected-packages
    (quote
-    (ess flycheck-julia julia-mode julia-repl julia-shell flycheck auctex magit latex-preview-pane latex-pretty-symbols yaml-mode vlf ps-ccrypt polymode pandoc-mode pandoc pager ein auto-complete))))
+    (magit-lfs flycheck-julia julia-mode julia-repl julia-shell flycheck auctex latex-preview-pane latex-pretty-symbols yaml-mode vlf ps-ccrypt polymode pandoc-mode pandoc pager ein auto-complete))))
 
 (setenv "CYGWIN" "nodosfilewarning")
 (custom-set-faces
