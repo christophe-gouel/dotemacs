@@ -12,8 +12,6 @@ wget http://sourceforge.net/projects/emacs-template/files/template/3.1c/template
 tar xvfz template-3.1c.tar.gz
 rm template-3.1c.tar.gz
 
-wget http://www.emacswiki.org/emacs/download/tool-bar%2b.el
-
 wget http://www.emacswiki.org/emacs/download/iswitchb-highlight.el
 
 git clone https://github.com/immerrr/lua-mode.git lua

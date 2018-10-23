@@ -42,8 +42,7 @@
 (setq org-todo-keywords '((type "TODO(t)" "STARTED(s)" "WAITING(w)" "|" "DONE(d)")))
 (setq org-tag-alist '(("OFFICE" . ?o) ("COMPUTER" . ?c) ("HOME" . ?h) ("PROJECT" . ?p) ("CALL" . ?a) ("ERRANDS" . ?e) ("TASK" . ?t)))
 (setq org-hide-leading-stars t)
-(setq org-directory "c:/Users/Christophe/Dropbox/Org")
-(setq org-agenda-files (quote ("c:/Users/Christophe/Dropbox/Org/mygtd.org")))
+;; (setq org-directory "c:/Users/Christophe/Dropbox/Org")
 
 ;; Integration of RefTeX in org
 (defun org-mode-reftex-setup ()
@@ -113,6 +112,10 @@
 (if (display-graphic-p)
     ()
     (menu-bar-mode -1))
+
+;;; Remove toolbar
+(if window-system
+    (tool-bar-mode 0))
 
 (setq inhibit-startup-screen t)
 
@@ -232,24 +235,10 @@
 	  '(lambda ()
 	     (define-key yaml-mode-map "\C-m" 'newline-and-indent)))
 
-;;; ==================================================
-;;;  Color Theme - http://www.nongnu.org/color-theme/
-;;; ==================================================
-(if (display-graphic-p)
-  (progn
-    (if mswindows
-      (add-to-list 'load-path "~/.emacs.d/site-lisp/color-theme-6.6.0"))
-    (require 'color-theme)
-    (color-theme-initialize)
-    (color-theme-blue-mood)))
-
-;;; ===============================================================
-;;;  Toolbar+ - http://www.emacswiki.org/cgi-bin/wiki/tool-bar+.el
-;;; ===============================================================
-;; (require 'tool-bar+)			 ; Activation of the pop-up tool bar
-;; (tool-bar-pop-up-mode 1)
-(if window-system
-    (tool-bar-mode 0))
+;;; ==============
+;;;  Custom theme
+;;; ==============
+(load-theme 'nord t)
 
 ;;; ============
 ;;;  LaTeX-mode
@@ -320,12 +309,6 @@
 	)
 	)
 
-;; Preview
-(setq preview-scale-function 1.7)      ; Higher preview images in TeX buffers
-(setq preview-auto-cache-preamble t)
-(setq preview-gs-command (executable-find "gswin64c"))
-(setq doc-view-ghostscript-program "C:\\Program Files\\gs\\gs9.20\\bin\\gswin64c.exe")
-
 (load "auctex.el" nil t t)
 (if mswindows
     (progn
@@ -348,6 +331,13 @@
       (setq TeX-view-program-list '(("qpdfview" "qpdfview --instance emacsauxtex --unique \"%o#src:%b:%n:0\"")))
       (setq TeX-view-program-selection '((output-pdf "qpdfview")))))
 
+;; Preview
+;; (load "preview-latex.el" nil t t)
+(setq preview-scale-function 1.7)      ; Higher preview images in TeX buffers
+(setq preview-auto-cache-preamble t)
+(setq preview-gs-command "gs")
+;; (setq preview-gs-command (executable-find "gswin64c"))
+
 
 
 ;; Beamer
@@ -366,25 +356,6 @@
 (add-hook 'TeX-mode-hook
 	  '(lambda()
 	     (local-set-key [(shift return)] 'tex-frame)))
-
-;;; ========
-;;;  Dynare
-;;; ========
-;; (require 'dynare)
-;; (autoload 'dynare-mode "dynare" "Enter dynare mode." t)
-;; (setq auto-mode-alist (cons '("\\.mod\\'" . dynare-mode) auto-mode-alist))
-
-;;; ===========================================================
-;;;  Mode imaxima - http://sites.google.com/site/imaximaimath/
-;;; ===========================================================
-;; (if mswindows
-;;   (load "~/.emacs.d/site-lisp/imaxima-imath-1.0/setup-imaxima-imath.el"))
-;; ;; (require 'setup-imaxima-imath)
-;; (autoload 'imaxima "imaxima" "Image support for Maxima." t)
-;; (autoload 'imath-mode "imath" "Interactive Math minor mode." t)
-;; (autoload 'maxima "maxima" "Original Maxima mode" t)
-;; (setq imaxima-use-maxima-mode-flag t)
-;; (setq imaxima-fnt-size "LARGE")
 
 ;;; ============================================
 ;;;  LUA - https://github.com/immerrr/lua-mode/
@@ -412,6 +383,7 @@
 ;;;  PDF
 ;;; =====
 (require 'doc-view)
+;; (setq doc-view-ghostscript-program "C:\\Program Files\\gs\\gs9.20\\bin\\gswin64c.exe")
 
 ;;; ===============
 ;;;  Remote access
@@ -506,7 +478,7 @@
 ;;;  ESS
 ;;; =====
 (require 'ess-site)
-(require 'ess-eldoc)
+;; (require 'ess-eldoc)
 (if (display-graphic-p)
   (progn
     (require 'ess-mouse)
@@ -709,6 +681,9 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
+   (quote
+    ("bf390ecb203806cbe351b966a88fc3036f3ff68cd2547db6ee3676e87327b311" default)))
  '(ess-R-font-lock-keywords
    (quote
     ((ess-R-fl-keyword:modifiers . t)
@@ -725,7 +700,7 @@
  '(latex-preview-pane-multifile-mode (quote auctex))
  '(package-selected-packages
    (quote
-    (magit-lfs flycheck-julia julia-mode julia-repl julia-shell flycheck auctex latex-preview-pane latex-pretty-symbols yaml-mode vlf ps-ccrypt polymode pandoc-mode pandoc pager ein auto-complete))))
+    (magit magit-lfs flycheck-julia julia-mode julia-repl julia-shell flycheck auctex latex-preview-pane latex-pretty-symbols yaml-mode vlf ps-ccrypt polymode pandoc-mode pandoc pager ein auto-complete))))
 
 (setenv "CYGWIN" "nodosfilewarning")
 (custom-set-faces

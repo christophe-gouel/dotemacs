@@ -10,12 +10,6 @@ wget http://sourceforge.net/projects/emacs-template/files/template/3.1c/template
 7z x template-3.1c.tar
 rm template-3.1c.*
 
-wget http://download.savannah.gnu.org/releases/color-theme/color-theme-6.6.0.zip
-unzip color-theme-6.6.0.zip
-rm color-theme-6.6.0.zip
-
-wget http://www.emacswiki.org/emacs/download/tool-bar%2b.el
-
 wget http://www.emacswiki.org/emacs/download/iswitchb-highlight.el
 
 wget http://matlab-emacs.cvs.sourceforge.net/viewvc/*checkout*/matlab-emacs/matlab-emacs/dl_emacs_support.m
