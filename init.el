@@ -172,7 +172,6 @@
 ;;; ========================================================
 ;;;  Gams - http://shirotakeda.org/en/gams/gams-mode/
 ;;; ========================================================
-(add-to-list 'load-path "~/.emacs.d/site-lisp/gams-mode-6.2")
 (require 'gams-mode)
 (if mswindows
   (progn
@@ -331,7 +330,7 @@
 
 ;; Preview
 ;; (load "preview-latex.el" nil t t)
-(setq preview-scale-function 1.7)      ; Higher preview images in TeX buffers
+(setq preview-scale-function 1.6)      ; Higher preview images in TeX buffers
 (setq preview-auto-cache-preamble t)
 (setq preview-gs-command "gs")
 ;; (setq preview-gs-command (executable-find "gswin64c"))
@@ -698,7 +697,7 @@
  '(latex-preview-pane-multifile-mode (quote auctex))
  '(package-selected-packages
    (quote
-    (magit magit-lfs flycheck-julia julia-mode julia-repl julia-shell flycheck auctex latex-preview-pane yaml-mode vlf ps-ccrypt polymode pandoc-mode pandoc pager ein auto-complete))))
+    (gams-ac gams-mode magit magit-lfs flycheck-julia julia-mode julia-repl julia-shell flycheck auctex latex-preview-pane yaml-mode vlf ps-ccrypt polymode pandoc-mode pandoc pager ein auto-complete))))
 
 (setenv "CYGWIN" "nodosfilewarning")
 (custom-set-faces
