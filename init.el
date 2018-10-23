@@ -160,6 +160,7 @@
 (require 'ispell)
 ;;; Use Aspell for spell checking.
 (if mswindows
+    (setq-default ispell-program-name "c:/Programs/Hunspell1.3.2-3/bin/hunspell.exe")
     (setq-default ispell-program-name "C:/Program Files (x86)/Aspell/bin/aspell.exe")
   (setq-default ispell-program-name "aspell"))
 (setq ispell-dictionary "american")
@@ -506,7 +507,7 @@
 ;;;  ESS
 ;;; =====
 (require 'ess-site)
-(require 'ess-eldoc)
+;; (require 'ess-eldoc)
 (if (display-graphic-p)
   (progn
     (require 'ess-mouse)
@@ -725,7 +726,7 @@
  '(latex-preview-pane-multifile-mode (quote auctex))
  '(package-selected-packages
    (quote
-    (magit-lfs flycheck-julia julia-mode julia-repl julia-shell flycheck auctex latex-preview-pane latex-pretty-symbols yaml-mode vlf ps-ccrypt polymode pandoc-mode pandoc pager ein auto-complete))))
+    (markdown-mode magit-lfs flycheck-julia julia-mode julia-repl julia-shell flycheck auctex latex-preview-pane latex-pretty-symbols yaml-mode vlf ps-ccrypt polymode pandoc-mode pandoc pager ein auto-complete))))
 
 (setenv "CYGWIN" "nodosfilewarning")
 (custom-set-faces
