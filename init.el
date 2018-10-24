@@ -330,13 +330,11 @@
       (setq TeX-view-program-selection '((output-pdf "qpdfview")))))
 
 ;; Preview
-;; (load "preview-latex.el" nil t t)
 (setq preview-scale-function 1.6)      ; Higher preview images in TeX buffers
 (setq preview-auto-cache-preamble t)
-(setq preview-gs-command "gs")
-;; (setq preview-gs-command (executable-find "gswin64c"))
-
-
+(if mswindows
+    (setq preview-gs-command (executable-find "gswin64c"))
+  (setq preview-gs-command "gs"))
 
 ;; Beamer
 (defun tex-frame ()
@@ -381,7 +379,8 @@
 ;;;  PDF
 ;;; =====
 (require 'doc-view)
-;; (setq doc-view-ghostscript-program "C:\\Program Files\\gs\\gs9.20\\bin\\gswin64c.exe")
+(if mswindows
+    (setq doc-view-ghostscript-program "C:\\Program Files\\gs\\gs9.20\\bin\\gswin64c.exe"))
 
 ;;; ===============
 ;;;  Remote access
