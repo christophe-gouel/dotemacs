@@ -361,12 +361,6 @@
 (setq auto-mode-alist (cons '("\\.lua$" . lua-mode) auto-mode-alist))
 (autoload 'lua-mode "lua-mode" "Lua editing mode." t)
 
-;;; ================================================================================
-;;;  Iswitch buffer - http://www.emacswiki.org/emacs/download/iswitchb-highlight.el
-;;; ================================================================================
-(iswitchb-mode 1)
-(require 'iswitchb-highlight)
-
 ;;; ======================
 ;;;  Mode CSV - From ELPA
 ;;; ======================
@@ -653,6 +647,15 @@
 (setq load-path (cons "path" load-path))
 (require 'ps-ccrypt "ps-ccrypt.el")
 
+;;; =================
+;;;  ivy and friends
+;;; =================
+(ivy-mode)
+(global-set-key "\C-s" 'swiper)
+(use-package ivy :demand
+      :config
+      (setq ivy-use-virtual-buffers t
+            ivy-count-format "%d/%d "))
 ;;; ==========
 ;;;  flycheck
 ;;; ==========
@@ -697,7 +700,7 @@
  '(latex-preview-pane-multifile-mode (quote auctex))
  '(package-selected-packages
    (quote
-    (auctex auto-complete ein flycheck flycheck-julia gams-ac gams-mode julia-mode julia-repl julia-shell latex-preview-pane magit magit-lfs markdown-mode pager pandoc pandoc-mode polymode ps-ccrypt yaml-mode vlf))))
+    (swiper counsel ivy htmlize auctex auto-complete ein flycheck flycheck-julia gams-ac gams-mode julia-mode julia-repl julia-shell latex-preview-pane magit magit-lfs markdown-mode pager pandoc pandoc-mode polymode ps-ccrypt yaml-mode vlf))))
 
 (setenv "CYGWIN" "nodosfilewarning")
 (custom-set-faces
