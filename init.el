@@ -176,12 +176,12 @@
 (require 'gams-mode)
 (if mswindows
   (progn
-    (setq gams-process-command-name "c:/Programs/GAMS/win64/24.8/gams.exe")
-    (setq gams-system-directory "c:/Programs/GAMS/win64/24.8/")
-    (setq gams-docs-directory "c:/Programs/GAMS/win64/24.8/docs")
+    (setq gams-process-command-name "c:/Programs/GAMS/win64/25.1/gams.exe")
+    (setq gams-system-directory "c:/Programs/GAMS/win64/25.1/")
+    (setq gams-docs-directory "c:/Programs/GAMS/win64/25.1/docs")
     (setq gams-docs-view-program "C:/Program Files/Tracker Software/PDF Viewer/PDFXCview.exe")
     (setq load-path
-	  (cons "c:/Programs/GAMS/win64/24.8/" ;; Set the installed directory!
+	  (cons "c:/Programs/GAMS/win64/25.1/" ;; Set the installed directory!
 		load-path)))
   (progn
     (setq gams-docs-directory "/opt/gams/gams24.9_linux_x64_64_sfx/docs")
@@ -645,7 +645,8 @@
 ;;;  ccrypt
 ;;; ========
 (setq load-path (cons "path" load-path))
-(require 'ps-ccrypt "ps-ccrypt.el")
+(require 'ps-ccrypt)
+;; (require 'ps-ccrypt "ps-ccrypt.el")
 
 ;;; =================
 ;;;  ivy and friends
