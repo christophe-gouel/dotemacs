@@ -184,7 +184,7 @@
 	  (cons "c:/Programs/GAMS/win64/25.1/" ;; Set the installed directory!
 		load-path)))
   (progn
-    (setq gams-docs-directory "/opt/gams/gams24.9_linux_x64_64_sfx/docs")
+    (setq gams-docs-directory "/opt/gams/gams26.1_linux_x64_64_sfx/docs")
     (setq gams-docs-view-program "qpdfview")))
 (setq gams-process-command-option "ll=0 lo=3 pw=153 ps=9999")
 (setq gams-statement-upcase t)
@@ -238,7 +238,7 @@
 ;;; ==============
 ;;;  Custom theme
 ;;; ==============
-(load-theme 'nord t)
+(load-theme 'leuven t)
 
 ;;; ============
 ;;;  LaTeX-mode
@@ -401,8 +401,6 @@
 ;;; ===============================================
 ;;;  Matlab - http://matlab-emacs.sourceforge.net/
 ;;; ===============================================
-(add-to-list 'load-path "~/.emacs.d/site-lisp/matlab-emacs")
-(load-library "matlab-load")
 (require 'matlab)
 
 ;; Matlab mode
@@ -536,6 +534,9 @@
 (setq comint-scroll-to-bottom-on-output t)
 (setq ess-help-own-frame 'one)
 
+;; (define-key ess-r-mode-map '[M--] #'ess-insert-assign)
+;; (define-key inferior-ess-r-mode-map '[M--] #'ess-insert-assign)
+
 ;;;Tout évaluer avec Shift-Enter
 (setq ess-ask-for-ess-directory nil)
 (setq ess-local-process-name "R")
@@ -664,6 +665,7 @@
   :ensure t
   :init (global-flycheck-mode))
 (setq flycheck-global-modes '(not LaTeX-mode latex-mode))
+(setq flycheck-global-modes '(not ess-mode ess-mode))
 
 ;;; Sent deleted files to trash
 (setq delete-by-moving-to-trash t)
@@ -684,7 +686,7 @@
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
    (quote
-    ("bf390ecb203806cbe351b966a88fc3036f3ff68cd2547db6ee3676e87327b311" default)))
+    ("14de8f58ad656af5be374086ae7ab663811633fc1483a02add92f7a1ff1a8455" "bf390ecb203806cbe351b966a88fc3036f3ff68cd2547db6ee3676e87327b311" default)))
  '(ess-R-font-lock-keywords
    (quote
     ((ess-R-fl-keyword:modifiers . t)
@@ -701,7 +703,7 @@
  '(latex-preview-pane-multifile-mode (quote auctex))
  '(package-selected-packages
    (quote
-    (swiper counsel ivy htmlize auctex auto-complete ein flycheck flycheck-julia gams-ac gams-mode julia-mode julia-repl julia-shell latex-preview-pane magit magit-lfs markdown-mode pager pandoc pandoc-mode polymode ps-ccrypt yaml-mode vlf))))
+    (matlab-mode espresso-theme counsel htmlize auctex auto-complete ein flycheck-julia gams-ac julia-repl julia-shell latex-preview-pane pager pandoc ps-ccrypt yaml-mode vlf))))
 
 (setenv "CYGWIN" "nodosfilewarning")
 (custom-set-faces
