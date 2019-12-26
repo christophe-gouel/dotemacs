@@ -161,14 +161,15 @@
 ;;;  Ispell
 ;;; ========
 (require 'ispell)
-;;; Use Aspell for spell checking.
-(if mswindows
-    (setq-default ispell-program-name "c:/Programs/Hunspell1.3.2-3/bin/hunspell.exe")
-    (setq-default ispell-program-name "C:/Program Files (x86)/Aspell/bin/aspell.exe")
-  (setq-default ispell-program-name "aspell"))
-(setq ispell-dictionary "american")
 (setq ispell-list-command "list")
 (setq flyspell-issue-welcome-flag nil)
+(if mswindows
+    (setq-default ispell-program-name "C:/ProgramData/chocolatey/lib/hunspell.portable/tools/hunspell.exe")
+  (setq-default ispell-program-name "aspell"))
+(setq ispell-local-dictionary "en_US") 
+(setq ispell-local-dictionary-alist
+      '(("en_US" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "en_US") nil utf-8)))
+(setq ispell-hunspell-dictionary-alist ispell-local-dictionary-alist)
 
 ;;; ========================================================
 ;;;  Gams - http://shirotakeda.org/en/gams/gams-mode/
@@ -176,12 +177,12 @@
 (require 'gams-mode)
 (if mswindows
   (progn
-    (setq gams-process-command-name "c:/Programs/GAMS/win64/25.1/gams.exe")
-    (setq gams-system-directory "c:/Programs/GAMS/win64/25.1/")
-    (setq gams-docs-directory "c:/Programs/GAMS/win64/25.1/docs")
-    (setq gams-docs-view-program "C:/Program Files/Tracker Software/PDF Viewer/PDFXCview.exe")
+    (setq gams-process-command-name "C:/GAMS/win64/29.1/gams.exe")
+    (setq gams-system-directory "C:/GAMS/win64/29.1/")
+    (setq gams-docs-directory "C:/GAMS/win64/29.1/docs")
+    (setq gams-docs-view-program "C:/Program Files (x86)/Foxit Software/Foxit Reader/FoxitReader.exe")
     (setq load-path
-	  (cons "c:/Programs/GAMS/win64/25.1/" ;; Set the installed directory!
+	  (cons "C:/GAMS/win64/29.1/" ;; Set the installed directory!
 		load-path)))
   (progn
     (setq gams-docs-directory "/opt/gams/gams26.1_linux_x64_64_sfx/docs")
@@ -330,10 +331,10 @@
       (setq TeX-view-program-selection '((output-pdf "qpdfview")))))
 
 ;; Preview
-(setq preview-scale-function 1.6)      ; Higher preview images in TeX buffers
+(setq preview-scale-function 1.5)      ; Higher preview images in TeX buffers
 (setq preview-auto-cache-preamble t)
 (if mswindows
-    (setq preview-gs-command (executable-find "gswin64c"))
+    (setq preview-gs-command "c:/Program Files/gs/gs9.50/bin/gswin64c.exe")
   (setq preview-gs-command "gs"))
 
 ;; Beamer
@@ -374,7 +375,7 @@
 ;;; =====
 (require 'doc-view)
 (if mswindows
-    (setq doc-view-ghostscript-program "C:\\Program Files\\gs\\gs9.20\\bin\\gswin64c.exe"))
+    (setq doc-view-ghostscript-program "C:\\Program Files\\gs\\gs9.50\\bin\\gswin64c.exe"))
 
 ;;; ===============
 ;;;  Remote access
@@ -703,7 +704,7 @@
  '(latex-preview-pane-multifile-mode (quote auctex))
  '(package-selected-packages
    (quote
-    (matlab-mode espresso-theme counsel htmlize auctex auto-complete ein flycheck-julia gams-ac julia-repl julia-shell latex-preview-pane pager pandoc ps-ccrypt yaml-mode vlf))))
+    (rw-hunspell matlab-mode espresso-theme counsel htmlize auctex auto-complete ein flycheck-julia gams-ac julia-repl julia-shell latex-preview-pane pager pandoc ps-ccrypt yaml-mode vlf))))
 
 (setenv "CYGWIN" "nodosfilewarning")
 (custom-set-faces
