@@ -166,7 +166,7 @@
 (if mswindows
     (setq-default ispell-program-name "C:/ProgramData/chocolatey/lib/hunspell.portable/tools/hunspell.exe")
   (setq-default ispell-program-name "aspell"))
-(setq ispell-local-dictionary "en_US") 
+(setq ispell-local-dictionary "en_US")
 (setq ispell-local-dictionary-alist
       '(("en_US" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "en_US") nil utf-8)))
 (setq ispell-hunspell-dictionary-alist ispell-local-dictionary-alist)
@@ -241,6 +241,21 @@
 ;;; ==============
 (load-theme 'leuven t)
 
+;;; ========
+;;;  Bibtex
+;;; ========
+(autoload 'ivy-bibtex "ivy-bibtex" "" t)
+;; ivy-bibtex requires ivy's `ivy--regex-ignore-order` regex builder, which
+;; ignores the order of regexp tokens when searching for matching candidates.
+;; Add something like this to your init file:
+(setq ivy-re-builders-alist
+      '((ivy-bibtex . ivy--regex-ignore-order)
+        (t . ivy--regex-plus)))
+(setq bibtex-completion-bibliography
+      '("/media/gouel/Data/Dropbox/Bibliography/Bibtex/References.bib"))
+(setq bibtex-completion-library-path '("/media/gouel/Data/Dropbox/Bibliography/Papers" "/media/gouel/Data/Dropbox/Bibliography/Papers/Software"))
+(setq bibtex-completion-pdf-field "file")
+
 ;;; ============
 ;;;  LaTeX-mode
 ;;; ============
@@ -308,7 +323,7 @@
 	)
 	)
 
-(load "auctex.el" nil t t)
+;; (load "auctex.el" nil t t)
 (if mswindows
     (progn
       (require 'tex-mik)
@@ -328,7 +343,8 @@
       (setq TeX-view-program-selection (quote ((output-pdf "Sumatra PDF")))))
     (progn
       (setq TeX-view-program-list '(("qpdfview" "qpdfview --instance emacsauxtex --unique \"%o#src:%b:%n:0\"")))
-      (setq TeX-view-program-selection '((output-pdf "qpdfview")))))
+      (setq TeX-view-program-selection '((output-pdf "qpdfview")
+					 (output-dvi "xdvi")))))
 
 ;; Preview
 (setq preview-scale-function 1.5)      ; Higher preview images in TeX buffers
@@ -704,7 +720,7 @@
  '(latex-preview-pane-multifile-mode (quote auctex))
  '(package-selected-packages
    (quote
-    (rw-hunspell matlab-mode espresso-theme counsel htmlize auctex auto-complete ein flycheck-julia gams-ac julia-repl julia-shell latex-preview-pane pager pandoc ps-ccrypt yaml-mode vlf))))
+    (rw-hunspell ivy-bibtex matlab-mode espresso-theme counsel htmlize auctex auto-complete ein flycheck-julia gams-ac julia-repl julia-shell latex-preview-pane pager pandoc ps-ccrypt yaml-mode vlf))))
 
 (setenv "CYGWIN" "nodosfilewarning")
 (custom-set-faces
