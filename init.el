@@ -659,6 +659,7 @@
 ;;;  Magit
 ;;; =======
 (global-set-key (kbd "C-x g") 'magit-status)
+(setq magit-diff-refine-hunk (quote all))
 
 ;;; ========
 ;;;  ccrypt
