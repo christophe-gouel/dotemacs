@@ -177,15 +177,15 @@
 (require 'gams-mode)
 (if mswindows
   (progn
-    (setq gams-process-command-name "C:/GAMS/win64/29.1/gams.exe")
-    (setq gams-system-directory "C:/GAMS/win64/29.1/")
-    (setq gams-docs-directory "C:/GAMS/win64/29.1/docs")
+    (setq gams-process-command-name "C:/GAMS/win64/Last/gams.exe")
+    (setq gams-system-directory "C:/GAMS/win64/Last/")
+    (setq gams-docs-directory "C:/GAMS/win64/Last/docs")
     (setq gams-docs-view-program "C:/Program Files (x86)/Foxit Software/Foxit Reader/FoxitReader.exe")
     (setq load-path
-	  (cons "C:/GAMS/win64/29.1/" ;; Set the installed directory!
+	  (cons "C:/GAMS/win64/Last/" ;; Set the installed directory!
 		load-path)))
   (progn
-    (setq gams-docs-directory "/opt/gams/gams29.1_linux_x64_64_sfx/docs")
+    (setq gams-docs-directory "/opt/gams/gamsLast_linux_x64_64_sfx/docs")
     (setq gams-docs-view-program "qpdfview")))
 (setq gams-process-command-option "ll=0 lo=3 pw=153 ps=9999")
 (setq gams-statement-upcase t)
@@ -339,7 +339,7 @@
 
 (if mswindows
     (progn
-      (setq TeX-view-program-list (quote (("Sumatra PDF" ("\"C:/Program Files/SumatraPDF/SumatraPDF.exe\" -reuse-instance" (mode-io-correlate " -forward-search %b %n") " %o")))))
+      (setq TeX-view-program-list (quote (("Sumatra PDF" ("\"SumatraPDF.exe\" -reuse-instance" (mode-io-correlate " -forward-search %b %n") " %o")))))
       (setq TeX-view-program-selection (quote ((output-pdf "Sumatra PDF")
 					       (output-dvi "Yap")))))
     (progn
