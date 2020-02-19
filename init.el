@@ -185,7 +185,7 @@
 	  (cons "C:/GAMS/win64/29.1/" ;; Set the installed directory!
 		load-path)))
   (progn
-    (setq gams-docs-directory "/opt/gams/gams26.1_linux_x64_64_sfx/docs")
+    (setq gams-docs-directory "/opt/gams/gams29.1_linux_x64_64_sfx/docs")
     (setq gams-docs-view-program "qpdfview")))
 (setq gams-process-command-option "ll=0 lo=3 pw=153 ps=9999")
 (setq gams-statement-upcase t)
