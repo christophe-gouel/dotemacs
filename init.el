@@ -1,4 +1,4 @@
-;; (byte-recompile-directory "~/.emacs.d/site-lisp" 1)
+(byte-recompile-directory "~/.emacs.d/site-lisp" 1)
 
 (defconst mswindows (equal window-system 'w32))
 
@@ -371,14 +371,6 @@
 	  '(lambda()
 	     (local-set-key [(shift return)] 'tex-frame)))
 
-;;; ============================================
-;;;  LUA - https://github.com/immerrr/lua-mode/
-;;; ============================================
-(add-to-list 'load-path "~/.emacs.d/site-lisp/lua")
-(require 'lua-mode)
-(setq auto-mode-alist (cons '("\\.lua$" . lua-mode) auto-mode-alist))
-(autoload 'lua-mode "lua-mode" "Lua editing mode." t)
-
 ;;; ======================
 ;;;  Mode CSV - From ELPA
 ;;; ======================
@@ -486,11 +478,11 @@
 ;;; =====
 (require 'ess-site)
 ;; (require 'ess-eldoc)
-(if (display-graphic-p)
-  (progn
-    (require 'ess-mouse)
-    (define-key ess-mode-map [(mouse-3)] 'ess-mouse-me)
-    (define-key inferior-ess-mode-map [(mouse-3)] 'ess-mouse-me)))
+;; (if (display-graphic-p)
+;;   (progn
+;;     (require 'ess-mouse)
+;;     (define-key ess-mode-map [(mouse-3)] 'ess-mouse-me)
+;;     (define-key inferior-ess-mode-map [(mouse-3)] 'ess-mouse-me)))
 
 ;; Following the "source is real" philosophy put forward by ESS, one
 ;; should not need the command history and should not save the
@@ -593,8 +585,8 @@
 	     (local-set-key [C-up] 'comint-previous-input)
 	     (local-set-key [C-down] 'comint-next-input)))
 
-(if (display-graphic-p)
-  (require 'ess-rutils))
+;; (if (display-graphic-p)
+;;   (require 'ess-rutils))
 
 ; Call imenu with \C-c =
 (define-key ess-mode-map "\C-c=" 'imenu)
@@ -704,11 +696,9 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
-   (quote
-    ("14de8f58ad656af5be374086ae7ab663811633fc1483a02add92f7a1ff1a8455" "bf390ecb203806cbe351b966a88fc3036f3ff68cd2547db6ee3676e87327b311" default)))
+   '("14de8f58ad656af5be374086ae7ab663811633fc1483a02add92f7a1ff1a8455" "bf390ecb203806cbe351b966a88fc3036f3ff68cd2547db6ee3676e87327b311" default))
  '(ess-R-font-lock-keywords
-   (quote
-    ((ess-R-fl-keyword:modifiers . t)
+   '((ess-R-fl-keyword:modifiers . t)
      (ess-R-fl-keyword:fun-defs . t)
      (ess-R-fl-keyword:keywords . t)
      (ess-R-fl-keyword:assign-ops . t)
@@ -718,11 +708,10 @@
      (ess-fl-keyword:operators . t)
      (ess-fl-keyword:delimiters . t)
      (ess-fl-keyword:= . t)
-     (ess-R-fl-keyword:F&T . t))))
- '(latex-preview-pane-multifile-mode (quote auctex))
+     (ess-R-fl-keyword:F&T . t)))
+ '(latex-preview-pane-multifile-mode 'auctex)
  '(package-selected-packages
-   (quote
-    (rw-hunspell ivy-bibtex matlab-mode espresso-theme counsel htmlize auctex auto-complete ein flycheck-julia gams-ac julia-repl julia-shell latex-preview-pane pager pandoc ps-ccrypt yaml-mode vlf))))
+   '(pandoc-mode rw-hunspell ivy-bibtex matlab-mode espresso-theme counsel htmlize auctex auto-complete ein flycheck-julia gams-ac julia-repl julia-shell latex-preview-pane pager ps-ccrypt yaml-mode vlf)))
 
 (setenv "CYGWIN" "nodosfilewarning")
 (custom-set-faces
