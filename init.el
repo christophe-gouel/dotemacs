@@ -1,4 +1,4 @@
-(byte-recompile-directory "~/.emacs.d/site-lisp" 1)
+;; (byte-recompile-directory "~/.emacs.d/site-lisp" 1)
 
 (defconst mswindows (equal window-system 'w32))
 

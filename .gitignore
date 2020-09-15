@@ -1,7 +1,14 @@
+ac-comphist.dat
 auto-save-list/
+bookmarks
+elpa/
+network-security.data
+recentf
 server/
+site-lisp/
+srecode-map.el
 .org-id-locations
 session.*
 tramp
-*
+transient/
 
