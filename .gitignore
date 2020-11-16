@@ -11,4 +11,4 @@ srecode-map.el
 session.*
 tramp
 transient/
-
+%backup%~

@@ -278,6 +278,7 @@
 (add-hook 'TeX-mode-hook 'flyspell-mode)
 (add-hook 'TeX-mode-hook 'auto-fill-mode)
 (add-hook 'TeX-mode-hook 'latex-math-mode)
+(add-hook 'LaTeX-mode-hook #'latex-extra-mode)
 
 (add-hook 'TeX-mode-hook 'imenu-add-menubar-index)
 (add-hook 'TeX-mode-hook (lambda ()
@@ -711,7 +712,7 @@
      (ess-R-fl-keyword:F&T . t)))
  '(latex-preview-pane-multifile-mode 'auctex)
  '(package-selected-packages
-   '(pandoc-mode rw-hunspell ivy-bibtex matlab-mode espresso-theme counsel htmlize auctex auto-complete ein flycheck-julia gams-ac julia-repl julia-shell latex-preview-pane pager ps-ccrypt yaml-mode vlf)))
+   '(latex-extra visual-fill-column rainbow-delimiters pandoc-mode rw-hunspell ivy-bibtex matlab-mode espresso-theme counsel htmlize auctex auto-complete ein flycheck-julia gams-ac julia-repl julia-shell latex-preview-pane pager ps-ccrypt yaml-mode vlf)))
 
 (setenv "CYGWIN" "nodosfilewarning")
 (custom-set-faces
