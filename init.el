@@ -177,12 +177,12 @@
 (require 'gams-mode)
 (if mswindows
   (progn
-    (setq gams-process-command-name "C:/GAMS/win64/Last/gams.exe")
-    (setq gams-system-directory "C:/GAMS/win64/Last/")
-    (setq gams-docs-directory "C:/GAMS/win64/Last/docs")
+    (setq gams-process-command-name "C:/GAMS/Last/gams.exe")
+    (setq gams-system-directory "C:/GAMS/Last/")
+    (setq gams-docs-directory "C:/GAMS/Last/docs")
     (setq gams-docs-view-program "C:/Program Files (x86)/Foxit Software/Foxit Reader/FoxitReader.exe")
     (setq load-path
-	  (cons "C:/GAMS/win64/Last/" ;; Set the installed directory!
+	  (cons "C:/GAMS/Last/" ;; Set the installed directory!
 		load-path)))
   (progn
     (setq gams-docs-directory "/opt/gams/gamsLast_linux_x64_64_sfx/docs")
