@@ -2,6 +2,7 @@ ac-comphist.dat
 auto-save-list/
 bookmarks
 elpa/
+eshell/*
 network-security.data
 recentf
 server/

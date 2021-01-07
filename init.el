@@ -7,6 +7,19 @@
 
 (setq backup-directory-alist
      	  '(("." . "~/.emacs.d/backup")))
+;;; =======
+;;;  Shell
+;;; =======
+
+(global-set-key [f1] 'shell)
+(global-set-key [f2] 'eshell)
+
+(if mswindows    ;; MS Windows clipboard is UTF-16LE
+    (defun bshell ()
+      (interactive)
+      (let ((shell-file-name "C:\\Windows\\System32\\bash.exe" ))
+	(shell "*ubuntu*"))
+      ))
 
 ;;; ==================
 ;;;  Packages manager
