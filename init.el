@@ -486,16 +486,26 @@
 ;;; =====================================
 (define-key global-map [(mouse-3)] 'mouse-me)
 
+;;; ===============
+;;;  auto-complete
+;;; ===============
+;; (require 'auto-complete)
+;; (require 'auto-complete-config)
+;; (add-to-list 'ac-dictionary-directories "~/.emacs.d/elpa/auto-complete-20140824.1658/dict")
+;; (ac-config-default)
+
+;;; =========
+;;;  Company
+;;; =========
+(use-package company
+  :ensure t
+  :init
+  (add-hook 'after-init-hook 'global-company-mode))
+
 ;;; =====
 ;;;  ESS
 ;;; =====
 (require 'ess-site)
-;; (require 'ess-eldoc)
-;; (if (display-graphic-p)
-;;   (progn
-;;     (require 'ess-mouse)
-;;     (define-key ess-mode-map [(mouse-3)] 'ess-mouse-me)
-;;     (define-key inferior-ess-mode-map [(mouse-3)] 'ess-mouse-me)))
 
 ;; Following the "source is real" philosophy put forward by ESS, one
 ;; should not need the command history and should not save the
@@ -503,121 +513,48 @@
 ;; disabled here.
 (setq-default inferior-R-args "--no-restore-history --no-save ")
 
-;; Set code indentation
-(setq ess-default-style 'DEFAULT)
-(setq ess-indent-level 2)
-(setq ess-arg-function-offset 2)
-(setq ess-else-offset 2)
-(add-hook 'ess-mode-hook
-	  '(lambda()
-	     (add-hook 'write-file-functions
-		       (lambda ()
-			 (ess-nuke-trailing-whitespace)))
-	     (setq ess-nuke-trailing-whitespace-p t)))
-(setq ess-first-continued-statement-offset 2
-      ess-continued-statement-offset 0)
+(setq comment-column 0) ; Prevent indentation of lines starting with one #
+(setq ess-style 'RStudio) ; Set code indentation
 
-(autoload 'ess-rdired "ess-rdired" "View *R* objects in a dired-like buffer." t)
+;; (define-key inferior-ess-mode-map [home] 'comint-bol)
+(define-key ess-mode-map [(control ?c) (?;)] 'comment-region)
+(define-key ess-mode-map [(control ?c) (?:)] 'uncomment-region)
 
-;;;Affichage d'une aide sur la fonction en cours d'usage
-;; ess-r-args-noargsmsg is printed, if no argument information could
-;; be found. You could set it to an empty string ("") for no message.
-(setq ess-r-args-noargsmsg "No args found.")
+;; (setq ess-help-own-frame 'one) ; Help start in its own frame
 
-;; ess-r-args-show-as determines how (where) the information is
-;; displayed. Set it to "tooltip" for little tooltip windows or to
-;; nil (the default) which will use the echo area at the bottom of
-;; your Emacs frame.
-(setq ess-r-args-show-as nil)
+;; ;; (define-key ess-r-mode-map '[M--] #'ess-insert-assign)
+;; ;; (define-key inferior-ess-r-mode-map '[M--] #'ess-insert-assign)
 
-;; ess-r-args-show-prefix is a string that is printed in front of the
-;; arguments list. The default ist "ARGS: ".
-(setq ess-r-args-show-prefix "ARGS: ")
-
-;; bind ess-r-args-show to F2
-(define-key ess-mode-map [f2] 'ess-r-args-show)
-(define-key inferior-ess-mode-map [f2] 'ess-r-args-show)
-
-;; bind ess-r-args-show to F2
-(define-key ess-mode-map [f1] 'ess-rdired)
-(define-key inferior-ess-mode-map [f1] 'ess-rdired)
-
-;; call ess-r-args-show automatically
-(define-key ess-mode-map "(" '(lambda nil "" (interactive)
-				(skeleton-pair-insert-maybe nil)
-				(ess-r-args-show)))
-
-;; bind ess-r-args-insert to F3
-(define-key ess-mode-map [f3] 'ess-r-args-insert)
-
-(define-key inferior-ess-mode-map [home] 'comint-bol)
-;; (define-key ess-mode-map [(control ?c) (?;)] 'comment-region)
-;; (define-key ess-mode-map [(control ?c) (?:)] 'uncomment-region)
-
-(setq comint-scroll-to-bottom-on-output t)
-(setq ess-help-own-frame 'one)
-
-;; (define-key ess-r-mode-map '[M--] #'ess-insert-assign)
-;; (define-key inferior-ess-r-mode-map '[M--] #'ess-insert-assign)
-
-;;;Tout évaluer avec Shift-Enter
-(setq ess-ask-for-ess-directory nil)
-(setq ess-local-process-name "R")
-(setq ansi-color-for-comint-mode 'filter)
-(setq comint-prompt-read-only t)
-(setq comint-scroll-to-bottom-on-input t)
+(setq ess-ask-for-ess-directory nil) ; Do not ask what is the project directory
+;; (setq ansi-color-for-comint-mode 'filter)
+;; (setq comint-prompt-read-only t)
+;; (setq comint-scroll-to-bottom-on-input t)
+;; (setq comint-scroll-to-bottom-on-output t)
 (setq comint-move-point-for-output t)
 
-(setq inferior-ess-start-args "-j")
+;; (setq inferior-ess-start-args "-j")
 
-(defun my-ess-start-R ()
-  (interactive)
-  (if (not (member "*R*" (mapcar (function buffer-name) (buffer-list))))
-    (progn
-      (delete-other-windows)
-      (setq w1 (selected-window))
-      (setq w1name (buffer-name))
-      (setq w2 (split-window w1))
-      (R)
-      (set-window-buffer w2 "*R*")
-      (set-window-buffer w1 w1name))))
+;; (defun my-ess-start-R ()
+;;   (interactive)
+;;   (if (not (member "*R*" (mapcar (function buffer-name) (buffer-list))))
+;;     (progn
+;;       (delete-other-windows)
+;;       (setq w1 (selected-window))
+;;       (setq w1name (buffer-name))
+;;       (setq w2 (split-window w1))
+;;       (R)
+;;       (set-window-buffer w2 "*R*")
+;;       (set-window-buffer w1 w1name))))
 
-(defun my-ess-eval ()
-  (interactive)
-  (my-ess-start-R)
-  (if (and transient-mark-mode mark-active)
-    (call-interactively 'ess-eval-region)
-    (call-interactively 'ess-eval-line-and-step)))
-
-(add-hook 'ess-mode-hook
-	  '(lambda()
-	     (local-set-key [(shift return)] 'my-ess-eval)))
-
-(add-hook 'inferior-ess-mode-hook
-	  '(lambda()
-	     (local-set-key [C-up] 'comint-previous-input)
-	     (local-set-key [C-down] 'comint-next-input)))
-
-;; (if (display-graphic-p)
-;;   (require 'ess-rutils))
+;; (defun my-ess-eval ()
+;;   (interactive)
+;;   (my-ess-start-R)
+;;   (if (and transient-mark-mode mark-active)
+;;     (call-interactively 'ess-eval-region)
+;;     (call-interactively 'ess-eval-line-and-step)))
 
 ; Call imenu with \C-c =
 (define-key ess-mode-map "\C-c=" 'imenu)
-
-;;; Sweave
-(add-hook 'Rnw-mode-hook
-          (lambda ()
-            (add-to-list 'TeX-command-list
-                         '("Sweave" "R CMD Sweave %s"
-                           TeX-run-command nil t :help "Run Sweave") t)
-            (add-to-list 'TeX-command-list
-                         '("LatexSweave" "%l \"%(mode)\\input{%s}\""
-                           TeX-run-TeX nil t :help "Run Latex after Sweave") t)
-            (setq TeX-command-default "Sweave")))
-;; Add standard Sweave file extensions to the list of files recognized
-;; by AUCTeX.
-(setq TeX-file-extensions
-      '("Rnw" "rnw" "Snw" "snw" "tex" "sty" "cls" "ltx" "texi" "texinfo" "dtx"))
 
 (defun find-in-R-files (string)
   "Find a regular expression in R files"
@@ -632,14 +569,6 @@
 (define-key global-map [(f5)] 'revert-buffer)
 ;; (define-key global-map "\C-c;" 'comment-region)
 ;; (define-key global-map "\C-c:" 'uncomment-region)
-
-;;; ===============
-;;;  auto-complete
-;;; ===============
-(require 'auto-complete)
-(require 'auto-complete-config)
-(add-to-list 'ac-dictionary-directories "~/.emacs.d/elpa/auto-complete-20140824.1658/dict")
-(ac-config-default)
 
 ;;; ===============
 ;;;  Markdown mode
