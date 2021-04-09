@@ -132,6 +132,30 @@
 
 (setq inhibit-startup-screen t)
 
+;;; ====================
+;;;  rainbow-delimiters
+;;; ====================
+
+(add-hook 'prog-mode-hook #'rainbow-delimiters-mode) ; Start the mode automatically in most programming modes
+
+;; rainbow-delimiters-mode setup, with decreasing bracket size
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+
+ '(rainbow-delimiters-depth-1-face ((t (:foreground "red" :height 1.2))))
+ '(rainbow-delimiters-depth-2-face ((t (:foreground "orange" :height 1.15))))
+ '(rainbow-delimiters-depth-3-face ((t (:foreground "cyan" :height 1.1))))
+ '(rainbow-delimiters-depth-4-face ((t (:foreground "green" :height 1.05))))
+ '(rainbow-delimiters-depth-5-face ((t (:foreground "blue" :height 1.0))))
+ '(rainbow-delimiters-depth-6-face ((t (:foreground "violet" :height 0.95))))
+ '(rainbow-delimiters-depth-7-face ((t (:foreground "purple" :height 0.9))))
+ '(rainbow-delimiters-depth-8-face ((t (:foreground "black" :height 0.85))))
+ '(rainbow-delimiters-unmatched-face ((t (:background "yellow" :height 0.8))))
+ )
+
 ;;; ========
 ;;;  Unfill
 ;;; ========
@@ -520,15 +544,13 @@
 (define-key ess-mode-map [(control ?c) (?;)] 'comment-region)
 (define-key ess-mode-map [(control ?c) (?:)] 'uncomment-region)
 
-;; (setq ess-help-own-frame 'one) ; Help start in its own frame
-
 ;; ;; (define-key ess-r-mode-map '[M--] #'ess-insert-assign)
 ;; ;; (define-key inferior-ess-r-mode-map '[M--] #'ess-insert-assign)
 
 (setq ess-ask-for-ess-directory nil) ; Do not ask what is the project directory
 ;; (setq ansi-color-for-comint-mode 'filter)
-;; (setq comint-prompt-read-only t)
-;; (setq comint-scroll-to-bottom-on-input t)
+(setq comint-prompt-read-only t) ; Prevent the ess prompt (>) to be writable
+(setq comint-scroll-to-bottom-on-input t) ; Move the cursor to > when typing in iESS buffer
 ;; (setq comint-scroll-to-bottom-on-output t)
 (setq comint-move-point-for-output t)
 
@@ -653,7 +675,7 @@
      (ess-R-fl-keyword:F&T . t)))
  '(latex-preview-pane-multifile-mode 'auctex)
  '(package-selected-packages
-   '(visual-fill-column pandoc-mode rw-hunspell ivy-bibtex matlab-mode espresso-theme counsel htmlize auctex auto-complete ein flycheck-julia gams-ac julia-repl julia-shell latex-preview-pane pager ps-ccrypt yaml-mode vlf)))
+   '(company visual-fill-column pandoc-mode rw-hunspell ivy-bibtex matlab-mode espresso-theme counsel htmlize auctex ein flycheck-julia gams-ac julia-repl julia-shell latex-preview-pane pager ps-ccrypt yaml-mode vlf)))
 
 (setenv "CYGWIN" "nodosfilewarning")
 (custom-set-faces
