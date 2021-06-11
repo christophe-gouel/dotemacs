@@ -510,14 +510,6 @@
 ;;; =====================================
 (define-key global-map [(mouse-3)] 'mouse-me)
 
-;;; ===============
-;;;  auto-complete
-;;; ===============
-;; (require 'auto-complete)
-;; (require 'auto-complete-config)
-;; (add-to-list 'ac-dictionary-directories "~/.emacs.d/elpa/auto-complete-20140824.1658/dict")
-;; (ac-config-default)
-
 ;;; =========
 ;;;  Company
 ;;; =========
@@ -540,21 +532,25 @@
 (setq comment-column 0) ; Prevent indentation of lines starting with one #
 (setq ess-style 'RStudio) ; Set code indentation
 
-;; (define-key inferior-ess-mode-map [home] 'comint-bol)
+(define-key inferior-ess-mode-map [home] 'comint-bol)
 (define-key ess-mode-map [(control ?c) (?;)] 'comment-region)
 (define-key ess-mode-map [(control ?c) (?:)] 'uncomment-region)
 
-;; ;; (define-key ess-r-mode-map '[M--] #'ess-insert-assign)
-;; ;; (define-key inferior-ess-r-mode-map '[M--] #'ess-insert-assign)
+;; Shortcut for assign <-
+(define-key ess-r-mode-map (kbd "M--") 'ess-insert-assign)
+(define-key inferior-ess-r-mode-map (kbd "M--") 'ess-insert-assign)
+
+;; Shortcut for pipe %>%
+(define-key ess-mode-map (kbd "C-%") " %>% ")
+(define-key inferior-ess-mode-map (kbd "C-%") " %>% ")
 
 (setq ess-ask-for-ess-directory nil) ; Do not ask what is the project directory
 ;; (setq ansi-color-for-comint-mode 'filter)
-(setq comint-prompt-read-only t) ; Prevent the ess prompt (>) to be writable
-(setq comint-scroll-to-bottom-on-input t) ; Move the cursor to > when typing in iESS buffer
-;; (setq comint-scroll-to-bottom-on-output t)
+;; (setq comint-prompt-read-only t) ; Prevent the ess prompt (>) to be writable
+;; (setq comint-scroll-to-bottom-on-input t) ; Move the cursor to > when typing in iESS buffer
+(setq comint-scroll-to-bottom-on-input 'this)
+(setq comint-scroll-to-bottom-on-output t)
 (setq comint-move-point-for-output t)
-
-;; (setq inferior-ess-start-args "-j")
 
 ;; (defun my-ess-start-R ()
 ;;   (interactive)
