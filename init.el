@@ -15,11 +15,16 @@
 (global-set-key [f2] 'eshell)
 
 (if mswindows    ;; MS Windows clipboard is UTF-16LE
-    (defun bshell ()
+    (defun bash ()
       (interactive)
-      (let ((shell-file-name "C:\\Windows\\System32\\bash.exe" ))
-	(shell "*ubuntu*"))
+      (let ((shell-file-name "C:\\Program Files\\Git\\bin\\bash.exe" ))
+	(shell "*bash*"))
       ))
+(setq explicit-bash.exe-args '("--login" "-i"))
+
+(add-hook 'shell-mode-hook
+      (lambda ()
+        (face-remap-set-base 'comint-highlight-prompt :inherit nil)))
 
 ;;; ==================
 ;;;  Packages manager
@@ -71,7 +76,8 @@
 ;;; ===============
 ;;;  Look and feel
 ;;; ===============
-(blink-cursor-mode nil)                  ; curseur ne clignote pas
+(setq blink-cursor-blinks 0)             ; curseur clignote indéfiniment
+(global-hl-line-mode +1)                 ; Highlight the current line
 (setq-default cursor-type 'bar)          ; curseur étroit
 (set-face-background 'cursor "#CC0000")  ; curseur rouge foncé
 (setq jit-lock-chunk-size 50000)
