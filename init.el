@@ -538,6 +538,11 @@
 (setq comment-column 0) ; Prevent indentation of lines starting with one #
 (setq ess-style 'RStudio) ; Set code indentation
 
+;; Add a vertical line at 80 columns
+(setq ess-mode-hook '(lambda () (setq fill-column 80)))
+(add-hook 'ess-mode-hook (lambda ()
+			   (display-fill-column-indicator-mode)))
+
 (define-key inferior-ess-mode-map [home] 'comint-bol)
 (define-key ess-mode-map [(control ?c) (?;)] 'comment-region)
 (define-key ess-mode-map [(control ?c) (?:)] 'uncomment-region)
