@@ -150,7 +150,6 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
-
  '(rainbow-delimiters-depth-1-face ((t (:foreground "red" :height 1.2))))
  '(rainbow-delimiters-depth-2-face ((t (:foreground "orange" :height 1.15))))
  '(rainbow-delimiters-depth-3-face ((t (:foreground "cyan" :height 1.1))))
@@ -159,8 +158,7 @@
  '(rainbow-delimiters-depth-6-face ((t (:foreground "violet" :height 0.95))))
  '(rainbow-delimiters-depth-7-face ((t (:foreground "purple" :height 0.9))))
  '(rainbow-delimiters-depth-8-face ((t (:foreground "black" :height 0.85))))
- '(rainbow-delimiters-unmatched-face ((t (:background "yellow" :height 0.8))))
- )
+ '(rainbow-delimiters-unmatched-face ((t (:background "yellow" :height 0.8)))))
 
 ;;; ========
 ;;;  Unfill
@@ -193,12 +191,6 @@
 ;;; ================
 (require 'recentf)
 (recentf-mode 1)
-
-;;; ===================================================
-;;;  Template - http://emacs-template.sourceforge.net/
-;;; ===================================================
-(add-to-list 'load-path "~/.emacs.d/site-lisp/template/lisp")
-(require 'template)
 
 ;;; ========
 ;;;  Ispell
@@ -544,7 +536,7 @@
 			   (display-fill-column-indicator-mode)))
 
 (define-key inferior-ess-mode-map [home] 'comint-bol)
-(define-key ess-mode-map [(control ?c) (?;)] 'comment-region)
+(define-key ess-mode-map (kbd "C-;") 'comment-region)
 (define-key ess-mode-map [(control ?c) (?:)] 'uncomment-region)
 
 ;; Shortcut for assign <-
@@ -682,12 +674,7 @@
      (ess-R-fl-keyword:F&T . t)))
  '(latex-preview-pane-multifile-mode 'auctex)
  '(package-selected-packages
-   '(company visual-fill-column pandoc-mode rw-hunspell ivy-bibtex matlab-mode espresso-theme counsel htmlize auctex ein flycheck-julia gams-ac julia-repl julia-shell latex-preview-pane pager ps-ccrypt yaml-mode vlf)))
+   '(magit company visual-fill-column pandoc-mode rw-hunspell ivy-bibtex matlab-mode espresso-theme counsel htmlize auctex ein flycheck-julia gams-ac julia-repl julia-shell latex-preview-pane pager ps-ccrypt yaml-mode vlf)))
 
 (setenv "CYGWIN" "nodosfilewarning")
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
+
