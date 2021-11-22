@@ -141,24 +141,21 @@
 ;;; ====================
 ;;;  rainbow-delimiters
 ;;; ====================
-
-(add-hook 'prog-mode-hook #'rainbow-delimiters-mode) ; Start the mode automatically in most programming modes
-
-;; rainbow-delimiters-mode setup, with decreasing bracket size
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(rainbow-delimiters-depth-1-face ((t (:foreground "red" :height 1.2))))
- '(rainbow-delimiters-depth-2-face ((t (:foreground "orange" :height 1.15))))
- '(rainbow-delimiters-depth-3-face ((t (:foreground "cyan" :height 1.1))))
- '(rainbow-delimiters-depth-4-face ((t (:foreground "green" :height 1.05))))
- '(rainbow-delimiters-depth-5-face ((t (:foreground "blue" :height 1.0))))
- '(rainbow-delimiters-depth-6-face ((t (:foreground "violet" :height 0.95))))
- '(rainbow-delimiters-depth-7-face ((t (:foreground "purple" :height 0.9))))
- '(rainbow-delimiters-depth-8-face ((t (:foreground "black" :height 0.85))))
- '(rainbow-delimiters-unmatched-face ((t (:background "yellow" :height 0.8)))))
+(use-package rainbow-delimiters
+  :ensure t
+  :init
+  (progn
+    (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
+  :custom-face
+  (rainbow-delimiters-depth-1-face ((t (:foreground "red" :height 1.2))))
+  (rainbow-delimiters-depth-2-face ((t (:foreground "orange" :height 1.15))))
+  (rainbow-delimiters-depth-3-face ((t (:foreground "cyan" :height 1.1))))
+  (rainbow-delimiters-depth-4-face ((t (:foreground "green" :height 1.05))))
+  (rainbow-delimiters-depth-5-face ((t (:foreground "blue" :height 1.0))))
+  (rainbow-delimiters-depth-6-face ((t (:foreground "violet" :height 0.95))))
+  (rainbow-delimiters-depth-7-face ((t (:foreground "purple" :height 0.9))))
+  (rainbow-delimiters-depth-8-face ((t (:foreground "black" :height 0.85))))
+  (rainbow-delimiters-unmatched-face ((t (:background "yellow" :height 0.8)))))
 
 ;;; ========
 ;;;  Unfill
@@ -176,35 +173,37 @@
 ;;; ============================================
 ;;;  Pager - From ELPA
 ;;; ============================================
-(require 'pager)
-(global-set-key "\C-v"	   'pager-page-down)
-(global-set-key [next] 	   'pager-page-down)
-(global-set-key "\ev"	   'pager-page-up)
-(global-set-key [prior]	   'pager-page-up)
-(global-set-key '[M-up]    'pager-row-up)
-(global-set-key '[M-kp-8]  'pager-row-up)
-(global-set-key '[M-down]  'pager-row-down)
-(global-set-key '[M-kp-2]  'pager-row-down)
+(use-package pager
+  :bind
+  (("\C-v" . pager-page-down)
+   ([next] . pager-page-down)
+   ("\ev" . pager-page-up)
+   ([prior] . pager-page-up)
+   ([M-up] . pager-row-up)
+   ([M-kp-8] . pager-row-up)
+   ([M-down] . pager-row-down)
+   ([M-kp-2] . pager-row-down)))
 
 ;;; ================
 ;;;  Recent Files
 ;;; ================
-(require 'recentf)
-(recentf-mode 1)
+(use-package recentf
+  :ensure t)
 
 ;;; ========
 ;;;  Ispell
 ;;; ========
-(require 'ispell)
-(setq ispell-list-command "list")
-(setq flyspell-issue-welcome-flag nil)
+(use-package ispell
+  :config
+  (setq ispell-list-command "list")
+  (setq flyspell-issue-welcome-flag nil)
+  (setq ispell-local-dictionary "en_US")
+  (setq ispell-local-dictionary-alist
+	'(("en_US" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "en_US") nil utf-8)))
+  (setq ispell-hunspell-dictionary-alist ispell-local-dictionary-alist))
 (if mswindows
     (setq-default ispell-program-name "C:/ProgramData/chocolatey/lib/hunspell.portable/tools/hunspell.exe")
   (setq-default ispell-program-name "aspell"))
-(setq ispell-local-dictionary "en_US")
-(setq ispell-local-dictionary-alist
-      '(("en_US" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "en_US") nil utf-8)))
-(setq ispell-hunspell-dictionary-alist ispell-local-dictionary-alist)
 
 ;;; ========================================================
 ;;;  Gams - http://shirotakeda.org/en/gams/gams-mode/
@@ -265,11 +264,9 @@
 ;;; ==================================================
 ;;;  Yaml mode - https://github.com/yoshiki/yaml-mode
 ;;; ==================================================
-(require 'yaml-mode)
-(setq auto-mode-alist (cons '("\\(\\.yml$\\|\\.yaml$\\)" . yaml-mode) auto-mode-alist))
-(add-hook 'yaml-mode-hook
-	  '(lambda ()
-	     (define-key yaml-mode-map "\C-m" 'newline-and-indent)))
+(use-package yaml-mode
+  :mode ("\\.yml$" . yaml-mode)
+  :bind ("\C-m" . newline-and-indent))
 
 ;;; ==============
 ;;;  Custom theme
@@ -406,31 +403,13 @@
 	  '(lambda()
 	     (local-set-key [(shift return)] 'tex-frame)))
 
-;;; ======================
-;;;  Mode CSV - From ELPA
-;;; ======================
-;; (require 'csv-mode)
-;; (autoload 'csv-mode "csv-mode"
-;;    "Major mode for editing comma-separated value files." t)
-;; (setq csv-separators '("," ";"))
-
 ;;; =====
 ;;;  PDF
 ;;; =====
-(require 'doc-view)
-(if mswindows
-    (setq doc-view-ghostscript-program "C:\\Program Files\\gs\\gs9.50\\bin\\gswin64c.exe"))
-
-;;; ===============
-;;;  Remote access
-;;; ===============
-;;; Tramp
-(require 'tramp)
-(if mswindows
-  (setq tramp-default-method "plink"))
-;; (setq tramp-password-end-of-line "xx")
-(setq tramp-verbose 10)
-;; (setq tramp-debug-buffer t)
+(use-package doc-view
+  :if mswindows
+  :config
+  (setq doc-view-ghostscript-program "C:\\Program Files\\gs\\gs9.50\\bin\\gswin64c.exe"))
 
 ;;; ==================
 ;;;  Auto-compression
@@ -483,25 +462,19 @@
 (add-hook 'matlab-shell-mode-hook 'my-matlab-shell-mode-hook)
 (setq matlab-shell-command-switches '("-nodesktop -nosplash"))
 
-
-;;; ========
-;;;  Octave
-;;; ========
-;; Octave major mode
-(add-hook 'octave-mode-hook
-	  (lambda ()
-	    (abbrev-mode 1)
-	    (auto-fill-mode 1)
-	    (if (eq window-system 'x)
-		(font-lock-mode 1))))
-;; Octave shell
-(add-hook 'inferior-octave-mode-hook
-	  (lambda ()
-	    (turn-on-font-lock)
-	    (define-key inferior-octave-mode-map [up]
-	      'comint-previous-input)
-	    (define-key inferior-octave-mode-map [down]
-	      'comint-next-input)))
+;;; ============
+;;;  projectile
+;;; ============
+(use-package projectile
+  :diminish projectile-mode
+  :config (projectile-mode)
+  :custom ((projectile-completion-system 'ivy))
+  :bind-keymap
+  ("C-c p" . projectile-command-map)
+  :init
+  (when (file-directory-p "~/Documents/git_projects")
+    (setq projectile-project-search-path '("~/Documents/git_projects")))
+  (setq projectile-switch-project-action #'projectile-dired))
 
 ;;; =====================================
 ;;;  Activation du clic droit comme aide
@@ -637,9 +610,10 @@
 ;;; ==========
 (use-package flycheck
   :ensure t
-  :init (global-flycheck-mode))
-(setq flycheck-global-modes '(not LaTeX-mode latex-mode))
-(setq flycheck-global-modes '(not ess-mode ess-mode))
+  :init (global-flycheck-mode)
+  :config
+  (setq flycheck-global-modes '(not LaTeX-mode latex-mode))
+  (setq flycheck-global-modes '(not ess-mode ess-mode)))
 
 ;;; Sent deleted files to trash
 (setq delete-by-moving-to-trash t)
@@ -674,7 +648,7 @@
      (ess-R-fl-keyword:F&T . t)))
  '(latex-preview-pane-multifile-mode 'auctex)
  '(package-selected-packages
-   '(magit company visual-fill-column pandoc-mode rw-hunspell ivy-bibtex matlab-mode espresso-theme counsel htmlize auctex ein flycheck-julia gams-ac julia-repl julia-shell latex-preview-pane pager ps-ccrypt yaml-mode vlf)))
+   '(projectile magit company visual-fill-column pandoc-mode rw-hunspell ivy-bibtex matlab-mode espresso-theme counsel htmlize auctex ein flycheck-julia gams-ac julia-repl julia-shell latex-preview-pane pager ps-ccrypt yaml-mode vlf)))
 
 (setenv "CYGWIN" "nodosfilewarning")
 
