@@ -47,6 +47,23 @@
     (server-start)
   (xterm-mouse-mode))
 
+;;; ===============
+;;;  all-the-icons
+;;; ===============
+(use-package all-the-icons
+  :if (display-graphic-p))
+(use-package all-the-icons-dired-mode
+  :init (add-hook 'dired-mode-hook 'all-the-icons-dired-mode))
+(use-package all-the-icons-ivy
+  :init (add-hook 'after-init-hook 'all-the-icons-ivy-setup))
+
+;;; =========
+;;;  neotree
+;;; =========
+(use-package neotree
+  :bind ([f8] . neotree-toggle)
+  :custom (neo-theme (if (display-graphic-p) 'icons 'arrow)))
+
 ;;; ==========
 ;;;  Org mode
 ;;; ==========
@@ -208,7 +225,34 @@
 ;;; ========================================================
 ;;;  Gams - http://shirotakeda.org/en/gams/gams-mode/
 ;;; ========================================================
-(require 'gams-mode)
+(use-package gams-mode
+  :mode ("\\.gms\\'" . gams-mode)
+  :custom
+  (gams-process-command-option "ll=0 lo=3 pw=153 ps=9999")
+  (gams-statement-upcase t)
+  (gams-fill-column 80)
+  (gams-recenter-font-lock t)
+  (gams-statement-name "Parameter")
+  (gams-dollar-control-name "exit")
+  (gams-default-pop-window-height 20)
+  (gams-inlinecom-symbol-start-default "{")
+  (gams-inlinecom-symbol-end-default "}")
+  ;; Indent
+  (gams-indent-on t)
+  (gams-indent-number 2)
+  (gams-indent-number-loop 2)
+  (gams-indent-number-mpsge 2)
+  (gams-indent-number-equation 2)
+  (font-lock-support-mode
+   '((gams-mode . nil)
+     (t . jit-lock-mode)))
+  :config
+  (defun find-in-gms-files (string)
+    "Find a regular expression in gms files"
+    (interactive "sRegular expression to find: ")
+    (grep (concat "grep -nHI -i -r -e " string " --include=*.gms *" )))
+  :bind ("\C-cf" . find-in-gms-files))
+
 (if mswindows
   (progn
     (setq gams-process-command-name "C:/GAMS/Last/gams.exe")
@@ -221,31 +265,6 @@
   (progn
     (setq gams-docs-directory "/opt/gams/gamsLast_linux_x64_64_sfx/docs")
     (setq gams-docs-view-program "qpdfview")))
-(setq gams-process-command-option "ll=0 lo=3 pw=153 ps=9999")
-(setq gams-statement-upcase t)
-(setq gams-fill-column 80)
-(setq gams-recenter-font-lock t)
-(setq gams-statement-name "Parameter")
-(setq gams-dollar-control-name "exit")
-(setq gams-default-pop-window-height 20)
-(setq gams-inlinecom-symbol-start-default "{")
-(setq gams-inlinecom-symbol-end-default "}")
-(defun find-in-gms-files (string)
-  "Find a regular expression in gms files"
-  (interactive "sRegular expression to find: ")
-  (grep (concat "grep -nHI -i -r -e " string " --include=*.gms *" )))
-(define-key gams-mode-map "\C-cf" 'find-in-gms-files)
-(setq font-lock-support-mode
-      '((gams-mode . nil)
-	(t . jit-lock-mode)))
-
-;; Indent
-(setq gams-indent-on t)
-(setq gams-indent-number 2)
-(setq gams-indent-number-loop 2)
-(setq gams-indent-number-mpsge 2)
-(setq gams-indent-number-equation 2)
-;; (setq indent-tabs-mode nil) ; Not use tabs for indent
 
 ;;; =========================================================================
 ;;;  Lancer une recherche d'article sous IDEAS ou google-search depuis Emacs
@@ -272,21 +291,6 @@
 ;;;  Custom theme
 ;;; ==============
 (load-theme 'leuven t)
-
-;;; ========
-;;;  Bibtex
-;;; ========
-(autoload 'ivy-bibtex "ivy-bibtex" "" t)
-;; ivy-bibtex requires ivy's `ivy--regex-ignore-order` regex builder, which
-;; ignores the order of regexp tokens when searching for matching candidates.
-;; Add something like this to your init file:
-(setq ivy-re-builders-alist
-      '((ivy-bibtex . ivy--regex-ignore-order)
-        (t . ivy--regex-plus)))
-(setq bibtex-completion-bibliography
-      '("/media/gouel/Data/Dropbox/Bibliography/Bibtex/References.bib"))
-(setq bibtex-completion-library-path '("/media/gouel/Data/Dropbox/Bibliography/Papers" "/media/gouel/Data/Dropbox/Bibliography/Papers/Software"))
-(setq bibtex-completion-pdf-field "file")
 
 ;;; ============
 ;;;  LaTeX-mode
@@ -599,12 +603,14 @@
 ;;; =================
 ;;;  ivy and friends
 ;;; =================
-(ivy-mode)
-(global-set-key "\C-s" 'swiper)
-(use-package ivy :demand
-      :config
-      (setq ivy-use-virtual-buffers t
-            ivy-count-format "%d/%d "))
+(use-package ivy
+  :demand
+  :bind ("\C-s" . swiper)
+  :custom
+  (ivy-use-virtual-buffers t)
+  (ivy-count-format "%d/%d ")
+  :config (ivy-mode))
+
 ;;; ==========
 ;;;  flycheck
 ;;; ==========
@@ -648,7 +654,20 @@
      (ess-R-fl-keyword:F&T . t)))
  '(latex-preview-pane-multifile-mode 'auctex)
  '(package-selected-packages
-   '(projectile magit company visual-fill-column pandoc-mode rw-hunspell ivy-bibtex matlab-mode espresso-theme counsel htmlize auctex ein flycheck-julia gams-ac julia-repl julia-shell latex-preview-pane pager ps-ccrypt yaml-mode vlf)))
+   '(neotree all-the-icons-ivy all-the-icons projectile magit company visual-fill-column pandoc-mode rw-hunspell ivy-bibtex matlab-mode espresso-theme counsel htmlize auctex ein flycheck-julia gams-ac julia-repl julia-shell latex-preview-pane pager ps-ccrypt yaml-mode vlf)))
 
 (setenv "CYGWIN" "nodosfilewarning")
-
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(rainbow-delimiters-depth-1-face ((t (:foreground "red" :height 1.2))))
+ '(rainbow-delimiters-depth-2-face ((t (:foreground "orange" :height 1.15))))
+ '(rainbow-delimiters-depth-3-face ((t (:foreground "cyan" :height 1.1))))
+ '(rainbow-delimiters-depth-4-face ((t (:foreground "green" :height 1.05))))
+ '(rainbow-delimiters-depth-5-face ((t (:foreground "blue" :height 1.0))))
+ '(rainbow-delimiters-depth-6-face ((t (:foreground "violet" :height 0.95))))
+ '(rainbow-delimiters-depth-7-face ((t (:foreground "purple" :height 0.9))))
+ '(rainbow-delimiters-depth-8-face ((t (:foreground "black" :height 0.85))))
+ '(rainbow-delimiters-unmatched-face ((t (:background "yellow" :height 0.8)))))
