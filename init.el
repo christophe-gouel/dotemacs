@@ -29,16 +29,28 @@
 ;;; ==================
 ;;;  Packages manager
 ;;; ==================
+;; use-package setup
 (require 'package)
-(add-to-list 'package-archives
-    '("marmalade" .
-      "http://marmalade-repo.org/packages/"))
-(add-to-list 'package-archives
-             '("melpa" . "https://melpa.org/packages/") t)
-(setq package-enable-at-startup nil)
-
+(setq package-enable-at-startup nil) ; dont do it immediately
+(setq package-archives '(("org"       . "http://orgmode.org/elpa/")
+			 ("gnu"       . "http://elpa.gnu.org/packages/")
+			 ("melpa"     . "https://melpa.org/packages/")))
 (package-initialize)
 
+;; Bootstrap use-package
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents) ; update archives
+  (package-install 'use-package)) ; grab the newest use-package
+
+;; Define packages
+(require 'use-package)
+
+;; Always download if not available
+(setq use-package-always-ensure t)
+
+;;; ===============
+;;;  Others
+;;; ===============
 ;;; Activate lower- and upper-case commands
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
@@ -52,17 +64,35 @@
 ;;; ===============
 (use-package all-the-icons
   :if (display-graphic-p))
-(use-package all-the-icons-dired-mode
+(use-package all-the-icons-dired
   :init (add-hook 'dired-mode-hook 'all-the-icons-dired-mode))
 (use-package all-the-icons-ivy
   :init (add-hook 'after-init-hook 'all-the-icons-ivy-setup))
+
+;;; ======================
+;;;  find-file-in-project
+;;; ======================
+(use-package find-file-in-project)
 
 ;;; =========
 ;;;  neotree
 ;;; =========
 (use-package neotree
-  :bind ([f8] . neotree-toggle)
+  ;; :bind ([f3] . neotree-toggle)
+  ;; :bind ([f3] . neotree-show)
+  :bind ([f3] . neotree-project-dir)
   :custom (neo-theme (if (display-graphic-p) 'icons 'arrow)))
+
+(defun neotree-project-dir ()
+  "Open NeoTree using the git root."
+  (interactive)
+  (let ((project-dir (ffip-project-root))
+        (file-name (buffer-file-name)))
+    (if project-dir
+        (progn
+          (neotree-dir project-dir)
+          (neotree-find file-name))
+      (message "Could not find git project root."))))
 
 ;;; ==========
 ;;;  Org mode
@@ -159,7 +189,6 @@
 ;;;  rainbow-delimiters
 ;;; ====================
 (use-package rainbow-delimiters
-  :ensure t
   :init
   (progn
     (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
@@ -173,6 +202,15 @@
   (rainbow-delimiters-depth-7-face ((t (:foreground "purple" :height 0.9))))
   (rainbow-delimiters-depth-8-face ((t (:foreground "black" :height 0.85))))
   (rainbow-delimiters-unmatched-face ((t (:background "yellow" :height 0.8)))))
+
+;;; =============
+;;;  smartparens
+;;; =============
+(use-package smartparens-config
+  :ensure smartparens
+  :config (progn (show-smartparens-global-mode t)))
+(add-hook 'prog-mode-hook 'turn-on-smartparens-strict-mode)
+(add-hook 'markdown-mode-hook 'turn-on-smartparens-strict-mode)
 
 ;;; ========
 ;;;  Unfill
@@ -204,8 +242,7 @@
 ;;; ================
 ;;;  Recent Files
 ;;; ================
-(use-package recentf
-  :ensure t)
+(use-package recentf)
 
 ;;; ========
 ;;;  Ispell
@@ -295,71 +332,65 @@
 ;;; ============
 ;;;  LaTeX-mode
 ;;; ============
-(setq reftex-bibpath-environment-variables (quote ("BIBINPUTS")))
-(setq-default TeX-auto-parse-length 200)
-(setq-default TeX-master nil)
-(setq TeX-auto-save t)
-(setq TeX-parse-self t)
-(setq LaTeX-default-options "12pt")
-(setq reftex-cite-format (quote natbib))
-(setq reftex-sort-bibtex-matches (quote author))
-;; (setq reftex-plug-into-AUCTeX t)
-(setq LaTeX-math-abbrev-prefix "²")
-(setq TeX-source-specials-mode 1)
-(setq TeX-source-correlate-mode t)
-(setq TeX-source-correlate-method (quote synctex))
-(setq TeX-source-correlate-start-server (quote ask))
-(setq TeX-PDF-mode t)
+(use-package tex
+  :ensure auctex
+  :init
+  (add-hook 'TeX-mode-hook 'flyspell-mode)
+  (add-hook 'TeX-mode-hook 'auto-fill-mode)
+  (add-hook 'TeX-mode-hook 'latex-math-mode)
+  (add-hook 'TeX-mode-hook 'imenu-add-menubar-index)
+  (add-hook 'TeX-mode-hook 'turn-on-reftex)
+  (add-hook 'TeX-mode-hook 'TeX-fold-mode 1)
+  (add-hook 'TeX-mode-hook
+            '(lambda ()
+               (define-key TeX-mode-map (kbd "<f9>")
+		 (lambda ()
+                   (interactive)
+                   (save-buffer)
+                   (TeX-command-menu "Latex")))
+               (define-key TeX-mode-map (kbd "<f10>")
+		 (lambda ()
+                   (interactive)
+		   ;; (TeX-fold-buffer)
+                   (preview-at-point)))
+               (define-key TeX-mode-map (kbd "<f12>")
+		 (lambda ()
+                   (interactive)
+                   (TeX-view)
+                   [return]))))
+  :custom
+  (reftex-bibpath-environment-variables (quote ("BIBINPUTS")))
+  (setq-default TeX-auto-parse-length 200)
+  (setq-default TeX-master nil)
+  (TeX-auto-save t)
+  (TeX-parse-self t)
+  (LaTeX-default-options "12pt")
+  (reftex-cite-format (quote natbib))
+  (reftex-sort-bibtex-matches (quote author))
+  (LaTeX-math-abbrev-prefix "²")
+  (TeX-source-specials-mode 1)
+  (TeX-source-correlate-mode t)
+  (TeX-source-correlate-method (quote synctex))
+  (TeX-source-correlate-start-server (quote ask))
+  (TeX-PDF-mode t)
+  (fill-column 80)
+  (reftex-plug-into-AUCTeX t)
+  (TeX-electric-sub-and-superscript 1)
+  (LaTeX-math-list
+   '(
+     (?) "right)")
+   (?( "left(")
+     (?/ "frac{}{}")
+     ))
+  :bind
+  ("\C-ce" . TeX-next-error)
+  ("\C-cf" . reftex-fancyref-fref)
+  ("\C-cF" . reftex-fancyref-Fref))
 
-(add-hook 'TeX-mode-hook 'flyspell-mode)
-(add-hook 'TeX-mode-hook 'auto-fill-mode)
-(add-hook 'TeX-mode-hook 'latex-math-mode)
-
-(add-hook 'TeX-mode-hook 'imenu-add-menubar-index)
-(add-hook 'TeX-mode-hook (lambda ()
- 			     (TeX-fold-mode 1)
-			     (auto-fill-mode)
-			     (turn-on-reftex)
-			     (setq reftex-plug-into-AUCTeX t)))
 (if mswindows
     ()
   (add-hook 'TeX-mode-hook 'TeX-fold-buffer t))
 
-(add-hook 'LaTeX-mode-hook
-     '(lambda nil
-	(define-key LaTeX-mode-map "\C-ce" 'TeX-next-error)
-	(define-key LaTeX-mode-map [S-mouse-3] 'imenu)
-	(define-key LaTeX-mode-map "\C-cf" 'reftex-fancyref-fref)
-	(define-key LaTeX-mode-map "\C-cF" 'reftex-fancyref-Fref)
-	(setq fill-column 80)))
-(add-hook 'TeX-mode-hook
-          '(lambda ()
-            (define-key TeX-mode-map (kbd "<f9>")
-              (lambda ()
-                (interactive)
-                (save-buffer)
-                (TeX-command-menu "Latex")))
-            (define-key TeX-mode-map (kbd "<f10>")
-              (lambda ()
-                (interactive)
-		;; (TeX-fold-buffer)
-                (preview-at-point)))
-            (define-key TeX-mode-map (kbd "<f12>")
-              (lambda ()
-                (interactive)
-                (TeX-view)
-                [return]))))
-
-(setq TeX-electric-sub-and-superscript 1)
-(setq LaTeX-math-list
-      '(
-	(?) "right)")
-        (?( "left(")
-	(?/ "frac{}{}")
-	)
-	)
-
-;; (load "auctex.el" nil t t)
 (if mswindows
     (progn
       (require 'tex-mik)
@@ -489,7 +520,6 @@
 ;;;  Company
 ;;; =========
 (use-package company
-  :ensure t
   :init
   (add-hook 'after-init-hook 'global-company-mode))
 
@@ -590,8 +620,9 @@
 ;;; =======
 ;;;  Magit
 ;;; =======
-(global-set-key (kbd "C-x g") 'magit-status)
-(setq magit-diff-refine-hunk (quote all))
+(use-package magit
+  :bind ("C-x g" . magit-status)
+  :custom (magit-diff-refine-hunk (quote all)))
 
 ;;; ========
 ;;;  ccrypt
@@ -615,7 +646,6 @@
 ;;;  flycheck
 ;;; ==========
 (use-package flycheck
-  :ensure t
   :init (global-flycheck-mode)
   :config
   (setq flycheck-global-modes '(not LaTeX-mode latex-mode))
@@ -654,7 +684,7 @@
      (ess-R-fl-keyword:F&T . t)))
  '(latex-preview-pane-multifile-mode 'auctex)
  '(package-selected-packages
-   '(neotree all-the-icons-ivy all-the-icons projectile magit company visual-fill-column pandoc-mode rw-hunspell ivy-bibtex matlab-mode espresso-theme counsel htmlize auctex ein flycheck-julia gams-ac julia-repl julia-shell latex-preview-pane pager ps-ccrypt yaml-mode vlf)))
+   '(find-file-in-project smartparens neotree all-the-icons-ivy all-the-icons projectile magit company visual-fill-column pandoc-mode rw-hunspell ivy-bibtex matlab-mode espresso-theme counsel htmlize auctex ein flycheck-julia gams-ac julia-repl julia-shell latex-preview-pane pager ps-ccrypt yaml-mode vlf)))
 
 (setenv "CYGWIN" "nodosfilewarning")
 (custom-set-faces

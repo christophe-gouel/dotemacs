@@ -12,7 +12,7 @@
  (webtex)
  (katex)
  (katex-stylesheet)
- (bibliography "d:/Dropbox/Bibliography/Bibtex/ReferencesUTF8.bib")
+ (bibliography "c:/Users/Gouel/Dropbox/Bibliography/Bibtex/ReferencesUTF8.bib")
  (csl)
  (citation-abbreviations)
  (natbib)
