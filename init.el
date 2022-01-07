@@ -98,6 +98,11 @@
       (message "Could not find git project root.")))))
 
 ;;; ==========
+;;;  ado-mode
+;;; ==========
+(use-package ado-mode)
+
+;;; ==========
 ;;;  Org mode
 ;;; ==========
 (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
