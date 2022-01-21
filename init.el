@@ -98,6 +98,11 @@
       (message "Could not find git project root.")))))
 
 ;;; ==========
+;;;  ado-mode
+;;; ==========
+(use-package ado-mode)
+
+;;; ==========
 ;;;  Org mode
 ;;; ==========
 (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
@@ -268,7 +273,7 @@
 ;;;  Gams - http://shirotakeda.org/en/gams/gams-mode/
 ;;; ========================================================
 (use-package gams-mode
-  :mode ("\\.gms\\'" . gams-mode)
+  :mode ("\\.gms\\'" "\\.inc\\'")
   :custom
   (gams-process-command-option "ll=0 lo=3 pw=153 ps=9999")
   (gams-statement-upcase t)
