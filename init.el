@@ -423,7 +423,7 @@
 (setq preview-scale-function 1.5)      ; Higher preview images in TeX buffers
 (setq preview-auto-cache-preamble t)
 (if mswindows
-    (setq preview-gs-command "c:/Program Files/gs/gs9.50/bin/gswin64c.exe")
+    (setq preview-gs-command "c:/Program Files/gs/gs9.55.0/bin/gswin64c.exe")
   (setq preview-gs-command "gs"))
 
 ;; Beamer
