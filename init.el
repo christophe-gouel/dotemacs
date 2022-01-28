@@ -166,18 +166,19 @@
     (set-clipboard-coding-system 'utf-16le-dos))
 
 ;;; Police Consolas
-(if mswindows
-  (progn
-    (set-face-font 'default "-outline-Consolas-normal-r-normal-normal-*-*-96-96-c-*-iso8859-1")
-    (set-face-font 'bold "-outline-Consolas-bold-r-normal-normal-*-*-96-96-c-*-iso8859-1")
-    (set-face-font 'italic "-outline-Consolas-normal-i-normal-normal-*-*-96-96-c-*-iso8859-1")
-    (set-face-font 'bold-italic "-outline-Consolas-bold-i-normal-normal-*-*-96-96-c-*-iso8859-1"))
-  (set-default-font "DejaVu Sans Mono 10"))
+;; (if mswindows
+;;   (progn
+;;     (set-face-font 'default "-outline-Consolas-normal-r-normal-normal-*-*-96-96-c-*-iso8859-1")
+;;     (set-face-font 'bold "-outline-Consolas-bold-r-normal-normal-*-*-96-96-c-*-iso8859-1")
+;;     (set-face-font 'italic "-outline-Consolas-normal-i-normal-normal-*-*-96-96-c-*-iso8859-1")
+;;     (set-face-font 'bold-italic "-outline-Consolas-bold-i-normal-normal-*-*-96-96-c-*-iso8859-1"))
+  ;; (set-default-font "DejaVu Sans Mono 10"))
 
 ;;; Remove menu bar in terminal mode
 (if (display-graphic-p)
     ()
-    (menu-bar-mode -1))
+  (progn (menu-bar-mode -1)
+   (global-hl-line-mode 0)))
 
 ;;; Remove toolbar
 (if window-system
