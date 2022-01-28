@@ -78,21 +78,29 @@
 ;;;  neotree
 ;;; =========
 (use-package neotree
-  ;; :bind ([f3] . neotree-toggle)
-  ;; :bind ([f3] . neotree-show)
+  :demand
   :bind ([f3] . neotree-project-dir)
-  :custom (neo-theme (if (display-graphic-p) 'icons 'arrow)))
+  :custom
+  (neo-theme (if (display-graphic-p) 'icons 'arrow))
+  (neo-show-hidden-files t))
 
 (defun neotree-project-dir ()
   "Open NeoTree using the git root."
   (interactive)
-  (let ((project-dir (ffip-project-root))
+  (if (neo-global--window-exists-p)
+      (neotree-hide)
+    (let ((project-dir (ffip-project-root))
         (file-name (buffer-file-name)))
     (if project-dir
         (progn
           (neotree-dir project-dir)
           (neotree-find file-name))
-      (message "Could not find git project root."))))
+      (message "Could not find git project root.")))))
+
+;;; ==========
+;;;  ado-mode
+;;; ==========
+(use-package ado-mode)
 
 ;;; ==========
 ;;;  Org mode
@@ -210,8 +218,10 @@
 (use-package smartparens-config
   :ensure smartparens
   :config (progn (show-smartparens-global-mode t)))
-(add-hook 'prog-mode-hook 'turn-on-smartparens-strict-mode)
-(add-hook 'markdown-mode-hook 'turn-on-smartparens-strict-mode)
+;; (add-hook 'prog-mode-hook 'turn-on-smartparens-strict-mode)
+;; (add-hook 'markdown-mode-hook 'turn-on-smartparens-strict-mode)
+(add-hook 'prog-mode-hook 'smartparens-mode)
+(add-hook 'markdown-mode-hook 'smartparens-mode)
 
 ;;; ========
 ;;;  Unfill
@@ -264,7 +274,7 @@
 ;;;  Gams - http://shirotakeda.org/en/gams/gams-mode/
 ;;; ========================================================
 (use-package gams-mode
-  :mode ("\\.gms\\'" . gams-mode)
+  :mode ("\\.gms\\'" "\\.inc\\'")
   :custom
   (gams-process-command-option "ll=0 lo=3 pw=153 ps=9999")
   (gams-statement-upcase t)
@@ -419,7 +429,7 @@
 (setq preview-scale-function 1.5)      ; Higher preview images in TeX buffers
 (setq preview-auto-cache-preamble t)
 (if mswindows
-    (setq preview-gs-command "c:/Program Files/gs/gs9.50/bin/gswin64c.exe")
+    (setq preview-gs-command "c:/Program Files/gs/gs9.55.0/bin/gswin64c.exe")
   (setq preview-gs-command "gs"))
 
 ;; Beamer
@@ -684,21 +694,8 @@
      (ess-fl-keyword:= . t)
      (ess-R-fl-keyword:F&T . t)))
  '(latex-preview-pane-multifile-mode 'auctex)
- '(package-selected-packages
-   '(find-file-in-project smartparens neotree all-the-icons-ivy all-the-icons projectile magit company visual-fill-column pandoc-mode rw-hunspell ivy-bibtex matlab-mode espresso-theme counsel htmlize auctex ein flycheck-julia gams-ac julia-repl julia-shell latex-preview-pane pager ps-ccrypt yaml-mode vlf)))
+ ;; '(package-selected-packages
+ ;;   '(all-the-icons-dired find-file-in-project smartparens neotree all-the-icons-ivy all-the-icons projectile magit company visual-fill-column pandoc-mode rw-hunspell ivy-bibtex matlab-mode espresso-theme counsel htmlize auctex ein flycheck-julia gams-ac julia-repl julia-shell latex-preview-pane pager ps-ccrypt yaml-mode vlf))
+ )
 
 (setenv "CYGWIN" "nodosfilewarning")
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(rainbow-delimiters-depth-1-face ((t (:foreground "red" :height 1.2))))
- '(rainbow-delimiters-depth-2-face ((t (:foreground "orange" :height 1.15))))
- '(rainbow-delimiters-depth-3-face ((t (:foreground "cyan" :height 1.1))))
- '(rainbow-delimiters-depth-4-face ((t (:foreground "green" :height 1.05))))
- '(rainbow-delimiters-depth-5-face ((t (:foreground "blue" :height 1.0))))
- '(rainbow-delimiters-depth-6-face ((t (:foreground "violet" :height 0.95))))
- '(rainbow-delimiters-depth-7-face ((t (:foreground "purple" :height 0.9))))
- '(rainbow-delimiters-depth-8-face ((t (:foreground "black" :height 0.85))))
- '(rainbow-delimiters-unmatched-face ((t (:background "yellow" :height 0.8)))))
