@@ -1,0 +1,4 @@
+(setq gams-user-dollar-control-list '(
+"ONDOTL"
+"ONMULTI"
+))

@@ -32,8 +32,7 @@
 ;; use-package setup
 (require 'package)
 (setq package-enable-at-startup nil) ; dont do it immediately
-(setq package-archives '(("org"       . "http://orgmode.org/elpa/")
-			 ("gnu"       . "http://elpa.gnu.org/packages/")
+(setq package-archives '(("gnu_elpa"  . "https://elpa.gnu.org/packages/")
 			 ("melpa"     . "https://melpa.org/packages/")))
 (package-initialize)
 
@@ -638,9 +637,7 @@
 ;;; ========
 ;;;  ccrypt
 ;;; ========
-(setq load-path (cons "path" load-path))
 (require 'ps-ccrypt)
-;; (require 'ps-ccrypt "ps-ccrypt.el")
 
 ;;; =================
 ;;;  ivy and friends
@@ -694,8 +691,21 @@
      (ess-fl-keyword:= . t)
      (ess-R-fl-keyword:F&T . t)))
  '(latex-preview-pane-multifile-mode 'auctex)
- ;; '(package-selected-packages
- ;;   '(all-the-icons-dired find-file-in-project smartparens neotree all-the-icons-ivy all-the-icons projectile magit company visual-fill-column pandoc-mode rw-hunspell ivy-bibtex matlab-mode espresso-theme counsel htmlize auctex ein flycheck-julia gams-ac julia-repl julia-shell latex-preview-pane pager ps-ccrypt yaml-mode vlf))
- )
+ '(package-selected-packages
+   '(yaml-mode vlf visual-fill-column use-package smartparens rainbow-delimiters projectile poly-R pandoc-mode pager neotree matlab-mode magit latex-preview-pane julia-shell julia-repl htmlize gams-ac flycheck-julia find-file-in-project ess espresso-theme ein counsel company auctex all-the-icons-ivy all-the-icons-dired ado-mode)))
 
 (setenv "CYGWIN" "nodosfilewarning")
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(rainbow-delimiters-depth-1-face ((t (:foreground "red" :height 1.2))))
+ '(rainbow-delimiters-depth-2-face ((t (:foreground "orange" :height 1.15))))
+ '(rainbow-delimiters-depth-3-face ((t (:foreground "cyan" :height 1.1))))
+ '(rainbow-delimiters-depth-4-face ((t (:foreground "green" :height 1.05))))
+ '(rainbow-delimiters-depth-5-face ((t (:foreground "blue" :height 1.0))))
+ '(rainbow-delimiters-depth-6-face ((t (:foreground "violet" :height 0.95))))
+ '(rainbow-delimiters-depth-7-face ((t (:foreground "purple" :height 0.9))))
+ '(rainbow-delimiters-depth-8-face ((t (:foreground "black" :height 0.85))))
+ '(rainbow-delimiters-unmatched-face ((t (:background "yellow" :height 0.8)))))
