@@ -16,3 +16,4 @@ tramp
 transient/
 %backup%~
 *.cache
+elpy/

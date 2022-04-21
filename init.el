@@ -101,6 +101,25 @@
 ;;; ==========
 (use-package ado-mode)
 
+;;; =============
+;;;  Python mode
+;;; =============
+(use-package elpy
+  :ensure t
+  :init
+  (elpy-enable))
+;; (use-package conda)
+;; (use-package py-autopep8)
+;; (use-package blacken)
+
+;; (setq python-shell-interpreter "jupyter"
+;;       python-shell-interpreter-args "console --simple-prompt"
+;;       python-shell-prompt-detect-failure-warning nil)
+;; (add-to-list 'python-shell-completion-native-disabled-interpreters
+;;              "jupyter")
+
+;; (use-package ein) ;; Emacs IPython Notebook
+
 ;;; ==========
 ;;;  Org mode
 ;;; ==========
@@ -135,6 +154,8 @@
 (setq-default cursor-type 'bar)          ; curseur étroit
 (set-face-background 'cursor "#CC0000")  ; curseur rouge foncé
 (setq jit-lock-chunk-size 50000)
+
+(setq large-file-warning-threshold 100000000) ; set large file threshold at 100 megabytes
 
 (require 'font-lock)
 (global-font-lock-mode t)                ; colorisation du texte
@@ -337,7 +358,8 @@
 ;;; ==============
 ;;;  Custom theme
 ;;; ==============
-(load-theme 'leuven t)
+;; (load-theme 'leuven t)
+(load-theme 'material t)  ;; Load material theme
 
 ;;; ============
 ;;;  LaTeX-mode
@@ -692,7 +714,7 @@
      (ess-R-fl-keyword:F&T . t)))
  '(latex-preview-pane-multifile-mode 'auctex)
  '(package-selected-packages
-   '(yaml-mode vlf visual-fill-column use-package smartparens rainbow-delimiters projectile poly-R pandoc-mode pager neotree matlab-mode magit latex-preview-pane julia-shell julia-repl htmlize gams-ac flycheck-julia find-file-in-project ess espresso-theme ein counsel company auctex all-the-icons-ivy all-the-icons-dired ado-mode)))
+   '(elpy material-theme yaml-mode vlf visual-fill-column use-package smartparens rainbow-delimiters projectile poly-R pandoc-mode pager neotree matlab-mode magit latex-preview-pane julia-shell julia-repl htmlize gams-ac flycheck-julia find-file-in-project ess espresso-theme ein counsel company auctex all-the-icons-ivy all-the-icons-dired ado-mode)))
 
 (setenv "CYGWIN" "nodosfilewarning")
 (custom-set-faces
