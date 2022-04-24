@@ -238,8 +238,6 @@
 (use-package smartparens-config
   :ensure smartparens
   :config (progn (show-smartparens-global-mode t)))
-;; (add-hook 'prog-mode-hook 'turn-on-smartparens-strict-mode)
-;; (add-hook 'markdown-mode-hook 'turn-on-smartparens-strict-mode)
 (add-hook 'prog-mode-hook 'smartparens-mode)
 (add-hook 'markdown-mode-hook 'smartparens-mode)
 
@@ -295,11 +293,15 @@
 ;;; ========================================================
 (use-package gams-mode
   :mode ("\\.gms\\'" "\\.inc\\'")
+  :init
+  (progn
+    (add-hook 'gams-mode-hook 'rainbow-delimiters-mode))
   :custom
   (gams-process-command-option "ll=0 lo=3 pw=153 ps=9999")
   (gams-statement-upcase t)
   (gams-fill-column 80)
   (gams-recenter-font-lock t)
+  (gams-close-paren-always nil)
   (gams-statement-name "Parameter")
   (gams-dollar-control-name "exit")
   (gams-default-pop-window-height 20)
@@ -358,7 +360,6 @@
 ;;; ==============
 ;;;  Custom theme
 ;;; ==============
-;; (load-theme 'leuven t)
 (load-theme 'material t)  ;; Load material theme
 
 ;;; ============
@@ -699,7 +700,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
-   '("14de8f58ad656af5be374086ae7ab663811633fc1483a02add92f7a1ff1a8455" "bf390ecb203806cbe351b966a88fc3036f3ff68cd2547db6ee3676e87327b311" default))
+   '("90a6f96a4665a6a56e36dec873a15cbedf761c51ec08dd993d6604e32dd45940" "f149d9986497e8877e0bd1981d1bef8c8a6d35be7d82cba193ad7e46f0989f6a" "14de8f58ad656af5be374086ae7ab663811633fc1483a02add92f7a1ff1a8455" "bf390ecb203806cbe351b966a88fc3036f3ff68cd2547db6ee3676e87327b311" default))
  '(ess-R-font-lock-keywords
    '((ess-R-fl-keyword:modifiers . t)
      (ess-R-fl-keyword:fun-defs . t)
