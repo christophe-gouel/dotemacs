@@ -240,6 +240,7 @@
   :config (progn (show-smartparens-global-mode t)))
 (add-hook 'prog-mode-hook 'smartparens-mode)
 (add-hook 'markdown-mode-hook 'smartparens-mode)
+(setq markdown-enable-math t)
 
 ;;; ========
 ;;;  Unfill
@@ -561,6 +562,23 @@
 ;;; =====
 (require 'ess-site)
 
+(use-package ess
+  :bind (;; Shortcut for pipe |>
+	 :map ess-r-mode-map
+         ("C-S-m" . " |> ")
+         :map inferior-ess-r-mode-map
+         ("C-S-m" . " |> ")
+	 ;; Shortcut for pipe %>%
+	 :map ess-r-mode-map
+	 ("C-%" . " %>% ")
+         :map inferior-ess-r-mode-map
+         ("C-%" . " %>% ")
+	 ;; Shortcut for assign <-
+	 :map ess-r-mode-map
+	 ("M--" . ess-insert-assign)
+         :map inferior-ess-r-mode-map
+	 ("M--" . ess-insert-assign)))
+
 ;; Following the "source is real" philosophy put forward by ESS, one
 ;; should not need the command history and should not save the
 ;; workspace at the end of an R session. Hence, both options are
@@ -579,13 +597,6 @@
 (define-key ess-mode-map (kbd "C-;") 'comment-region)
 (define-key ess-mode-map [(control ?c) (?:)] 'uncomment-region)
 
-;; Shortcut for assign <-
-(define-key ess-r-mode-map (kbd "M--") 'ess-insert-assign)
-(define-key inferior-ess-r-mode-map (kbd "M--") 'ess-insert-assign)
-
-;; Shortcut for pipe %>%
-(define-key ess-mode-map (kbd "C-%") " %>% ")
-(define-key inferior-ess-mode-map (kbd "C-%") " %>% ")
 
 (setq ess-ask-for-ess-directory nil) ; Do not ask what is the project directory
 ;; (setq ansi-color-for-comint-mode 'filter)
@@ -700,7 +711,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
-   '("90a6f96a4665a6a56e36dec873a15cbedf761c51ec08dd993d6604e32dd45940" "f149d9986497e8877e0bd1981d1bef8c8a6d35be7d82cba193ad7e46f0989f6a" "14de8f58ad656af5be374086ae7ab663811633fc1483a02add92f7a1ff1a8455" "bf390ecb203806cbe351b966a88fc3036f3ff68cd2547db6ee3676e87327b311" default))
+   '("14de8f58ad656af5be374086ae7ab663811633fc1483a02add92f7a1ff1a8455" "bf390ecb203806cbe351b966a88fc3036f3ff68cd2547db6ee3676e87327b311" default))
  '(ess-R-font-lock-keywords
    '((ess-R-fl-keyword:modifiers . t)
      (ess-R-fl-keyword:fun-defs . t)
@@ -715,7 +726,7 @@
      (ess-R-fl-keyword:F&T . t)))
  '(latex-preview-pane-multifile-mode 'auctex)
  '(package-selected-packages
-   '(elpy material-theme yaml-mode vlf visual-fill-column use-package smartparens rainbow-delimiters projectile poly-R pandoc-mode pager neotree matlab-mode magit latex-preview-pane julia-shell julia-repl htmlize gams-ac flycheck-julia find-file-in-project ess espresso-theme ein counsel company auctex all-the-icons-ivy all-the-icons-dired ado-mode)))
+   '(material-theme yaml-mode vlf visual-fill-column use-package smartparens rainbow-delimiters projectile poly-R pandoc-mode pager neotree matlab-mode magit latex-preview-pane julia-shell julia-repl htmlize gams-ac flycheck-julia find-file-in-project ess espresso-theme ein counsel company auctex all-the-icons-ivy all-the-icons-dired ado-mode)))
 
 (setenv "CYGWIN" "nodosfilewarning")
 (custom-set-faces
