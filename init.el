@@ -222,15 +222,15 @@
   (progn
     (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
   :custom-face
-  (rainbow-delimiters-depth-1-face ((t (:foreground "red" :height 1.2))))
-  (rainbow-delimiters-depth-2-face ((t (:foreground "orange" :height 1.15))))
-  (rainbow-delimiters-depth-3-face ((t (:foreground "cyan" :height 1.1))))
-  (rainbow-delimiters-depth-4-face ((t (:foreground "green" :height 1.05))))
-  (rainbow-delimiters-depth-5-face ((t (:foreground "blue" :height 1.0))))
-  (rainbow-delimiters-depth-6-face ((t (:foreground "violet" :height 0.95))))
-  (rainbow-delimiters-depth-7-face ((t (:foreground "purple" :height 0.9))))
-  (rainbow-delimiters-depth-8-face ((t (:foreground "black" :height 0.85))))
-  (rainbow-delimiters-unmatched-face ((t (:background "yellow" :height 0.8)))))
+  (rainbow-delimiters-depth-1-face ((t (:foreground "red"))))
+  (rainbow-delimiters-depth-2-face ((t (:foreground "orange"))))
+  (rainbow-delimiters-depth-3-face ((t (:foreground "cyan"))))
+  (rainbow-delimiters-depth-4-face ((t (:foreground "green"))))
+  (rainbow-delimiters-depth-5-face ((t (:foreground "blue"))))
+  (rainbow-delimiters-depth-6-face ((t (:foreground "violet"))))
+  (rainbow-delimiters-depth-7-face ((t (:foreground "purple"))))
+  (rainbow-delimiters-depth-8-face ((t (:foreground "black"))))
+  (rainbow-delimiters-unmatched-face ((t (:background "yellow")))))
 
 ;;; =============
 ;;;  smartparens
@@ -729,17 +729,3 @@
    '(material-theme yaml-mode vlf visual-fill-column use-package smartparens rainbow-delimiters projectile poly-R pandoc-mode pager neotree matlab-mode magit latex-preview-pane julia-shell julia-repl htmlize gams-ac flycheck-julia find-file-in-project ess espresso-theme ein counsel company auctex all-the-icons-ivy all-the-icons-dired ado-mode)))
 
 (setenv "CYGWIN" "nodosfilewarning")
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(rainbow-delimiters-depth-1-face ((t (:foreground "red" :height 1.2))))
- '(rainbow-delimiters-depth-2-face ((t (:foreground "orange" :height 1.15))))
- '(rainbow-delimiters-depth-3-face ((t (:foreground "cyan" :height 1.1))))
- '(rainbow-delimiters-depth-4-face ((t (:foreground "green" :height 1.05))))
- '(rainbow-delimiters-depth-5-face ((t (:foreground "blue" :height 1.0))))
- '(rainbow-delimiters-depth-6-face ((t (:foreground "violet" :height 0.95))))
- '(rainbow-delimiters-depth-7-face ((t (:foreground "purple" :height 0.9))))
- '(rainbow-delimiters-depth-8-face ((t (:foreground "black" :height 0.85))))
- '(rainbow-delimiters-unmatched-face ((t (:background "yellow" :height 0.8)))))
