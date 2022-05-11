@@ -296,18 +296,22 @@
   :mode ("\\.gms\\'" "\\.inc\\'")
   :init
   (progn
-    (add-hook 'gams-mode-hook 'rainbow-delimiters-mode))
+    (add-hook 'gams-mode-hook 'rainbow-delimiters-mode)
+    (add-hook 'gams-mode-hook 'smartparens-mode))
   :custom
   (gams-process-command-option "ll=0 lo=3 pw=153 ps=9999")
   (gams-statement-upcase t)
   (gams-fill-column 80)
   (gams-recenter-font-lock t)
-  (gams-close-paren-always nil)
   (gams-statement-name "Parameter")
   (gams-dollar-control-name "exit")
   (gams-default-pop-window-height 20)
-  (gams-inlinecom-symbol-start-default "{")
-  (gams-inlinecom-symbol-end-default "}")
+  ;; (gams-inlinecom-symbol-start-default "{")
+  ;; (gams-inlinecom-symbol-end-default "}")
+  ;; Remove the handling of parenthèses by gams-mode to use smartparens instead
+  (gams-close-paren-always nil)
+  (gams-close-double-quotation-always nil)
+  (gams-close-single-quotation-always nil)
   ;; Indent
   (gams-indent-on t)
   (gams-indent-number 2)
@@ -711,7 +715,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
-   '("14de8f58ad656af5be374086ae7ab663811633fc1483a02add92f7a1ff1a8455" "bf390ecb203806cbe351b966a88fc3036f3ff68cd2547db6ee3676e87327b311" default))
+   '("90a6f96a4665a6a56e36dec873a15cbedf761c51ec08dd993d6604e32dd45940" "f149d9986497e8877e0bd1981d1bef8c8a6d35be7d82cba193ad7e46f0989f6a" "14de8f58ad656af5be374086ae7ab663811633fc1483a02add92f7a1ff1a8455" "bf390ecb203806cbe351b966a88fc3036f3ff68cd2547db6ee3676e87327b311" default))
  '(ess-R-font-lock-keywords
    '((ess-R-fl-keyword:modifiers . t)
      (ess-R-fl-keyword:fun-defs . t)
@@ -729,3 +733,17 @@
    '(material-theme yaml-mode vlf visual-fill-column use-package smartparens rainbow-delimiters projectile poly-R pandoc-mode pager neotree matlab-mode magit latex-preview-pane julia-shell julia-repl htmlize gams-ac flycheck-julia find-file-in-project ess espresso-theme ein counsel company auctex all-the-icons-ivy all-the-icons-dired ado-mode)))
 
 (setenv "CYGWIN" "nodosfilewarning")
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(rainbow-delimiters-depth-1-face ((t (:foreground "red"))))
+ '(rainbow-delimiters-depth-2-face ((t (:foreground "orange"))))
+ '(rainbow-delimiters-depth-3-face ((t (:foreground "cyan"))))
+ '(rainbow-delimiters-depth-4-face ((t (:foreground "green"))))
+ '(rainbow-delimiters-depth-5-face ((t (:foreground "blue"))))
+ '(rainbow-delimiters-depth-6-face ((t (:foreground "violet"))))
+ '(rainbow-delimiters-depth-7-face ((t (:foreground "purple"))))
+ '(rainbow-delimiters-depth-8-face ((t (:foreground "black"))))
+ '(rainbow-delimiters-unmatched-face ((t (:background "yellow")))))
