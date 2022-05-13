@@ -269,10 +269,17 @@
    ([M-down] . pager-row-down)
    ([M-kp-2] . pager-row-down)))
 
-;;; ================
+;;; ==============
 ;;;  Recent Files
-;;; ================
+;;; ==============
 (use-package recentf)
+
+;;; ========
+;;;  Docker
+;;; ========
+(use-package docker
+  :ensure t
+  :bind ("C-c d" . docker))
 
 ;;; ========
 ;;;  Ispell
