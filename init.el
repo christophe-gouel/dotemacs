@@ -313,8 +313,6 @@
   (gams-statement-name "Parameter")
   (gams-dollar-control-name "exit")
   (gams-default-pop-window-height 20)
-  ;; (gams-inlinecom-symbol-start-default "{")
-  ;; (gams-inlinecom-symbol-end-default "}")
   ;; Remove the handling of parenthèses by gams-mode to use smartparens instead
   (gams-close-paren-always nil)
   (gams-close-double-quotation-always nil)
@@ -689,11 +687,21 @@
 ;;; =================
 (use-package ivy
   :demand
-  :bind ("\C-s" . swiper)
   :custom
   (ivy-use-virtual-buffers t)
   (ivy-count-format "%d/%d ")
   :config (ivy-mode))
+
+;; swiper is slow for large files so it is replaced by isearch for large files
+(defun search-method-according-to-numlines ()
+  "Determines the number of lines of current buffer and chooses a search method accordingly"
+  (interactive)
+  (if (< (count-lines (point-min) (point-max)) 20000)
+      (swiper)
+    (isearch-forward)
+    )
+  )
+(global-set-key "\C-s" 'search-method-according-to-numlines)
 
 ;;; ==========
 ;;;  flycheck
