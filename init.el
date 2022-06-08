@@ -346,6 +346,29 @@
     (setq gams-docs-directory "/opt/gams/gamsLast_linux_x64_64_sfx/docs")
     (setq gams-docs-view-program "qpdfview")))
 
+; Polymode for gams
+(define-hostmode poly-gams-hostmode
+  :mode 'gams-mode)
+
+(define-innermode poly-gams-yaml-innermode
+  :mode 'yaml-mode
+  :head-matcher ".?o?n?embeddedcode.* connect:$"
+  :tail-matcher ".*embeddedcode.*$"
+  :head-mode 'host
+  :tail-mode 'host)
+
+(define-innermode poly-gams-python-innermode
+  :mode 'python-mode
+  :head-matcher ".?o?n?embeddedcode.* python:$"
+  :tail-matcher ".*embeddedcode.*$"
+  :head-mode 'host
+  :tail-mode 'host)
+
+(define-polymode poly-gams-mode
+  :hostmode 'poly-gams-hostmode
+  :innermodes '(poly-gams-yaml-innermode
+		poly-gams-python-innermode))
+
 ;;; =========================================================================
 ;;;  Lancer une recherche d'article sous IDEAS ou google-search depuis Emacs
 ;;; =========================================================================
