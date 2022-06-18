@@ -393,7 +393,7 @@
 ;;; ==============
 ;;;  Custom theme
 ;;; ==============
-(load-theme 'material t)  ;; Load material theme
+(load-theme 'solarized-gruvbox-dark t)
 
 ;;; ============
 ;;;  LaTeX-mode
@@ -753,7 +753,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
-   '("90a6f96a4665a6a56e36dec873a15cbedf761c51ec08dd993d6604e32dd45940" "f149d9986497e8877e0bd1981d1bef8c8a6d35be7d82cba193ad7e46f0989f6a" "14de8f58ad656af5be374086ae7ab663811633fc1483a02add92f7a1ff1a8455" "bf390ecb203806cbe351b966a88fc3036f3ff68cd2547db6ee3676e87327b311" default))
+   '("830877f4aab227556548dc0a28bf395d0abe0e3a0ab95455731c9ea5ab5fe4e1" "7f1d414afda803f3244c6fb4c2c64bea44dac040ed3731ec9d75275b9e831fe5" "fee7287586b17efbfda432f05539b58e86e059e78006ce9237b8732fde991b4c" "70cfdd2e7beaf492d84dfd5f1955ca358afb0a279df6bd03240c2ce74a578e9e" "90a6f96a4665a6a56e36dec873a15cbedf761c51ec08dd993d6604e32dd45940" "f149d9986497e8877e0bd1981d1bef8c8a6d35be7d82cba193ad7e46f0989f6a" "14de8f58ad656af5be374086ae7ab663811633fc1483a02add92f7a1ff1a8455" "bf390ecb203806cbe351b966a88fc3036f3ff68cd2547db6ee3676e87327b311" default))
  '(ess-R-font-lock-keywords
    '((ess-R-fl-keyword:modifiers . t)
      (ess-R-fl-keyword:fun-defs . t)
@@ -768,7 +768,7 @@
      (ess-R-fl-keyword:F&T . t)))
  '(latex-preview-pane-multifile-mode 'auctex)
  '(package-selected-packages
-   '(material-theme yaml-mode vlf visual-fill-column use-package smartparens rainbow-delimiters projectile poly-R pandoc-mode pager neotree matlab-mode magit latex-preview-pane julia-shell julia-repl htmlize gams-ac flycheck-julia find-file-in-project ess espresso-theme ein counsel company auctex all-the-icons-ivy all-the-icons-dired ado-mode)))
+   '(solarized-theme docker yaml-mode vlf visual-fill-column use-package smartparens rainbow-delimiters projectile poly-R pandoc-mode pager neotree matlab-mode magit latex-preview-pane julia-shell julia-repl htmlize gams-ac flycheck-julia find-file-in-project ess espresso-theme ein counsel company auctex all-the-icons-ivy all-the-icons-dired ado-mode)))
 
 (setenv "CYGWIN" "nodosfilewarning")
 (custom-set-faces
