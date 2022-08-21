@@ -73,6 +73,14 @@
 ;;; ======================
 (use-package find-file-in-project)
 
+;;; ======================
+;;;  greek-unicode-insert
+;;; ======================
+;; Installed manually from https://github.com/Malabarba/greek-unicode-insert
+(use-package greek-unicode-insert
+  :load-path "site-lisp/greek-unicode-insert"
+  :bind ("²" . greek-unicode-insert-map))
+
 ;;; =========
 ;;;  neotree
 ;;; =========
