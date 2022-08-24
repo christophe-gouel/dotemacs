@@ -115,7 +115,8 @@
 (use-package elpy
   :ensure t
   :init
-  (elpy-enable))
+  (elpy-enable)
+  (setq elpy-shell-starting-directory 'current-directory))
 (use-package conda
   :config (progn
             (conda-env-initialize-interactive-shells)
