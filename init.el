@@ -112,8 +112,9 @@
 ;;; =============
 ;;;  Python mode
 ;;; =============
+(setq python-shell-interpreter "ipython"
+      python-shell-interpreter-args "-i --simple-prompt --InteractiveShell.display_page=True")
 (use-package elpy
-  :ensure t
   :init
   (elpy-enable)
   (setq elpy-shell-starting-directory 'current-directory))
