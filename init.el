@@ -313,6 +313,13 @@
     (setq-default ispell-program-name "C:/ProgramData/chocolatey/lib/hunspell.portable/tools/hunspell.exe")
   (setq-default ispell-program-name "aspell"))
 
+;;; ==========
+;;;  Polymode
+;;; ==========
+(use-package poly-R)
+(use-package poly-markdown)
+(add-to-list 'auto-mode-alist '("\\.Rmd" . poly-markdown+r-mode))
+
 ;;; ========================================================
 ;;;  Gams - http://shirotakeda.org/en/gams/gams-mode/
 ;;; ========================================================
@@ -410,7 +417,10 @@
 ;;; ==============
 ;;;  Custom theme
 ;;; ==============
-(load-theme 'solarized-gruvbox-dark t)
+(use-package solarized-theme 
+  :ensure t
+  :config
+  (load-theme 'solarized-gruvbox-light t))
 
 ;;; ============
 ;;;  LaTeX-mode
@@ -543,7 +553,8 @@
 ;;; ===============================================
 ;;;  Matlab - http://matlab-emacs.sourceforge.net/
 ;;; ===============================================
-(require 'matlab)
+(use-package  matlab
+  :ensure matlab-mode)
 
 ;; Matlab mode
 ;;; Set up matlab-mode to load on .m files
@@ -703,13 +714,6 @@
 (add-hook 'pandoc-mode-hook 'pandoc-load-default-settings)
 (add-hook 'markdown-mode-hook 'flyspell-mode)
 
-;;; ==========
-;;;  Polymode
-;;; ==========
-(require 'poly-R)
-(require 'poly-markdown)
-(add-to-list 'auto-mode-alist '("\\.Rmd" . poly-markdown+r-mode))
-
 ;;; =======
 ;;;  Magit
 ;;; =======
@@ -731,6 +735,8 @@
   (ivy-use-virtual-buffers t)
   (ivy-count-format "%d/%d ")
   :config (ivy-mode))
+
+(use-package swiper)
 
 ;; swiper is slow for large files so it is replaced by isearch for large files
 (defun search-method-according-to-numlines ()
@@ -760,17 +766,15 @@
 ;;; =======
 (setq inferior-julia-program-name "c:/Users/gouel/AppData/Local/Julia-0.6.2/bin/julia.exe")
 
-(require 'vlf)
+(use-package vlf)
 
-(require 'ein)
+(use-package ein)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(custom-safe-themes
-   '("285d1bf306091644fb49993341e0ad8bafe57130d9981b680c1dbd974475c5c7" "830877f4aab227556548dc0a28bf395d0abe0e3a0ab95455731c9ea5ab5fe4e1" "7f1d414afda803f3244c6fb4c2c64bea44dac040ed3731ec9d75275b9e831fe5" "fee7287586b17efbfda432f05539b58e86e059e78006ce9237b8732fde991b4c" "70cfdd2e7beaf492d84dfd5f1955ca358afb0a279df6bd03240c2ce74a578e9e" "90a6f96a4665a6a56e36dec873a15cbedf761c51ec08dd993d6604e32dd45940" "f149d9986497e8877e0bd1981d1bef8c8a6d35be7d82cba193ad7e46f0989f6a" "14de8f58ad656af5be374086ae7ab663811633fc1483a02add92f7a1ff1a8455" "bf390ecb203806cbe351b966a88fc3036f3ff68cd2547db6ee3676e87327b311" default))
  '(ess-R-font-lock-keywords
    '((ess-R-fl-keyword:modifiers . t)
      (ess-R-fl-keyword:fun-defs . t)
@@ -785,7 +789,7 @@
      (ess-R-fl-keyword:F&T . t)))
  '(latex-preview-pane-multifile-mode 'auctex)
  '(package-selected-packages
-   '(solarized-theme docker yaml-mode vlf visual-fill-column use-package smartparens rainbow-delimiters projectile poly-R pandoc-mode pager neotree matlab-mode magit latex-preview-pane julia-shell julia-repl htmlize gams-ac flycheck-julia find-file-in-project ess espresso-theme ein counsel company auctex all-the-icons-ivy all-the-icons-dired ado-mode)))
+   '(yaml-mode vlf use-package solarized-theme smartparens rainbow-delimiters projectile poly-R pager neotree matlab-mode magit gams-mode flycheck find-file-in-project ess elpy ein docker conda auctex all-the-icons-ivy all-the-icons-dired ado-mode)))
 
 (setenv "CYGWIN" "nodosfilewarning")
 (custom-set-faces
