@@ -437,7 +437,7 @@
   (add-hook 'TeX-mode-hook 'turn-on-reftex)
   (add-hook 'TeX-mode-hook 'TeX-fold-mode 1)
   (add-hook 'TeX-mode-hook
-            '(lambda ()
+            #'(lambda ()
                (define-key TeX-mode-map (kbd "<f9>")
 		 (lambda ()
                    (interactive)
@@ -530,7 +530,7 @@
       (letf (( (symbol-function 'TeX-command-query) (lambda (x) "LaTeX")))
 	(TeX-command-region)))))
 (add-hook 'TeX-mode-hook
-	  '(lambda()
+	  #'(lambda()
 	     (local-set-key [(shift return)] 'tex-frame)))
 
 ;;; =====
