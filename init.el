@@ -419,6 +419,8 @@
 ;;; ==============
 (use-package solarized-theme 
   :ensure t
+  :init
+  (setq custom-safe-themes t)
   :config
   (load-theme 'solarized-gruvbox-light t))
 
@@ -705,8 +707,9 @@
 ;;; ===============
 ;;;  Markdown mode
 ;;; ===============
+(use-package pandoc-mode)
 (autoload 'markdown-mode "markdown-mode"
-   "Major mode for editing Markdown files" t)
+  "Major mode for editing Markdown files" t)
 (add-to-list 'auto-mode-alist '("\\.text\\'" . markdown-mode))
 (add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
 (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
@@ -764,7 +767,10 @@
 ;;; =======
 ;;;  Julia
 ;;; =======
-(setq inferior-julia-program-name "c:/Users/gouel/AppData/Local/Julia-0.6.2/bin/julia.exe")
+(use-package julia-mode)
+
+;; (use-package julia-repl)  ; Does not work on Linux
+;; (add-hook 'julia-mode-hook 'julia-repl-mode) 
 
 (use-package vlf)
 
@@ -787,9 +793,7 @@
      (ess-fl-keyword:delimiters . t)
      (ess-fl-keyword:= . t)
      (ess-R-fl-keyword:F&T . t)))
- '(latex-preview-pane-multifile-mode 'auctex)
- '(package-selected-packages
-   '(yaml-mode vlf use-package solarized-theme smartparens rainbow-delimiters projectile poly-R pager neotree matlab-mode magit gams-mode flycheck find-file-in-project ess elpy ein docker conda auctex all-the-icons-ivy all-the-icons-dired ado-mode)))
+ '(latex-preview-pane-multifile-mode 'auctex))
 
 (setenv "CYGWIN" "nodosfilewarning")
 (custom-set-faces
