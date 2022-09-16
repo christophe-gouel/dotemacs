@@ -411,13 +411,13 @@
 ;;;  Yaml mode - https://github.com/yoshiki/yaml-mode
 ;;; ==================================================
 (use-package yaml-mode
-  :mode ("\\.yml$" . yaml-mode)
+  :mode ("\\.yml$" "\\.dvc" "dvc.lock")
   :bind ("\C-m" . newline-and-indent))
 
 ;;; ==============
 ;;;  Custom theme
 ;;; ==============
-(use-package solarized-theme 
+(use-package solarized-theme
   :ensure t
   :init
   (setq custom-safe-themes t)
@@ -539,7 +539,7 @@
 (use-package doc-view
   :if mswindows
   :config
-  (setq doc-view-ghostscript-program "C:\\Program Files\\gs\\gs9.50\\bin\\gswin64c.exe"))
+  (setq doc-view-ghostscript-program "C:\\Program Files\\gs\\gs9.56.1\\bin\\gswin64c.exe"))
 
 ;;; ==================
 ;;;  Auto-compression
