@@ -119,13 +119,12 @@
   (elpy-enable)
   (setq elpy-shell-starting-directory 'current-directory))
 (use-package conda
-  :config (progn
-            (conda-env-initialize-interactive-shells)
-            (conda-env-initialize-eshell)
-            (conda-env-autoactivate-mode t)
-	    ;; (setq conda-env-home-directory (expand-file-name "~/anaconda3"))
-	    ;; (custom-set-variables '(conda-anaconda-home "~/anaconda3"))
-	    ))
+  :config
+  ;; (progn
+  ;;   ;; (conda-env-initialize-interactive-shells)
+  ;;   ;; (conda-env-initialize-eshell)
+  ;;   (conda-env-autoactivate-mode t))
+  (setq-default mode-line-format (cons '(:exec conda-env-current-name) mode-line-format)))
 ;; (use-package py-autopep8)
 ;; (use-package blacken)
 
@@ -190,8 +189,6 @@
 (add-hook 'write-file-hooks 'time-stamp) ; Time-stamp
 
 (setq default-major-mode 'text-mode)     ; mode par défaut
-(setq text-mode-hook '(lambda () (setq fill-column 80)))
-(add-hook 'text-mode-hook 'turn-on-auto-fill) ; wrap long lines in text mode
 
 (setq column-number-mode t)              ; affichage du numéro de la colonne
 
@@ -259,9 +256,9 @@
 (add-hook 'markdown-mode-hook 'smartparens-mode)
 (setq markdown-enable-math t)
 
-;;; ========
-;;;  Unfill
-;;; ========
+;;; =============
+;;;  fill-Unfill
+;;; =============
 (defun unfill-paragraph ()
   (interactive)
   (let ((fill-column (point-max)))
@@ -271,6 +268,12 @@
   (interactive "r")
   (let ((fill-column (point-max)))
     (fill-region start end nil)))
+
+(use-package visual-fill-column
+  :config
+  (setq visual-fill-column-width 100))
+(add-hook 'visual-line-mode-hook #'visual-fill-column-mode)
+(add-hook 'text-mode-hook 'visual-fill-column-mode)
 
 ;;; ============================================
 ;;;  Pager - From ELPA
