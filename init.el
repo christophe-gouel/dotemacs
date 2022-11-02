@@ -730,7 +730,11 @@
 ;;; =======
 (use-package magit
   :bind ("C-x g" . magit-status)
-  :custom (magit-diff-refine-hunk (quote all)))
+  :custom
+  (magit-diff-refine-hunk (quote all))
+  :config
+  (remove-hook 'server-switch-hook 'magit-commit-diff)  ; Do not diff when committing
+  (remove-hook 'with-editor-filter-visit-hook 'magit-commit-diff))  ; Do not diff when committing
 
 ;;; ========
 ;;;  ccrypt
