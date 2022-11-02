@@ -274,6 +274,7 @@
   (setq visual-fill-column-width 100))
 (add-hook 'visual-line-mode-hook #'visual-fill-column-mode)
 (add-hook 'text-mode-hook 'visual-fill-column-mode)
+(add-hook 'text-mode-hook 'visual-line-mode)
 
 ;;; ============================================
 ;;;  Pager - From ELPA
@@ -359,6 +360,10 @@
     (interactive "sRegular expression to find: ")
     (grep (concat "grep -nHI -i -r -e " string " --include=*.gms *" )))
   :bind ("\C-cf" . find-in-gms-files))
+
+(use-package gams-ac
+  :init
+  (gams-ac-after-init-setup))
 
 (if mswindows
   (progn
