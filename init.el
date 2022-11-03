@@ -269,8 +269,11 @@
   (let ((fill-column (point-max)))
     (fill-region start end nil)))
 
+(setq-default fill-column 80)
+
+;; Use visual fill column for text mode
 (use-package visual-fill-column
-  :config
+  :init
   (setq visual-fill-column-width 100))
 (add-hook 'visual-line-mode-hook #'visual-fill-column-mode)
 (add-hook 'text-mode-hook 'visual-fill-column-mode)
@@ -336,7 +339,7 @@
   :custom
   (gams-process-command-option "ll=0 lo=3 pw=153 ps=9999")
   (gams-statement-upcase t)
-  (gams-fill-column 80)
+  (gams-fill-column 100)
   (gams-recenter-font-lock t)
   (gams-statement-name "Parameter")
   (gams-dollar-control-name "exit")
@@ -439,7 +442,6 @@
   :ensure auctex
   :init
   (add-hook 'TeX-mode-hook 'flyspell-mode)
-  (add-hook 'TeX-mode-hook 'auto-fill-mode)
   (add-hook 'TeX-mode-hook 'latex-math-mode)
   (add-hook 'TeX-mode-hook 'imenu-add-menubar-index)
   (add-hook 'TeX-mode-hook 'turn-on-reftex)
@@ -476,7 +478,6 @@
   (TeX-source-correlate-method (quote synctex))
   (TeX-source-correlate-start-server (quote ask))
   (TeX-PDF-mode t)
-  (fill-column 80)
   (reftex-plug-into-AUCTeX t)
   (TeX-electric-sub-and-superscript 1)
   (LaTeX-math-list
@@ -578,7 +579,7 @@
 (setq matlab-indent-level 2)
 (setq matlab-comment-region-s "% ")
 (defun my-matlab-mode-hook ()
-  (setq fill-column 80) 	        ; where auto-fill should wrap
+  ;; (setq fill-column 80) 	        ; where auto-fill should wrap
   (setq matlab-show-mlint-warnings t)   ; Activate mlint
   (mlint-minor-mode))                   ; Activate mlint minor mode
 (add-hook 'matlab-mode-hook 'my-matlab-mode-hook)
@@ -659,7 +660,7 @@
 (setq ess-style 'RStudio) ; Set code indentation
 
 ;; Add a vertical line at 80 columns
-(setq ess-mode-hook '(lambda () (setq fill-column 80)))
+;; (setq ess-mode-hook '(lambda () (setq fill-column 80)))
 (add-hook 'ess-mode-hook (lambda ()
 			   (display-fill-column-indicator-mode)))
 
