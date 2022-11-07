@@ -491,6 +491,11 @@
   ("\C-cf" . reftex-fancyref-fref)
   ("\C-cF" . reftex-fancyref-Fref))
 
+;; Increase reftex speed (especially on Windows)
+(setq reftex-enable-partial-scans t
+      reftex-save-parse-info t
+      reftex-use-multiple-selection-buffers t)
+
 (if mswindows
     ()
   (add-hook 'TeX-mode-hook 'TeX-fold-buffer t))
