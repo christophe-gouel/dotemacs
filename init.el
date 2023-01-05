@@ -325,6 +325,7 @@
 ;;; ==========
 (use-package poly-R)
 (use-package poly-markdown)
+(use-package quarto-mode)
 (add-to-list 'auto-mode-alist '("\\.Rmd" . poly-markdown+r-mode))
 
 ;;; ========================================================
@@ -428,12 +429,30 @@
 ;;; ==============
 ;;;  Custom theme
 ;;; ==============
-(use-package solarized-theme
+(use-package doom-themes
   :ensure t
-  :init
-  (setq custom-safe-themes t)
   :config
-  (load-theme 'solarized-gruvbox-light t))
+  ;; Global settings (defaults)
+  (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
+        doom-themes-enable-italic t) ; if nil, italics is universally disabled
+  (load-theme 'doom-one t)
+
+  ;; Enable flashing mode-line on errors
+  (doom-themes-visual-bell-config)
+  ;; Enable custom neotree theme (all-the-icons must be installed!)
+  (doom-themes-neotree-config)
+  ;; or for treemacs users
+  (setq doom-themes-treemacs-theme "doom-atom") ; use "doom-colors" for less minimal icon theme
+  (doom-themes-treemacs-config)
+  ;; Corrects (and improves) org-mode's native fontification.
+  (doom-themes-org-config))
+
+;; (use-package solarized-theme
+;;   :ensure t
+;;   :init
+;;   (setq custom-safe-themes t)
+;;   :config
+;;   (load-theme 'solarized-gruvbox-light t))
 
 ;;; ============
 ;;;  LaTeX-mode
@@ -515,8 +534,9 @@
 
 (if mswindows
     (progn
-      (setq TeX-view-program-list (quote (("Sumatra PDF" ("\"SumatraPDF.exe\" -reuse-instance" (mode-io-correlate " -forward-search %b %n") " %o")))))
-      (setq TeX-view-program-selection (quote ((output-pdf "Sumatra PDF")
+      ;; (setq TeX-view-program-list (quote (("Sumatra PDF" ("\"SumatraPDF.exe\" -reuse-instance" (mode-io-correlate " -forward-search %b %n") " %o")))))
+      ;; (setq TeX-view-program-selection (quote ((output-pdf "Sumatra PDF")
+      (setq TeX-view-program-selection (quote ((output-pdf "SumatraPDF")
 					       (output-dvi "Yap")))))
     (progn
       (setq TeX-view-program-list '(("qpdfview" "qpdfview --instance emacsauxtex --unique \"%o#src:%b:%n:0\"")))
@@ -710,6 +730,19 @@
   (grep (concat "grep -nHI -i -r -e " string " --include=*.R* *" )))
 (define-key ess-mode-map "\C-cf" 'find-in-R-files)
 
+(add-hook 'ess-mode-hook
+	  '(lambda ()
+	     (outline-minor-mode)
+	     (setq outline-regexp "^# .*----")
+	     (defun outline-level ()
+	       (cond (looking-at "^# .*----") 1)
+	       (cond (looking-at "^## .*----") 2)
+	       (cond (looking-at "^### .*----") 3)
+	       (cond (looking-at "^#### .*----") 4)
+	       ((looking-at "^[a-zA-Z0-9_\.]+ ?<- ?function(.*{") 5)
+	       (t 1000)
+	       )))
+
 ;;; ===================================
 ;;;  Définition de touches perso global
 ;;; ===================================
@@ -811,7 +844,9 @@
      (ess-fl-keyword:delimiters . t)
      (ess-fl-keyword:= . t)
      (ess-R-fl-keyword:F&T . t)))
- '(latex-preview-pane-multifile-mode 'auctex))
+ '(latex-preview-pane-multifile-mode 'auctex)
+ '(package-selected-packages
+   '(doom-themes zenburn-theme yaml-mode vlf visual-fill-column use-package sublimity solarized-theme smartparens rainbow-delimiters quarto-mode projectile poly-R pandoc-mode pager neotree matlab-mode material-theme magit latex-preview-pane julia-shell julia-repl json-mode htmlize gams-ac flycheck-julia find-file-in-project ess-view-data espresso-theme elpy ein docker counsel conda auctex all-the-icons-ivy all-the-icons-dired aircon-theme ado-mode)))
 
 (setenv "CYGWIN" "nodosfilewarning")
 (custom-set-faces
