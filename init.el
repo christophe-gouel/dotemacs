@@ -1,5 +1,3 @@
-;; (byte-recompile-directory "~/.emacs.d/site-lisp" 1)
-
 (defconst mswindows (equal window-system 'w32))
 
 ;;; My location for external packages.
@@ -7,6 +5,12 @@
 
 (setq backup-directory-alist
      	  '(("." . "~/.emacs.d/backup")))
+
+;; Define a file in which any customization is saved
+(setq custom-file (concat user-emacs-directory "custom.el"))
+(when (file-exists-p custom-file)
+  (load custom-file))
+
 ;;; =======
 ;;;  Shell
 ;;; =======
@@ -646,9 +650,9 @@
 ;;; =====================================
 (define-key global-map [(mouse-3)] 'mouse-me)
 
-;;; =========
-;;;  Company
-;;; =========
+;;; ============================================
+;;;  Company - Modern auto-completion framework
+;;; ============================================
 (use-package company
   :init
   (add-hook 'after-init-hook 'global-company-mode))
@@ -778,7 +782,8 @@
 ;;; ========
 ;;;  ccrypt
 ;;; ========
-(require 'ps-ccrypt)
+(use-package ps-ccrypt
+  :load-path "site-lisp")
 
 ;;; =================
 ;;;  ivy and friends
@@ -821,45 +826,11 @@
 (use-package julia-mode)
 
 ;; (use-package julia-repl)  ; Does not work on Linux
-;; (add-hook 'julia-mode-hook 'julia-repl-mode) 
+;; (add-hook 'julia-mode-hook 'julia-repl-mode)
 
+;;; ==================
+;;;  View Large Files
+;;; ==================
 (use-package vlf)
 
-(use-package ein)
-
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(ess-R-font-lock-keywords
-   '((ess-R-fl-keyword:modifiers . t)
-     (ess-R-fl-keyword:fun-defs . t)
-     (ess-R-fl-keyword:keywords . t)
-     (ess-R-fl-keyword:assign-ops . t)
-     (ess-R-fl-keyword:constants . t)
-     (ess-fl-keyword:fun-calls . t)
-     (ess-fl-keyword:numbers . t)
-     (ess-fl-keyword:operators . t)
-     (ess-fl-keyword:delimiters . t)
-     (ess-fl-keyword:= . t)
-     (ess-R-fl-keyword:F&T . t)))
- '(latex-preview-pane-multifile-mode 'auctex)
- '(package-selected-packages
-   '(doom-themes zenburn-theme yaml-mode vlf visual-fill-column use-package sublimity solarized-theme smartparens rainbow-delimiters quarto-mode projectile poly-R pandoc-mode pager neotree matlab-mode material-theme magit latex-preview-pane julia-shell julia-repl json-mode htmlize gams-ac flycheck-julia find-file-in-project ess-view-data espresso-theme elpy ein docker counsel conda auctex all-the-icons-ivy all-the-icons-dired aircon-theme ado-mode)))
-
-(setenv "CYGWIN" "nodosfilewarning")
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(rainbow-delimiters-depth-1-face ((t (:foreground "red"))))
- '(rainbow-delimiters-depth-2-face ((t (:foreground "orange"))))
- '(rainbow-delimiters-depth-3-face ((t (:foreground "cyan"))))
- '(rainbow-delimiters-depth-4-face ((t (:foreground "green"))))
- '(rainbow-delimiters-depth-5-face ((t (:foreground "blue"))))
- '(rainbow-delimiters-depth-6-face ((t (:foreground "violet"))))
- '(rainbow-delimiters-depth-7-face ((t (:foreground "purple"))))
- '(rainbow-delimiters-depth-8-face ((t (:foreground "black"))))
- '(rainbow-delimiters-unmatched-face ((t (:background "yellow")))))
+;;; init.el ends here
