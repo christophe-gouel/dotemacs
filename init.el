@@ -258,6 +258,7 @@
   :config (progn (show-smartparens-global-mode t)))
 (add-hook 'prog-mode-hook 'smartparens-mode)
 (add-hook 'markdown-mode-hook 'smartparens-mode)
+(add-hook 'yaml-mode-hook 'smartparens-mode)
 (setq markdown-enable-math t)
 
 ;;; =============
@@ -329,8 +330,9 @@
 ;;; ==========
 (use-package poly-R)
 (use-package poly-markdown)
-(use-package quarto-mode)
+;; (use-package quarto-mode)
 (add-to-list 'auto-mode-alist '("\\.Rmd" . poly-markdown+r-mode))
+(add-to-list 'auto-mode-alist '("\\.qmd" . poly-markdown+r-mode))
 
 ;;; ========================================================
 ;;;  Gams - http://shirotakeda.org/en/gams/gams-mode/
@@ -458,6 +460,13 @@
 ;;   :config
 ;;   (load-theme 'solarized-gruvbox-light t))
 
+;;; ===============
+;;;  doom-modeline
+;;; ===============
+(use-package doom-modeline
+  :ensure t
+  :hook (after-init . doom-modeline-mode))
+
 ;;; ============
 ;;;  LaTeX-mode
 ;;; ============
@@ -505,8 +514,8 @@
   (TeX-electric-sub-and-superscript 1)
   (LaTeX-math-list
    '(
-     (?) "right)")
-   (?( "left(")
+     (?\) "right)")
+   (?\( "left(")
      (?/ "frac{}{}")
      ))
   :bind
@@ -551,7 +560,7 @@
 (setq preview-scale-function 1.5)      ; Higher preview images in TeX buffers
 (setq preview-auto-cache-preamble t)
 (if mswindows
-    (setq preview-gs-command "c:/Program Files/gs/gs9.55.0/bin/gswin64c.exe")
+    (setq preview-gs-command "C:\\Program Files\\gs\\gs9.56.1\\bin\\gswin64c.exe")
   (setq preview-gs-command "gs"))
 
 ;; Beamer
@@ -735,17 +744,17 @@
 (define-key ess-mode-map "\C-cf" 'find-in-R-files)
 
 (add-hook 'ess-mode-hook
-	  '(lambda ()
-	     (outline-minor-mode)
-	     (setq outline-regexp "^# .*----")
-	     (defun outline-level ()
-	       (cond (looking-at "^# .*----") 1)
-	       (cond (looking-at "^## .*----") 2)
-	       (cond (looking-at "^### .*----") 3)
-	       (cond (looking-at "^#### .*----") 4)
-	       ((looking-at "^[a-zA-Z0-9_\.]+ ?<- ?function(.*{") 5)
-	       (t 1000)
-	       )))
+	  #'(lambda ()
+	      (outline-minor-mode)
+	      (setq outline-regexp "^# .*----")
+	      (defun outline-level ()
+		(cond (looking-at "^# .*----") 1)
+		(cond (looking-at "^## .*----") 2)
+		(cond (looking-at "^### .*----") 3)
+		(cond (looking-at "^#### .*----") 4)
+		((looking-at "^[a-zA-Z0-9_\.]+ ?<- ?function(.*{") 5)
+		(t 1000)
+		)))
 
 ;;; ===================================
 ;;;  Définition de touches perso global
@@ -833,4 +842,4 @@
 ;;; ==================
 (use-package vlf)
 
-;;; init.el ends here
+;; ;;; init.el ends here
