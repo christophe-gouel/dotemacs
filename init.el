@@ -73,6 +73,31 @@
   :init (add-hook 'after-init-hook 'all-the-icons-ivy-setup))
 
 ;;; ======================
+;;;  Dashboard
+;;; ======================
+(use-package dashboard
+  :ensure t
+  :config
+  ;; On active la prise en charge des projets avec projectile
+  (setq dashboard-projects-backend 'projectile)
+  ;; On ajoute les raccourcis de rubrique
+  (setq dashboard-set-navigator t)
+  ;; On centre le contenu
+  (setq dashboard-center-content t)
+  ;; On configure ce qu'on veut voir apparaître
+  (setq dashboard-items '((recents  . 5)
+                          (projects . 5)
+                          (bookmarks . 5)))
+  ;; On met des icônes
+  (setq dashboard-set-heading-icons t)
+  (setq dashboard-set-file-icons t)
+  ;; On vire le footer (je ne le lis pas)
+  (setq dashboard-set-footer nil)
+  ;; On démarre dashboard par défaut
+  (dashboard-setup-startup-hook)
+  )
+
+;;; ======================
 ;;;  find-file-in-project
 ;;; ======================
 (use-package find-file-in-project)
@@ -653,6 +678,7 @@
   (when (file-directory-p "~/Documents/git_projects")
     (setq projectile-project-search-path '("~/Documents/git_projects")))
   (setq projectile-switch-project-action #'projectile-dired))
+(setq projectile-use-git-grep t)
 
 ;;; =====================================
 ;;;  Activation du clic droit comme aide
