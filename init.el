@@ -782,6 +782,13 @@
 		(t 1000)
 		)))
 
+;; Fix to a bug in iess (see: https://github.com/emacs-ess/ESS/issues/1193)
+;; To check with new emacs/ess version if still relevant
+(defun my-inferior-ess-init ()
+  (setq-local ansi-color-for-comint-mode 'filter)
+  (smartparens-mode 1))
+(add-hook 'inferior-ess-mode-hook 'my-inferior-ess-init)
+
 ;;; ===================================
 ;;;  Définition de touches perso global
 ;;; ===================================
