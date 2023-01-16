@@ -436,20 +436,6 @@
   :innermodes '(poly-gams-yaml-innermode
 		poly-gams-python-innermode))
 
-;;; =========================================================================
-;;;  Lancer une recherche d'article sous IDEAS ou google-search depuis Emacs
-;;; =========================================================================
-(defun ideas (command)
-;"Uses `browse-url' to submit keywords to IDEAS and open result in an external browser defined in `browse-url-browser-function'."
-  (interactive "sCommand:")
-  (browse-url
-   (concat "http://ideas.repec.org/cgi-bin/htsearch?words="command)))
-
-(defun google-scholar (command)
-  (interactive "sCommand:")
-  (browse-url
-   (concat "http://scholar.google.com/scholar?q="command)))
-
 ;;; ==================================================
 ;;;  Yaml mode - https://github.com/yoshiki/yaml-mode
 ;;; ==================================================
@@ -679,6 +665,8 @@
     (setq projectile-project-search-path '("~/Documents/git_projects")))
   (setq projectile-switch-project-action #'projectile-dired))
 (setq projectile-use-git-grep t)
+
+(use-package ripgrep)
 
 ;;; =====================================
 ;;;  Activation du clic droit comme aide
