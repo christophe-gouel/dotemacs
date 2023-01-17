@@ -263,7 +263,8 @@
 (use-package rainbow-delimiters
   :init
   (progn
-    (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
+    (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
+    (add-hook 'yaml-mode-hook 'rainbow-delimiters-mode))
   :custom-face
   (rainbow-delimiters-depth-1-face ((t (:foreground "red"))))
   (rainbow-delimiters-depth-2-face ((t (:foreground "orange"))))
@@ -280,11 +281,12 @@
 ;;; =============
 (use-package smartparens-config
   :ensure smartparens
+  :init
+  (progn
+    (add-hook 'prog-mode-hook 'smartparens-mode)
+    (add-hook 'markdown-mode-hook 'smartparens-mode)
+    (add-hook 'yaml-mode-hook 'smartparens-mode))
   :config (progn (show-smartparens-global-mode t)))
-(add-hook 'prog-mode-hook 'smartparens-mode)
-(add-hook 'markdown-mode-hook 'smartparens-mode)
-(add-hook 'yaml-mode-hook 'smartparens-mode)
-(setq markdown-enable-math t)
 
 ;;; =============
 ;;;  fill-Unfill
@@ -463,13 +465,6 @@
   (doom-themes-treemacs-config)
   ;; Corrects (and improves) org-mode's native fontification.
   (doom-themes-org-config))
-
-;; (use-package solarized-theme
-;;   :ensure t
-;;   :init
-;;   (setq custom-safe-themes t)
-;;   :config
-;;   (load-theme 'solarized-gruvbox-light t))
 
 ;;; ===============
 ;;;  doom-modeline
@@ -788,15 +783,19 @@
 ;;; ===============
 ;;;  Markdown mode
 ;;; ===============
+(use-package markdown-mode
+  :ensure t
+  :mode ("README\\.md\\'" . gfm-mode)
+  :init
+  (setq markdown-command "pandoc")
+  (setq markdown-enable-math t))
 (use-package pandoc-mode)
-(autoload 'markdown-mode "markdown-mode"
-  "Major mode for editing Markdown files" t)
-(add-to-list 'auto-mode-alist '("\\.text\\'" . markdown-mode))
-(add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
-(add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
+;; (autoload 'markdown-mode "markdown-mode"
+;;   "Major mode for editing Markdown files" t)
 (add-hook 'markdown-mode-hook 'pandoc-mode)
 (add-hook 'pandoc-mode-hook 'pandoc-load-default-settings)
 (add-hook 'markdown-mode-hook 'flyspell-mode)
+
 
 ;;; =======
 ;;;  Magit
