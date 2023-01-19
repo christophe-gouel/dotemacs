@@ -116,6 +116,16 @@
   (which-key-mode t)
   )
 
+;;; =======
+;;;  dired
+;;; =======
+(use-package dired
+  :ensure nil
+  :commands (dired dired-jump)
+  :init (add-hook 'dired-mode-hook (lambda ()
+				     (dired-hide-details-mode)))
+  :custom ((dired-listing-switches "-agho --group-directories-first")))
+
 ;;; ======================
 ;;;  greek-unicode-insert
 ;;; ======================
