@@ -102,6 +102,20 @@
 ;;; ======================
 (use-package find-file-in-project)
 
+;;; ===========
+;;;  which-key
+;;; ===========
+(use-package which-key
+  :diminish which-key-mode
+  :init
+  (setq which-key-sort-uppercase-first nil
+		max-mini-window-height 15)
+  ;; On va utiliser une fenêtre dédiée plutôt que le minibuffer
+  (which-key-setup-side-window-bottom)
+  ;; On l'active partout, tout le temps
+  (which-key-mode t)
+  )
+
 ;;; ======================
 ;;;  greek-unicode-insert
 ;;; ======================
@@ -164,6 +178,9 @@
 ;;              "jupyter")
 
 ;; (use-package ein) ;; Emacs IPython Notebook
+
+;; Set encoding to utf-8 to allows utf-8 characters in Python REPL (from https://stackoverflow.com/questions/14172576/why-unicodeencodeerror-raised-only-in-emacss-python-shell?utm_source=pocket_reader)
+(setenv "PYTHONIOENCODING" "utf-8")
 
 ;;; ==========
 ;;;  Org mode
