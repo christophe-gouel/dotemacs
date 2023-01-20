@@ -84,23 +84,18 @@
   (setq dashboard-set-navigator t)
   ;; On centre le contenu
   (setq dashboard-center-content t)
-  ;; On configure ce qu'on veut voir apparaître
+  ;; On configure ce qu'on veut voir apparaÃ®tre
   (setq dashboard-items '((recents  . 5)
                           (projects . 5)
                           (bookmarks . 5)))
-  ;; On met des icônes
+  ;; On met des icÃ´nes
   (setq dashboard-set-heading-icons t)
   (setq dashboard-set-file-icons t)
   ;; On vire le footer (je ne le lis pas)
   (setq dashboard-set-footer nil)
-  ;; On démarre dashboard par défaut
+  ;; On dÃ©marre dashboard par dÃ©faut
   (dashboard-setup-startup-hook)
   )
-
-;;; ======================
-;;;  find-file-in-project
-;;; ======================
-(use-package find-file-in-project)
 
 ;;; ===========
 ;;;  which-key
@@ -110,7 +105,7 @@
   :init
   (setq which-key-sort-uppercase-first nil
 		max-mini-window-height 15)
-  ;; On va utiliser une fenêtre dédiée plutôt que le minibuffer
+  ;; On va utiliser une fenÃªtre dÃ©diÃ©e plutÃ´t que le minibuffer
   (which-key-setup-side-window-bottom)
   ;; On l'active partout, tout le temps
   (which-key-mode t)
@@ -132,34 +127,44 @@
 ;; Installed manually from https://github.com/Malabarba/greek-unicode-insert
 (use-package greek-unicode-insert
   :load-path "site-lisp/greek-unicode-insert"
-  :bind ("²" . greek-unicode-insert-map))
+  :bind ("Â²" . greek-unicode-insert-map))
 
-;;; =========
-;;;  neotree
-;;; =========
-(use-package neotree
-  :demand
-  :bind ([f3] . neotree-project-dir)
-  :custom
-  (neo-theme (if (display-graphic-p) 'icons 'arrow))
-  (neo-show-hidden-files t))
+;;; ======================
+;;;  treemacs
+;;; ======================
+(use-package treemacs
+  :ensure t
+  :defer t
+  :after (treemacs-all-the-icons)
+  :hook (treemacs-mode . no_code_mode)
+  :bind
+  :config
+  (setq treemacs-width 20
+	treemacs-indentation '(4 px)
+	treemacs-is-never-other-window t
+	treemacs-width-is-initially-locked nil
+	treemacs-space-between-root-nodes nil
+	treemacs-collapse-dirs 4
+	treemacs-text-scale -1)
+  (treemacs-resize-icons 14)
+  (treemacs-follow-mode t)
+  (treemacs-tag-follow-mode t)
+  (treemacs-filewatch-mode t)
+  (treemacs-fringe-indicator-mode 'always)
+  (treemacs-hide-gitignored-files-mode nil)
+  (treemacs-load-theme "all-the-icons"))
 
-(defun neotree-project-dir ()
-  "Open NeoTree using the git root."
-  (interactive)
-  (if (neo-global--window-exists-p)
-      (neotree-hide)
-    (let ((project-dir (ffip-project-root))
-        (file-name (buffer-file-name)))
-    (if project-dir
-        (progn
-          (neotree-dir project-dir)
-          (neotree-find file-name))
-      (message "Could not find git project root.")))))
+(global-set-key [f3] 'treemacs-select-window)
 
-;;; ==========
-;;;  ado-mode
-;;; ==========
+;; (define-key global-mode-map "[f6]" 'treemacs-select-window)
+
+(use-package treemacs-magit
+  :after (treemacs magit)
+  :ensure t)
+
+;;; ==================================
+;;;  ado-mode for editing Stata files
+;;; ==================================
 (use-package ado-mode)
 
 ;;; =============
@@ -221,21 +226,21 @@
 ;;; ===============
 ;;;  Look and feel
 ;;; ===============
-(setq blink-cursor-blinks 0)             ; curseur clignote indéfiniment
+(setq blink-cursor-blinks 0)             ; curseur clignote indÃ©finiment
 (global-hl-line-mode +1)                 ; Highlight the current line
-(setq-default cursor-type 'bar)          ; curseur étroit
-(set-face-background 'cursor "#CC0000")  ; curseur rouge foncé
+(setq-default cursor-type 'bar)          ; curseur Ã©troit
+(set-face-background 'cursor "#CC0000")  ; curseur rouge foncÃ©
 (setq jit-lock-chunk-size 50000)
 
 (setq large-file-warning-threshold 100000000) ; set large file threshold at 100 megabytes
 
 (require 'font-lock)
 (global-font-lock-mode t)                ; colorisation du texte
-;; (transient-mark-mode t)                  ; mode de sélection "normal"
-(delete-selection-mode t)                ; entrée efface texte sélectionné
+;; (transient-mark-mode t)                  ; mode de sÃ©lection "normal"
+(delete-selection-mode t)                ; entrÃ©e efface texte sÃ©lectionnÃ©
 (setq-default mouse-yank-at-point t)     ; coller avec la souris
-(show-paren-mode t)                      ; coupler les parenthèses
-(setq-default case-fold-search t)        ; recherche sans égard à la casse
+(show-paren-mode t)                      ; coupler les parenthÃ¨ses
+(setq-default case-fold-search t)        ; recherche sans Ã©gard Ã  la casse
 
 (setq display-time-24hr-format t)        ; Affichage de l'heure format 24h
 (display-time)                           ; Affichage de l'errur dans le bandeau
@@ -244,9 +249,9 @@
 
 (add-hook 'write-file-hooks 'time-stamp) ; Time-stamp
 
-(setq default-major-mode 'text-mode)     ; mode par défaut
+(setq default-major-mode 'text-mode)     ; mode par dÃ©faut
 
-(setq column-number-mode t)              ; affichage du numéro de la colonne
+(setq column-number-mode t)              ; affichage du numÃ©ro de la colonne
 
 (setq frame-title-format '(buffer-file-name "Emacs: %b (%f)" "Emacs: %b")) ; Affiche le chemin complet du fichier dans la barre de titre d'Emacs
 
@@ -262,15 +267,6 @@
 (setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING))
 (if mswindows    ;; MS Windows clipboard is UTF-16LE
     (set-clipboard-coding-system 'utf-16le-dos))
-
-;;; Police Consolas
-;; (if mswindows
-;;   (progn
-;;     (set-face-font 'default "-outline-Consolas-normal-r-normal-normal-*-*-96-96-c-*-iso8859-1")
-;;     (set-face-font 'bold "-outline-Consolas-bold-r-normal-normal-*-*-96-96-c-*-iso8859-1")
-;;     (set-face-font 'italic "-outline-Consolas-normal-i-normal-normal-*-*-96-96-c-*-iso8859-1")
-;;     (set-face-font 'bold-italic "-outline-Consolas-bold-i-normal-normal-*-*-96-96-c-*-iso8859-1"))
-  ;; (set-default-font "DejaVu Sans Mono 10"))
 
 ;;; Remove menu bar in terminal mode
 (if (display-graphic-p)
@@ -368,6 +364,8 @@
 ;;;  Ispell
 ;;; ========
 (use-package ispell
+  :init
+  (add-hook 'text-mode-hook 'flyspell-mode)
   :config
   (setq ispell-list-command "list")
   (setq flyspell-issue-welcome-flag nil)
@@ -378,6 +376,17 @@
 (if mswindows
     (setq-default ispell-program-name "C:/ProgramData/chocolatey/lib/hunspell.portable/tools/hunspell.exe")
   (setq-default ispell-program-name "aspell"))
+
+(use-package flyspell-correct
+  :ensure  t
+  :after flyspell
+  :bind (:map flyspell-mode-map
+		  ("M-$" . flyspell-correct-at-point)))
+
+(use-package flyspell-correct-ivy
+  :ensure t
+  :demand t
+  :after flyspell-correct)
 
 ;;; ==========
 ;;;  Polymode
@@ -405,7 +414,7 @@
   (gams-statement-name "Parameter")
   (gams-dollar-control-name "exit")
   (gams-default-pop-window-height 20)
-  ;; Remove the handling of parenthèses by gams-mode to use smartparens instead
+  ;; Remove the handling of parenthÃ¨ses by gams-mode to use smartparens instead
   (gams-close-paren-always nil)
   (gams-close-double-quotation-always nil)
   (gams-close-single-quotation-always nil)
@@ -506,7 +515,6 @@
 (use-package tex
   :ensure auctex
   :init
-  (add-hook 'TeX-mode-hook 'flyspell-mode)
   (add-hook 'TeX-mode-hook 'latex-math-mode)
   (add-hook 'TeX-mode-hook 'imenu-add-menubar-index)
   (add-hook 'TeX-mode-hook 'turn-on-reftex)
@@ -537,7 +545,7 @@
   (LaTeX-default-options "12pt")
   (reftex-cite-format (quote natbib))
   (reftex-sort-bibtex-matches (quote author))
-  (LaTeX-math-abbrev-prefix "²")
+  (LaTeX-math-abbrev-prefix "Â²")
   (TeX-source-specials-mode 1)
   (TeX-source-correlate-mode t)
   (TeX-source-correlate-method (quote synctex))
@@ -800,7 +808,7 @@
 (add-hook 'inferior-ess-mode-hook 'my-inferior-ess-init)
 
 ;;; ===================================
-;;;  Définition de touches perso global
+;;;  DÃ©finition de touches perso global
 ;;; ===================================
 (define-key global-map [(M-f1)] 'bookmark-bmenu-list)
 (define-key global-map [(f5)] 'revert-buffer)
@@ -821,8 +829,6 @@
 ;;   "Major mode for editing Markdown files" t)
 (add-hook 'markdown-mode-hook 'pandoc-mode)
 (add-hook 'pandoc-mode-hook 'pandoc-load-default-settings)
-(add-hook 'markdown-mode-hook 'flyspell-mode)
-
 
 ;;; =======
 ;;;  Magit
@@ -838,6 +844,7 @@
 ;;; ========
 ;;;  ccrypt
 ;;; ========
+;; To download from https://github.com/isdamir/ps-ccrypt
 (use-package ps-ccrypt
   :load-path "site-lisp")
 
