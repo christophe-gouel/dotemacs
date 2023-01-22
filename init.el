@@ -509,6 +509,25 @@
   :ensure t
   :hook (after-init . doom-modeline-mode))
 
+(use-package eglot)
+
+;;; =========
+;;;  minimap
+;;; =========
+;; (use-package minimap
+;;   :diminish minimap-mode
+;;   :init
+;;   (setq minimap-window-location 'right
+;; 	minimap-width-fraction 0.04
+;; 	minimap-hide-scroll-bar nil
+;; 	minimap-hide-fringes nil
+;; 	minimap-dedicated-window t
+;; 	minimap-minimum-width 15)
+;;   :custom-face
+;;   (minimap-font-face ((t (:height 13 :weight bold :width condensed
+;;                           :spacing dual-width :family "VT323"))))
+;;   (minimap-active-region-background ((t (:extend t :background "gray24")))))
+
 ;;; ============
 ;;;  LaTeX-mode
 ;;; ============
