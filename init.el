@@ -751,6 +751,8 @@
          :map inferior-ess-r-mode-map
 	 ("M--" . ess-insert-assign)))
 
+(add-hook 'ess-mode-hook 'eglot-ensure)
+
 ;; Following the "source is real" philosophy put forward by ESS, one
 ;; should not need the command history and should not save the
 ;; workspace at the end of an R session. Hence, both options are
