@@ -363,19 +363,26 @@
 ;;; ========
 ;;;  Ispell
 ;;; ========
-(use-package ispell
+(use-package flyspell
   :init
   (add-hook 'text-mode-hook 'flyspell-mode)
+  (add-hook 'prog-mode-hook 'flyspell-prog-mode)
   :config
-  (setq ispell-list-command "list")
-  (setq flyspell-issue-welcome-flag nil)
-  (setq ispell-local-dictionary "en_US")
-  (setq ispell-local-dictionary-alist
-	'(("en_US" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "en_US") nil utf-8)))
-  (setq ispell-hunspell-dictionary-alist ispell-local-dictionary-alist))
-(if mswindows
-    (setq-default ispell-program-name "C:/ProgramData/chocolatey/lib/hunspell.portable/tools/hunspell.exe")
-  (setq-default ispell-program-name "aspell"))
+  (setq ispell-program-name (executable-find "hunspell")
+	flyspell-issue-welcome-flag nil
+	ispell-really-hunspell t
+	ispell-dictionary "en_US"
+	ispell-local-dictionary "en_US"
+	ispell-local-dictionary-alist
+	'(("en_US"
+	   "[[:alpha:]]"
+	   "[^[:alpha:]]"
+	   "[']"
+	   nil
+	   ("-d" "en_US")
+	   nil
+	   utf-8))
+	ispell-hunspell-dictionary-alist ispell-local-dictionary-alist))
 
 (use-package flyspell-correct
   :ensure  t
