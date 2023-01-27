@@ -366,7 +366,6 @@
 (use-package flyspell
   :init
   (add-hook 'text-mode-hook 'flyspell-mode)
-  (add-hook 'prog-mode-hook 'flyspell-prog-mode)
   :config
   (setq ispell-program-name (executable-find "hunspell")
 	flyspell-issue-welcome-flag nil
@@ -516,24 +515,18 @@
   :ensure t
   :hook (after-init . doom-modeline-mode))
 
-(use-package eglot)
+;;; =======
+;;;  eglot
+;;; =======
+(use-package eglot
+  :config
+  (setq eglot-ignored-server-capabilities '(:documentOnTypeFormattingProvider)))  ; Prevent eglot from reformatting code automatically
 
-;;; =========
-;;;  minimap
-;;; =========
-;; (use-package minimap
-;;   :diminish minimap-mode
-;;   :init
-;;   (setq minimap-window-location 'right
-;; 	minimap-width-fraction 0.04
-;; 	minimap-hide-scroll-bar nil
-;; 	minimap-hide-fringes nil
-;; 	minimap-dedicated-window t
-;; 	minimap-minimum-width 15)
-;;   :custom-face
-;;   (minimap-font-face ((t (:height 13 :weight bold :width condensed
-;;                           :spacing dual-width :family "VT323"))))
-;;   (minimap-active-region-background ((t (:extend t :background "gray24")))))
+;;; =======
+;;;  eldoc
+;;; =======
+; Prevent eldoc from showing the function doc in the minibuffer when the cursor is on the function
+(setq eldoc-echo-area-use-multiline-p nil)
 
 ;;; ============
 ;;;  LaTeX-mode
@@ -744,21 +737,28 @@
 (use-package ess
   :bind (;; Shortcut for pipe |>
 	 :map ess-r-mode-map
-         ("C-S-m" . " |> ")
+         ("C-S-m" . " |>")
          :map inferior-ess-r-mode-map
-         ("C-S-m" . " |> ")
+         ("C-S-m" . " |>")
 	 ;; Shortcut for pipe %>%
 	 :map ess-r-mode-map
-	 ("C-%" . " %>% ")
+	 ("C-%" . " %>%")
          :map inferior-ess-r-mode-map
-         ("C-%" . " %>% ")
+         ("C-%" . " %>%")
 	 ;; Shortcut for assign <-
 	 :map ess-r-mode-map
 	 ("M--" . ess-insert-assign)
          :map inferior-ess-r-mode-map
-	 ("M--" . ess-insert-assign)))
-
-(add-hook 'ess-mode-hook 'eglot-ensure)
+	 ("M--" . ess-insert-assign))
+  :config
+  (setq ess-assign-list '(" <-" " <<- " " = " " -> " " ->> ")
+	ess-style 'RStudio  ; Set code indentation
+	ess-ask-for-ess-directory nil  ; Do not ask what is the project directory
+	comint-scroll-to-bottom-on-input 'this
+	comint-scroll-to-bottom-on-output t
+	comint-move-point-for-output t)
+  :init
+  (add-hook 'ess-mode-hook 'eglot-ensure))
 
 ;; Following the "source is real" philosophy put forward by ESS, one
 ;; should not need the command history and should not save the
@@ -767,7 +767,6 @@
 (setq-default inferior-R-args "--no-restore-history --no-save ")
 
 (setq comment-column 0) ; Prevent indentation of lines starting with one #
-(setq ess-style 'RStudio) ; Set code indentation
 
 ;; Add a vertical line at 80 columns
 ;; (setq ess-mode-hook '(lambda () (setq fill-column 80)))
@@ -777,15 +776,6 @@
 (define-key inferior-ess-mode-map [home] 'comint-bol)
 (define-key ess-mode-map (kbd "C-;") 'comment-region)
 (define-key ess-mode-map [(control ?c) (?:)] 'uncomment-region)
-
-
-(setq ess-ask-for-ess-directory nil) ; Do not ask what is the project directory
-;; (setq ansi-color-for-comint-mode 'filter)
-;; (setq comint-prompt-read-only t) ; Prevent the ess prompt (>) to be writable
-;; (setq comint-scroll-to-bottom-on-input t) ; Move the cursor to > when typing in iESS buffer
-(setq comint-scroll-to-bottom-on-input 'this)
-(setq comint-scroll-to-bottom-on-output t)
-(setq comint-move-point-for-output t)
 
 ;; (defun my-ess-start-R ()
 ;;   (interactive)
