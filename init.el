@@ -117,9 +117,13 @@
 (use-package dired
   :ensure nil
   :commands (dired dired-jump)
-  :init (add-hook 'dired-mode-hook (lambda ()
-				     (dired-hide-details-mode)))
-  :custom ((dired-listing-switches "-agho --group-directories-first")))
+  :init
+  (add-hook 'dired-mode-hook (lambda ()
+			       (dired-hide-details-mode)))
+  (add-hook 'dired-mode-hook 'auto-revert-mode)
+  :custom
+  ((dired-listing-switches "-agho --group-directories-first"))
+  )
 
 ;;; ======================
 ;;;  greek-unicode-insert
@@ -152,7 +156,8 @@
   (treemacs-filewatch-mode t)
   (treemacs-fringe-indicator-mode 'always)
   (treemacs-hide-gitignored-files-mode nil)
-  (treemacs-load-theme "all-the-icons"))
+  (treemacs-load-theme "all-the-icons")
+  )
 
 (global-set-key [f3] 'treemacs-select-window)
 
@@ -161,6 +166,18 @@
 (use-package treemacs-magit
   :after (treemacs magit)
   :ensure t)
+
+;;; ===============================
+;;;  font-lock for hex color codes
+;;; ===============================
+ (defvar hexcolour-keywords
+   '(("#[abcdef[:digit:]]\\{6\\}"
+      (0 (put-text-property (match-beginning 0)
+                            (match-end 0)
+			    'face (list :background 
+				        (match-string-no-properties 0)))))))
+(defun hexcolour-add-to-font-lock ()
+  (font-lock-add-keywords nil hexcolour-keywords))
 
 ;;; ==================================
 ;;;  ado-mode for editing Stata files
@@ -758,7 +775,10 @@
 	comint-scroll-to-bottom-on-output t
 	comint-move-point-for-output t)
   :init
-  (add-hook 'ess-mode-hook 'eglot-ensure))
+  (add-hook 'ess-mode-hook 'hexcolour-add-to-font-lock)
+  ;; (add-hook 'ess-mode-hook 'eglot-ensure)
+  )
+
 
 ;; Following the "source is real" philosophy put forward by ESS, one
 ;; should not need the command history and should not save the
