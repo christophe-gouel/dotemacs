@@ -79,20 +79,20 @@
   :ensure t
   :config
   ;; On active la prise en charge des projets avec projectile
-  (setq dashboard-projects-backend 'projectile)
-  ;; On ajoute les raccourcis de rubrique
-  (setq dashboard-set-navigator t)
-  ;; On centre le contenu
-  (setq dashboard-center-content t)
-  ;; On configure ce qu'on veut voir apparaître
-  (setq dashboard-items '((recents  . 5)
+  (setq dashboard-projects-backend 'projectile
+	;; On ajoute les raccourcis de rubrique
+	dashboard-set-navigator t
+	;; On centre le contenu
+	dashboard-center-content t
+	;; On configure ce qu'on veut voir apparaître
+	dashboard-items '((recents  . 5)
                           (projects . 5)
-                          (bookmarks . 5)))
-  ;; On met des icônes
-  (setq dashboard-set-heading-icons t)
-  (setq dashboard-set-file-icons t)
-  ;; On vire le footer (je ne le lis pas)
-  (setq dashboard-set-footer nil)
+                          (bookmarks . 5))
+	;; On met des icônes
+	dashboard-set-heading-icons t
+	dashboard-set-file-icons t
+	;; On vire le footer (je ne le lis pas)
+	dashboard-set-footer nil)
   ;; On démarre dashboard par défaut
   (dashboard-setup-startup-hook)
   )
@@ -174,7 +174,7 @@
    '(("#[abcdef[:digit:]]\\{6\\}"
       (0 (put-text-property (match-beginning 0)
                             (match-end 0)
-			    'face (list :background 
+			    'face (list :background
 				        (match-string-no-properties 0)))))))
 (defun hexcolour-add-to-font-lock ()
   (font-lock-add-keywords nil hexcolour-keywords))
@@ -240,9 +240,9 @@
   )
 (add-hook 'org-mode-hook 'org-mode-reftex-setup)
 
-;;; ===============
-;;;  Look and feel
-;;; ===============
+;;; ========================================
+;;;  Look, feel, and general emacs behavior
+;;; ========================================
 (setq blink-cursor-blinks 0)             ; curseur clignote indéfiniment
 (global-hl-line-mode +1)                 ; Highlight the current line
 (setq-default cursor-type 'bar)          ; curseur étroit
@@ -260,17 +260,14 @@
 (setq-default case-fold-search t)        ; recherche sans égard à la casse
 
 (setq display-time-24hr-format t)        ; Affichage de l'heure format 24h
-(display-time)                           ; Affichage de l'errur dans le bandeau
 
 (fset 'yes-or-no-p 'y-or-n-p)            ; Replace yes or no with y or n
-
-(add-hook 'write-file-hooks 'time-stamp) ; Time-stamp
 
 (setq default-major-mode 'text-mode)     ; mode par défaut
 
 (setq column-number-mode t)              ; affichage du numéro de la colonne
 
-(setq frame-title-format '(buffer-file-name "Emacs: %b (%f)" "Emacs: %b")) ; Affiche le chemin complet du fichier dans la barre de titre d'Emacs
+(setq comment-column 0) ; Prevent indentation of lines starting with one comment
 
 ;;; set up unicode
 (set-language-environment "UTF-8")
@@ -284,6 +281,10 @@
 (setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING))
 (if mswindows    ;; MS Windows clipboard is UTF-16LE
     (set-clipboard-coding-system 'utf-16le-dos))
+
+;;; Sent deleted files to trash
+(setq delete-by-moving-to-trash t)
+
 
 ;;; Remove menu bar in terminal mode
 (if (display-graphic-p)
@@ -416,9 +417,8 @@
 ;;; ==========
 (use-package poly-R)
 (use-package poly-markdown)
-;; (use-package quarto-mode)
+(use-package quarto-mode)
 (add-to-list 'auto-mode-alist '("\\.Rmd" . poly-markdown+r-mode))
-(add-to-list 'auto-mode-alist '("\\.qmd" . poly-markdown+r-mode))
 
 ;;; ========================================================
 ;;;  Gams - http://shirotakeda.org/en/gams/gams-mode/
@@ -463,16 +463,16 @@
 
 (if mswindows
   (progn
-    (setq gams-process-command-name "C:/GAMS/Last/gams.exe")
-    (setq gams-system-directory "C:/GAMS/Last/")
-    (setq gams-docs-directory "C:/GAMS/Last/docs")
-    (setq gams-docs-view-program "C:/Program Files (x86)/Foxit Software/Foxit Reader/FoxitReader.exe")
-    (setq load-path
+    (setq gams-process-command-name "C:/GAMS/Last/gams.exe"
+	  gams-system-directory "C:/GAMS/Last/"
+	  gams-docs-directory "C:/GAMS/Last/docs"
+	  gams-docs-view-program "C:/Program Files (x86)/Foxit Software/Foxit Reader/FoxitReader.exe"
+	  load-path
 	  (cons "C:/GAMS/Last/" ;; Set the installed directory!
 		load-path)))
   (progn
-    (setq gams-docs-directory "/opt/gams/gamsLast_linux_x64_64_sfx/docs")
-    (setq gams-docs-view-program "qpdfview")))
+    (setq gams-docs-directory "/opt/gams/gamsLast_linux_x64_64_sfx/docs"
+	  gams-docs-view-program "qpdfview")))
 
 ; Polymode for gams
 (define-hostmode poly-gams-hostmode
@@ -774,28 +774,23 @@
 	comint-scroll-to-bottom-on-input 'this
 	comint-scroll-to-bottom-on-output t
 	comint-move-point-for-output t)
+  ;; Following the "source is real" philosophy put forward by ESS, one should
+  ;; not need the command history and should not save the workspace at the end
+  ;; of an R session. Hence, both options are disabled here.
+  (setq-default inferior-R-args "--no-restore-history --no-save ")
   :init
   (add-hook 'ess-mode-hook 'hexcolour-add-to-font-lock)
+  ;; Add a vertical line at 80 columns
+  (add-hook 'ess-mode-hook (lambda ()
+			     (display-fill-column-indicator-mode)))
   ;; (add-hook 'ess-mode-hook 'eglot-ensure)
   )
-
-
-;; Following the "source is real" philosophy put forward by ESS, one
-;; should not need the command history and should not save the
-;; workspace at the end of an R session. Hence, both options are
-;; disabled here.
-(setq-default inferior-R-args "--no-restore-history --no-save ")
-
-(setq comment-column 0) ; Prevent indentation of lines starting with one #
-
-;; Add a vertical line at 80 columns
-;; (setq ess-mode-hook '(lambda () (setq fill-column 80)))
-(add-hook 'ess-mode-hook (lambda ()
-			   (display-fill-column-indicator-mode)))
 
 (define-key inferior-ess-mode-map [home] 'comint-bol)
 (define-key ess-mode-map (kbd "C-;") 'comment-region)
 (define-key ess-mode-map [(control ?c) (?:)] 'uncomment-region)
+; Call imenu with \C-c =
+(define-key ess-mode-map "\C-c=" 'imenu)
 
 ;; (defun my-ess-start-R ()
 ;;   (interactive)
@@ -815,9 +810,6 @@
 ;;   (if (and transient-mark-mode mark-active)
 ;;     (call-interactively 'ess-eval-region)
 ;;     (call-interactively 'ess-eval-line-and-step)))
-
-; Call imenu with \C-c =
-(define-key ess-mode-map "\C-c=" 'imenu)
 
 (defun find-in-R-files (string)
   "Find a regular expression in R files"
@@ -848,7 +840,6 @@
 ;;; ===================================
 ;;;  Définition de touches perso global
 ;;; ===================================
-(define-key global-map [(M-f1)] 'bookmark-bmenu-list)
 (define-key global-map [(f5)] 'revert-buffer)
 ;; (define-key global-map "\C-c;" 'comment-region)
 ;; (define-key global-map "\C-c:" 'uncomment-region)
@@ -860,8 +851,8 @@
   :ensure t
   :mode ("README\\.md\\'" . gfm-mode)
   :init
-  (setq markdown-command "pandoc")
-  (setq markdown-enable-math t))
+  (setq markdown-command "pandoc"
+	markdown-enable-math t))
 (use-package pandoc-mode)
 ;; (autoload 'markdown-mode "markdown-mode"
 ;;   "Major mode for editing Markdown files" t)
@@ -908,18 +899,6 @@
     )
   )
 (global-set-key "\C-s" 'search-method-according-to-numlines)
-
-;;; ==========
-;;;  flycheck
-;;; ==========
-(use-package flycheck
-  :init (global-flycheck-mode)
-  :config
-  (setq flycheck-global-modes '(not LaTeX-mode latex-mode))
-  (setq flycheck-global-modes '(not ess-mode ess-mode)))
-
-;;; Sent deleted files to trash
-(setq delete-by-moving-to-trash t)
 
 ;;; =======
 ;;;  Julia
