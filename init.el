@@ -901,6 +901,12 @@
   )
 (global-set-key "\C-s" 'search-method-according-to-numlines)
 
+(use-package ivy-xref
+  :ensure t
+  :init
+  (setq xref-show-definitions-function #'ivy-xref-show-defs)
+  )
+
 ;;; =======
 ;;;  Julia
 ;;; =======
