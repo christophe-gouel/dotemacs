@@ -773,7 +773,8 @@
 	ess-ask-for-ess-directory nil  ; Do not ask what is the project directory
 	comint-scroll-to-bottom-on-input 'this
 	comint-scroll-to-bottom-on-output t
-	comint-move-point-for-output t)
+	comint-move-point-for-output t
+	 ess-use-flymake nil)  ; Deactivate linter because it does not seem to work
   ;; Following the "source is real" philosophy put forward by ESS, one should
   ;; not need the command history and should not save the workspace at the end
   ;; of an R session. Hence, both options are disabled here.
@@ -912,5 +913,11 @@
 ;;;  View Large Files
 ;;; ==================
 (use-package vlf)
+
+;;; =======
+;;;  Tramp
+;;; =======
+(if mswindows
+    (setq tramp-default-method "plink"))
 
 ;; ;;; init.el ends here
