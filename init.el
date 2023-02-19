@@ -218,16 +218,11 @@
 ;;;  Org mode
 ;;; ==========
 (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
-(global-set-key "\C-cl" 'org-store-link)
-(global-set-key "\C-cc" 'org-capture)
-(global-set-key "\C-ca" 'org-agenda)
-(global-set-key "\C-cb" 'org-iswitchb)
 (setq org-hide-leading-stars t)
 (setq org-export-with-LaTeX-fragments t)       ; Export LaTeX fragment to HTML
 (setq org-todo-keywords '((type "TODO(t)" "STARTED(s)" "WAITING(w)" "|" "DONE(d)")))
 (setq org-tag-alist '(("OFFICE" . ?o) ("COMPUTER" . ?c) ("HOME" . ?h) ("PROJECT" . ?p) ("CALL" . ?a) ("ERRANDS" . ?e) ("TASK" . ?t)))
 (setq org-hide-leading-stars t)
-;; (setq org-directory "c:/Users/Christophe/Dropbox/Org")
 
 ;; Integration of RefTeX in org
 (defun org-mode-reftex-setup ()
@@ -545,6 +540,8 @@
 ; Prevent eldoc from showing the function doc in the minibuffer when the cursor is on the function
 (setq eldoc-echo-area-use-multiline-p nil)
 
+
+
 ;;; ============
 ;;;  LaTeX-mode
 ;;; ============
@@ -574,6 +571,7 @@
                    [return]))))
   :custom
   (reftex-bibpath-environment-variables (quote ("BIBINPUTS")))
+  (reftex-default-bibliography '("References.bib"))
   (setq-default TeX-auto-parse-length 200)
   (setq-default TeX-master nil)
   (TeX-auto-save t)
@@ -859,6 +857,33 @@
 ;;   "Major mode for editing Markdown files" t)
 (add-hook 'markdown-mode-hook 'pandoc-mode)
 (add-hook 'pandoc-mode-hook 'pandoc-load-default-settings)
+
+;; Code to use RefTeX to input references in markdown
+;; from <https://gist.github.com/kleinschmidt/5ab0d3c423a7ee013a2c01b3919b009a?utm_source=pocket_saves>
+
+;; define markdown citation formats
+(defvar markdown-cite-format)
+(setq markdown-cite-format
+      '(
+        (?\C-m . "[@%l]")
+        (?p . "[@%l]")
+        (?t . "@%l")
+        )
+      )
+
+;; wrap reftex-citation with local variables for markdown format
+(defun markdown-reftex-citation ()
+  (interactive)
+  (let ((reftex-cite-format markdown-cite-format)
+        (reftex-cite-key-separator "; @"))
+    (reftex-citation)))
+
+;; bind modified reftex-citation to C-c[, without enabling reftex-mode
+;; https://www.gnu.org/software/auctex/manual/reftex/Citations-Outside-LaTeX.html#SEC31
+(add-hook
+ 'markdown-mode-hook
+ (lambda ()
+   (define-key markdown-mode-map "\C-c[" 'markdown-reftex-citation)))
 
 ;;; =======
 ;;;  Magit
