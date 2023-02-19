@@ -859,7 +859,7 @@
 (add-hook 'pandoc-mode-hook 'pandoc-load-default-settings)
 
 ;; Code to use RefTeX to input references in markdown
-;; from <https://gist.github.com/kleinschmidt/5ab0d3c423a7ee013a2c01b3919b009a?utm_source=pocket_saves>
+;; from <https://gist.github.com/kleinschmidt/5ab0d3c423a7ee013a2c01b3919b009a>
 
 ;; define markdown citation formats
 (defvar markdown-cite-format)
@@ -884,6 +884,30 @@
  'markdown-mode-hook
  (lambda ()
    (define-key markdown-mode-map "\C-c[" 'markdown-reftex-citation)))
+
+;; Code to import screenshots in markdown files
+;; from <https://www.nistara.net/post/2022-11-14-emacs-markdown-screenshots> and
+;; <https://stackoverflow.com/questions/17435995/paste-an-image-on-clipboard-to-emacs-org-mode-file-without-saving-it/31868530#31868530>
+(defun markdown-screenshot ()
+  "Copy a screenshot into a time stamped unique-named file in the
+same directory as the working and insert a link to this file."
+  (interactive)
+  (setq filename
+        (concat
+         (make-temp-name
+          (concat (file-name-nondirectory (buffer-file-name))
+                  "_screenshots/"
+                  (format-time-string "%Y-%m-%d_%a_%kh%Mm_")) ) ".png"))
+  (unless (file-exists-p (file-name-directory filename))
+    (make-directory (file-name-directory filename)))
+  ; copy the screenshot to file
+  (shell-command (concat "powershell -command \"Add-Type -AssemblyName System.Windows.Forms;if ($([System.Windows.Forms.Clipboard]::ContainsImage())) {$image = [System.Windows.Forms.Clipboard]::GetImage();[System.Drawing.Bitmap]$image.Save('" filename "',[System.Drawing.Imaging.ImageFormat]::Png); Write-Output 'clipboard content saved as file'} else {Write-Output 'clipboard does not contain image data'}\""))
+  ; insert into file if correctly taken
+  (if (file-exists-p filename)
+      (insert (concat "![](" filename ")")))
+  (markdown-display-inline-images)
+  (newline)
+  )
 
 ;;; =======
 ;;;  Magit
