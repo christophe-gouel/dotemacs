@@ -200,8 +200,6 @@
   ;;   ;; (conda-env-initialize-eshell)
   ;;   (conda-env-autoactivate-mode t))
   (setq-default mode-line-format (cons '(:exec conda-env-current-name) mode-line-format)))
-;; (use-package py-autopep8)
-;; (use-package blacken)
 
 ;; (setq python-shell-interpreter "jupyter"
 ;;       python-shell-interpreter-args "console --simple-prompt"
