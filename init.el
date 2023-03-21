@@ -538,7 +538,10 @@
 ; Prevent eldoc from showing the function doc in the minibuffer when the cursor is on the function
 (setq eldoc-echo-area-use-multiline-p nil)
 
-
+;;; ============
+;;;  format-all
+;;; ============
+(use-package format-all)
 
 ;;; ============
 ;;;  LaTeX-mode
