@@ -444,11 +444,11 @@
    '((gams-mode . nil)
      (t . jit-lock-mode)))
   :config
-  (defun find-in-gms-files (string)
-    "Find a regular expression in gms files"
+  (defun find-in-gams-files (string)
+    "Find a regular expression in gams files"
     (interactive "sRegular expression to find: ")
-    (grep (concat "grep -nHI -i -r -e " string " --include=*.gms *" )))
-  :bind ("\C-cf" . find-in-gms-files))
+    (grep (concat "grep -nHI -i -r -e " string " --include=\*.{gms,inc} *" )))
+  :bind ("\C-cf" . find-in-gams-files))
 
 (use-package gams-ac
   :init
@@ -814,7 +814,7 @@
 (defun find-in-R-files (string)
   "Find a regular expression in R files"
   (interactive "sRegular expression to find: ")
-  (grep (concat "grep -nHI -i -r -e " string " --include=*.R* *" )))
+  (grep (concat "grep -nHI -i -r -e " string " --include=\*.{R,Rmd,qmd} *" )))
 (define-key ess-mode-map "\C-cf" 'find-in-R-files)
 
 (add-hook 'ess-mode-hook
