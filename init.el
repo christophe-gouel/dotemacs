@@ -189,10 +189,6 @@
 ;;; =============
 (setq python-shell-interpreter "ipython"
       python-shell-interpreter-args "-i --simple-prompt --InteractiveShell.display_page=True")
-(use-package elpy
-  :init
-  (elpy-enable)
-  (setq elpy-shell-starting-directory 'current-directory))
 (use-package conda
   :config
   ;; (progn
@@ -200,15 +196,6 @@
   ;;   ;; (conda-env-initialize-eshell)
   ;;   (conda-env-autoactivate-mode t))
   (setq-default mode-line-format (cons '(:exec conda-env-current-name) mode-line-format)))
-
-;; (setq python-shell-interpreter "jupyter"
-;;       python-shell-interpreter-args "console --simple-prompt"
-;;       python-shell-prompt-detect-failure-warning nil)
-;; (add-to-list 'python-shell-completion-native-disabled-interpreters
-;;              "jupyter")
-
-;; (use-package ein) ;; Emacs IPython Notebook
-
 ;; Set encoding to utf-8 to allows utf-8 characters in Python REPL (from https://stackoverflow.com/questions/14172576/why-unicodeencodeerror-raised-only-in-emacss-python-shell?utm_source=pocket_reader)
 (setenv "PYTHONIOENCODING" "utf-8")
 
@@ -531,6 +518,7 @@
 (use-package eglot
   :config
   (setq eglot-ignored-server-capabilities '(:documentOnTypeFormattingProvider)))  ; Prevent eglot from reformatting code automatically
+(add-hook 'python-mode-hook 'eglot-ensure)
 
 ;;; =======
 ;;;  eldoc
