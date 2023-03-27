@@ -1,3 +1,7 @@
+;; To install manually:
+;; - pip install --user python-lsp-server[all] jupyter[all]
+;; - Rscript -e "install.packages('languageserver')"
+
 (defconst mswindows (equal window-system 'w32))
 
 ;;; My location for external packages.
@@ -187,17 +191,18 @@
 ;;; =============
 ;;;  Python mode
 ;;; =============
-(setq python-shell-interpreter "ipython"
-      python-shell-interpreter-args "-i --simple-prompt --InteractiveShell.display_page=True")
+(use-package python
+  :config
+  (setq python-shell-interpreter "jupyter"
+	python-shell-interpreter-args "console --simple-prompt"
+	python-shell-prompt-detect-failure-warning nil)
+;; Set encoding to utf-8 to allows utf-8 characters in Python REPL (from https://stackoverflow.com/questions/14172576/why-unicodeencodeerror-raised-only-in-emacss-python-shell?utm_source=pocket_reader)
+  (setenv "PYTHONIOENCODING" "utf-8")
+  )
 (use-package conda
   :config
-  ;; (progn
-  ;;   ;; (conda-env-initialize-interactive-shells)
-  ;;   ;; (conda-env-initialize-eshell)
-  ;;   (conda-env-autoactivate-mode t))
-  (setq-default mode-line-format (cons '(:exec conda-env-current-name) mode-line-format)))
-;; Set encoding to utf-8 to allows utf-8 characters in Python REPL (from https://stackoverflow.com/questions/14172576/why-unicodeencodeerror-raised-only-in-emacss-python-shell?utm_source=pocket_reader)
-(setenv "PYTHONIOENCODING" "utf-8")
+  (setq-default mode-line-format (cons '(:exec conda-env-current-name) mode-line-format))
+  )
 
 ;;; ==========
 ;;;  Org mode
