@@ -1,6 +1,9 @@
 ;; To install manually:
-;; - pip install --user python-lsp-server[all] jupyter[all]
-;; - Rscript -e "install.packages('languageserver')"
+;; - LSP servers
+;;   - pip install --user python-lsp-server[all] jupyter[all]
+;;   - Rscript -e "install.packages('languageserver')"
+;;   - Curl --output %HOME%/.local/bin/digestif.cmd https://raw.githubusercontent.com/astoff/digestif/master/scripts/digestif.cmd
+;; - M-x all-the-icons-install-fonts
 
 (defconst mswindows (equal window-system 'w32))
 
@@ -35,7 +38,6 @@
 ;;;  Packages manager
 ;;; ==================
 (require 'package)
-;; (setq package-enable-at-startup nil) ; dont do it immediately
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
 (package-initialize)
 
@@ -77,6 +79,7 @@
 ;;;  Dashboard
 ;;; ======================
 (use-package dashboard
+  :if (display-graphic-p)
   :config
   ;; On active la prise en charge des projets avec projectile
   (setq dashboard-projects-backend 'projectile
@@ -730,8 +733,6 @@
 ;;; =====
 ;;;  ESS
 ;;; =====
-(require 'ess-site)
-
 (use-package ess
   :bind (;; Shortcut for pipe |>
 	 :map ess-r-mode-map
