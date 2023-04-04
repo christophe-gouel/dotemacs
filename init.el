@@ -4,7 +4,9 @@
 ;;   - Rscript -e "install.packages('languageserver')"
 ;;   - Curl --output %HOME%/.local/bin/digestif.cmd https://raw.githubusercontent.com/astoff/digestif/master/scripts/digestif.cmd
 ;; - M-x all-the-icons-install-fonts
-;; - Install the font from https://fonts.google.com/specimen/Fira+Code?query=fira+code
+;; - Install fonts
+;;   - <https://fonts.google.com/specimen/Fira+Code>
+;;   - <https://candyfonts.com/font/symbola.htm>
 
 (defconst mswindows (equal window-system 'w32))
 
@@ -238,6 +240,7 @@
     (add-to-list 'default-frame-alist
              '(font . "Fira Code Regular-10"))
   )
+(set-fontset-font "fontset-default" 'symbol "Symbola")
 
 (require 'font-lock)
 (global-font-lock-mode t)                ; colorisation du texte
