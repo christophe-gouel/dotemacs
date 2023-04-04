@@ -18,3 +18,4 @@ transient/
 *.cache
 elpy/
 custom.el
+quelpa/

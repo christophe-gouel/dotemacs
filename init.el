@@ -4,9 +4,6 @@
 
 (defconst mswindows (equal window-system 'w32))
 
-;;; My location for external packages.
-(add-to-list 'load-path "~/.emacs.d/site-lisp")
-
 (setq backup-directory-alist
      	  '(("." . "~/.emacs.d/backup")))
 
@@ -37,23 +34,23 @@
 ;;; ==================
 ;;;  Packages manager
 ;;; ==================
-;; use-package setup
 (require 'package)
-(setq package-enable-at-startup nil) ; dont do it immediately
-(setq package-archives '(("gnu_elpa"  . "https://elpa.gnu.org/packages/")
-			 ("melpa"     . "https://melpa.org/packages/")))
+;; (setq package-enable-at-startup nil) ; dont do it immediately
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
 (package-initialize)
 
+;; use-package setup
 ;; Bootstrap use-package
 (unless (package-installed-p 'use-package)
   (package-refresh-contents) ; update archives
   (package-install 'use-package)) ; grab the newest use-package
-
-;; Define packages
 (require 'use-package)
-
-;; Always download if not available
+;; Always download packages if not available
 (setq use-package-always-ensure t)
+
+;; Quelpa
+(use-package quelpa)
+(use-package quelpa-use-package)
 
 ;;; ===============
 ;;;  Others
@@ -80,7 +77,6 @@
 ;;;  Dashboard
 ;;; ======================
 (use-package dashboard
-  :ensure t
   :config
   ;; On active la prise en charge des projets avec projectile
   (setq dashboard-projects-backend 'projectile
@@ -132,16 +128,14 @@
 ;;; ======================
 ;;;  greek-unicode-insert
 ;;; ======================
-;; Installed manually from https://github.com/Malabarba/greek-unicode-insert
 (use-package greek-unicode-insert
-  :load-path "site-lisp/greek-unicode-insert"
+  :quelpa (greek-unicode-insert :fetcher git :url "https://github.com/Malabarba/greek-unicode-insert.git")
   :bind ("²" . greek-unicode-insert-map))
 
 ;;; ======================
 ;;;  treemacs
 ;;; ======================
 (use-package treemacs
-  :ensure t
   :defer t
   :after (treemacs-all-the-icons)
   :hook (treemacs-mode . no_code_mode)
@@ -169,7 +163,7 @@
 
 (use-package treemacs-magit
   :after (treemacs magit)
-  :ensure t)
+  )
 
 ;;; ===============================
 ;;;  font-lock for hex color codes
@@ -360,7 +354,6 @@
 ;;;  Docker
 ;;; ========
 (use-package docker
-  :ensure t
   :bind ("C-c d" . docker))
 
 ;;; ========
@@ -387,13 +380,11 @@
 	ispell-hunspell-dictionary-alist ispell-local-dictionary-alist))
 
 (use-package flyspell-correct
-  :ensure  t
   :after flyspell
   :bind (:map flyspell-mode-map
 		  ("M-$" . flyspell-correct-at-point)))
 
 (use-package flyspell-correct-ivy
-  :ensure t
   :demand t
   :after flyspell-correct)
 
@@ -493,7 +484,6 @@
 ;;;  Custom theme
 ;;; ==============
 (use-package doom-themes
-  :ensure t
   :config
   ;; Global settings (defaults)
   (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
@@ -514,7 +504,6 @@
 ;;;  doom-modeline
 ;;; ===============
 (use-package doom-modeline
-  :ensure t
   :hook (after-init . doom-modeline-mode))
 
 ;;; =======
@@ -841,7 +830,6 @@
 ;;;  Markdown mode
 ;;; ===============
 (use-package markdown-mode
-  :ensure t
   :mode ("README\\.md\\'" . gfm-mode)
   :init
   (setq markdown-command "pandoc"
@@ -917,9 +905,8 @@ same directory as the working and insert a link to this file."
 ;;; ========
 ;;;  ccrypt
 ;;; ========
-;; To download from https://github.com/isdamir/ps-ccrypt
 (use-package ps-ccrypt
-  :load-path "site-lisp")
+  :quelpa (ps-ccrypt :fetcher git :url "https://github.com/isdamir/ps-ccrypt.git"))
 
 ;;; =================
 ;;;  ivy and friends
@@ -945,7 +932,6 @@ same directory as the working and insert a link to this file."
 (global-set-key "\C-s" 'search-method-according-to-numlines)
 
 (use-package ivy-xref
-  :ensure t
   :init
   (setq xref-show-definitions-function #'ivy-xref-show-defs)
   )
