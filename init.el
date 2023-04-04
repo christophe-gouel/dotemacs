@@ -4,6 +4,7 @@
 ;;   - Rscript -e "install.packages('languageserver')"
 ;;   - Curl --output %HOME%/.local/bin/digestif.cmd https://raw.githubusercontent.com/astoff/digestif/master/scripts/digestif.cmd
 ;; - M-x all-the-icons-install-fonts
+;; - Install the font from https://fonts.google.com/specimen/Fira+Code?query=fira+code
 
 (defconst mswindows (equal window-system 'w32))
 
@@ -232,6 +233,11 @@
 (setq jit-lock-chunk-size 50000)
 
 (setq large-file-warning-threshold 100000000) ; set large file threshold at 100 megabytes
+
+(if (display-graphic-p)
+    (add-to-list 'default-frame-alist
+             '(font . "Fira Code Regular-10"))
+  )
 
 (require 'font-lock)
 (global-font-lock-mode t)                ; colorisation du texte
