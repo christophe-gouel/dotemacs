@@ -19,3 +19,5 @@ transient/
 elpy/
 custom.el
 quelpa/
+projects
+emacs_backtrace.txt

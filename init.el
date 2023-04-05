@@ -1,10 +1,12 @@
 ;; To install manually:
 ;; - LSP servers
-;;   - pip install --user python-lsp-server[all] jupyter[all]
-;;   - Rscript -e "install.packages('languageserver')"
-;;   - Curl --output %HOME%/.local/bin/digestif.cmd https://raw.githubusercontent.com/astoff/digestif/master/scripts/digestif.cmd
+;; ```{bash}
+;;   pip3 install --user python-lsp-server[all] jupyter[all]
+;;   Rscript -e "install.packages('languageserver')"
+;;   Curl --output %HOME%/.local/bin/digestif.cmd https://raw.githubusercontent.com/astoff/digestif/master/scripts/digestif.cmd
+;; ```
 ;; - M-x all-the-icons-install-fonts
-;; - Install fonts
+;; - Download and install fonts
 ;;   - <https://fonts.google.com/specimen/Fira+Code>
 ;;   - <https://candyfonts.com/font/symbola.htm>
 
@@ -74,9 +76,11 @@
 (use-package all-the-icons
   :if (display-graphic-p))
 (use-package all-the-icons-dired
-  :init (add-hook 'dired-mode-hook 'all-the-icons-dired-mode))
+  :if (display-graphic-p)
+  :hook (dired-mode . all-the-icons-dired-mode))
 (use-package all-the-icons-ivy
-  :init (add-hook 'after-init-hook 'all-the-icons-ivy-setup))
+  :if (display-graphic-p)
+  :hook (after-init . all-the-icons-ivy-setup))
 
 ;;; ======================
 ;;;  Dashboard
@@ -413,10 +417,10 @@
 ;;; ========================================================
 (use-package gams-mode
   :mode ("\\.gms\\'" "\\.inc\\'")
-  :init
-  (progn
-    (add-hook 'gams-mode-hook 'rainbow-delimiters-mode)
-    (add-hook 'gams-mode-hook 'smartparens-mode))
+  :hook ((gams-mode . rainbow-delimiters-mode)
+	 (gams-mode . smartparens-mode)
+	 (gams-mode . (lambda ()
+			(display-fill-column-indicator-mode))))
   :custom
   (gams-process-command-option "ll=0 lo=3 pw=153 ps=9999")
   (gams-statement-upcase t)
