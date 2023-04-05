@@ -196,9 +196,10 @@
 ;;;  Python mode
 ;;; =============
 (use-package python
+  :ensure nil
   :config
-  (setq python-shell-interpreter "jupyter"
-	python-shell-interpreter-args "console --simple-prompt"
+  (setq python-shell-interpreter "ipython3"
+	python-shell-interpreter-args "-i --simple-prompt"
 	python-shell-prompt-detect-failure-warning nil)
 ;; Set encoding to utf-8 to allows utf-8 characters in Python REPL (from https://stackoverflow.com/questions/14172576/why-unicodeencodeerror-raised-only-in-emacss-python-shell?utm_source=pocket_reader)
   (setenv "PYTHONIOENCODING" "utf-8")
