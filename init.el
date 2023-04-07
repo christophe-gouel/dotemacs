@@ -27,6 +27,10 @@
 (global-set-key [f1] 'shell)
 (global-set-key [f2] 'eshell)
 
+(use-package eshell-git-prompt
+  :config
+  (eshell-git-prompt-use-theme 'powerline))
+
 (if mswindows    ;; MS Windows clipboard is UTF-16LE
     (defun bash ()
       (interactive)
@@ -440,9 +444,6 @@
   (gams-indent-number-loop 2)
   (gams-indent-number-mpsge 2)
   (gams-indent-number-equation 2)
-  (font-lock-support-mode
-   '((gams-mode . nil)
-     (t . jit-lock-mode)))
   :config
   (defun find-in-gams-files (string)
     "Find a regular expression in gams files"
@@ -529,7 +530,6 @@
 (use-package eglot
   :config
   (setq eglot-ignored-server-capabilities '(:documentOnTypeFormattingProvider)))  ; Prevent eglot from reformatting code automatically
-(add-hook 'python-mode-hook 'eglot-ensure)
 
 ;;; =======
 ;;;  eldoc
@@ -788,6 +788,8 @@
 (define-key ess-mode-map [(control ?c) (?:)] 'uncomment-region)
 ; Call imenu with \C-c =
 (define-key ess-mode-map "\C-c=" 'imenu)
+
+(use-package rutils) ; To interact easily with renv
 
 ;; (defun my-ess-start-R ()
 ;;   (interactive)
