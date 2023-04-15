@@ -153,7 +153,6 @@
   :defer t
   :after (treemacs-all-the-icons)
   :hook (treemacs-mode . no_code_mode)
-  :bind
   :config
   (setq treemacs-width 20
 	treemacs-indentation '(4 px)
@@ -171,9 +170,9 @@
   (treemacs-load-theme "all-the-icons")
   )
 
-(global-set-key [f3] 'treemacs-select-window)
+(setq treemacs-python-executable "python")
 
-;; (define-key global-mode-map "[f6]" 'treemacs-select-window)
+(global-set-key [f3] 'treemacs-select-window)
 
 (use-package treemacs-magit
   :after (treemacs magit)
@@ -212,6 +211,7 @@
   :config
   (setq-default mode-line-format (cons '(:exec conda-env-current-name) mode-line-format))
   )
+(use-package poetry)
 
 ;;; ==========
 ;;;  Org mode
@@ -780,12 +780,9 @@
   ;; Add a vertical line at 80 columns
   (add-hook 'ess-mode-hook (lambda ()
 			     (display-fill-column-indicator-mode)))
-  ;; (add-hook 'ess-mode-hook 'eglot-ensure)
   )
 
 (define-key inferior-ess-mode-map [home] 'comint-bol)
-(define-key ess-mode-map (kbd "C-;") 'comment-region)
-(define-key ess-mode-map [(control ?c) (?:)] 'uncomment-region)
 ; Call imenu with \C-c =
 (define-key ess-mode-map "\C-c=" 'imenu)
 
@@ -840,8 +837,6 @@
 ;;;  Définition de touches perso global
 ;;; ===================================
 (define-key global-map [(f5)] 'revert-buffer)
-;; (define-key global-map "\C-c;" 'comment-region)
-;; (define-key global-map "\C-c:" 'uncomment-region)
 
 ;;; ===============
 ;;;  Markdown mode
