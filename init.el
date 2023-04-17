@@ -298,6 +298,10 @@
 
 (setq inhibit-startup-screen t)
 
+;; From <https://emacsredux.com/blog/2014/08/25/a-peek-at-emacs-24-dot-4-prettify-symbols-mode/>
+;; To check if this is a good idea or if one should rather activate it by mode
+(global-prettify-symbols-mode +1)
+
 ;;; ====================
 ;;;  rainbow-delimiters
 ;;; ====================
@@ -654,6 +658,16 @@
 (add-hook 'TeX-mode-hook
 	  #'(lambda()
 	     (local-set-key [(shift return)] 'tex-frame)))
+
+(use-package cdlatex
+  :init
+  (add-hook 'LaTeX-mode-hook #'turn-on-cdlatex)
+  )
+
+(add-hook 'LaTeX-mode-hook
+      (lambda ()
+        (make-local-variable 'company-idle-delay)
+        (setq company-idle-delay 0.3)))
 
 ;;; =====
 ;;;  PDF
