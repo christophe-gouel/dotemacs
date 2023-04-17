@@ -742,7 +742,52 @@
 ;;; ============================================
 (use-package company
   :init
-  (add-hook 'after-init-hook 'global-company-mode))
+  (add-hook 'after-init-hook 'global-company-mode)
+  :config
+  (setq
+   ;; Number the candidates (use M-1, M-2 etc to select completions).
+   company-show-numbers t
+   company-idle-delay 0)
+  ;; company configuation from <https://github.com/radian-software/radian/blob/develop/emacs/radian.el>
+  :bind (;; Replace `completion-at-point' and `complete-symbol' with
+         ;; `company-manual-begin'. You might think this could be put
+         ;; in the `:bind*' declaration below, but it seems that
+         ;; `bind-key*' does not work with remappings.
+         ([remap completion-at-point] . company-manual-begin)
+         ([remap complete-symbol] . company-manual-begin)
+	 
+         ;; The following are keybindings that take effect whenever
+         ;; the completions menu is visible, even if the user has not
+         ;; explicitly interacted with Company.
+	 
+         :map company-active-map
+	 
+         ;; Make TAB always complete the current selection. Note that
+         ;; <tab> is for windowed Emacs and TAB is for terminal Emacs.
+         ("<tab>" . company-complete-selection)
+         ("TAB" . company-complete-selection)
+	 
+         ;; Prevent SPC from ever triggering a completion.
+         ("SPC" . nil)
+	 
+         ;; The following are keybindings that only take effect if the
+         ;; user has explicitly interacted with Company.
+	 
+         :map company-active-map
+         :filter (company-explicit-action-p)
+	 
+         ;; Make RET trigger a completion if and only if the user has
+         ;; explicitly interacted with Company. Note that <return> is
+         ;; for windowed Emacs and RET is for terminal Emacs.
+         ("<return>" . company-complete-selection)
+         ("RET" . company-complete-selection)
+	 )
+  
+  :bind* (;; The default keybinding for `completion-at-point' and
+          ;; `complete-symbol' is M-TAB or equivalently C-M-i. Here we
+          ;; make sure that no minor modes override this keybinding.
+          ("M-TAB" . company-manual-begin))
+  )
 
 ;;; =====
 ;;;  ESS
