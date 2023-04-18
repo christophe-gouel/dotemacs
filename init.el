@@ -301,6 +301,48 @@
 ;; From <https://emacsredux.com/blog/2014/08/25/a-peek-at-emacs-24-dot-4-prettify-symbols-mode/>
 ;; To check if this is a good idea or if one should rather activate it by mode
 (global-prettify-symbols-mode +1)
+(setq prettify-symbols-unprettify-at-point t)
+;; (add-hook 'gams-mode-hook
+;;             (lambda ()
+;;               (push '("sum" . ?∑) prettify-symbols-alist)))
+
+(setq gams-symbols-list '(lambda ()
+			   (mapc (lambda (pair) (push pair prettify-symbols-alist))
+				 '(("sum" . ?∑)
+				   ("prod" . ?∏)
+				   ("=l=" . ?≤)
+				   ("<=" . ?≤)
+				   ("=g=" . ?≥)
+				   (">=" . ?≥)
+				   ("=e=" . ?=)
+				   ("**" . ?^)))))
+(add-hook 'gams-mode-hook gams-symbols-list)
+
+;; (use-package prettify-utils
+;;   :quelpa (prettify-utils :fetcher url :url "https://raw.githubusercontent.com/Ilazki/prettify-utils.el/master/prettify-utils.el")
+;;   )
+
+(quelpa
+ '(prettify-utils :fetcher url :url "https://raw.githubusercontent.com/Ilazki/prettify-utils.el/master/prettify-utils.el"))
+
+(defun prettify-set ()
+  (setq prettify-symbols-alist
+		(prettify-utils-generate
+		 ("lambda"	"λ")
+		 ("|>"		"▷")
+		 ("<|"		"◁")
+		 ("->>"		"↠")
+		 ("->"		"→")
+		 ("<-"		"←")
+		 ("=>"		"⇒")
+		 ("<="		"≤")
+		 (">="		"≥")
+		 ("[ ]"         "☐")
+                 ("[X]"         "☑")
+                 ("[-]"        "❍"))
+		))
+(add-hook 'prog-mode-hook 'prettify-set)
+(add-hook 'gams-mode-hook 'prettify-set)
 
 ;;; ====================
 ;;;  rainbow-delimiters
@@ -663,6 +705,10 @@
   :init
   (add-hook 'LaTeX-mode-hook #'turn-on-cdlatex)
   )
+(add-hook 'cdlatex-tab-hook
+          (defun cdlatex-indent-maybe ()
+            (when (or (bolp) (looking-back "^[ \t]+"))
+              (LaTeX-indent-line))))
 
 (add-hook 'LaTeX-mode-hook
       (lambda ()
