@@ -302,25 +302,38 @@
 ;; To check if this is a good idea or if one should rather activate it by mode
 (global-prettify-symbols-mode +1)
 (setq prettify-symbols-unprettify-at-point t)
-;; (add-hook 'gams-mode-hook
-;;             (lambda ()
-;;               (push '("sum" . ?∑) prettify-symbols-alist)))
 
 (setq gams-symbols-list '(lambda ()
 			   (mapc (lambda (pair) (push pair prettify-symbols-alist))
-				 '(("sum" . ?∑)
+				 '(;; Math operator
+				   ("sum" . ?∑)
 				   ("prod" . ?∏)
+				   ("**" . ?^)
+				   ;; Relations in equations
 				   ("=l=" . ?≤)
-				   ("<=" . ?≤)
 				   ("=g=" . ?≥)
-				   (">=" . ?≥)
 				   ("=e=" . ?=)
-				   ("**" . ?^)))))
+				   ;; Logical operator
+				   ("lt" . ?<)
+				   ("gt" . ?>)
+				   ("<=" . ?≤)
+				   ("le" . ?≤)
+				   (">=" . ?≥)
+				   ("ge" . ?≥)
+				   ("eq" . ?=)
+				   ("or" . ?∨)
+				   ("and" . ?∧)
+				   ("xor" . ?⊻)
+				   ("imp" . ?⇒)
+				   ("eqv" . ?⇔)
+				   ("not" . ?¬)
+				   ("ne" . ?≠)
+				   ("<>" . ?≠)
+				   ("==" . ?=)
+				   ;; Mathematical constant
+				   ("inf" . ?∞)
+				   ))))
 (add-hook 'gams-mode-hook gams-symbols-list)
-
-;; (use-package prettify-utils
-;;   :quelpa (prettify-utils :fetcher url :url "https://raw.githubusercontent.com/Ilazki/prettify-utils.el/master/prettify-utils.el")
-;;   )
 
 (quelpa
  '(prettify-utils :fetcher url :url "https://raw.githubusercontent.com/Ilazki/prettify-utils.el/master/prettify-utils.el"))
@@ -331,6 +344,7 @@
 		 ("lambda"	"λ")
 		 ("|>"		"▷")
 		 ("<|"		"◁")
+		 ("%T>%"        "▶")
 		 ("->>"		"↠")
 		 ("->"		"→")
 		 ("<-"		"←")
@@ -339,7 +353,9 @@
 		 (">="		"≥")
 		 ("[ ]"         "☐")
                  ("[X]"         "☑")
-                 ("[-]"        "❍"))
+                 ("[-]"         "❍")
+		 ("function"    "ƒ")
+		("-inf"        "-∞"))
 		))
 (add-hook 'prog-mode-hook 'prettify-set)
 (add-hook 'gams-mode-hook 'prettify-set)
