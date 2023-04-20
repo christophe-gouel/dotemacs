@@ -298,42 +298,13 @@
 
 (setq inhibit-startup-screen t)
 
+;;; ==================
+;;;  prettify-symbols
+;;; ==================
 ;; From <https://emacsredux.com/blog/2014/08/25/a-peek-at-emacs-24-dot-4-prettify-symbols-mode/>
 ;; To check if this is a good idea or if one should rather activate it by mode
 (global-prettify-symbols-mode +1)
 (setq prettify-symbols-unprettify-at-point t)
-
-(setq gams-symbols-list '(lambda ()
-			   (mapc (lambda (pair) (push pair prettify-symbols-alist))
-				 '(;; Math operator
-				   ("sum" . ?∑)
-				   ("prod" . ?∏)
-				   ("**" . ?^)
-				   ;; Relations in equations
-				   ("=l=" . ?≤)
-				   ("=g=" . ?≥)
-				   ("=e=" . ?=)
-				   ;; Logical operator
-				   ("lt" . ?<)
-				   ("gt" . ?>)
-				   ("<=" . ?≤)
-				   ("le" . ?≤)
-				   (">=" . ?≥)
-				   ("ge" . ?≥)
-				   ("eq" . ?=)
-				   ("or" . ?∨)
-				   ("and" . ?∧)
-				   ("xor" . ?⊻)
-				   ("imp" . ?⇒)
-				   ("eqv" . ?⇔)
-				   ("not" . ?¬)
-				   ("ne" . ?≠)
-				   ("<>" . ?≠)
-				   ("==" . ?=)
-				   ;; Mathematical constant
-				   ("inf" . ?∞)
-				   ))))
-(add-hook 'gams-mode-hook gams-symbols-list)
 
 (quelpa
  '(prettify-utils :fetcher url :url "https://raw.githubusercontent.com/Ilazki/prettify-utils.el/master/prettify-utils.el"))
@@ -344,7 +315,7 @@
 		 ("lambda"	"λ")
 		 ("|>"		"▷")
 		 ("<|"		"◁")
-		 ("%T>%"        "▶")
+		 ("%>%"         "▶")
 		 ("->>"		"↠")
 		 ("->"		"→")
 		 ("<-"		"←")
@@ -355,10 +326,47 @@
                  ("[X]"         "☑")
                  ("[-]"         "❍")
 		 ("function"    "ƒ")
-		("-inf"        "-∞"))
-		))
+		 ("%x%"         "⊗")
+		 ("%*%"         "×")
+		 )))
+
+(defun gams-symbols-list ()
+  (setq prettify-symbols-alist
+		(prettify-utils-generate
+		 ;; Math operator
+		 ("sum"  "∑")
+		 ("prod" "∏")
+		 ("**"   "^")
+		 ;; Relations in equations
+		 ("=l="  "≤")
+		 ("=g="  "≥")
+		 ("=e="  "=")
+		 ;; Logical operator
+		 ("lt"   "<")
+		 ("gt"   ">")
+		 ("<="   "≤")
+		 ("le"   "≤")
+		 (">="   "≥")
+		 ("ge"   "≥")
+		 ("eq"   "=")
+		 ("or"   "∨")
+		 ("and"  "∧")
+		 ("xor"  "⊻")
+		 ("imp"  "⇒")
+		 ("eqv"  "⇔")
+		 ("not"  "¬")
+		 ("ne"   "≠")
+		 ("<>"   "≠")
+		 ("=="   "=")
+		 ;; Mathematical constant
+		 ("inf"  "∞")
+		 ("-inf" "-∞")
+		 )))
+
+(add-hook 'gams-mode-hook 'gams-symbols-list)
 (add-hook 'prog-mode-hook 'prettify-set)
 (add-hook 'gams-mode-hook 'prettify-set)
+(add-hook 'inferior-ess-mode-hook 'prettify-set)
 
 ;;; ====================
 ;;;  rainbow-delimiters
