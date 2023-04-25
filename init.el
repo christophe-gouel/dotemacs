@@ -873,6 +873,12 @@
           ("M-TAB" . company-manual-begin))
   )
 
+;;; ===========
+;;;  Yasnippet
+;;; ===========
+(use-package yasnippet)
+(yas-global-mode 1)
+
 ;;; =====
 ;;;  ESS
 ;;; =====

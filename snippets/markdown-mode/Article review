@@ -1,0 +1,19 @@
+# -*- mode: snippet -*-
+# name: Article review
+# key: arev
+# --
+
+---
+title: "Referee report on '$1'"
+date: `(format-time-string "%Y-%m-%d")`
+---
+
+$0
+
+# Major comments
+
+# Minor comments
+
+# Edits
+
+# References
