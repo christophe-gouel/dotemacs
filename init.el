@@ -5,6 +5,10 @@
 ;;   Rscript -e "install.packages('languageserver')"
 ;;   Curl --output %HOME%/.local/bin/digestif.cmd https://raw.githubusercontent.com/astoff/digestif/master/scripts/digestif.cmd
 ;; ```
+;; - Autocompletion in Python on Windows.
+;; ```{bash}
+;;   pip3 install --user  pyreadline3
+;; ```
 ;; - M-x all-the-icons-install-fonts
 ;; - Download and install fonts
 ;;   - <https://fonts.google.com/specimen/Fira+Code>
@@ -206,6 +210,8 @@
 	python-shell-prompt-detect-failure-warning nil)
 ;; Set encoding to utf-8 to allows utf-8 characters in Python REPL (from https://stackoverflow.com/questions/14172576/why-unicodeencodeerror-raised-only-in-emacss-python-shell?utm_source=pocket_reader)
   (setenv "PYTHONIOENCODING" "utf-8")
+  :hook (python-mode . (lambda ()
+			(display-fill-column-indicator-mode)))
   )
 (use-package conda
   :config
@@ -702,10 +708,9 @@
 					 (output-dvi "xdvi")))))
 
 ;; Preview
-(setq preview-scale-function 1.5)      ; Higher preview images in TeX buffers
 (setq preview-auto-cache-preamble t)
 (if mswindows
-    (setq preview-gs-command "C:\\Program Files\\gs\\gs9.56.1\\bin\\gswin64c.exe")
+    (setq preview-gs-command "C:\\Program Files\\gs\\gs10.01.1\\bin\\gswin64c.exe")
   (setq preview-gs-command "gs"))
 
 ;; Beamer
@@ -745,7 +750,7 @@
 (use-package doc-view
   :if mswindows
   :config
-  (setq doc-view-ghostscript-program "C:\\Program Files\\gs\\gs9.56.1\\bin\\gswin64c.exe"))
+  (setq doc-view-ghostscript-program "C:\\Program Files\\gs\\gs10.01.1\\bin\\gswin64c.exe"))
 
 ;;; ==================
 ;;;  Auto-compression
@@ -1048,12 +1053,6 @@ same directory as the working and insert a link to this file."
   :config
   (remove-hook 'server-switch-hook 'magit-commit-diff)  ; Do not diff when committing
   (remove-hook 'with-editor-filter-visit-hook 'magit-commit-diff))  ; Do not diff when committing
-
-;;; ========
-;;;  ccrypt
-;;; ========
-(use-package ps-ccrypt
-  :quelpa (ps-ccrypt :fetcher git :url "https://github.com/isdamir/ps-ccrypt.git"))
 
 ;;; =================
 ;;;  ivy and friends
