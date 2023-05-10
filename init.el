@@ -1,3 +1,4 @@
+
 ;; To install manually:
 ;; - LSP servers
 ;; ```{bash}
@@ -623,28 +624,28 @@
 ;;; ============
 (use-package tex
   :ensure auctex
-  :init
-  (add-hook 'TeX-mode-hook 'latex-math-mode)
-  (add-hook 'TeX-mode-hook 'imenu-add-menubar-index)
-  (add-hook 'TeX-mode-hook 'turn-on-reftex)
-  (add-hook 'TeX-mode-hook 'TeX-fold-mode 1)
-  (add-hook 'TeX-mode-hook
-            #'(lambda ()
-               (define-key TeX-mode-map (kbd "<f9>")
-		 (lambda ()
-                   (interactive)
-                   (save-buffer)
-                   (TeX-command-menu "Latex")))
-               (define-key TeX-mode-map (kbd "<f10>")
-		 (lambda ()
-                   (interactive)
-		   ;; (TeX-fold-buffer)
-                   (preview-at-point)))
-               (define-key TeX-mode-map (kbd "<f12>")
-		 (lambda ()
-                   (interactive)
-                   (TeX-view)
-                   [return]))))
+  :hook
+  (TeX-mode . latex-math-mode)
+  (TeX-mode . imenu-add-menubar-index)
+  (TeX-mode . turn-on-reftex)
+  (TeX-mode . (lambda ()
+                (TeX-fold-mode 1)))
+  ;; Custom functions to compile, preview, and view documents
+  (TeX-mode . (lambda ()
+		(define-key TeX-mode-map (kbd "<f9>")
+		  (lambda ()
+                    (interactive)
+                    (save-buffer)
+                    (TeX-command-menu "Latex")))
+		(define-key TeX-mode-map (kbd "<f10>")
+		  (lambda ()
+                    (interactive)
+                    (preview-at-point)))
+		(define-key TeX-mode-map (kbd "<f12>")
+		  (lambda ()
+                    (interactive)
+                    (TeX-view)
+                    [return]))))
   :custom
   (reftex-bibpath-environment-variables (quote ("BIBINPUTS")))
   (reftex-default-bibliography '("References.bib"))
@@ -669,19 +670,22 @@
    (?\( "left(")
      (?/ "frac{}{}")
      ))
+  ;; Increase reftex speed (especially on Windows)
+  (reftex-enable-partial-scans t)
+  (reftex-save-parse-info t)
+  (reftex-use-multiple-selection-buffers t)
+  ;; Prevent folding of math to let prettify-symbols do the job
+  (TeX-fold-math-spec-list-internal nil)
+  (TeX-fold-math-spec-list nil)
+  (LaTeX-fold-math-spec-list nil)
   :bind
   ("\C-ce" . TeX-next-error)
   ("\C-cf" . reftex-fancyref-fref)
-  ("\C-cF" . reftex-fancyref-Fref))
+  ("\C-cF" . reftex-fancyref-Fref)
+  )
 
-;; Increase reftex speed (especially on Windows)
-(setq reftex-enable-partial-scans t
-      reftex-save-parse-info t
-      reftex-use-multiple-selection-buffers t)
-
-(if mswindows
-    ()
-  (add-hook 'TeX-mode-hook 'TeX-fold-buffer t))
+;; Automatically fold TeX buffers at opening
+(add-hook 'TeX-mode-hook 'TeX-fold-buffer t)
 
 (if mswindows
     (progn
@@ -731,9 +735,13 @@
 	     (local-set-key [(shift return)] 'tex-frame)))
 
 (use-package cdlatex
-  :init
-  (add-hook 'LaTeX-mode-hook #'turn-on-cdlatex)
+  :hook
+  (LaTeX-mode . turn-on-cdlatex)
+  :config
+  ;; Prevent cdlatex from defining LaTeX math subscript everywhere
+  (define-key cdlatex-mode-map "_" nil)
   )
+;; Allow tab to be used to indent when the cursor is at the beginning of the line
 (add-hook 'cdlatex-tab-hook
           (defun cdlatex-indent-maybe ()
             (when (or (bolp) (looking-back "^[ \t]+"))
