@@ -14,6 +14,7 @@
 ;; - Download and install fonts
 ;;   - <https://fonts.google.com/specimen/Fira+Code>
 ;;   - <https://candyfonts.com/font/symbola.htm>
+;;   - <https://github.com/aliftype/xits>
 
 (defconst mswindows (equal window-system 'w32))
 
@@ -257,6 +258,7 @@
              '(font . "Fira Code Regular-10"))
   )
 (set-fontset-font "fontset-default" 'symbol "Symbola")
+(set-fontset-font t 'unicode (font-spec :name "XITS Math") nil 'prepend)
 
 (require 'font-lock)
 (global-font-lock-mode t)                ; colorisation du texte
