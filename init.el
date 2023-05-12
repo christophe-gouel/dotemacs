@@ -142,7 +142,8 @@
 			       (dired-hide-details-mode)))
   (add-hook 'dired-mode-hook 'auto-revert-mode)
   :custom
-  ((dired-listing-switches "-agho --group-directories-first"))
+  (dired-listing-switches "-agho --group-directories-first")
+  (auto-revert-verbose nil)
   )
 
 ;;; ======================
@@ -182,6 +183,11 @@
 
 (use-package treemacs-magit
   :after (treemacs magit)
+  )
+
+(use-package treemacs-projectile
+  :after (treemacs projectile)
+  :ensure t
   )
 
 ;;; ===============================
@@ -820,14 +826,16 @@
 (use-package projectile
   :diminish projectile-mode
   :config (projectile-mode)
-  :custom ((projectile-completion-system 'ivy))
+  :custom
+  (projectile-completion-system 'ivy)
+  (projectile-use-git-grep t)
+  (projectile-switch-project-action #'projectile-dired)
   :bind-keymap
   ("C-c p" . projectile-command-map)
   :init
   (when (file-directory-p "~/Documents/git_projects")
     (setq projectile-project-search-path '("~/Documents/git_projects")))
-  (setq projectile-switch-project-action #'projectile-dired))
-(setq projectile-use-git-grep t)
+  )
 
 (use-package ripgrep)
 
