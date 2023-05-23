@@ -896,6 +896,19 @@
           ("M-TAB" . company-manual-begin))
   )
 
+(use-package company-bibtex)
+(use-package company-math)
+(use-package company-reftex)
+
+(setq company-backends
+      (append '((:separate company-bibtex
+			   company-reftex-labels
+                           company-reftex-citations
+			   company-math-symbols-latex
+			   company-math-symbols-unicode
+			   company-latex-commands))
+              company-backends))
+
 ;;; ===========
 ;;;  Yasnippet
 ;;; ===========
