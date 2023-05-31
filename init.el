@@ -26,6 +26,26 @@
 (when (file-exists-p custom-file)
   (load custom-file))
 
+;;; ==================
+;;;  Packages manager
+;;; ==================
+(require 'package)
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
+(package-initialize)
+
+;; use-package setup
+;; Bootstrap use-package
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents) ; update archives
+  (package-install 'use-package)) ; grab the newest use-package
+(require 'use-package)
+;; Always download packages if not available
+(setq use-package-always-ensure t)
+
+;; Quelpa
+(use-package quelpa)
+(use-package quelpa-use-package)
+
 ;;; =======
 ;;;  Shell
 ;;; =======
@@ -48,26 +68,6 @@
 (add-hook 'shell-mode-hook
       (lambda ()
         (face-remap-set-base 'comint-highlight-prompt :inherit nil)))
-
-;;; ==================
-;;;  Packages manager
-;;; ==================
-(require 'package)
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
-(package-initialize)
-
-;; use-package setup
-;; Bootstrap use-package
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents) ; update archives
-  (package-install 'use-package)) ; grab the newest use-package
-(require 'use-package)
-;; Always download packages if not available
-(setq use-package-always-ensure t)
-
-;; Quelpa
-(use-package quelpa)
-(use-package quelpa-use-package)
 
 ;;; ===============
 ;;;  Others
@@ -137,13 +137,13 @@
 (use-package dired
   :ensure nil
   :commands (dired dired-jump)
-  :init
-  (add-hook 'dired-mode-hook (lambda ()
-			       (dired-hide-details-mode)))
-  (add-hook 'dired-mode-hook 'auto-revert-mode)
   :custom
   (dired-listing-switches "-agho --group-directories-first")
   (auto-revert-verbose nil)
+  :hook
+  (dired-mode . (lambda ()
+		  (dired-hide-details-mode)))
+  (dired-mode . auto-revert-mode)
   )
 
 ;;; ======================
@@ -184,32 +184,38 @@
   :hook (python-mode . (lambda ()
 			(display-fill-column-indicator-mode)))
   )
+
 (use-package conda
   :config
   (setq-default mode-line-format (cons '(:exec conda-env-current-name) mode-line-format))
   )
+
 (use-package poetry)
 
 ;;; ==========
 ;;;  Org mode
 ;;; ==========
-(add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
-(setq org-hide-leading-stars t)
-(setq org-export-with-LaTeX-fragments t)       ; Export LaTeX fragment to HTML
-(setq org-todo-keywords '((type "TODO(t)" "STARTED(s)" "WAITING(w)" "|" "DONE(d)")))
-(setq org-tag-alist '(("OFFICE" . ?o) ("COMPUTER" . ?c) ("HOME" . ?h) ("PROJECT" . ?p) ("CALL" . ?a) ("ERRANDS" . ?e) ("TASK" . ?t)))
-(setq org-hide-leading-stars t)
-
-;; Integration of RefTeX in org
-(defun org-mode-reftex-setup ()
-  (load-library "reftex")
-  (and (buffer-file-name)
-       (file-exists-p (buffer-file-name))
-        (global-auto-revert-mode t)
-       (reftex-parse-all))
-  (define-key org-mode-map (kbd "C-c )") 'reftex-citation)
-  )
-(add-hook 'org-mode-hook 'org-mode-reftex-setup)
+(use-package org
+  :ensure nil
+  :mode ("\\.org\\'" . org-mode)
+  :custom
+  (org-hide-leading-stars t)
+  (org-export-with-LaTeX-fragments t)       ; Export LaTeX fragment to HTML
+  (org-todo-keywords '((type "TODO(t)" "STARTED(s)" "WAITING(w)" "|" "DONE(d)")))
+  (org-tag-alist '(("OFFICE" . ?o) ("COMPUTER" . ?c) ("HOME" . ?h) ("PROJECT" . ?p) ("CALL" . ?a) ("ERRANDS" . ?e) ("TASK" . ?t)))
+  (org-hide-leading-stars t)
+  :config
+  ;; Integration of RefTeX in org
+  (defun org-mode-reftex-setup ()
+    (load-library "reftex")
+    (and (buffer-file-name)
+	 (file-exists-p (buffer-file-name))
+         (global-auto-revert-mode t)
+	 (reftex-parse-all))
+    (define-key org-mode-map (kbd "C-c )") 'reftex-citation)
+    )
+  :hook (org-mode . org-mode-reftex-setup)
+)
 
 ;;; ========================================
 ;;;  Look, feel, and general emacs behavior
@@ -263,7 +269,6 @@
 ;;; Sent deleted files to trash
 (setq delete-by-moving-to-trash t)
 
-
 ;;; Remove menu bar in terminal mode
 (if (display-graphic-p)
     ()
@@ -284,62 +289,61 @@
 (global-prettify-symbols-mode +1)
 (setq prettify-symbols-unprettify-at-point t)
 
-(quelpa
- '(prettify-utils :fetcher url :url "https://raw.githubusercontent.com/Ilazki/prettify-utils.el/master/prettify-utils.el"))
-
-(defun prettify-set ()
-  (setq prettify-symbols-alist
-		(prettify-utils-generate
-		 ("lambda"	"λ")
-		 ("|>"		"▷")
-		 ("<|"		"◁")
-		 ("%>%"         "▶")
-		 ("->>"		"↠")
-		 ("->"		"→")
-		 ("<-"		"←")
-		 ("=>"		"⇒")
-		 ("<="		"≤")
-		 (">="		"≥")
-		 ("[ ]"         "☐")
-                 ("[X]"         "☑")
-                 ("[-]"         "❍")
-		 ("function"    "ƒ")
-		 ("%x%"         "⊗")
-		 ("%*%"         "×")
-		 )))
-
-(defun gams-symbols-list ()
-  (setq prettify-symbols-alist
-		(prettify-utils-generate
-		 ;; Math operator
-		 ("sum"  "∑")
-		 ("prod" "∏")
-		 ("**"   "^")
-		 ;; Relations in equations
-		 ("=l="  "≤")
-		 ("=g="  "≥")
-		 ("=e="  "=")
-		 ;; Logical operator
-		 ("lt"   "<")
-		 ("gt"   ">")
-		 ("<="   "≤")
-		 ("le"   "≤")
-		 (">="   "≥")
-		 ("ge"   "≥")
-		 ("eq"   "=")
-		 ("or"   "∨")
-		 ("and"  "∧")
-		 ("xor"  "⊻")
-		 ("imp"  "⇒")
-		 ("eqv"  "⇔")
-		 ("not"  "¬")
-		 ("ne"   "≠")
-		 ("<>"   "≠")
-		 ("=="   "=")
-		 ;; Mathematical constant
-		 ("inf"  "∞")
-		 ("-inf" "-∞")
-		 )))
+(use-package prettify-utils
+  :config
+  (defun prettify-set ()
+    (setq prettify-symbols-alist
+	  (prettify-utils-generate
+	   ("lambda"	"λ")
+	   ("|>"		"▷")
+	   ("<|"		"◁")
+	   ("%>%"         "▶")
+	   ("->>"		"↠")
+	   ("->"		"→")
+	   ("<-"		"←")
+	   ("=>"		"⇒")
+	   ("<="		"≤")
+	   (">="		"≥")
+	   ("[ ]"         "☐")
+           ("[X]"         "☑")
+           ("[-]"         "❍")
+	   ("function"    "ƒ")
+	   ("%x%"         "⊗")
+	   ("%*%"         "×")
+	   )))
+  (defun gams-symbols-list ()
+    (setq prettify-symbols-alist
+	  (prettify-utils-generate
+	   ;; Math operator
+	   ("sum"  "∑")
+	   ("prod" "∏")
+	   ("**"   "^")
+	   ;; Relations in equations
+	   ("=l="  "≤")
+	   ("=g="  "≥")
+	   ("=e="  "=")
+	   ;; Logical operator
+	   ("lt"   "<")
+	   ("gt"   ">")
+	   ("<="   "≤")
+	   ("le"   "≤")
+	   (">="   "≥")
+	   ("ge"   "≥")
+	   ("eq"   "=")
+	   ("or"   "∨")
+	   ("and"  "∧")
+	   ("xor"  "⊻")
+	   ("imp"  "⇒")
+	   ("eqv"  "⇔")
+	   ("not"  "¬")
+	   ("ne"   "≠")
+	   ("<>"   "≠")
+	   ("=="   "=")
+	   ;; Mathematical constant
+	   ("inf"  "∞")
+	   ("-inf" "-∞")
+	   )))
+  )
 
 (add-hook 'gams-mode-hook 'gams-symbols-list)
 (add-hook 'prog-mode-hook 'prettify-set)
@@ -421,7 +425,8 @@
    ([M-up] . pager-row-up)
    ([M-kp-8] . pager-row-up)
    ([M-down] . pager-row-down)
-   ([M-kp-2] . pager-row-down)))
+   ([M-kp-2] . pager-row-down))
+  )
 
 ;;; ==============
 ;;;  Recent Files
@@ -438,8 +443,7 @@
 ;;;  Ispell
 ;;; ========
 (use-package flyspell
-  :init
-  (add-hook 'text-mode-hook 'flyspell-mode)
+  :hook (text-mode . flyspell-mode)
   :config
   (setq ispell-program-name (executable-find "hunspell")
 	flyspell-issue-welcome-flag nil
@@ -925,25 +929,6 @@
 
 (use-package rutils) ; To interact easily with renv
 
-;; (defun my-ess-start-R ()
-;;   (interactive)
-;;   (if (not (member "*R*" (mapcar (function buffer-name) (buffer-list))))
-;;     (progn
-;;       (delete-other-windows)
-;;       (setq w1 (selected-window))
-;;       (setq w1name (buffer-name))
-;;       (setq w2 (split-window w1))
-;;       (R)
-;;       (set-window-buffer w2 "*R*")
-;;       (set-window-buffer w1 w1name))))
-
-;; (defun my-ess-eval ()
-;;   (interactive)
-;;   (my-ess-start-R)
-;;   (if (and transient-mark-mode mark-active)
-;;     (call-interactively 'ess-eval-region)
-;;     (call-interactively 'ess-eval-line-and-step)))
-
 (defun find-in-R-files (string)
   "Find a regular expression in R files"
   (interactive "sRegular expression to find: ")
@@ -978,66 +963,60 @@
 ;;; ===============
 ;;;  Markdown mode
 ;;; ===============
+(use-package pandoc-mode)
 (use-package markdown-mode
   :mode ("README\\.md\\'" . gfm-mode)
   :init
   (setq markdown-command "pandoc"
-	markdown-enable-math t))
-(use-package pandoc-mode)
-;; (autoload 'markdown-mode "markdown-mode"
-;;   "Major mode for editing Markdown files" t)
-(add-hook 'markdown-mode-hook 'pandoc-mode)
-(add-hook 'pandoc-mode-hook 'pandoc-load-default-settings)
-
-;; Code to use RefTeX to input references in markdown
-;; from <https://gist.github.com/kleinschmidt/5ab0d3c423a7ee013a2c01b3919b009a>
-
-;; define markdown citation formats
-(defvar markdown-cite-format)
-(setq markdown-cite-format
-      '(
-        (?\C-m . "[@%l]")
-        (?p . "[@%l]")
-        (?t . "@%l")
-        )
-      )
-
-;; wrap reftex-citation with local variables for markdown format
-(defun markdown-reftex-citation ()
-  (interactive)
-  (let ((reftex-cite-format markdown-cite-format)
-        (reftex-cite-key-separator "; @"))
-    (reftex-citation)))
-
-;; bind modified reftex-citation to C-c[, without enabling reftex-mode
-;; https://www.gnu.org/software/auctex/manual/reftex/Citations-Outside-LaTeX.html#SEC31
-(add-hook
- 'markdown-mode-hook
- (lambda ()
-   (define-key markdown-mode-map "\C-c[" 'markdown-reftex-citation)))
-
-;; Code to import screenshots in markdown files
-;; from <https://www.nistara.net/post/2022-11-14-emacs-markdown-screenshots> and
-;; <https://stackoverflow.com/questions/17435995/paste-an-image-on-clipboard-to-emacs-org-mode-file-without-saving-it/31868530#31868530>
-(defun markdown-screenshot ()
-  "Copy a screenshot into a time stamped unique-named file in the
+	markdown-enable-math t)
+  :config
+  ;; Code to import screenshots in markdown files
+  ;; from <https://www.nistara.net/post/2022-11-14-emacs-markdown-screenshots> and
+  ;; <https://stackoverflow.com/questions/17435995/paste-an-image-on-clipboard-to-emacs-org-mode-file-without-saving-it/31868530#31868530>
+  (defun markdown-screenshot ()
+    "Copy a screenshot into a time stamped unique-named file in the
 same directory as the working and insert a link to this file."
-  (interactive)
-  (setq filename
-        (concat
-         (make-temp-name
-          (concat (file-name-nondirectory (buffer-file-name))
-                  "_screenshots/"
-                  (format-time-string "%Y-%m-%d_%a_%kh%Mm_")) ) ".png"))
-  (unless (file-exists-p (file-name-directory filename))
-    (make-directory (file-name-directory filename)))
-  ; copy the screenshot to file
-  (shell-command (concat "powershell -command \"Add-Type -AssemblyName System.Windows.Forms;if ($([System.Windows.Forms.Clipboard]::ContainsImage())) {$image = [System.Windows.Forms.Clipboard]::GetImage();[System.Drawing.Bitmap]$image.Save('" filename "',[System.Drawing.Imaging.ImageFormat]::Png); Write-Output 'clipboard content saved as file'} else {Write-Output 'clipboard does not contain image data'}\""))
-  ; insert into file if correctly taken
-  (if (file-exists-p filename)
-      (insert (concat "![](" filename ")")))
-  (markdown-display-inline-images)
-  (newline)
+    (interactive)
+    (setq filename
+          (concat
+           (make-temp-name
+            (concat (file-name-nondirectory (buffer-file-name))
+                    "_screenshots/"
+                    (format-time-string "%Y-%m-%d_%a_%kh%Mm_")) ) ".png"))
+    (unless (file-exists-p (file-name-directory filename))
+      (make-directory (file-name-directory filename)))
+					; copy the screenshot to file
+    (shell-command (concat "powershell -command \"Add-Type -AssemblyName System.Windows.Forms;if ($([System.Windows.Forms.Clipboard]::ContainsImage())) {$image = [System.Windows.Forms.Clipboard]::GetImage();[System.Drawing.Bitmap]$image.Save('" filename "',[System.Drawing.Imaging.ImageFormat]::Png); Write-Output 'clipboard content saved as file'} else {Write-Output 'clipboard does not contain image data'}\""))
+					; insert into file if correctly taken
+    (if (file-exists-p filename)
+	(insert (concat "![](" filename ")")))
+    (markdown-display-inline-images)
+    (newline)
+    )
+  ;; Code to use RefTeX to input references in markdown
+  ;; from <https://gist.github.com/kleinschmidt/5ab0d3c423a7ee013a2c01b3919b009a>
+  ;; define markdown citation formats
+  (defvar markdown-cite-format)
+  (setq markdown-cite-format
+	'(
+          (?\C-m . "[@%l]")
+          (?p . "[@%l]")
+          (?t . "@%l")
+          ))
+  ;; wrap reftex-citation with local variables for markdown format
+  (defun markdown-reftex-citation ()
+    (interactive)
+    (let ((reftex-cite-format markdown-cite-format)
+          (reftex-cite-key-separator "; @"))
+      (reftex-citation)))
+  :hook
+  (markdown-mode . pandoc-mode)
+  (pandoc-mode . pandoc-load-default-settings)
+  ;; bind modified reftex-citation to C-c[, without enabling reftex-mode
+  ;; https://www.gnu.org/software/auctex/manual/reftex/Citations-Outside-LaTeX.html#SEC31
+  (markdown-mode .
+		 (lambda ()
+		   (define-key markdown-mode-map "\C-c[" 'markdown-reftex-citation)))
   )
 
 ;;; =======
