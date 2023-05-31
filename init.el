@@ -153,43 +153,6 @@
   :quelpa (greek-unicode-insert :fetcher git :url "https://github.com/Malabarba/greek-unicode-insert.git")
   :bind ("²" . greek-unicode-insert-map))
 
-;;; ======================
-;;;  treemacs
-;;; ======================
-(use-package treemacs
-  :defer t
-  :after (treemacs-all-the-icons)
-  :hook (treemacs-mode . no_code_mode)
-  :config
-  (setq treemacs-width 20
-	treemacs-indentation '(4 px)
-	treemacs-is-never-other-window t
-	treemacs-width-is-initially-locked nil
-	treemacs-space-between-root-nodes nil
-	treemacs-collapse-dirs 4
-	treemacs-text-scale -1)
-  (treemacs-resize-icons 14)
-  (treemacs-follow-mode t)
-  (treemacs-tag-follow-mode t)
-  (treemacs-filewatch-mode t)
-  (treemacs-fringe-indicator-mode 'always)
-  (treemacs-hide-gitignored-files-mode nil)
-  (treemacs-load-theme "all-the-icons")
-  )
-
-(setq treemacs-python-executable "python")
-
-(global-set-key [f3] 'treemacs-select-window)
-
-(use-package treemacs-magit
-  :after (treemacs magit)
-  )
-
-(use-package treemacs-projectile
-  :after (treemacs projectile)
-  :ensure t
-  )
-
 ;;; ===============================
 ;;;  font-lock for hex color codes
 ;;; ===============================
@@ -601,14 +564,8 @@
   (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
         doom-themes-enable-italic t) ; if nil, italics is universally disabled
   (load-theme 'doom-one t)
-
   ;; Enable flashing mode-line on errors
   (doom-themes-visual-bell-config)
-  ;; Enable custom neotree theme (all-the-icons must be installed!)
-  (doom-themes-neotree-config)
-  ;; or for treemacs users
-  (setq doom-themes-treemacs-theme "doom-atom") ; use "doom-colors" for less minimal icon theme
-  (doom-themes-treemacs-config)
   ;; Corrects (and improves) org-mode's native fontification.
   (doom-themes-org-config))
 
