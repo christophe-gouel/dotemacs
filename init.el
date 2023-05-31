@@ -429,13 +429,22 @@
 
 (setq-default fill-column 80)
 
+;; Package to visually (not really) indent the filled lines following the first
+;; lines
+(use-package adaptive-wrap)
+
 ;; Use visual fill column for text mode
 (use-package visual-fill-column
   :init
-  (setq visual-fill-column-width 100))
-(add-hook 'visual-line-mode-hook #'visual-fill-column-mode)
-(add-hook 'text-mode-hook 'visual-fill-column-mode)
-(add-hook 'text-mode-hook 'visual-line-mode)
+  (setq visual-fill-column-width 100)
+  :config (defun my-visual-fill ()
+	    (interactive)
+	    (visual-line-mode 'toggle)
+	    (visual-fill-column-mode 'toggle)
+	    (adaptive-wrap-prefix-mode 'toggle))
+  :bind ("C-c v" . my-visual-fill)
+  :hook (text-mode . my-visual-fill)
+  )
 
 ;;; ============================================
 ;;;  Pager - From ELPA
