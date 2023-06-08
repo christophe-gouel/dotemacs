@@ -521,7 +521,7 @@
     (setq gams-process-command-name "C:/GAMS/Last/gams.exe"
 	  gams-system-directory "C:/GAMS/Last/"
 	  gams-docs-directory "C:/GAMS/Last/docs"
-	  gams-docs-view-program "C:/Program Files (x86)/Foxit Software/Foxit Reader/FoxitReader.exe"
+	  gams-docs-view-program "C:/Program Files (x86)/Foxit Software/Foxit PDF Reader/FoxitPDFReader.exe"
 	  load-path
 	  (cons "C:/GAMS/Last/" ;; Set the installed directory!
 		load-path)))
@@ -1056,6 +1056,21 @@ same directory as the working and insert a link to this file."
 (use-package ivy-xref
   :init
   (setq xref-show-definitions-function #'ivy-xref-show-defs)
+  )
+
+;;; ============
+;;;  ivy-bibtex
+;;; ============
+(use-package ivy-bibtex
+  :custom
+  (bibtex-completion-bibliography
+   (substitute-in-file-name "${BIBINPUTS}/References.bib"))
+  (bibtex-completion-library-path
+   (substitute-in-file-name "${HOME}/Dropbox (Inrae EcoPub)/Bibliography/Papers"))
+  (bibtex-completion-pdf-symbol "⌘")
+  (bibtex-completion-pdf-open-function
+   (lambda (fpath)
+     (call-process "C:/Program Files (x86)/Foxit Software/Foxit PDF Reader/FoxitPDFReader.exe" nil 0 nil fpath)))
   )
 
 ;;; =======
