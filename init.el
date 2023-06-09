@@ -156,14 +156,10 @@
 ;;; ===============================
 ;;;  font-lock for hex color codes
 ;;; ===============================
- (defvar hexcolour-keywords
-   '(("#[abcdef[:digit:]]\\{6\\}"
-      (0 (put-text-property (match-beginning 0)
-                            (match-end 0)
-			    'face (list :background
-				        (match-string-no-properties 0)))))))
-(defun hexcolour-add-to-font-lock ()
-  (font-lock-add-keywords nil hexcolour-keywords))
+(use-package rainbow-mode
+  :quelpa (rainbow-mode :fetcher url
+			:url "https://raw.githubusercontent.com/emacsmirror/rainbow-mode/master/rainbow-mode.el")
+  :hook (prog-mode . rainbow-mode))
 
 ;;; ==================================
 ;;;  ado-mode for editing Stata files
@@ -667,27 +663,13 @@
 
 (if mswindows
     (progn
-      (require 'tex-mik)
       (eval-after-load "tex"
 	'(add-to-list 'TeX-command-list
 		      '("htlatex" "htlatex %s" TeX-run-command t t :help "Run htlatex") t))
       (eval-after-load "tex"
 	'(add-to-list 'TeX-command-list
 		      '("htlatexword" "htlatexword %s" TeX-run-command nil t :help "Run htlatex with Word options") t))
-      (eval-after-load "tex"
-	'(add-to-list 'TeX-command-list
-		      '("PDFViewerClose" "PDFXCview-close.bat %s" TeX-run-command nil t :help "Close PDF open in PDF-XChange Viewer") t))))
-
-(if mswindows
-    (progn
-      ;; (setq TeX-view-program-list (quote (("Sumatra PDF" ("\"SumatraPDF.exe\" -reuse-instance" (mode-io-correlate " -forward-search %b %n") " %o")))))
-      ;; (setq TeX-view-program-selection (quote ((output-pdf "Sumatra PDF")
-      (setq TeX-view-program-selection (quote ((output-pdf "SumatraPDF")
-					       (output-dvi "Yap")))))
-    (progn
-      (setq TeX-view-program-list '(("qpdfview" "qpdfview --instance emacsauxtex --unique \"%o#src:%b:%n:0\"")))
-      (setq TeX-view-program-selection '((output-pdf "qpdfview")
-					 (output-dvi "xdvi")))))
+      ))
 
 ;; Preview
 (setq preview-auto-cache-preamble t)
@@ -730,9 +712,9 @@
         (make-local-variable 'company-idle-delay)
         (setq company-idle-delay 0.3)))
 
-;;; =====
-;;;  PDF
-;;; =====
+;;; ==========
+;;;  doc-view
+;;; ==========
 (use-package doc-view
   :if mswindows
   :config
@@ -1092,4 +1074,20 @@ same directory as the working and insert a link to this file."
 (if mswindows
     (setq tramp-default-method "plink"))
 
-;; ;;; init.el ends here
+;;; ===========
+;;;  pdf-tools
+;;; ===========
+(use-package pdf-tools
+  :init
+  (pdf-tools-install)  ; Standard activation command
+  (pdf-loader-install) ; On demand loading, leads to faster startup time
+  :config
+  (setq TeX-view-program-selection '((output-pdf "PDF Tools"))
+	TeX-view-program-list '(("PDF Tools" TeX-pdf-tools-sync-view))
+	TeX-source-correlate-start-server t)
+  (add-hook 'TeX-after-compilation-finished-functions #'TeX-revert-document-buffer)
+  :bind (:map pdf-view-mode-map
+	      ("C-s" . isearch-forward))
+  )
+
+;;; init.el ends here
