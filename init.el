@@ -672,7 +672,8 @@
       ))
 
 ;; Preview
-(setq preview-auto-cache-preamble t)
+(setq preview-auto-cache-preamble t
+      preview-default-option-list '("displaymath" "graphics" "textmath"))
 (if mswindows
     (setq preview-gs-command "C:\\Program Files\\gs\\gs10.01.1\\bin\\gswin64c.exe")
   (setq preview-gs-command "gs"))
@@ -697,6 +698,10 @@
 (use-package cdlatex
   :hook
   (LaTeX-mode . turn-on-cdlatex)
+  ; Slow down company for a better use of cdlatex
+  (LaTeX-mode . (lambda ()
+		  (make-local-variable 'company-idle-delay)
+		  (setq company-idle-delay 0.3)))
   :config
   ;; Prevent cdlatex from defining LaTeX math subscript everywhere
   (define-key cdlatex-mode-map "_" nil)
@@ -706,11 +711,6 @@
           (defun cdlatex-indent-maybe ()
             (when (or (bolp) (looking-back "^[ \t]+"))
               (LaTeX-indent-line))))
-
-(add-hook 'LaTeX-mode-hook
-      (lambda ()
-        (make-local-variable 'company-idle-delay)
-        (setq company-idle-delay 0.3)))
 
 ;;; ==========
 ;;;  doc-view
