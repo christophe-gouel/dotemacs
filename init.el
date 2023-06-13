@@ -26,6 +26,9 @@
 (when (file-exists-p custom-file)
   (load custom-file))
 
+;; Define file that stores secrets
+(setq auth-sources '("~/.authinfo"))
+
 ;;; ==================
 ;;;  Packages manager
 ;;; ==================
@@ -188,6 +191,19 @@
 
 (use-package poetry)
 
+;;; =========
+;;;  chatGPT
+;;; =========
+(use-package chatgpt-shell
+  :custom
+  (chatgpt-shell-openai-key
+      (auth-source-pick-first-password :host "api.openai.com"))
+  )
+
+(use-package gptel
+  :custom
+  (gptel-use-curl nil)
+  )
 ;;; ==========
 ;;;  Org mode
 ;;; ==========
