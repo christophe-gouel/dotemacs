@@ -153,15 +153,18 @@
 ;;;  greek-unicode-insert
 ;;; ======================
 (use-package greek-unicode-insert
-  :quelpa (greek-unicode-insert :fetcher git :url "https://github.com/Malabarba/greek-unicode-insert.git")
+  :quelpa (greek-unicode-insert
+	   :fetcher git
+	   :url "https://github.com/Malabarba/greek-unicode-insert.git")
   :bind ("²" . greek-unicode-insert-map))
 
 ;;; ===============================
 ;;;  font-lock for hex color codes
 ;;; ===============================
 (use-package rainbow-mode
-  :quelpa (rainbow-mode :fetcher url
-			:url "https://raw.githubusercontent.com/emacsmirror/rainbow-mode/master/rainbow-mode.el")
+  :quelpa (rainbow-mode
+	   :fetcher url
+	   :url "https://raw.githubusercontent.com/emacsmirror/rainbow-mode/master/rainbow-mode.el")
   :hook (prog-mode . rainbow-mode))
 
 ;;; ==================================
@@ -186,7 +189,8 @@
 
 (use-package conda
   :config
-  (setq-default mode-line-format (cons '(:exec conda-env-current-name) mode-line-format))
+  (setq-default mode-line-format
+		(cons '(:exec conda-env-current-name) mode-line-format))
   )
 
 (use-package poetry)
@@ -240,6 +244,7 @@
 
 (setq large-file-warning-threshold 100000000) ; set large file threshold at 100 megabytes
 
+;; Fonts and unicode characters
 (if (display-graphic-p)
     (add-to-list 'default-frame-alist
              '(font . "Fira Code Regular-10"))
@@ -247,9 +252,6 @@
 (set-fontset-font "fontset-default" 'symbol "Symbola")
 (set-fontset-font t 'unicode (font-spec :name "XITS Math") nil 'prepend)
 
-(require 'font-lock)
-(global-font-lock-mode t)                ; colorisation du texte
-;; (transient-mark-mode t)                  ; mode de sélection "normal"
 (delete-selection-mode t)                ; entrée efface texte sélectionné
 (setq-default mouse-yank-at-point t)     ; coller avec la souris
 (show-paren-mode t)                      ; coupler les parenthèses
@@ -425,9 +427,9 @@
   :hook (text-mode . my-visual-fill)
   )
 
-;;; ============================================
-;;;  Pager - From ELPA
-;;; ============================================
+;;; =======
+;;;  Pager
+;;; =======
 (use-package pager
   :bind
   (("\C-v" . pager-page-down)
@@ -533,13 +535,12 @@
     (setq gams-process-command-name "C:/GAMS/Last/gams.exe"
 	  gams-system-directory "C:/GAMS/Last/"
 	  gams-docs-directory "C:/GAMS/Last/docs"
-	  gams-docs-view-program "C:/Program Files (x86)/Foxit Software/Foxit PDF Reader/FoxitPDFReader.exe"
 	  load-path
 	  (cons "C:/GAMS/Last/" ;; Set the installed directory!
 		load-path)))
   (progn
-    (setq gams-docs-directory "/opt/gams/gamsLast_linux_x64_64_sfx/docs"
-	  gams-docs-view-program "qpdfview")))
+    (setq gams-docs-directory "/opt/gams/gamsLast_linux_x64_64_sfx/docs"))
+  )
 
 ; Polymode for gams
 (define-hostmode poly-gams-hostmode
@@ -596,8 +597,11 @@
 ;;; =======
 (use-package eglot
   :config
-  (setq eglot-ignored-server-capabilities '(:documentOnTypeFormattingProvider)))  ; Prevent eglot from reformatting code automatically
-
+  (setq eglot-ignored-server-capabilities '(:documentOnTypeFormattingProvider))  ; Prevent eglot from reformatting code automatically
+  :bind
+  ("\C-c l" . eglot)
+  )
+  
 ;;; =======
 ;;;  eldoc
 ;;; =======
@@ -868,6 +872,9 @@
 (use-package company-math)
 (use-package company-reftex)
 
+(use-package company-box
+  :hook (company-mode . company-box-mode))
+
 (setq company-backends
       (append '((:separate company-bibtex
 			   company-reftex-labels
@@ -915,7 +922,6 @@
   ;; of an R session. Hence, both options are disabled here.
   (setq-default inferior-R-args "--no-restore-history --no-save ")
   :init
-  (add-hook 'ess-mode-hook 'hexcolour-add-to-font-lock)
   ;; Add a vertical line at 80 columns
   (add-hook 'ess-mode-hook (lambda ()
 			     (display-fill-column-indicator-mode)))
@@ -1066,18 +1072,12 @@ same directory as the working and insert a link to this file."
   (bibtex-completion-library-path
    (substitute-in-file-name "${HOME}/Dropbox (Inrae EcoPub)/Bibliography/Papers"))
   (bibtex-completion-pdf-symbol "⌘")
-  (bibtex-completion-pdf-open-function
-   (lambda (fpath)
-     (call-process "C:/Program Files (x86)/Foxit Software/Foxit PDF Reader/FoxitPDFReader.exe" nil 0 nil fpath)))
   )
 
 ;;; =======
 ;;;  Julia
 ;;; =======
 (use-package julia-mode)
-
-;; (use-package julia-repl)  ; Does not work on Linux
-;; (add-hook 'julia-mode-hook 'julia-repl-mode)
 
 ;;; ==================
 ;;;  View Large Files
