@@ -45,6 +45,9 @@
 ;; Always download packages if not available
 (setq use-package-always-ensure t)
 
+;; To keep GPG keys up to date
+(use-package gnu-elpa-keyring-update)
+
 ;; Quelpa
 (use-package quelpa)
 (use-package quelpa-use-package)
@@ -147,6 +150,11 @@
   (dired-mode . (lambda ()
 		  (dired-hide-details-mode)))
   (dired-mode . auto-revert-mode)
+  )
+
+(use-package diredfl
+  :hook
+  (dired-mode . diredfl-mode)
   )
 
 ;;; ======================
@@ -1104,6 +1112,26 @@ same directory as the working and insert a link to this file."
   (add-hook 'TeX-after-compilation-finished-functions #'TeX-revert-document-buffer)
   :bind (:map pdf-view-mode-map
 	      ("C-s" . isearch-forward))
+  )
+
+;;; ==========
+;;;  obsidian
+;;; ==========
+(use-package obsidian
+  :demand t
+  :config
+  (obsidian-specify-path "~/Dropbox (Inrae EcoPub)/obsidian")
+  (global-obsidian-mode t)
+  :custom
+  ;; This directory will be used for `obsidian-capture' if set.
+  (obsidian-inbox-directory "Inbox")
+  :bind (:map obsidian-mode-map
+	      ;; Replace C-c C-o with Obsidian.el's implementation. It's ok to use another key binding.
+	      ("C-c C-o" . obsidian-follow-link-at-point)
+	      ;; Jump to backlinks
+	      ("C-c C-b" . obsidian-backlink-jump)
+	      ;; If you prefer you can use `obsidian-insert-link'
+	      ("C-c C-l" . obsidian-insert-wikilink))
   )
 
 ;;; init.el ends here
