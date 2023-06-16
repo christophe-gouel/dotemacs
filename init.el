@@ -978,9 +978,14 @@
 (use-package pandoc-mode)
 (use-package markdown-mode
   :mode ("README\\.md\\'" . gfm-mode)
-  :init
-  (setq markdown-command "pandoc"
-	markdown-enable-math t)
+  :custom
+  (markdown-command "pandoc")
+  (markdown-enable-math t)
+  (markdown-enable-math t)
+  (markdown-header-scaling t)
+  (markdown-hide-markup t)
+  (markdown-fontify-code-blocks-natively t)
+  (markdown-enable-highlighting-syntax t)
   :config
   ;; Code to import screenshots in markdown files
   ;; from <https://www.nistara.net/post/2022-11-14-emacs-markdown-screenshots> and
