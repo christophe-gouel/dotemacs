@@ -162,8 +162,8 @@
 ;;; ======================
 (use-package greek-unicode-insert
   :quelpa (greek-unicode-insert
-	   :fetcher git
-	   :url "https://github.com/Malabarba/greek-unicode-insert.git")
+	   :fetcher github
+	   :url "Malabarba/greek-unicode-insert.git")
   :bind ("²" . greek-unicode-insert-map))
 
 ;;; ===============================
@@ -364,6 +364,7 @@
 	   ;; Mathematical constant
 	   ("inf"  "∞")
 	   ("-inf" "-∞")
+	   ("+inf" "+∞")
 	   )))
   )
 
@@ -979,7 +980,13 @@
 (use-package markdown-mode
   :mode ("README\\.md\\'" . gfm-mode)
   :custom
-  (markdown-command "pandoc")
+  (markdown-command
+   (concat "pandoc"
+	   " --from=markdown --to=html"
+	   " --standalone --mathjax"
+	   ;; " --citeproc --bibliography="
+	   ;; (shell-quote-argument (substitute-in-file-name "${BIBINPUTS}\\References.bib"))
+	   ))
   (markdown-enable-math t)
   (markdown-enable-math t)
   (markdown-header-scaling t)
