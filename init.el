@@ -762,6 +762,10 @@
             (when (or (bolp) (looking-back "^[ \t]+"))
               (LaTeX-indent-line))))
 
+(use-package texfrag
+  :hook (markdown-mode . texfrag-mode)
+  )
+
 ;;; ==========
 ;;;  doc-view
 ;;; ==========
