@@ -49,7 +49,10 @@
 (use-package gnu-elpa-keyring-update)
 
 ;; Quelpa
-(use-package quelpa)
+(use-package quelpa
+  :custom
+  (quelpa-update-melpa-p nil) ; Prevent update at all startup
+  )
 (use-package quelpa-use-package)
 
 ;;; =======
@@ -155,6 +158,24 @@
 (use-package diredfl
   :hook
   (dired-mode . diredfl-mode)
+  )
+
+;;; =======
+;;;  imenu
+;;; =======
+
+(use-package imenu
+  :ensure nil
+  :custom
+  (imenu-auto-rescan t)
+  )
+
+(use-package imenu-list
+  :bind
+  ("\C-c=" . imenu-list-smart-toggle)
+  :custom
+  (imenu-list-focus-after-activation t)
+  (imenu-list-position 'above)
   )
 
 ;;; ======================
@@ -937,8 +958,6 @@
   )
 
 (define-key inferior-ess-mode-map [home] 'comint-bol)
-; Call imenu with \C-c =
-(define-key ess-mode-map "\C-c=" 'imenu)
 
 (use-package rutils) ; To interact easily with renv
 
@@ -988,7 +1007,7 @@
 	   ;; (shell-quote-argument (substitute-in-file-name "${BIBINPUTS}\\References.bib"))
 	   ))
   (markdown-enable-math t)
-  (markdown-enable-math t)
+  (markdown-enable-prefix-prompts nil)
   (markdown-header-scaling t)
   (markdown-hide-markup t)
   (markdown-fontify-code-blocks-natively t)
@@ -1041,6 +1060,7 @@ same directory as the working and insert a link to this file."
   (markdown-mode .
 		 (lambda ()
 		   (define-key markdown-mode-map "\C-c[" 'markdown-reftex-citation)))
+  (markdown-mode . imenu-add-menubar-index)
   )
 
 ;;; =======
