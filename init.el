@@ -762,8 +762,11 @@
             (when (or (bolp) (looking-back "^[ \t]+"))
               (LaTeX-indent-line))))
 
+;; texfrag to have preview of LaTeX fragment outside LaTeX buffers
 (use-package texfrag
-  :hook (markdown-mode . texfrag-mode)
+  :hook
+  (markdown-mode . texfrag-mode)
+  (eww-mode . texfrag-mode)
   )
 
 ;;; ==========
