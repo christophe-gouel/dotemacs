@@ -1084,12 +1084,17 @@ same directory as the working and insert a link to this file."
 ;;; =================
 ;;;  ivy and friends
 ;;; =================
+(use-package counsel
+  :config (counsel-mode)
+  )
+
 (use-package ivy
   :demand
   :custom
   (ivy-use-virtual-buffers t)
   (ivy-count-format "%d/%d ")
-  :config (ivy-mode))
+  :config (ivy-mode)
+  )
 
 (use-package swiper)
 
@@ -1107,6 +1112,22 @@ same directory as the working and insert a link to this file."
 (use-package ivy-xref
   :init
   (setq xref-show-definitions-function #'ivy-xref-show-defs)
+  )
+
+(use-package ivy-prescient
+  :after counsel
+  :config
+  (ivy-prescient-mode)
+  )
+
+(use-package all-the-icons-ivy-rich
+  :after counsel
+  :init (all-the-icons-ivy-rich-mode +1)
+  )
+
+(use-package ivy-rich
+  :after all-the-icons-ivy-rich
+  :init (ivy-rich-mode +1)
   )
 
 ;;; ============
