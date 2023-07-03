@@ -224,6 +224,18 @@
 
 (use-package poetry)
 
+(use-package pyvenv
+  :config
+  (if mswindows
+      ;; Default virtualenv cache directory for poetry on Microsoft Windows
+      (setenv "WORKON_HOME"
+	      (substitute-in-file-name "${LOCALAPPDATA}/pypoetry/Cache/virtualenvs"))
+    ;; Default virtualenv cache directory for poetry on *nix
+    (setenv "WORKON_HOME" "~/.cache/pypoetry/virtualenvs"))
+  :hook
+  (python-mode . pyvenv-mode)
+  )
+
 ;;; =========
 ;;;  chatGPT
 ;;; =========
