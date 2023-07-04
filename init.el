@@ -605,9 +605,9 @@
   :innermodes '(poly-gams-yaml-innermode
 		poly-gams-python-innermode))
 
-;;; ==================================================
-;;;  Yaml mode - https://github.com/yoshiki/yaml-mode
-;;; ==================================================
+;;; ===========
+;;;  Yaml mode
+;;; ===========
 (use-package yaml-mode
   :mode ("\\.yml$" "\\.dvc" "dvc.lock")
   :bind ("\C-m" . newline-and-indent))
@@ -1090,6 +1090,19 @@ same directory as the working and insert a link to this file."
   :config
   (remove-hook 'server-switch-hook 'magit-commit-diff)  ; Do not diff when committing
   (remove-hook 'with-editor-filter-visit-hook 'magit-commit-diff))  ; Do not diff when committing
+
+;;; =========
+;;;  diff-hl
+;;; =========
+(use-package diff-hl
+  :defer t
+  :after magit
+  :hook
+  (prog-mode . diff-hl-mode)
+  (latex-mode . diff-hl-mode)
+  (dired-mode . diff-hl-dired-mode)
+  (magit-post-refresh . diff-hl-magit-post-refresh)
+  )
 
 ;;; =================
 ;;;  ivy and friends
