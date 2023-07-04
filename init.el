@@ -232,8 +232,6 @@
 	      (substitute-in-file-name "${LOCALAPPDATA}/pypoetry/Cache/virtualenvs"))
     ;; Default virtualenv cache directory for poetry on *nix
     (setenv "WORKON_HOME" "~/.cache/pypoetry/virtualenvs"))
-  :hook
-  (python-mode . pyvenv-mode)
   )
 
 ;;; =========
