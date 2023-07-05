@@ -8,8 +8,9 @@
 ;; ```
 ;; - Autocompletion in Python on Windows.
 ;; ```{bash}
-;;   pip3 install --user  pyreadline3
+;;   pip3 install --user pyreadline3
 ;; ```
+;; - M-x jedi:install-server
 ;; - M-x all-the-icons-install-fonts
 ;; - Download and install fonts
 ;;   - <https://fonts.google.com/specimen/Fira+Code>
@@ -212,8 +213,12 @@
 	python-shell-prompt-detect-failure-warning nil)
 ;; Set encoding to utf-8 to allows utf-8 characters in Python REPL (from https://stackoverflow.com/questions/14172576/why-unicodeencodeerror-raised-only-in-emacss-python-shell?utm_source=pocket_reader)
   (setenv "PYTHONIOENCODING" "utf-8")
-  :hook (python-mode . (lambda ()
-			(display-fill-column-indicator-mode)))
+  (defun my/python-mode-hook ()
+    (add-to-list 'company-backends 'company-jedi))
+  :hook
+  (python-mode . (lambda ()
+		   (display-fill-column-indicator-mode)))
+  (python-mode . my/python-mode-hook)
   )
 
 (use-package conda
@@ -565,7 +570,7 @@
     (interactive "sRegular expression to find: ")
     (grep (concat "grep -nHI -i -r -e " string " --include=\*.{gms,inc} *" )))
   :bind ("\C-cf" . find-in-gams-files))
-
+
 (use-package gams-ac
   :init
   (gams-ac-after-init-setup))
@@ -918,9 +923,7 @@
 (use-package company-bibtex)
 (use-package company-math)
 (use-package company-reftex)
-
-(use-package company-box
-  :hook (company-mode . company-box-mode))
+(use-package company-jedi)
 
 (setq company-backends
       (append '((:separate company-bibtex
@@ -963,7 +966,7 @@
 	comint-scroll-to-bottom-on-input 'this
 	comint-scroll-to-bottom-on-output t
 	comint-move-point-for-output t
-	 ess-use-flymake nil)  ; Deactivate linter because it does not seem to work
+	ess-use-flymake nil)  ; Deactivate linter because it does not seem to work
   ;; Following the "source is real" philosophy put forward by ESS, one should
   ;; not need the command history and should not save the workspace at the end
   ;; of an R session. Hence, both options are disabled here.
@@ -973,6 +976,7 @@
   (add-hook 'ess-mode-hook (lambda ()
 			     (display-fill-column-indicator-mode)))
   )
+
 
 (define-key inferior-ess-mode-map [home] 'comint-bol)
 
