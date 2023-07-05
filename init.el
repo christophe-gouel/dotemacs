@@ -17,7 +17,8 @@
 ;;   - <https://candyfonts.com/font/symbola.htm>
 ;;   - <https://github.com/aliftype/xits>
 
-(defconst mswindows (equal window-system 'w32))
+(defconst is-mswindows (equal window-system 'w32)
+  "Boolean indicating whether Emacs is excuted within MS Windows.")
 
 (setq backup-directory-alist
      	  '(("." . "~/.emacs.d/backup")))
@@ -66,7 +67,7 @@
   :config
   (eshell-git-prompt-use-theme 'powerline))
 
-(if mswindows    ;; MS Windows clipboard is UTF-16LE
+(if is-mswindows    ;; MS Windows clipboard is UTF-16LE
     (defun bash ()
       (interactive)
       (let ((shell-file-name "C:\\Program Files\\Git\\bin\\bash.exe" ))
@@ -169,6 +170,9 @@
   (flymake-no-changes-timeout nil)
   :config
   (setq ess-use-flymake nil) ; Deactivate linter in ess because it does not seem to work
+  :bind
+  ("M-n" . flymake-goto-next-error)
+  ("M-p" . flymake-goto-prev-error)
   )
 
 ;;; =======
@@ -242,7 +246,7 @@
   :custom
   (pyvenv-virtualenvwrapper-supported "ipython3")
   :config
-  (if mswindows
+  (if is-mswindows
       ;; Default virtualenv cache directory for poetry on Microsoft Windows
       (setenv "WORKON_HOME"
 	      (substitute-in-file-name "${LOCALAPPDATA}/pypoetry/Cache/virtualenvs"))
@@ -332,7 +336,7 @@
 (set-keyboard-coding-system 'utf-8)
 (setq default-buffer-file-coding-system 'utf-8-unix)
 (setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING))
-(if mswindows    ;; MS Windows clipboard is UTF-16LE
+(if is-mswindows    ;; MS Windows clipboard is UTF-16LE
     (set-clipboard-coding-system 'utf-16le-dos))
 
 ;;; Sent deleted files to trash
@@ -455,11 +459,13 @@
 ;;;  fill-Unfill
 ;;; =============
 (defun unfill-paragraph ()
+  "Unfill paragraph."
   (interactive)
   (let ((fill-column (point-max)))
   (fill-paragraph nil)))
 
 (defun unfill-region (start end)
+  "Unfill region."
   (interactive "r")
   (let ((fill-column (point-max)))
     (fill-region start end nil)))
@@ -586,7 +592,7 @@
   :init
   (gams-ac-after-init-setup))
 
-(if mswindows
+(if is-mswindows
   (progn
     (setq gams-process-command-name "C:/GAMS/Last/gams.exe"
 	  gams-system-directory "C:/GAMS/Last/"
@@ -737,7 +743,7 @@
 ;; Automatically fold TeX buffers at opening
 (add-hook 'TeX-mode-hook 'TeX-fold-buffer t)
 
-(if mswindows
+(if is-mswindows
     (progn
       (eval-after-load "tex"
 	'(add-to-list 'TeX-command-list
@@ -750,13 +756,13 @@
 ;; Preview
 (setq preview-auto-cache-preamble t
       preview-default-option-list '("displaymath" "graphics" "textmath"))
-(if mswindows
+(if is-mswindows
     (setq preview-gs-command "C:\\Program Files\\gs\\gs10.01.1\\bin\\gswin64c.exe")
   (setq preview-gs-command "gs"))
 
 ;; Beamer
 (defun tex-frame ()
-  "Run pdflatex on current frame. Frame must be declared as an environment."
+  "Run pdflatex on current frame.  Frame must be declared as an environment."
   (interactive)
   (let (beg)
     (save-excursion
@@ -799,7 +805,7 @@
 ;;;  doc-view
 ;;; ==========
 (use-package doc-view
-  :if mswindows
+  :if is-mswindows
   :config
   (setq doc-view-ghostscript-program "C:\\Program Files\\gs\\gs10.01.1\\bin\\gswin64c.exe"))
 
@@ -832,19 +838,18 @@
 (setq matlab-indent-level 2)
 (setq matlab-comment-region-s "% ")
 (defun my-matlab-mode-hook ()
-  ;; (setq fill-column 80) 	        ; where auto-fill should wrap
   (setq matlab-show-mlint-warnings t)   ; Activate mlint
   (mlint-minor-mode))                   ; Activate mlint minor mode
 (add-hook 'matlab-mode-hook 'my-matlab-mode-hook)
 
 (defun find-in-m-files (string)
-  "Find a regular expression in m files"
+  "Find a regular expression in m files."
   (interactive "sRegular expression to find: ")
   (grep (concat "grep -nHI -i -r -e " string " --include=*.m *" )))
 (define-key matlab-mode-map "\C-cf" 'find-in-m-files)
 
 ;; mlint
-(if mswindows
+(if is-mswindows
     (setq mlint-programs (quote ("C:/Program Files/MATLAB/RLast/bin/win64/mlint.exe")))
   (setq mlint-programs (quote ("/usr/local/MATLAB/RLast/bin/glnxa64/mlint"))))
 
@@ -993,7 +998,7 @@
 (use-package rutils) ; To interact easily with renv
 
 (defun find-in-R-files (string)
-  "Find a regular expression in R files"
+  "Find a regular expression in R files."
   (interactive "sRegular expression to find: ")
   (grep (concat "grep -nHI -i -r -e " string " --include=\*.{R,Rmd,qmd} *" )))
 (define-key ess-mode-map "\C-cf" 'find-in-R-files)
@@ -1011,9 +1016,10 @@
 		(t 1000)
 		)))
 
-;; Fix to a bug in iess (see: https://github.com/emacs-ess/ESS/issues/1193)
-;; To check with new emacs/ess version if still relevant
 (defun my-inferior-ess-init ()
+  "Fix to a bug in iess (see:
+https://github.com/emacs-ess/ESS/issues/1193) To check with new
+emacs/ess version if still relevant."
   (setq-local ansi-color-for-comint-mode 'filter)
   (smartparens-mode 1))
 (add-hook 'inferior-ess-mode-hook 'my-inferior-ess-init)
@@ -1137,7 +1143,7 @@ same directory as the working and insert a link to this file."
 
 ;; swiper is slow for large files so it is replaced by isearch for large files
 (defun search-method-according-to-numlines ()
-  "Determines the number of lines of current buffer and chooses a search method accordingly"
+  "Determine the number of lines of current buffer and chooses a search method accordingly."
   (interactive)
   (if (< (count-lines (point-min) (point-max)) 20000)
       (swiper)
@@ -1192,7 +1198,7 @@ same directory as the working and insert a link to this file."
 ;;; =======
 ;;;  Tramp
 ;;; =======
-(if mswindows
+(if is-mswindows
     (setq tramp-default-method "plink"))
 
 ;;; ===========
