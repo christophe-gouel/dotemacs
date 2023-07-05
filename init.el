@@ -230,6 +230,8 @@
 (use-package poetry)
 
 (use-package pyvenv
+  :custom
+  (pyvenv-virtualenvwrapper-supported "ipython3")
   :config
   (if mswindows
       ;; Default virtualenv cache directory for poetry on Microsoft Windows
