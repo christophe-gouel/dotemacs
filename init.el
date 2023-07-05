@@ -59,7 +59,6 @@
 ;;; =======
 ;;;  Shell
 ;;; =======
-
 (global-set-key [f1] 'shell)
 (global-set-key [f2] 'eshell)
 
@@ -161,10 +160,20 @@
   (dired-mode . diredfl-mode)
   )
 
+;;; =========
+;;;  flymake
+;;; =========
+(use-package flymake
+  :ensure nil
+  :custom
+  (flymake-no-changes-timeout nil)
+  :config
+  (setq ess-use-flymake nil) ; Deactivate linter in ess because it does not seem to work
+  )
+
 ;;; =======
 ;;;  imenu
 ;;; =======
-
 (use-package imenu
   :ensure nil
   :custom
@@ -967,8 +976,7 @@
 	ess-ask-for-ess-directory nil  ; Do not ask what is the project directory
 	comint-scroll-to-bottom-on-input 'this
 	comint-scroll-to-bottom-on-output t
-	comint-move-point-for-output t
-	ess-use-flymake nil)  ; Deactivate linter because it does not seem to work
+	comint-move-point-for-output t)
   ;; Following the "source is real" philosophy put forward by ESS, one should
   ;; not need the command history and should not save the workspace at the end
   ;; of an R session. Hence, both options are disabled here.
