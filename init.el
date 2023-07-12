@@ -11,10 +11,8 @@
 ;;   pip3 install --user pyreadline3
 ;; ```
 ;; - M-x jedi:install-server
-;; - M-x all-the-icons-install-fonts
 ;; - Download and install fonts
-;;   - <https://fonts.google.com/specimen/Fira+Code>
-;;   - <https://candyfonts.com/font/symbola.htm>
+;;   - JetBrains from <https://www.nerdfonts.com/font-downloads>
 ;;   - <https://github.com/aliftype/xits>
 
 (defconst is-mswindows (equal window-system 'w32)
@@ -90,17 +88,36 @@
     (server-start)
   (xterm-mouse-mode))
 
-;;; ===============
-;;;  all-the-icons
-;;; ===============
-(use-package all-the-icons
-  :if (display-graphic-p))
-(use-package all-the-icons-dired
+;;; ============
+;;;  nerd-icons
+;;; ============
+(use-package nerd-icons
   :if (display-graphic-p)
-  :hook (dired-mode . all-the-icons-dired-mode))
-(use-package all-the-icons-ivy
+  :custom
+  (nerd-icons-font-family "JetBrainsMonoNL NF")
+  )
+(use-package nerd-icons-dired
   :if (display-graphic-p)
-  :hook (after-init . all-the-icons-ivy-setup))
+  :hook
+  (dired-mode . nerd-icons-dired-mode)
+  )
+(use-package nerd-icons-ivy-rich
+  :if (display-graphic-p)
+  :after counsel
+  :init
+  (nerd-icons-ivy-rich-mode 1)
+  (ivy-rich-mode 1)
+  )
+(use-package nerd-icons-ibuffer
+  :if (display-graphic-p)
+  :hook
+  (ibuffer-mode . nerd-icons-ibuffer-mode)
+  )
+(use-package nerd-icons-completion
+  :if (display-graphic-p)
+  :config
+  (nerd-icons-completion-mode)
+  )
 
 ;;; ======================
 ;;;  Dashboard
@@ -305,11 +322,16 @@
 
 ;; Fonts and unicode characters
 (if (display-graphic-p)
-    (add-to-list 'default-frame-alist
-             '(font . "Fira Code Regular-10"))
+    (progn
+      (add-to-list 'default-frame-alist
+		   '(font . "JetBrainsMonoNL NF-10"))
+      (set-fontset-font t 'unicode (font-spec :name "XITS Math") nil 'prepend)
+      )
   )
-(set-fontset-font "fontset-default" 'symbol "Symbola")
-(set-fontset-font t 'unicode (font-spec :name "XITS Math") nil 'prepend)
+;; (set-fontset-font "fontset-default" 'symbol "Symbola")
+;; To list all available fonts, use
+;; (dolist (font (x-list-fonts "*"))
+;;   (insert (format "%s\n" font)))
 
 (delete-selection-mode t)                ; entrée efface texte sélectionné
 (setq-default mouse-yank-at-point t)     ; coller avec la souris
@@ -359,10 +381,14 @@
 ;;; ==================
 ;; From <https://emacsredux.com/blog/2014/08/25/a-peek-at-emacs-24-dot-4-prettify-symbols-mode/>
 ;; To check if this is a good idea or if one should rather activate it by mode
-(global-prettify-symbols-mode +1)
-(setq prettify-symbols-unprettify-at-point t)
+(if (display-graphic-p)
+    (progn
+      (global-prettify-symbols-mode +1)
+      (setq prettify-symbols-unprettify-at-point t)
+      ))
 
 (use-package prettify-utils
+  :if (display-graphic-p)
   :config
   (defun prettify-set ()
     (setq prettify-symbols-alist
@@ -419,10 +445,13 @@
 	   )))
   )
 
-(add-hook 'gams-mode-hook 'gams-symbols-list)
-(add-hook 'prog-mode-hook 'prettify-set)
-(add-hook 'gams-mode-hook 'prettify-set)
-(add-hook 'inferior-ess-mode-hook 'prettify-set)
+(if (display-graphic-p)
+    (progn
+      (add-hook 'gams-mode-hook 'gams-symbols-list)
+      (add-hook 'prog-mode-hook 'prettify-set)
+      (add-hook 'gams-mode-hook 'prettify-set)
+      (add-hook 'inferior-ess-mode-hook 'prettify-set)
+      ))
 
 ;;; ====================
 ;;;  rainbow-delimiters
@@ -652,7 +681,11 @@
 ;;;  doom-modeline
 ;;; ===============
 (use-package doom-modeline
-  :hook (after-init . doom-modeline-mode))
+  :hook (after-init . doom-modeline-mode)
+  :config
+  (if (not (display-graphic-p))
+      (setq doom-modeline-icon nil))
+  )
 
 ;;; =======
 ;;;  eglot
@@ -1163,13 +1196,8 @@ same directory as the working and insert a link to this file."
   (ivy-prescient-mode)
   )
 
-(use-package all-the-icons-ivy-rich
-  :after counsel
-  :init (all-the-icons-ivy-rich-mode +1)
-  )
-
 (use-package ivy-rich
-  :after all-the-icons-ivy-rich
+  :after nerd-icons-ivy-rich
   :init (ivy-rich-mode +1)
   )
 
