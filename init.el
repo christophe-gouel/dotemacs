@@ -365,8 +365,7 @@
 (setq delete-by-moving-to-trash t)
 
 ;;; Remove menu bar in terminal mode
-(if (display-graphic-p)
-    ()
+(if (not (display-graphic-p))
   (progn (menu-bar-mode -1)
    (global-hl-line-mode 0)))
 
@@ -728,7 +727,7 @@
 		  (lambda ()
                     (interactive)
                     (save-buffer)
-                    (TeX-command-menu "Latex")))
+                    (TeX-command-menu "latex")))
 		(define-key TeX-mode-map (kbd "<f10>")
 		  (lambda ()
                     (interactive)
@@ -778,16 +777,6 @@
 
 ;; Automatically fold TeX buffers at opening
 (add-hook 'TeX-mode-hook 'TeX-fold-buffer t)
-
-(if is-mswindows
-    (progn
-      (eval-after-load "tex"
-	'(add-to-list 'TeX-command-list
-		      '("htlatex" "htlatex %s" TeX-run-command t t :help "Run htlatex") t))
-      (eval-after-load "tex"
-	'(add-to-list 'TeX-command-list
-		      '("htlatexword" "htlatexword %s" TeX-run-command nil t :help "Run htlatex with Word options") t))
-      ))
 
 ;; Preview
 (setq preview-auto-cache-preamble t
