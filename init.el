@@ -215,7 +215,7 @@
 (use-package greek-unicode-insert
   :quelpa (greek-unicode-insert
 	   :fetcher github
-	   :url "Malabarba/greek-unicode-insert.git")
+	   :repo "Malabarba/greek-unicode-insert")
   :bind ("²" . greek-unicode-insert-map))
 
 ;;; ===============================
@@ -388,6 +388,9 @@
       ))
 
 (use-package prettify-utils
+  :quelpa (prettify-utils
+	   :fetcher url
+	   :url "https://raw.githubusercontent.com/Ilazki/prettify-utils.el/master/prettify-utils.el")
   :if (display-graphic-p)
   :config
   (defun prettify-set ()
