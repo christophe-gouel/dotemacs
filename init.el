@@ -6,6 +6,7 @@
 ;;   Rscript -e "install.packages('languageserver')"
 ;;   Curl --output %HOME%/.local/bin/digestif.cmd https://raw.githubusercontent.com/astoff/digestif/master/scripts/digestif.cmd
 ;; ```
+;; - Languagetool: to download from <https://languagetool.org/download/>
 ;; - Autocompletion in Python on Windows.
 ;; ```{bash}
 ;;   pip3 install --user pyreadline3
@@ -566,16 +567,39 @@
 	   ("-d" "en_US")
 	   nil
 	   utf-8))
-	ispell-hunspell-dictionary-alist ispell-local-dictionary-alist))
+	ispell-hunspell-dictionary-alist ispell-local-dictionary-alist)
+  )
 
 (use-package flyspell-correct
   :after flyspell
   :bind (:map flyspell-mode-map
-		  ("M-$" . flyspell-correct-at-point)))
+		  ("M-$" . flyspell-correct-at-point))
+  )
 
 (use-package flyspell-correct-ivy
   :demand t
-  :after flyspell-correct)
+  :after flyspell-correct
+  )
+
+;;; ==============
+;;;  languagetool
+;;; ==============
+(use-package flymake-languagetool
+  :if is-mswindows
+  :hook ((text-mode       . flymake-languagetool-load)
+         (latex-mode      . flymake-languagetool-load)
+         (org-mode        . flymake-languagetool-load)
+         (markdown-mode   . flymake-languagetool-load)
+	 (text-mode       . flymake-mode)
+         (latex-mode      . flymake-mode)
+         (org-mode        . flymake-mode)
+         (markdown-mode   . flymake-mode)
+	 )
+  :custom
+  (flymake-languagetool-server-jar
+   (substitute-in-file-name "${HOME}/Documents/LanguageTool-6.2/languagetool-server.jar"))
+  (flymake-languagetool-check-spelling t)
+  )
 
 ;;; ==========
 ;;;  Polymode
