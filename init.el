@@ -253,6 +253,7 @@
   )
 
 (use-package conda
+  :if is-mswindows
   :config
   (setq-default mode-line-format
 		(cons '(:exec conda-env-current-name) mode-line-format))
@@ -419,7 +420,7 @@
 	   ;; Math operator
 	   ("sum"  "∑")
 	   ("prod" "∏")
-	   ("**"   "^")
+	   ;; ("**"   "^")
 	   ;; Relations in equations
 	   ("=l="  "≤")
 	   ("=g="  "≥")
@@ -432,12 +433,12 @@
 	   (">="   "≥")
 	   ("ge"   "≥")
 	   ("eq"   "=")
-	   ("or"   "∨")
-	   ("and"  "∧")
+	   ;; ("or"   "∨")
+	   ;; ("and"  "∧")
 	   ("xor"  "⊻")
 	   ("imp"  "⇒")
 	   ("eqv"  "⇔")
-	   ("not"  "¬")
+	   ;; ("not"  "¬")
 	   ("ne"   "≠")
 	   ("<>"   "≠")
 	   ("=="   "=")
@@ -590,10 +591,6 @@
          (latex-mode      . flymake-languagetool-load)
          (org-mode        . flymake-languagetool-load)
          (markdown-mode   . flymake-languagetool-load)
-	 (text-mode       . flymake-mode)
-         (latex-mode      . flymake-mode)
-         (org-mode        . flymake-mode)
-         (markdown-mode   . flymake-mode)
 	 )
   :custom
   (flymake-languagetool-server-jar
@@ -1221,6 +1218,7 @@ same directory as the working and insert a link to this file."
 ;;;  ivy-bibtex
 ;;; ============
 (use-package ivy-bibtex
+  :if is-mswindows
   :custom
   (bibtex-completion-bibliography
    (substitute-in-file-name "${BIBINPUTS}/References.bib"))
