@@ -19,32 +19,33 @@
 (defconst is-mswindows (equal window-system 'w32)
   "Boolean indicating whether Emacs is excuted within MS Windows.")
 
-(setq backup-directory-alist
-     	  '(("." . "~/.emacs.d/backup")))
-
 ;; Define a file in which any customization is saved
 (setq custom-file (concat user-emacs-directory "custom.el"))
 (when (file-exists-p custom-file)
   (load custom-file))
 
-;; Define file that stores secrets
-(setq auth-sources '("~/.authinfo"))
-
 ;;; ==================
 ;;;  Packages manager
 ;;; ==================
-(require 'package)
+;; (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
 (package-initialize)
 
 ;; use-package setup
-;; Bootstrap use-package
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents) ; update archives
-  (package-install 'use-package)) ; grab the newest use-package
-(require 'use-package)
-;; Always download packages if not available
-(setq use-package-always-ensure t)
+;; Bootstrap use-package for emacs version below 29
+(when (< emacs-major-version 29)
+    (unless (package-installed-p 'use-package)
+      (package-refresh-contents) ; update archives
+      (package-install 'use-package)) ; grab the newest use-package
+    (require 'use-package)
+    )
+
+(use-package use-package
+  :ensure nil
+  :custom
+  ;; Always download packages if not available
+  (use-package-always-ensure t)
+  )
 
 ;; To keep GPG keys up to date
 (use-package gnu-elpa-keyring-update)
@@ -144,6 +145,15 @@
   ;; On démarre dashboard par défaut
   (dashboard-setup-startup-hook)
   )
+
+;;; ========
+;;;  proced
+;;; ========
+(use-package proced
+  :ensure nil
+  :custom
+  (proced-enable-color-flag t)
+)
 
 ;;; ===========
 ;;;  which-key
@@ -314,37 +324,41 @@
 ;;; ========================================
 ;;;  Look, feel, and general emacs behavior
 ;;; ========================================
-(setq blink-cursor-blinks 0)             ; curseur clignote indéfiniment
-(global-hl-line-mode +1)                 ; Highlight the current line
-(setq-default cursor-type 'bar)          ; curseur étroit
-(set-face-background 'cursor "#CC0000")  ; curseur rouge foncé
+(use-package emacs
+  :custom
+  (pixel-scroll-precision-mode t)
+  (blink-cursor-blinks 0)  ; curseur clignote indéfiniment
+  (cursor-type 'bar)  ; curseur étroit
+  (show-paren-mode t)  ; coupler les parenthèses
+  (auth-sources '("~/.authinfo"))  ; Define file that stores secrets
+  (backup-directory-alist '(("." . "~/.emacs.d/backup")))
+  (display-time-24hr-format t)  ; Affichage de l'heure format 24h
+  (default-major-mode 'text-mode)  ; mode par défaut
+  :config
+  (set-face-background 'cursor "#CC0000")  ; curseur rouge foncé
+  (tool-bar-mode 0)
+  (when (display-graphic-p)
+    (global-hl-line-mode +1)  ; Highlight the current line
+    ;; Fonts and unicode characters
+    (add-to-list 'default-frame-alist
+		 '(font . "JetBrainsMonoNL NF-10"))
+    (set-fontset-font t 'unicode (font-spec :name "XITS Math") nil 'prepend)
+    )
+  ;; To list all available fonts, use
+  ;; (dolist (font (x-list-fonts "*"))
+  ;;   (insert (format "%s\n" font)))
+  )
 (setq jit-lock-chunk-size 50000)
 
 (setq large-file-warning-threshold 100000000) ; set large file threshold at 100 megabytes
 
-;; Fonts and unicode characters
-(if (display-graphic-p)
-    (progn
-      (add-to-list 'default-frame-alist
-		   '(font . "JetBrainsMonoNL NF-10"))
-      (set-fontset-font t 'unicode (font-spec :name "XITS Math") nil 'prepend)
-      )
-  )
-;; (set-fontset-font "fontset-default" 'symbol "Symbola")
-;; To list all available fonts, use
-;; (dolist (font (x-list-fonts "*"))
-;;   (insert (format "%s\n" font)))
-
 (delete-selection-mode t)                ; entrée efface texte sélectionné
 (setq-default mouse-yank-at-point t)     ; coller avec la souris
-(show-paren-mode t)                      ; coupler les parenthèses
 (setq-default case-fold-search t)        ; recherche sans égard à la casse
 
-(setq display-time-24hr-format t)        ; Affichage de l'heure format 24h
 
 (fset 'yes-or-no-p 'y-or-n-p)            ; Replace yes or no with y or n
 
-(setq default-major-mode 'text-mode)     ; mode par défaut
 
 (setq column-number-mode t)              ; affichage du numéro de la colonne
 
@@ -365,17 +379,6 @@
 
 ;;; Sent deleted files to trash
 (setq delete-by-moving-to-trash t)
-
-;;; Remove menu bar in terminal mode
-(if (not (display-graphic-p))
-  (progn (menu-bar-mode -1)
-   (global-hl-line-mode 0)))
-
-;;; Remove toolbar
-(if window-system
-    (tool-bar-mode 0))
-
-(setq inhibit-startup-screen t)
 
 ;;; ==================
 ;;;  prettify-symbols
@@ -606,10 +609,11 @@
 (use-package quarto-mode)
 (add-to-list 'auto-mode-alist '("\\.Rmd" . poly-markdown+r-mode))
 
-;;; ========================================================
-;;;  Gams - http://shirotakeda.org/en/gams/gams-mode/
-;;; ========================================================
+;;; ======
+;;;  GAMS 
+;;; ======
 (use-package gams-mode
+  ;; :load-path "c:/Users/Gouel/Documents/git_projects/code/gams-mode"
   :mode ("\\.gms\\'" "\\.inc\\'")
   :hook ((gams-mode . rainbow-delimiters-mode)
 	 (gams-mode . smartparens-mode)
@@ -623,7 +627,7 @@
   (gams-statement-name "Parameter")
   (gams-dollar-control-name "exit")
   (gams-default-pop-window-height 20)
-  ;; Remove the handling of parenthèses by gams-mode to use smartparens instead
+  ;; Remove the handling of parentheses by gams-mode to use smartparens instead
   (gams-close-paren-always nil)
   (gams-close-double-quotation-always nil)
   (gams-close-single-quotation-always nil)
@@ -639,10 +643,6 @@
     (interactive "sRegular expression to find: ")
     (grep (concat "grep -nHI -i -r -e " string " --include=\*.{gms,inc} *" )))
   :bind ("\C-cf" . find-in-gams-files))
-
-(use-package gams-ac
-  :init
-  (gams-ac-after-init-setup))
 
 (if is-mswindows
   (progn
@@ -714,6 +714,7 @@
 ;;;  eglot
 ;;; =======
 (use-package eglot
+  :ensure nil
   :config
   (setq eglot-ignored-server-capabilities '(:documentOnTypeFormattingProvider))  ; Prevent eglot from reformatting code automatically
   :bind
@@ -924,11 +925,6 @@
   )
 
 (use-package ripgrep)
-
-;;; =====================================
-;;;  Activation du clic droit comme aide
-;;; =====================================
-(define-key global-map [(mouse-3)] 'mouse-me)
 
 ;;; ============================================
 ;;;  Company - Modern auto-completion framework

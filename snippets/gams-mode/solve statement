@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: solve statement
+# key: solve
+# --
+
+solve $1 using $2 $3 $4;
