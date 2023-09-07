@@ -642,19 +642,12 @@
     "Find a regular expression in gams files"
     (interactive "sRegular expression to find: ")
     (grep (concat "grep -nHI -i -r -e " string " --include=\*.{gms,inc} *" )))
+  (if is-mswindows
+      (setq gams-system-directory "C:/GAMS/Last/"
+	    gams-docs-directory "C:/GAMS/Last/docs")
+    (setq gams-system-directory "/opt/gams/gamsLast_linux_x64_64_sfx"
+	  gams-docs-directory "/opt/gams/gamsLast_linux_x64_64_sfx/docs"))
   :bind ("\C-cf" . find-in-gams-files))
-
-(if is-mswindows
-  (progn
-    (setq gams-process-command-name "C:/GAMS/Last/gams.exe"
-	  gams-system-directory "C:/GAMS/Last/"
-	  gams-docs-directory "C:/GAMS/Last/docs"
-	  load-path
-	  (cons "C:/GAMS/Last/" ;; Set the installed directory!
-		load-path)))
-  (progn
-    (setq gams-docs-directory "/opt/gams/gamsLast_linux_x64_64_sfx/docs"))
-  )
 
 ; Polymode for gams
 (define-hostmode poly-gams-hostmode
