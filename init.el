@@ -334,6 +334,9 @@
   (backup-directory-alist '(("." . "~/.emacs.d/backup")))
   (display-time-24hr-format t)  ; Affichage de l'heure format 24h
   (default-major-mode 'text-mode)  ; mode par défaut
+  ;; Options to make lsp usable in emacs (from <https://emacs-lsp.github.io/lsp-mode/page/performance/>)
+  (gc-cons-threshold (* 10 800000))
+  (read-process-output-max (* 1024 1024))
   :config
   (set-face-background 'cursor "#CC0000")  ; curseur rouge foncé
   (tool-bar-mode 0)
