@@ -296,6 +296,7 @@
   :custom
   (gptel-use-curl nil)
   )
+
 ;;; ==========
 ;;;  Org mode
 ;;; ==========
@@ -426,7 +427,6 @@
 	   ;; Math operator
 	   ("sum"  "∑")
 	   ("prod" "∏")
-	   ;; ("**"   "^")
 	   ;; Relations in equations
 	   ("=l="  "≤")
 	   ("=g="  "≥")
@@ -439,12 +439,9 @@
 	   (">="   "≥")
 	   ("ge"   "≥")
 	   ("eq"   "=")
-	   ;; ("or"   "∨")
-	   ;; ("and"  "∧")
 	   ("xor"  "⊻")
 	   ("imp"  "⇒")
 	   ("eqv"  "⇔")
-	   ;; ("not"  "¬")
 	   ("ne"   "≠")
 	   ("<>"   "≠")
 	   ("=="   "=")
@@ -453,15 +450,9 @@
 	   ("-inf" "-∞")
 	   ("+inf" "+∞")
 	   )))
+  (when (display-graphic-p)
+    (add-hook 'prog-mode-hook 'prettify-set))
   )
-
-(if (display-graphic-p)
-    (progn
-      (add-hook 'gams-mode-hook 'gams-symbols-list)
-      (add-hook 'prog-mode-hook 'prettify-set)
-      (add-hook 'gams-mode-hook 'prettify-set)
-      (add-hook 'inferior-ess-mode-hook 'prettify-set)
-      ))
 
 ;;; ====================
 ;;;  rainbow-delimiters
@@ -650,7 +641,11 @@
 	    gams-docs-directory "C:/GAMS/Last/docs")
     (setq gams-system-directory "/opt/gams/gamsLast_linux_x64_64_sfx"
 	  gams-docs-directory "/opt/gams/gamsLast_linux_x64_64_sfx/docs"))
-  :bind ("\C-cf" . find-in-gams-files))
+  (when (display-graphic-p)
+    (add-hook 'gams-mode-hook 'gams-symbols-list)
+    (add-hook 'gams-mode-hook 'prettify-set))
+  :bind ("\C-cf" . find-in-gams-files)
+  )
 
 ; Polymode for gams
 (define-hostmode poly-gams-hostmode
@@ -1020,6 +1015,9 @@
 	comint-scroll-to-bottom-on-input 'this
 	comint-scroll-to-bottom-on-output t
 	comint-move-point-for-output t)
+  (when (display-graphic-p)
+      (add-hook 'inferior-ess-mode-hook 'prettify-set)
+    )
   ;; Following the "source is real" philosophy put forward by ESS, one should
   ;; not need the command history and should not save the workspace at the end
   ;; of an R session. Hence, both options are disabled here.
