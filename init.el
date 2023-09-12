@@ -983,6 +983,15 @@
 			   company-latex-commands))
               company-backends))
 
+(use-package company-quickhelp
+  :if (display-graphic-p)
+  :custom
+  (company-quickhelp-delay 0.1)
+  :config
+  (eval-after-load 'company
+    '(define-key company-active-map (kbd "C-c h") #'company-quickhelp-manual-begin))
+)
+
 ;;; ===========
 ;;;  Yasnippet
 ;;; ===========
