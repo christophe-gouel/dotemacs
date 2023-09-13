@@ -250,7 +250,7 @@
   :ensure nil
   :config
   (setq python-shell-interpreter "ipython3"
-	python-shell-interpreter-args "-i --simple-prompt"
+	python-shell-interpreter-args "-i --simple-prompt --InteractiveShell.display_page=True"
 	python-shell-prompt-detect-failure-warning nil)
 ;; Set encoding to utf-8 to allows utf-8 characters in Python REPL (from https://stackoverflow.com/questions/14172576/why-unicodeencodeerror-raised-only-in-emacss-python-shell?utm_source=pocket_reader)
   (setenv "PYTHONIOENCODING" "utf-8")
@@ -1235,6 +1235,12 @@ same directory as the working and insert a link to this file."
 ;;;  View Large Files
 ;;; ==================
 (use-package vlf)
+
+;;; ===============
+;;;  expand-region
+;;; ===============
+(use-package expand-region
+  :bind ("C-!" . er/expand-region))
 
 ;;; =======
 ;;;  Tramp
