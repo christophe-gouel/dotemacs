@@ -260,6 +260,7 @@
   (python-mode . (lambda ()
 		   (display-fill-column-indicator-mode)))
   (python-mode . my/python-mode-hook)
+  (python-mode . flymake-mode)
   )
 
 (use-package conda
@@ -282,6 +283,8 @@
     ;; Default virtualenv cache directory for poetry on *nix
     (setenv "WORKON_HOME" "~/.cache/pypoetry/virtualenvs"))
   )
+
+(use-package pydoc)
 
 ;;; =========
 ;;;  chatGPT
