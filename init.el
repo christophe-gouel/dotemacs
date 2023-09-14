@@ -286,6 +286,10 @@
 
 (use-package pydoc)
 
+(use-package numpydoc
+  :bind (:map python-mode-map
+              ("C-c C-n" . numpydoc-generate)))
+
 ;;; =========
 ;;;  chatGPT
 ;;; =========
