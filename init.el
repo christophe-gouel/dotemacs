@@ -15,6 +15,7 @@
 ;; - Download and install fonts
 ;;   - JetBrains from <https://www.nerdfonts.com/font-downloads>
 ;;   - <https://github.com/aliftype/xits>
+;; - fd command for a fast find: <https://github.com/sharkdp/fd>
 
 (defconst is-mswindows (equal window-system 'w32)
   "Boolean indicating whether Emacs is excuted within MS Windows.")
@@ -915,6 +916,8 @@
   (projectile-completion-system 'ivy)
   (projectile-use-git-grep t)
   (projectile-switch-project-action #'projectile-dired)
+  (projectile-enable-caching nil)
+  (projectile-indexing-method 'alien)
   :bind-keymap
   ("C-c p" . projectile-command-map)
   :init
