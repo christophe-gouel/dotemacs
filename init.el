@@ -518,11 +518,18 @@
 (use-package visual-fill-column
   :init
   (setq visual-fill-column-width 100)
-  :config (defun my-visual-fill ()
-	    (interactive)
-	    (visual-line-mode 'toggle)
-	    (visual-fill-column-mode 'toggle)
-	    (adaptive-wrap-prefix-mode 'toggle))
+  :config
+  (defun my-visual-fill ()
+    (interactive)
+    (visual-line-mode 'toggle)
+    (visual-fill-column-mode 'toggle)
+    (adaptive-wrap-prefix-mode 'toggle))
+  (defun center-text ()
+    (interactive)
+    (setq-local visual-fill-column-center-text t))
+  (defun uncenter-text ()
+    (interactive)
+    (setq-local visual-fill-column-center-text nil))
   :bind ("C-c v" . my-visual-fill)
   :hook (text-mode . my-visual-fill)
   )
