@@ -1191,6 +1191,9 @@ same directory as the working and insert a link to this file."
   (remove-hook 'server-switch-hook 'magit-commit-diff)  ; Do not diff when committing
   (remove-hook 'with-editor-filter-visit-hook 'magit-commit-diff))  ; Do not diff when committing
 
+(use-package magit-delta
+  :hook (magit-mode . magit-delta-mode))
+
 ;;; =========
 ;;;  diff-hl
 ;;; =========
