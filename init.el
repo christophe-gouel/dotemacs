@@ -782,6 +782,30 @@
    (?\( "left(")
      (?/ "frac{}{}")
      ))
+  ;; Personalize the list of commands to be folded
+  (TeX-fold-macro-spec-list
+   '(("[f]"
+      ("footnote" "marginpar"))
+     ("[c]"
+      ("citeyear" "citeauthor" "citep" "citet" "cite"))
+     ("[l]"
+      ("label"))
+     ("[r]"
+      ("ref" "pageref" "eqref" "footref" "fref" "Fref"))
+     ("[i]"
+      ("index" "glossary"))
+     ("[1]:||*"
+      ("item"))
+     ("..."
+      ("dots"))
+     ("(C)"
+      ("copyright"))
+     ("(R)"
+      ("textregistered"))
+     ("TM"
+      ("texttrademark"))
+     (1
+      ("part" "chapter" "section" "subsection" "subsubsection" "paragraph" "subparagraph" "part*" "chapter*" "section*" "subsection*" "subsubsection*" "paragraph*" "subparagraph*" "emph" "textit" "textsl" "textmd" "textrm" "textsf" "texttt" "textbf" "textsc" "textup"))))
   ;; Increase reftex speed (especially on Windows)
   (reftex-enable-partial-scans t)
   (reftex-save-parse-info t)
@@ -794,6 +818,7 @@
   ("\C-ce" . TeX-next-error)
   ("\C-cf" . reftex-fancyref-fref)
   ("\C-cF" . reftex-fancyref-Fref)
+  ("M-RET" . latex-insert-item)
   )
 
 ;; Automatically fold TeX buffers at opening
