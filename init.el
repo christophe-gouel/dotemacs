@@ -1097,11 +1097,11 @@
 		)))
 
 (defun my-inferior-ess-init ()
-  "Fix to a bug in iess (see:
-https://github.com/emacs-ess/ESS/issues/1193) To check with new
-emacs/ess version if still relevant."
-  (setq-local ansi-color-for-comint-mode 'filter)
-  (smartparens-mode 1))
+  "Workaround for https://github.com/emacs-ess/ESS/issues/1193"
+  (add-hook 'comint-preoutput-filter-functions #'xterm-color-filter -90 t)
+  (setq-local ansi-color-for-comint-mode nil)
+  (smartparens-mode 1)
+  )
 (add-hook 'inferior-ess-mode-hook 'my-inferior-ess-init)
 
 ;;; ===================================
