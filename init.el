@@ -747,8 +747,9 @@
   (TeX-mode . latex-math-mode)
   (TeX-mode . imenu-add-menubar-index)
   (TeX-mode . turn-on-reftex)
-  (TeX-mode . (lambda ()
-                (TeX-fold-mode 1)))
+  (TeX-mode . TeX-fold-buffer)
+  :hook
+  (TeX-mode . TeX-fold-mode)
   ;; Custom functions to compile, preview, and view documents
   (TeX-mode . (lambda ()
 		(define-key TeX-mode-map (kbd "<f9>")
@@ -766,22 +767,17 @@
                     (TeX-view)
                     [return]))))
   :custom
-  (reftex-bibpath-environment-variables (quote ("BIBINPUTS")))
-  (reftex-default-bibliography '("References.bib"))
   (setq-default TeX-auto-parse-length 200)
   (setq-default TeX-master nil)
   (TeX-auto-save t)
   (TeX-parse-self t)
   (LaTeX-default-options "12pt")
-  (reftex-cite-format (quote natbib))
-  (reftex-sort-bibtex-matches (quote author))
   (LaTeX-math-abbrev-prefix "²")
   (TeX-source-specials-mode 1)
   (TeX-source-correlate-mode t)
   (TeX-source-correlate-method (quote synctex))
   (TeX-source-correlate-start-server (quote ask))
   (TeX-PDF-mode t)
-  (reftex-plug-into-AUCTeX t)
   (TeX-electric-sub-and-superscript 1)
   (LaTeX-math-list
    '(
@@ -789,6 +785,13 @@
    (?\( "left(")
      (?/ "frac{}{}")
      ))
+
+  ;; Preview
+  (preview-auto-cache-preamble t)
+  (preview-default-option-list '("displaymath" "graphics" "textmath"))
+
+  ;; Fold-mode
+  
   ;; Personalize the list of commands to be folded
   (TeX-fold-macro-spec-list
    '(("[f]"
@@ -813,30 +816,35 @@
       ("texttrademark"))
      (1
       ("part" "chapter" "section" "subsection" "subsubsection" "paragraph" "subparagraph" "part*" "chapter*" "section*" "subsection*" "subsubsection*" "paragraph*" "subparagraph*" "emph" "textit" "textsl" "textmd" "textrm" "textsf" "texttt" "textbf" "textsc" "textup"))))
-  ;; Increase reftex speed (especially on Windows)
-  (reftex-enable-partial-scans t)
-  (reftex-save-parse-info t)
-  (reftex-use-multiple-selection-buffers t)
   ;; Prevent folding of math to let prettify-symbols do the job
   (TeX-fold-math-spec-list-internal nil)
   (TeX-fold-math-spec-list nil)
   (LaTeX-fold-math-spec-list nil)
+  :config
+    (if is-mswindows
+      (setq preview-gs-command "C:\\Program Files\\gs\\gs10.01.1\\bin\\gswin64c.exe")
+    (setq preview-gs-command "gs"))
   :bind
   ("\C-ce" . TeX-next-error)
-  ("\C-cf" . reftex-fancyref-fref)
-  ("\C-cF" . reftex-fancyref-Fref)
   ("M-RET" . latex-insert-item)
   )
 
-;; Automatically fold TeX buffers at opening
-(add-hook 'TeX-mode-hook 'TeX-fold-buffer t)
-
-;; Preview
-(setq preview-auto-cache-preamble t
-      preview-default-option-list '("displaymath" "graphics" "textmath"))
-(if is-mswindows
-    (setq preview-gs-command "C:\\Program Files\\gs\\gs10.01.1\\bin\\gswin64c.exe")
-  (setq preview-gs-command "gs"))
+(use-package reftex
+  :custom
+  (reftex-bibpath-environment-variables (quote ("BIBINPUTS")))
+  (reftex-default-bibliography '("References.bib"))
+  (reftex-cite-format (quote natbib))
+  (reftex-sort-bibtex-matches (quote author))
+  (reftex-plug-into-AUCTeX t)
+  (reftex-label-alist '(AMSTeX)) ; Use \eqref by default instead of \ref
+  ;; Increase reftex speed (especially on Windows)
+  (reftex-enable-partial-scans t)
+  (reftex-save-parse-info t)
+  (reftex-use-multiple-selection-buffers t)
+  :bind
+  ("\C-cf" . reftex-fancyref-fref)
+  ("\C-cF" . reftex-fancyref-Fref)
+  )
 
 ;; Beamer
 (defun tex-frame ()
