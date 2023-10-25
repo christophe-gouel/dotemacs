@@ -873,6 +873,9 @@
   :config
   ;; Prevent cdlatex from defining LaTeX math subscript everywhere
   (define-key cdlatex-mode-map "_" nil)
+  :custom
+  (cdlatex-command-alist
+	'(("equ*" "Insert equation* env"   "" cdlatex-environment ("equation*") t nil)))
   )
 ;; Allow tab to be used to indent when the cursor is at the beginning of the line
 (add-hook 'cdlatex-tab-hook
