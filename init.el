@@ -736,7 +736,12 @@
 ;;; ============
 ;;;  format-all
 ;;; ============
-(use-package format-all)
+(use-package format-all
+  :config
+  (setq-default format-all-formatters
+		'(("LaTeX"
+		   (latexindent "-m" "--yaml=modifyLineBreaks:textWrapOptions:columns:-1,defaultIndent:'  ',indentAfterItems:itemize:0;enumerate:0:description:0"))))
+  )
 
 ;;; ============
 ;;;  LaTeX-mode
@@ -771,6 +776,7 @@
   (setq-default TeX-master nil)
   (TeX-auto-save t)
   (TeX-parse-self t)
+  (LaTeX-item-indent 0)
   (LaTeX-default-options "12pt")
   (LaTeX-math-abbrev-prefix "²")
   (TeX-source-specials-mode 1)
@@ -821,7 +827,7 @@
   (TeX-fold-math-spec-list nil)
   (LaTeX-fold-math-spec-list nil)
   :config
-    (if is-mswindows
+  (if is-mswindows
       (setq preview-gs-command "C:\\Program Files\\gs\\gs10.01.1\\bin\\gswin64c.exe")
     (setq preview-gs-command "gs"))
   :bind
