@@ -740,7 +740,7 @@
   :config
   (setq-default format-all-formatters
 		'(("LaTeX"
-		   (latexindent "-m" "--yaml=modifyLineBreaks:textWrapOptions:columns:-1,defaultIndent:'  ',indentAfterItems:itemize:0;enumerate:0:description:0"))))
+		   (latexindent "-m" "--yaml=modifyLineBreaks:textWrapOptions:columns:-1,defaultIndent:'  ',indentAfterItems:itemize:0;enumerate:0;description:0"))))
   )
 
 ;;; ============
