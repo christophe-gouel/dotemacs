@@ -305,6 +305,68 @@
   (gptel-use-curl nil)
   )
 
+;;; ==================
+;;;  GitHub - Copilot
+;;; ==================
+;; Configuration from <https://robert.kra.hn/posts/2023-02-22-copilot-emacs-setup/>
+(use-package copilot
+  :quelpa (copilot :fetcher github
+                   :repo "zerolfx/copilot.el"
+                   :branch "main"
+                   :files ("dist" "*.el"))
+  :custom
+  (copilot-indent-warning-suppress t)
+  :config
+  (defun cg/copilot-complete-or-accept ()
+    "Command that either triggers a completion or accepts one if one is available."
+    (interactive)
+    (if (copilot--overlay-visible)
+	(progn
+          (copilot-accept-completion)
+          (open-line 1)
+          (next-line))
+      (copilot-complete)))
+  
+  (defvar cg/copilot-manual-mode nil
+    "When `t' will only show completions when manually triggered, e.g. via M-C-<return>.")
+
+  (defun cg/copilot-disable-predicate ()
+    "When copilot should not automatically show completions."
+    cg/copilot-manual-mode)
+
+  (defun cg/copilot-change-activation ()
+    "Switch between three activation modes:
+       - automatic: copilot will automatically overlay completions
+       - manual: you need to press a key (M-C-<return>) to trigger completions
+       - off: copilot is completely disabled."
+    (interactive)
+    (if (and copilot-mode cg/copilot-manual-mode)
+	(progn
+          (message "deactivating copilot")
+          (global-copilot-mode -1)
+          (setq cg/copilot-manual-mode nil))
+      (if copilot-mode
+          (progn
+            (message "activating copilot manual mode")
+            (setq cg/copilot-manual-mode t))
+	(message "activating copilot mode")
+	(global-copilot-mode))))
+
+  (add-to-list 'copilot-disable-predicates #'cg/copilot-disable-predicate)
+  :hook (prog-mode . (lambda() (setq cg/copilot-manual-mode t)))
+  :bind
+  (
+   ("C-M-c"         . cg/copilot-change-activation)
+   :map copilot-mode-map
+   (("M-C-<next>"   . copilot-next-completion)
+    ("M-C-<prior>"  . copilot-previous-completion)
+    ("M-C-<right>"  . copilot-accept-completion-by-word)
+    ("M-C-<down>"   . copilot-accept-completion-by-line)
+    ("M-C-<return>" . cg/copilot-complete-or-accept)
+    ("M-C-g"        . copilot-clear-overlay))
+   )
+  )
+
 ;;; ==========
 ;;;  Org mode
 ;;; ==========
@@ -622,7 +684,7 @@
 ;;;  GAMS 
 ;;; ======
 (use-package gams-mode
-  ;; :load-path "c:/Users/Gouel/Documents/git_projects/code/gams-mode"
+  :load-path "c:/Users/Gouel/Documents/git_projects/code/gams-mode"
   :mode ("\\.gms\\'" "\\.inc\\'")
   :hook ((gams-mode . rainbow-delimiters-mode)
 	 (gams-mode . smartparens-mode)
