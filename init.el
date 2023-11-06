@@ -593,7 +593,7 @@
     (interactive)
     (setq-local visual-fill-column-center-text nil))
   :bind ("C-c v" . my-visual-fill)
-  :hook (text-mode . my-visual-fill)
+  :hook (TeX-mode . my-visual-fill)
   )
 
 ;;; =======
@@ -1212,7 +1212,7 @@
   (markdown-enable-math t)
   (markdown-enable-prefix-prompts nil)
   (markdown-header-scaling t)
-  (markdown-hide-markup t)
+  (markdown-hide-markup nil)
   (markdown-fontify-code-blocks-natively t)
   (markdown-enable-highlighting-syntax t)
   :config
