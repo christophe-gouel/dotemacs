@@ -582,18 +582,25 @@
   (setq visual-fill-column-width 100)
   :config
   (defun my-visual-fill ()
+    "Toggle visual fill column and visual line mode."
     (interactive)
     (visual-line-mode 'toggle)
     (visual-fill-column-mode 'toggle)
     (adaptive-wrap-prefix-mode 'toggle))
+  
   (defun center-text ()
+    "Center text in visual fill column."
     (interactive)
     (setq-local visual-fill-column-center-text t))
+  
   (defun uncenter-text ()
+    "Uncenter text in visual fill column."
     (interactive)
     (setq-local visual-fill-column-center-text nil))
   :bind ("C-c v" . my-visual-fill)
-  :hook (TeX-mode . my-visual-fill)
+  :hook
+  (TeX-mode    . my-visual-fill)
+  (bibtex-mode . my-visual-fill)
   )
 
 ;;; =======
