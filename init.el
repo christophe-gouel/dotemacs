@@ -198,7 +198,7 @@
   :custom
   (flymake-no-changes-timeout nil)
   :config
-  (setq ess-use-flymake nil) ; Deactivate linter in ess because it does not seem to work
+  (remove-hook 'flymake-diagnostic-functions 'flymake-proc-legacy-flymake)
   :bind
   ("M-n" . flymake-goto-next-error)
   ("M-p" . flymake-goto-prev-error)
@@ -1218,7 +1218,7 @@
 	   ))
   (markdown-enable-math t)
   (markdown-enable-prefix-prompts nil)
-  (markdown-header-scaling t)
+  (markdown-header-scaling nil)
   (markdown-hide-markup nil)
   (markdown-fontify-code-blocks-natively t)
   (markdown-enable-highlighting-syntax t)
