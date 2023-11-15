@@ -198,6 +198,7 @@
   :custom
   (flymake-no-changes-timeout nil)
   :config
+  (setq ess-use-flymake nil) ; Deactivate linter in ess because it does not seem to work well
   (remove-hook 'flymake-diagnostic-functions 'flymake-proc-legacy-flymake)
   :bind
   ("M-n" . flymake-goto-next-error)
@@ -461,7 +462,7 @@
 ;; To check if this is a good idea or if one should rather activate it by mode
 (if (display-graphic-p)
     (progn
-      (global-prettify-symbols-mode +1)
+      ;; (global-prettify-symbols-mode +1)
       (setq prettify-symbols-unprettify-at-point t)
       ))
 
@@ -474,22 +475,22 @@
   (defun prettify-set ()
     (setq prettify-symbols-alist
 	  (prettify-utils-generate
-	   ("lambda"	"λ")
-	   ("|>"		"▷")
+	   ;; ("lambda"	"λ")
+	   ("|>"		"▷ ")
 	   ("<|"		"◁")
-	   ("%>%"         "▶")
+	   ("%>%"               "▶ ")
 	   ("->>"		"↠")
 	   ("->"		"→")
-	   ("<-"		"←")
+	   ("<-"		"← ")
 	   ("=>"		"⇒")
 	   ("<="		"≤")
 	   (">="		"≥")
 	   ("[ ]"         "☐")
            ("[X]"         "☑")
            ("[-]"         "❍")
-	   ("function"    "ƒ")
-	   ("%x%"         "⊗")
-	   ("%*%"         "×")
+	   ;; ("function"    "ƒ")
+	   ("%x%"         " ⊗ ")
+	   ("%*%"         " × ")
 	   )))
   (defun gams-symbols-list ()
     (setq prettify-symbols-alist
@@ -822,6 +823,7 @@
   (TeX-mode . imenu-add-menubar-index)
   (TeX-mode . turn-on-reftex)
   (TeX-mode . TeX-fold-buffer)
+  (TeX-mode . prettify-symbols-mode)
   :hook
   (TeX-mode . TeX-fold-mode)
   ;; Custom functions to compile, preview, and view documents
@@ -1415,4 +1417,26 @@ same directory as the working and insert a link to this file."
 	      ("C-c C-l" . obsidian-insert-wikilink))
   )
 
+;; Background jobs for R using ChatGPT
+(require 'compile)
+
+(defun run-r-script ()
+  "Run an R script using Rscript and display the output in a compilation buffer."
+  (interactive)
+  (let* ((script (read-file-name "R script: ")) ; Prompt the user to select an R script file
+         (basename (file-name-base script)) ; Extract the base name of the script file
+         (combuf-name (format "*R-compilation-%s*" basename)) ; Generate a unique compilation buffer name
+         (combuf (get-buffer combuf-name)) ; Get the existing compilation buffer, if any
+         (compilation-buffer-name-function (lambda (_) combuf-name)) ; Set the compilation buffer name function
+         (compilation-ask-about-save nil)) ; Automatically save modified buffers without asking
+    (when combuf
+      (kill-buffer combuf)) ; Kill the existing compilation buffer
+    (setq combuf (get-buffer-create combuf-name)) ; Create a new compilation buffer
+    (with-current-buffer combuf
+      (setq default-directory (file-name-directory script)) ; Set the default directory of the compilation buffer
+      (delete-region (point-min) (point-max)) ; Delete any existing content in the compilation buffer
+      (compilation-mode)) ; Enable compilation mode in the buffer
+    (compile (format "Rscript %s" script)) ; Execute the R script using Rscript
+    (with-current-buffer combuf
+      (rename-buffer combuf-name)))) ; Rename the compilation buffer to its final name
 ;;; init.el ends here
