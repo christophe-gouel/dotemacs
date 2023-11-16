@@ -1147,6 +1147,13 @@
 	 ("M--" . ess-insert-assign)
          :map inferior-ess-r-mode-map
 	 ("M--" . ess-insert-assign))
+  :custom
+  (ess-roxy-str "#'")
+  (ess-roxy-template-alist
+   '(("description" . ".. content for \\description{} (no empty lines) ..")
+     ("details" . ".. content for \\details{} ..")
+     ("param" . "")
+     ("return" . "")))
   :config
   (setq ess-assign-list '(" <-" " <<- " " = " " -> " " ->> ")
 	ess-style 'RStudio  ; Set code indentation
