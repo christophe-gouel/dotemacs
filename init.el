@@ -422,6 +422,9 @@
   ;; To list all available fonts, use
   ;; (dolist (font (x-list-fonts "*"))
   ;;   (insert (format "%s\n" font)))
+  :bind
+  (:map compilation-mode-map
+	("r" . recompile))
   )
 (setq jit-lock-chunk-size 50000)
 
