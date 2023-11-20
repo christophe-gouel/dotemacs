@@ -414,17 +414,17 @@
     (add-to-list 'default-frame-alist
 		 '(font . "JetBrainsMonoNL NF-10"))
     (set-fontset-font t 'unicode (font-spec :name "XITS Math") nil 'prepend)
+    ;; To list all available fonts, use
+    ;; (dolist (font (x-list-fonts "*"))
+    ;;   (insert (format "%s\n" font)))
+    (add-hook 'text-mode-hook 'prettify-symbols-mode)
     )
-  ;; To list all available fonts, use
-  ;; (dolist (font (x-list-fonts "*"))
-  ;;   (insert (format "%s\n" font)))
-  :bind
-  ("<f5>" . revert-buffer)
-  (:map compilation-mode-map
-	("r" . recompile))
+  :bind(
+	("<f5>" . revert-buffer)
+	(:map compilation-mode-map
+	      ("r" . recompile)))
   :hook
   (prog-mode . display-fill-column-indicator-mode)
-  (text-mode . prettify-symbols-mode)
   )
 (setq jit-lock-chunk-size 50000)
 
@@ -457,68 +457,6 @@
 
 ;;; Sent deleted files to trash
 (setq delete-by-moving-to-trash t)
-
-;;; ==================
-;;;  prettify-symbols
-;;; ==================
-(use-package prettify-utils
-  :quelpa (prettify-utils
-	   :fetcher url
-	   :url "https://raw.githubusercontent.com/Ilazki/prettify-utils.el/master/prettify-utils.el")
-  :if (display-graphic-p)
-  :config
-  (defun prettify-set ()
-    (setq prettify-symbols-alist
-	  (prettify-utils-generate
-	   ;; ("lambda"	"λ")
-	   ("|>"		"▷ ")
-	   ("<|"		"◁")
-	   ("%>%"               "▶ ")
-	   ("->>"		"↠")
-	   ("->"		"→")
-	   ("<-"		"← ")
-	   ("=>"		"⇒")
-	   ("<="		"≤")
-	   (">="		"≥")
-	   ("[ ]"         "☐")
-           ("[X]"         "☑")
-           ("[-]"         "❍")
-	   ;; ("function"    "ƒ")
-	   ("%x%"         " ⊗ ")
-	   ("%*%"         " × ")
-	   )))
-  (defun gams-symbols-list ()
-    (setq prettify-symbols-alist
-	  (prettify-utils-generate
-	   ;; Math operator
-	   ("sum"  "∑")
-	   ("prod" "∏")
-	   ;; Relations in equations
-	   ("=l="  "≤")
-	   ("=g="  "≥")
-	   ("=e="  "=")
-	   ;; Logical operator
-	   ("lt"   "<")
-	   ("gt"   ">")
-	   ("<="   "≤")
-	   ("le"   "≤")
-	   (">="   "≥")
-	   ("ge"   "≥")
-	   ("eq"   "=")
-	   ("xor"  "⊻")
-	   ("imp"  "⇒")
-	   ("eqv"  "⇔")
-	   ("ne"   "≠")
-	   ("<>"   "≠")
-	   ("=="   "=")
-	   ;; Mathematical constant
-	   ("inf"  "∞")
-	   ("-inf" "-∞")
-	   ("+inf" "+∞")
-	   )))
-  ;; (when (display-graphic-p)
-  ;;   (add-hook 'prog-mode-hook 'prettify-set))
-  )
 
 ;;; ====================
 ;;;  rainbow-delimiters
@@ -720,9 +658,6 @@
 	    gams-docs-directory "C:/GAMS/Last/docs")
     (setq gams-system-directory "/opt/gams/gamsLast_linux_x64_64_sfx"
 	  gams-docs-directory "/opt/gams/gamsLast_linux_x64_64_sfx/docs"))
-  ;; (when (display-graphic-p)
-  ;;   (add-hook 'gams-mode-hook 'gams-symbols-list)
-  ;;   (add-hook 'gams-mode-hook 'prettify-set))
   :bind (:map gams-mode-map
 	      ("C-c f" . find-in-gams-files))
   )
@@ -1286,7 +1221,6 @@ same directory as the working and insert a link to this file."
       (reftex-citation)))
   :hook
   (markdown-mode . imenu-add-menubar-index)
-  ;; (markdown-mode . prettify-symbols-mode)
   :bind (:map markdown-mode-map
 	      ("C-c [" . markdown-reftex-citation))
   )
