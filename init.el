@@ -405,6 +405,7 @@
   (gc-cons-threshold (* 10 800000))
   (read-process-output-max (* 1024 1024))
   (prettify-symbols-unprettify-at-point t)
+  (column-number-mode t)              ; affichage du numéro de la colonne
   :config
   (set-face-background 'cursor "#CC0000")  ; curseur rouge foncé
   (tool-bar-mode 0)
@@ -419,7 +420,7 @@
     ;;   (insert (format "%s\n" font)))
     (add-hook 'text-mode-hook 'prettify-symbols-mode)
     )
-  :bind(
+  :bind(("C-x C-b" . ibuffer)
 	("<f5>" . revert-buffer)
 	(:map compilation-mode-map
 	      ("r" . recompile)))
@@ -434,11 +435,8 @@
 (setq-default mouse-yank-at-point t)     ; coller avec la souris
 (setq-default case-fold-search t)        ; recherche sans égard à la casse
 
-
 (fset 'yes-or-no-p 'y-or-n-p)            ; Replace yes or no with y or n
 
-
-(setq column-number-mode t)              ; affichage du numéro de la colonne
 
 (setq comment-column 0) ; Prevent indentation of lines starting with one comment
 
@@ -627,6 +625,8 @@
 (use-package gams-mode
   ;; :load-path "c:/Users/Gouel/Documents/git_projects/code/gams-mode"
   :mode ("\\.gms\\'" "\\.inc\\'")
+  ;; I don't know why but despite gams-mode being a prog-mode, it does not load
+  ;; automatically some default minor modes for prog-mode.
   :hook ((gams-mode . rainbow-delimiters-mode)
 	 (gams-mode . smartparens-mode)
 	 (gams-mode . display-fill-column-indicator-mode))
@@ -909,12 +909,6 @@
 ;;;  Auto-compression
 ;;; ==================
 (auto-compression-mode t)
-
-;;; ================
-;;;  Ibuffer
-;;; ================
-(global-set-key (kbd "C-x C-b") 'ibuffer)
-(autoload 'ibuffer "ibuffer" "List buffers." t)
 
 ;;; ===============================================
 ;;;  Matlab - http://matlab-emacs.sourceforge.net/
