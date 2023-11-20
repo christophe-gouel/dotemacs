@@ -61,9 +61,6 @@
 ;;; =======
 ;;;  Shell
 ;;; =======
-(global-set-key [f1] 'shell)
-(global-set-key [f2] 'eshell)
-
 (use-package eshell-git-prompt
   :config
   (eshell-git-prompt-use-theme 'powerline))
@@ -216,7 +213,7 @@
 
 (use-package imenu-list
   :bind
-  ("\C-c=" . imenu-list-smart-toggle)
+  ("C-c =" . imenu-list-smart-toggle)
   :custom
   (imenu-list-focus-after-activation t)
   (imenu-list-position 'above)
@@ -259,8 +256,6 @@
   (defun my/python-mode-hook ()
     (add-to-list 'company-backends 'company-jedi))
   :hook
-  (python-mode . (lambda ()
-		   (display-fill-column-indicator-mode)))
   (python-mode . my/python-mode-hook)
   (python-mode . flymake-mode)
   )
@@ -409,6 +404,7 @@
   ;; Options to make lsp usable in emacs (from <https://emacs-lsp.github.io/lsp-mode/page/performance/>)
   (gc-cons-threshold (* 10 800000))
   (read-process-output-max (* 1024 1024))
+  (prettify-symbols-unprettify-at-point t)
   :config
   (set-face-background 'cursor "#CC0000")  ; curseur rouge foncé
   (tool-bar-mode 0)
@@ -423,8 +419,12 @@
   ;; (dolist (font (x-list-fonts "*"))
   ;;   (insert (format "%s\n" font)))
   :bind
+  ("<f5>" . revert-buffer)
   (:map compilation-mode-map
 	("r" . recompile))
+  :hook
+  (prog-mode . display-fill-column-indicator-mode)
+  (text-mode . prettify-symbols-mode)
   )
 (setq jit-lock-chunk-size 50000)
 
@@ -461,14 +461,6 @@
 ;;; ==================
 ;;;  prettify-symbols
 ;;; ==================
-;; From <https://emacsredux.com/blog/2014/08/25/a-peek-at-emacs-24-dot-4-prettify-symbols-mode/>
-;; To check if this is a good idea or if one should rather activate it by mode
-(if (display-graphic-p)
-    (progn
-      ;; (global-prettify-symbols-mode +1)
-      (setq prettify-symbols-unprettify-at-point t)
-      ))
-
 (use-package prettify-utils
   :quelpa (prettify-utils
 	   :fetcher url
@@ -524,8 +516,8 @@
 	   ("-inf" "-∞")
 	   ("+inf" "+∞")
 	   )))
-  (when (display-graphic-p)
-    (add-hook 'prog-mode-hook 'prettify-set))
+  ;; (when (display-graphic-p)
+  ;;   (add-hook 'prog-mode-hook 'prettify-set))
   )
 
 ;;; ====================
@@ -695,12 +687,11 @@
 ;;;  GAMS 
 ;;; ======
 (use-package gams-mode
-  :load-path "c:/Users/Gouel/Documents/git_projects/code/gams-mode"
+  ;; :load-path "c:/Users/Gouel/Documents/git_projects/code/gams-mode"
   :mode ("\\.gms\\'" "\\.inc\\'")
   :hook ((gams-mode . rainbow-delimiters-mode)
 	 (gams-mode . smartparens-mode)
-	 (gams-mode . (lambda ()
-			(display-fill-column-indicator-mode))))
+	 (gams-mode . display-fill-column-indicator-mode))
   :custom
   (gams-process-command-option "ll=0 lo=3 pw=153 ps=9999")
   (gams-statement-upcase t)
@@ -721,7 +712,7 @@
   (gams-indent-number-equation 2)
   :config
   (defun find-in-gams-files (string)
-    "Find a regular expression in gams files"
+    "Find a regular expression in GAMS files"
     (interactive "sRegular expression to find: ")
     (grep (concat "grep -nHI -i -r -e " string " --include=\*.{gms,inc} *" )))
   (if is-mswindows
@@ -729,10 +720,11 @@
 	    gams-docs-directory "C:/GAMS/Last/docs")
     (setq gams-system-directory "/opt/gams/gamsLast_linux_x64_64_sfx"
 	  gams-docs-directory "/opt/gams/gamsLast_linux_x64_64_sfx/docs"))
-  (when (display-graphic-p)
-    (add-hook 'gams-mode-hook 'gams-symbols-list)
-    (add-hook 'gams-mode-hook 'prettify-set))
-  :bind ("\C-cf" . find-in-gams-files)
+  ;; (when (display-graphic-p)
+  ;;   (add-hook 'gams-mode-hook 'gams-symbols-list)
+  ;;   (add-hook 'gams-mode-hook 'prettify-set))
+  :bind (:map gams-mode-map
+	      ("C-c f" . find-in-gams-files))
   )
 
 ; Polymode for gams
@@ -763,7 +755,8 @@
 ;;; ===========
 (use-package yaml-mode
   :mode ("\\.yml$" "\\.dvc" "dvc.lock")
-  :bind ("\C-m" . newline-and-indent))
+  :bind (:map yaml-mode-map
+	      ("C-m" . newline-and-indent)))
 
 ;;; ==============
 ;;;  Custom theme
@@ -797,7 +790,7 @@
   :config
   (setq eglot-ignored-server-capabilities '(:documentOnTypeFormattingProvider))  ; Prevent eglot from reformatting code automatically
   :bind
-  ("\C-c l" . eglot)
+  ("C-c l" . eglot)
   )
   
 ;;; =======
@@ -826,7 +819,6 @@
   (TeX-mode . imenu-add-menubar-index)
   (TeX-mode . turn-on-reftex)
   (TeX-mode . TeX-fold-buffer)
-  (TeX-mode . prettify-symbols-mode)
   :hook
   (TeX-mode . TeX-fold-mode)
   ;; Custom functions to compile, preview, and view documents
@@ -904,9 +896,9 @@
   (if is-mswindows
       (setq preview-gs-command "C:\\Program Files\\gs\\gs10.01.1\\bin\\gswin64c.exe")
     (setq preview-gs-command "gs"))
-  :bind
-  ("\C-ce" . TeX-next-error)
-  ("M-RET" . latex-insert-item)
+  :bind (:map TeX-mode-map
+	      ("C-c e" . TeX-next-error)
+	      ("M-RET" . latex-insert-item))
   )
 
 (use-package reftex
@@ -921,9 +913,9 @@
   (reftex-enable-partial-scans t)
   (reftex-save-parse-info t)
   (reftex-use-multiple-selection-buffers t)
-  :bind
-  ("\C-cf" . reftex-fancyref-fref)
-  ("\C-cF" . reftex-fancyref-Fref)
+  :bind (:map reftex-mode-map 
+	      ("C-c f" . reftex-fancyref-fref)
+	      ("C-c F" . reftex-fancyref-Fref))
   )
 
 ;; Beamer
@@ -1135,20 +1127,17 @@
 ;;;  ESS
 ;;; =====
 (use-package ess
-  :bind (;; Shortcut for pipe |>
-	 :map ess-r-mode-map
-         ("C-S-m" . " |>")
-         :map inferior-ess-r-mode-map
+  :bind (:map ess-r-mode-map
+	 ;; Shortcut for pipe |>
          ("C-S-m" . " |>")
 	 ;; Shortcut for pipe %>%
-	 :map ess-r-mode-map
 	 ("C-%" . " %>%")
-         :map inferior-ess-r-mode-map
-         ("C-%" . " %>%")
 	 ;; Shortcut for assign <-
-	 :map ess-r-mode-map
 	 ("M--" . ess-insert-assign)
+	 ("<f9>" . run-r-script-on-current-buffer-file)
          :map inferior-ess-r-mode-map
+         ("C-S-m" . " |>")
+         ("C-%" . " %>%")
 	 ("M--" . ess-insert-assign))
   :custom
   (ess-roxy-str "#'")
@@ -1164,9 +1153,6 @@
 	comint-scroll-to-bottom-on-input 'this
 	comint-scroll-to-bottom-on-output t
 	comint-move-point-for-output t)
-  (when (display-graphic-p)
-      (add-hook 'inferior-ess-mode-hook 'prettify-set)
-    )
   ;; Following the "source is real" philosophy put forward by ESS, one should
   ;; not need the command history and should not save the workspace at the end
   ;; of an R session. Hence, both options are disabled here.
@@ -1201,13 +1187,7 @@
     (interactive)
     (let ((filename (read-file-name "R script: ")))
       (run-r-script filename (file-name-base filename))))
-
-  :init
-  ;; Add a vertical line at 80 columns
-  (add-hook 'ess-mode-hook (lambda ()
-			     (display-fill-column-indicator-mode)))
   )
-
 
 (define-key inferior-ess-mode-map [home] 'comint-bol)
 
@@ -1243,12 +1223,11 @@
 ;;; ===================================
 ;;;  Définition de touches perso global
 ;;; ===================================
-(define-key global-map [(f5)] 'revert-buffer)
+;; (define-key global-map [(f5)] 'revert-buffer)
 
 ;;; ===============
 ;;;  Markdown mode
 ;;; ===============
-(use-package pandoc-mode)
 (use-package markdown-mode
   :mode ("README\\.md\\'" . gfm-mode)
   :custom
@@ -1306,14 +1285,16 @@ same directory as the working and insert a link to this file."
           (reftex-cite-key-separator "; @"))
       (reftex-citation)))
   :hook
+  (markdown-mode . imenu-add-menubar-index)
+  ;; (markdown-mode . prettify-symbols-mode)
+  :bind (:map markdown-mode-map
+	      ("C-c [" . markdown-reftex-citation))
+  )
+
+(use-package pandoc-mode
+  :hook
   (markdown-mode . pandoc-mode)
   (pandoc-mode . pandoc-load-default-settings)
-  ;; bind modified reftex-citation to C-c[, without enabling reftex-mode
-  ;; https://www.gnu.org/software/auctex/manual/reftex/Citations-Outside-LaTeX.html#SEC31
-  (markdown-mode .
-		 (lambda ()
-		   (define-key markdown-mode-map "\C-c[" 'markdown-reftex-citation)))
-  (markdown-mode . imenu-add-menubar-index)
   )
 
 ;;; =======
