@@ -316,11 +316,17 @@
   (defun cg/copilot-complete-or-accept ()
     "Command that either triggers a completion or accepts one if one is available."
     (interactive)
+    ;; Check if the Copilot overlay is visible
     (if (copilot--overlay-visible)
 	(progn
+	  ;; Accept the completion
           (copilot-accept-completion)
-          (open-line 1)
-          (next-line))
+          ;; ;; Open a new line
+          ;; (open-line 1)
+          ;; ;; Move to the next line
+          ;; (next-line)
+	  )
+      ;; If the Copilot overlay is not visible, trigger completion
       (copilot-complete)))
   
   (defvar cg/copilot-manual-mode nil
@@ -339,14 +345,14 @@
     (if (and copilot-mode cg/copilot-manual-mode)
 	(progn
           (message "deactivating copilot")
-          (global-copilot-mode -1)
+          (copilot-mode -1)
           (setq cg/copilot-manual-mode nil))
       (if copilot-mode
           (progn
             (message "activating copilot manual mode")
             (setq cg/copilot-manual-mode t))
 	(message "activating copilot mode")
-	(global-copilot-mode))))
+	(copilot-mode))))
 
   (add-to-list 'copilot-disable-predicates #'cg/copilot-disable-predicate)
   :hook (prog-mode . (lambda() (setq cg/copilot-manual-mode t)))
