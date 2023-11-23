@@ -213,10 +213,17 @@
 
 (use-package imenu-list
   :bind
-  ("C-c =" . imenu-list-smart-toggle)
+  (("C-c =" . imenu-list-smart-toggle)
+   :map imenu-list-major-mode-map
+	 ("C-<return>" . cg/imenu-list-goto-entry))
   :custom
   (imenu-list-focus-after-activation t)
-  (imenu-list-position 'above)
+  (imenu-list-position 'right)
+  :config
+  (defun cg/imenu-list-goto-entry ()
+    (interactive)
+    (imenu-list-goto-entry)
+    (imenu-list-smart-toggle))
   )
 
 ;;; ======================
@@ -1036,7 +1043,7 @@
 
 (setq company-backends
       (append '((:separate company-bibtex
-			   company-reftex-labels
+			   ;; company-reftex-labels
                            company-reftex-citations
 			   company-math-symbols-latex
 			   company-math-symbols-unicode
