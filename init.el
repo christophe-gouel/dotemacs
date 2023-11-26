@@ -426,7 +426,7 @@
     (global-hl-line-mode +1)  ; Highlight the current line
     ;; Fonts and unicode characters
     (add-to-list 'default-frame-alist
-		 '(font . "JetBrainsMonoNL NF-10"))
+		 '(font . "JetBrainsMono NF-10"))
     (set-fontset-font t 'unicode (font-spec :name "XITS Math") nil 'prepend)
     ;; To list all available fonts, use
     ;; (dolist (font (x-list-fonts "*"))
@@ -468,6 +468,27 @@
 
 ;;; Sent deleted files to trash
 (setq delete-by-moving-to-trash t)
+
+;;; ===========
+;;;  ligatures
+;;; ===========
+(use-package ligature
+  :config
+  ;; Enable all JetBrains Mono ligatures in programming modes
+  (ligature-set-ligatures 'prog-mode '("-|" "-~" "---" "-<<" "-<" "--" "->" "->>" "-->" "///" "/=" "/=="
+                                      "/>" "//" "/*" "*>" "***" "*/" "<-" "<<-" "<=>" "<=" "<|" "<||"
+                                      "<|||" "<|>" "<:" "<>" "<-<" "<<<" "<==" "<<=" "<=<" "<==>" "<-|"
+                                      "<<" "<~>" "<=|" "<~~" "<~" "<$>" "<$" "<+>" "<+" "</>" "</" "<*"
+                                      "<*>" "<->" "<!--" ":>" ":<" ":::" "::" ":?" ":?>" ":=" "::=" "=>>"
+                                      "==>" "=/=" "=!=" "=>" "===" "=:=" "==" "!==" "!!" "!=" ">]" ">:"
+                                      ">>-" ">>=" ">=>" ">>>" ">-" ">=" "&&&" "&&" "|||>" "||>" "|>" "|]"
+                                      "|}" "|=>" "|->" "|=" "||-" "|-" "||=" "||" ".." ".?" ".=" ".-" "..<"
+                                      "..." "+++" "+>" "++" "[||]" "[<" "[|" "{|" "??" "?." "?=" "?:" "##"
+                                      "###" "####" "#[" "#{" "#=" "#!" "#:" "#_(" "#_" "#?" "#(" ";;" "_|_"
+                                      "__" "~~" "~~>" "~>" "~-" "~@" "$>" "^=" "]#"))
+  ;; Enables ligature checks globally in all buffers. You can also do it
+  ;; per mode with `ligature-mode'.
+  (global-ligature-mode t))
 
 ;;; ====================
 ;;;  rainbow-delimiters
