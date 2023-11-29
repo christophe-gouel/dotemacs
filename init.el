@@ -215,12 +215,12 @@
   :bind
   (("C-c =" . imenu-list-smart-toggle)
    :map imenu-list-major-mode-map
-	 ("C-<return>" . cg/imenu-list-goto-entry))
+	 ("M-<return>" . my/imenu-list-goto-entry))
   :custom
   (imenu-list-focus-after-activation t)
   (imenu-list-position 'right)
   :config
-  (defun cg/imenu-list-goto-entry ()
+  (defun my/imenu-list-goto-entry ()
     (interactive)
     (imenu-list-goto-entry)
     (imenu-list-smart-toggle))
@@ -243,6 +243,11 @@
 	   :fetcher url
 	   :url "https://raw.githubusercontent.com/emacsmirror/rainbow-mode/master/rainbow-mode.el")
   :hook (prog-mode . rainbow-mode))
+
+(use-package keycast)
+
+(use-package company-box
+  :hook (company-mode . company-box-mode))
 
 ;;; ==================================
 ;;;  ado-mode for editing Stata files
@@ -320,7 +325,7 @@
   :custom
   (copilot-indent-warning-suppress t)
   :config
-  (defun cg/copilot-complete-or-accept ()
+  (defun my/copilot-complete-or-accept ()
     "Command that either triggers a completion or accepts one if one is available."
     (interactive)
     ;; Check if the Copilot overlay is visible
@@ -336,42 +341,42 @@
       ;; If the Copilot overlay is not visible, trigger completion
       (copilot-complete)))
   
-  (defvar cg/copilot-manual-mode nil
+  (defvar my/copilot-manual-mode nil
     "When `t' will only show completions when manually triggered, e.g. via M-C-<return>.")
 
-  (defun cg/copilot-disable-predicate ()
+  (defun my/copilot-disable-predicate ()
     "When copilot should not automatically show completions."
-    cg/copilot-manual-mode)
+    my/copilot-manual-mode)
 
-  (defun cg/copilot-change-activation ()
+  (defun my/copilot-change-activation ()
     "Switch between three activation modes:
        - automatic: copilot will automatically overlay completions
        - manual: you need to press a key (M-C-<return>) to trigger completions
        - off: copilot is completely disabled."
     (interactive)
-    (if (and copilot-mode cg/copilot-manual-mode)
+    (if (and copilot-mode my/copilot-manual-mode)
 	(progn
           (message "deactivating copilot")
           (copilot-mode -1)
-          (setq cg/copilot-manual-mode nil))
+          (setq my/copilot-manual-mode nil))
       (if copilot-mode
           (progn
             (message "activating copilot manual mode")
-            (setq cg/copilot-manual-mode t))
+            (setq my/copilot-manual-mode t))
 	(message "activating copilot mode")
 	(copilot-mode))))
 
-  (add-to-list 'copilot-disable-predicates #'cg/copilot-disable-predicate)
-  :hook (prog-mode . (lambda() (setq cg/copilot-manual-mode t)))
+  (add-to-list 'copilot-disable-predicates #'my/copilot-disable-predicate)
+  :hook (prog-mode . (lambda() (setq my/copilot-manual-mode t)))
   :bind
   (
-   ("C-M-c"         . cg/copilot-change-activation)
+   ("C-M-c"         . my/copilot-change-activation)
    :map copilot-mode-map
    (("M-C-<next>"   . copilot-next-completion)
     ("M-C-<prior>"  . copilot-previous-completion)
     ("M-C-<right>"  . copilot-accept-completion-by-word)
     ("M-C-<down>"   . copilot-accept-completion-by-line)
-    ("M-C-<return>" . cg/copilot-complete-or-accept)
+    ("M-C-<return>" . my/copilot-complete-or-accept)
     ("M-C-g"        . copilot-clear-overlay))
    )
   )
@@ -390,7 +395,7 @@
   (org-hide-leading-stars t)
   :config
   ;; Integration of RefTeX in org
-  (defun org-mode-reftex-setup ()
+  (defun my/org-mode-reftex-setup ()
     (load-library "reftex")
     (and (buffer-file-name)
 	 (file-exists-p (buffer-file-name))
@@ -398,7 +403,7 @@
 	 (reftex-parse-all))
     (define-key org-mode-map (kbd "C-c )") 'reftex-citation)
     )
-  :hook (org-mode . org-mode-reftex-setup)
+  :hook (org-mode . my/org-mode-reftex-setup)
 )
 
 ;;; ========================================
@@ -524,13 +529,13 @@
 ;;; =============
 ;;;  fill-Unfill
 ;;; =============
-(defun unfill-paragraph ()
+(defun my/unfill-paragraph ()
   "Unfill paragraph."
   (interactive)
   (let ((fill-column (point-max)))
   (fill-paragraph nil)))
 
-(defun unfill-region (start end)
+(defun my/unfill-region (start end)
   "Unfill region."
   (interactive "r")
   (let ((fill-column (point-max)))
@@ -547,26 +552,26 @@
   :init
   (setq visual-fill-column-width 100)
   :config
-  (defun my-visual-fill ()
+  (defun my/visual-fill ()
     "Toggle visual fill column and visual line mode."
     (interactive)
     (visual-line-mode 'toggle)
     (visual-fill-column-mode 'toggle)
     (adaptive-wrap-prefix-mode 'toggle))
   
-  (defun center-text ()
+  (defun my/center-text ()
     "Center text in visual fill column."
     (interactive)
     (setq-local visual-fill-column-center-text t))
   
-  (defun uncenter-text ()
+  (defun my/uncenter-text ()
     "Uncenter text in visual fill column."
     (interactive)
     (setq-local visual-fill-column-center-text nil))
-  :bind ("C-c v" . my-visual-fill)
+  :bind ("C-c v" . my/visual-fill)
   :hook
-  (TeX-mode    . my-visual-fill)
-  (bibtex-mode . my-visual-fill)
+  (TeX-mode    . my/visual-fill)
+  (bibtex-mode . my/visual-fill)
   )
 
 ;;; =======
@@ -683,7 +688,7 @@
   (gams-indent-number-mpsge 2)
   (gams-indent-number-equation 2)
   :config
-  (defun find-in-gams-files (string)
+  (defun my/find-in-gams-files (string)
     "Find a regular expression in GAMS files"
     (interactive "sRegular expression to find: ")
     (grep (concat "grep -nHI -i -r -e " string " --include=\*.{gms,inc} *" )))
@@ -693,7 +698,7 @@
     (setq gams-system-directory "/opt/gams/gamsLast_linux_x64_64_sfx"
 	  gams-docs-directory "/opt/gams/gamsLast_linux_x64_64_sfx/docs"))
   :bind (:map gams-mode-map
-	      ("C-c f" . find-in-gams-files))
+	      ("C-c f" . my/find-in-gams-files))
   )
 
 ; Polymode for gams
@@ -888,7 +893,7 @@
   )
 
 ;; Beamer
-(defun tex-frame ()
+(defun my/tex-frame ()
   "Run pdflatex on current frame.  Frame must be declared as an environment."
   (interactive)
   (let (beg)
@@ -902,7 +907,7 @@
 	(TeX-command-region)))))
 (add-hook 'TeX-mode-hook
 	  #'(lambda()
-	     (local-set-key [(shift return)] 'tex-frame)))
+	     (local-set-key [(shift return)] 'my/tex-frame)))
 
 (use-package cdlatex
   :hook
@@ -966,11 +971,11 @@
   (mlint-minor-mode))                   ; Activate mlint minor mode
 (add-hook 'matlab-mode-hook 'my-matlab-mode-hook)
 
-(defun find-in-m-files (string)
+(defun my/find-in-m-files (string)
   "Find a regular expression in m files."
   (interactive "sRegular expression to find: ")
   (grep (concat "grep -nHI -i -r -e " string " --include=*.m *" )))
-(define-key matlab-mode-map "\C-cf" 'find-in-m-files)
+(define-key matlab-mode-map "\C-cf" 'my/find-in-m-files)
 
 ;; mlint
 (if is-mswindows
@@ -979,9 +984,9 @@
 
 ;; Matlab shell
 (autoload 'matlab-shell "matlab" "Interactive MATLAB mode." t)
-(defun my-matlab-shell-mode-hook ()
+(defun my/matlab-shell-mode-hook ()
   '())
-(add-hook 'matlab-shell-mode-hook 'my-matlab-shell-mode-hook)
+(add-hook 'matlab-shell-mode-hook 'my/matlab-shell-mode-hook)
 (setq matlab-shell-command-switches '("-nodesktop -nosplash"))
 
 ;;; ============
@@ -1121,7 +1126,7 @@
   ;; of an R session. Hence, both options are disabled here.
   (setq-default inferior-R-args "--no-restore-history --no-save ")
   ;; Background jobs for R as in RStudio
-  (defun run-r-script (arg title)
+  (defun my/run-r-script (arg title)
     (let* ((is-file (file-exists-p arg))
 	   (working-directory (if is-file default-directory (file-name-directory arg)))
 	   (combuf-name (format "*Rscript-%s*" title)) ; Generate a unique compilation buffer name
@@ -1140,27 +1145,27 @@
       (with-current-buffer combuf
 	(rename-buffer combuf-name)))) ; Rename the compilation buffer to its final name
 
-  (defun run-r-script-on-current-buffer-file ()
+  (defun my/run-r-script-on-current-buffer-file ()
     (interactive)
     (let ((filename (buffer-file-name)))
       (when filename
-	(run-r-script filename (file-name-base filename)))))
+	(my/run-r-script filename (file-name-base filename)))))
 
-  (defun run-r-script-on-file ()
+  (defun my/run-r-script-on-file ()
     (interactive)
     (let ((filename (read-file-name "R script: ")))
-      (run-r-script filename (file-name-base filename))))
+      (my/run-r-script filename (file-name-base filename))))
   )
 
 (define-key inferior-ess-mode-map [home] 'comint-bol)
 
 (use-package rutils) ; To interact easily with renv
 
-(defun find-in-R-files (string)
+(defun my/find-in-R-files (string)
   "Find a regular expression in R files."
   (interactive "sRegular expression to find: ")
   (grep (concat "grep -nHI -i -r -e " string " --include=\*.{R,Rmd,qmd} *" )))
-(define-key ess-mode-map "\C-cf" 'find-in-R-files)
+(define-key ess-mode-map "\C-cf" 'my/find-in-R-files)
 
 (add-hook 'ess-mode-hook
 	  #'(lambda ()
@@ -1175,13 +1180,13 @@
 		(t 1000)
 		)))
 
-(defun my-inferior-ess-init ()
+(defun my/inferior-ess-init ()
   "Workaround for https://github.com/emacs-ess/ESS/issues/1193"
   (add-hook 'comint-preoutput-filter-functions #'xterm-color-filter -90 t)
   (setq-local ansi-color-for-comint-mode nil)
   (smartparens-mode 1)
   )
-(add-hook 'inferior-ess-mode-hook 'my-inferior-ess-init)
+(add-hook 'inferior-ess-mode-hook 'my/inferior-ess-init)
 
 ;;; ===================================
 ;;;  Définition de touches perso global
@@ -1211,7 +1216,7 @@
   ;; Code to import screenshots in markdown files
   ;; from <https://www.nistara.net/post/2022-11-14-emacs-markdown-screenshots> and
   ;; <https://stackoverflow.com/questions/17435995/paste-an-image-on-clipboard-to-emacs-org-mode-file-without-saving-it/31868530#31868530>
-  (defun markdown-screenshot ()
+  (defun my/markdown-screenshot ()
     "Copy a screenshot into a time stamped unique-named file in the
 same directory as the working and insert a link to this file."
     (interactive)
@@ -1242,7 +1247,7 @@ same directory as the working and insert a link to this file."
           (?t . "@%l")
           ))
   ;; wrap reftex-citation with local variables for markdown format
-  (defun markdown-reftex-citation ()
+  (defun my/markdown-reftex-citation ()
     (interactive)
     (let ((reftex-cite-format markdown-cite-format)
           (reftex-cite-key-separator "; @"))
@@ -1250,7 +1255,7 @@ same directory as the working and insert a link to this file."
   :hook
   (markdown-mode . imenu-add-menubar-index)
   :bind (:map markdown-mode-map
-	      ("C-c [" . markdown-reftex-citation))
+	      ("C-c [" . my/markdown-reftex-citation))
   )
 
 (use-package pandoc-mode
@@ -1304,7 +1309,7 @@ same directory as the working and insert a link to this file."
 (use-package swiper)
 
 ;; swiper is slow for large files so it is replaced by isearch for large files
-(defun search-method-according-to-numlines ()
+(defun my/search-method-according-to-numlines ()
   "Determine the number of lines of current buffer and chooses a search method accordingly."
   (interactive)
   (if (< (count-lines (point-min) (point-max)) 20000)
@@ -1312,7 +1317,7 @@ same directory as the working and insert a link to this file."
     (isearch-forward)
     )
   )
-(global-set-key "\C-s" 'search-method-according-to-numlines)
+(global-set-key "\C-s" 'my/search-method-according-to-numlines)
 
 (use-package ivy-xref
   :init
