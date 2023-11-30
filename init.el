@@ -13,7 +13,9 @@
 ;; ```
 ;; - M-x jedi:install-server
 ;; - Download and install fonts
-;;   - JetBrains from <https://www.nerdfonts.com/font-downloads>
+;;   - JetBrains from
+;;     - Nerf-fonts version: <https://www.nerdfonts.com/font-downloads>
+;;     - Standard version: <https://www.jetbrains.com/fr-fr/lp/mono/>
 ;;   - <https://github.com/aliftype/xits>
 ;; - fd command for a fast find: <https://github.com/sharkdp/fd>
 
@@ -28,7 +30,7 @@
 ;;; ==================
 ;;;  Packages manager
 ;;; ==================
-;; (require 'package)
+(require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
 (package-initialize)
 
@@ -94,7 +96,7 @@
 (use-package nerd-icons
   :if (display-graphic-p)
   :custom
-  (nerd-icons-font-family "JetBrainsMonoNL NF")
+  (nerd-icons-font-family "JetBrainsMono NF")
   )
 (use-package nerd-icons-dired
   :if (display-graphic-p)
@@ -1099,14 +1101,14 @@
 	 ;; Shortcut for pipe |>
          ("C-S-m" . " |>")
 	 ;; Shortcut for pipe %>%
-	 ("C-%" . " %>%")
+	 ("C-%"   . " %>%")
 	 ;; Shortcut for assign <-
-	 ("M--" . ess-insert-assign)
-	 ("<f9>" . run-r-script-on-current-buffer-file)
+	 ("M--"   . ess-insert-assign)
+	 ("<f9>"  . my/run-r-script-on-current-buffer-file)
          :map inferior-ess-r-mode-map
          ("C-S-m" . " |>")
-         ("C-%" . " %>%")
-	 ("M--" . ess-insert-assign))
+         ("C-%"   . " %>%")
+	 ("M--"   . ess-insert-assign))
   :custom
   (ess-roxy-str "#'")
   (ess-roxy-template-alist
