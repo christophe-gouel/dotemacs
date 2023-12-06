@@ -1,4 +1,3 @@
-
 ;; To install manually:
 ;; - LSP servers
 ;; ```{bash}
@@ -247,9 +246,6 @@
   :hook (prog-mode . rainbow-mode))
 
 (use-package keycast)
-
-(use-package company-box
-  :hook (company-mode . company-box-mode))
 
 ;;; ==================================
 ;;;  ado-mode for editing Stata files
@@ -1078,14 +1074,22 @@
 			   company-latex-commands))
               company-backends))
 
-(use-package company-quickhelp
-  :if (display-graphic-p)
+;; (use-package company-quickhelp
+;;   :if (display-graphic-p)
+;;   :custom
+;;   (company-quickhelp-delay 0.1)
+;;   :config
+;;   (eval-after-load 'company
+;;     '(define-key company-active-map (kbd "C-c h") #'company-quickhelp-manual-begin))
+;; )
+
+;; Use company-box for a better position of the autocompletion when using
+;; copilot
+(use-package company-box
+  :hook (company-mode . company-box-mode)
   :custom
-  (company-quickhelp-delay 0.1)
-  :config
-  (eval-after-load 'company
-    '(define-key company-active-map (kbd "C-c h") #'company-quickhelp-manual-begin))
-)
+  (company-box-doc-enable nil)
+  )
 
 ;;; ===========
 ;;;  Yasnippet
@@ -1116,6 +1120,7 @@
      ("details" . ".. content for \\details{} ..")
      ("param" . "")
      ("return" . "")))
+  (ess-nuke-trailing-whitespace-p t)
   :config
   (setq ess-assign-list '(" <-" " <<- " " = " " -> " " ->> ")
 	ess-style 'RStudio  ; Set code indentation
