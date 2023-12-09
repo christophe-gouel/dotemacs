@@ -478,7 +478,7 @@
 (use-package ligature
   :config
   ;; Enable all JetBrains Mono ligatures in programming modes
-  (ligature-set-ligatures 'prog-mode '("-|" "-~" "---" "-<<" "-<" "--" "->" "->>" "-->" "///" "/=" "/=="
+  (defconst jb-ligatures '("-|" "-~" "---" "-<<" "-<" "--" "->" "->>" "-->" "///" "/=" "/=="
                                       "/>" "//" "/*" "*>" "***" "*/" "<-" "<<-" "<=>" "<=" "<|" "<||"
                                       "<|||" "<|>" "<:" "<>" "<-<" "<<<" "<==" "<<=" "<=<" "<==>" "<-|"
                                       "<<" "<~>" "<=|" "<~~" "<~" "<$>" "<$" "<+>" "<+" "</>" "</" "<*"
@@ -489,9 +489,13 @@
                                       "..." "+++" "+>" "++" "[||]" "[<" "[|" "{|" "??" "?." "?=" "?:" "##"
                                       "###" "####" "#[" "#{" "#=" "#!" "#:" "#_(" "#_" "#?" "#(" ";;" "_|_"
                                       "__" "~~" "~~>" "~>" "~-" "~@" "$>" "^=" "]#"))
+  (ligature-set-ligatures 'prog-mode jb-ligatures)
+  (ligature-set-ligatures 'text-mode jb-ligatures)
+  (ligature-set-ligatures 'special-mode jb-ligatures)
   ;; Enables ligature checks globally in all buffers. You can also do it
   ;; per mode with `ligature-mode'.
-  (global-ligature-mode t))
+  (global-ligature-mode t)
+  )
 
 ;;; ====================
 ;;;  rainbow-delimiters
