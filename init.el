@@ -198,9 +198,56 @@
   :config
   (setq ess-use-flymake nil) ; Deactivate linter in ess because it does not seem to work well
   (remove-hook 'flymake-diagnostic-functions 'flymake-proc-legacy-flymake)
+
+
+  ;; (defun tex-textidote-flymake-init ()
+  ;;   (let ((source (flymake-proc-init-create-temp-buffer-copy
+  ;;                  'flymake-proc-init-create-temp-inplace)))
+  ;;     (list "java"
+  ;;           "-jar" (expand-file-name "~/.local/jar/textidote.jar-0.9.jar")
+  ;;           "--read-all" 
+  ;;           "--output" "singleline"
+  ;;           "--no-color"
+  ;;           "--check" (if ispell-current-dictionary (substring ispell-current-dictionary 0 2) "en")
+  ;; 	    "--firstlang" "fr"
+  ;;           source)))
+  ;; (add-to-list 'flymake-allowed-file-name-masks
+  ;;              '("\\.tex\\'" tex-textidote-flymake-init))
+
   :bind
   ("M-n" . flymake-goto-next-error)
   ("M-p" . flymake-goto-prev-error)
+  )
+
+(use-package flycheck
+  :config
+  (flycheck-define-checker tex-textidote
+    "A LaTeX grammar/spelling checker using textidote.
+
+  See https://github.com/sylvainhalle/textidote"
+    :modes (latex-mode plain-tex-mode)
+    :command ("java" "-jar" (eval (expand-file-name "~/.local/jar/textidote.jar-0.9.jar"))
+              "--read-all"
+              "--output" "singleline"
+              "--no-color"
+              "--check"   (eval (if ispell-current-dictionary (substring ispell-current-dictionary 0 2) "en"))
+	      "--firstlang" "fr"
+              ;; Try to honor local aspell dictionary and replacements if they exist
+              ;; "--dict"    (eval (expand-file-name "~/.aspell.en.pws"))
+              ;; "--replace" (eval (expand-file-name "~/.aspell.en.prepl"))
+              ;; Using source ensures that a single temporary file in a different dir is created
+              ;; such that textidote won't process other files. This serves as a hacky workaround for
+              ;; https://github.com/sylvainhalle/textidote/issues/200.
+              source)
+    :error-patterns ((warning line-start (file-name)
+                              "(L" line "C" column "-" (or (seq "L" end-line "C" end-column) "?") "): "
+                              (message (one-or-more (not "\""))) (one-or-more not-newline) line-end)))
+  (add-to-list 'flycheck-checkers 'tex-textidote)
+  )
+
+(use-package flymake-flycheck
+  :hook
+  (flymake-mode . flymake-flycheck-auto)
   )
 
 ;;; =======
@@ -639,18 +686,18 @@
 ;;; ==============
 ;;;  languagetool
 ;;; ==============
-(use-package flymake-languagetool
-  :if is-mswindows
-  :hook ((text-mode       . flymake-languagetool-load)
-         (latex-mode      . flymake-languagetool-load)
-         (org-mode        . flymake-languagetool-load)
-         (markdown-mode   . flymake-languagetool-load)
-	 )
-  :custom
-  (flymake-languagetool-server-jar
-   (substitute-in-file-name "${HOME}/Documents/LanguageTool-6.2/languagetool-server.jar"))
-  (flymake-languagetool-check-spelling t)
-  )
+;; (use-package flymake-languagetool
+;;   :if is-mswindows
+;;   :hook ((text-mode       . flymake-languagetool-load)
+;;          (latex-mode      . flymake-languagetool-load)
+;;          (org-mode        . flymake-languagetool-load)
+;;          (markdown-mode   . flymake-languagetool-load)
+;; 	 )
+;;   :custom
+;;   (flymake-languagetool-server-jar
+;;    (substitute-in-file-name "${HOME}/Documents/LanguageTool-6.2/languagetool-server.jar"))
+;;   (flymake-languagetool-check-spelling t)
+;;   )
 
 ;;; ==========
 ;;;  Polymode
