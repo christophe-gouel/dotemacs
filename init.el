@@ -199,21 +199,6 @@
   (setq ess-use-flymake nil) ; Deactivate linter in ess because it does not seem to work well
   (remove-hook 'flymake-diagnostic-functions 'flymake-proc-legacy-flymake)
 
-
-  ;; (defun tex-textidote-flymake-init ()
-  ;;   (let ((source (flymake-proc-init-create-temp-buffer-copy
-  ;;                  'flymake-proc-init-create-temp-inplace)))
-  ;;     (list "java"
-  ;;           "-jar" (expand-file-name "~/.local/jar/textidote.jar-0.9.jar")
-  ;;           "--read-all" 
-  ;;           "--output" "singleline"
-  ;;           "--no-color"
-  ;;           "--check" (if ispell-current-dictionary (substring ispell-current-dictionary 0 2) "en")
-  ;; 	    "--firstlang" "fr"
-  ;;           source)))
-  ;; (add-to-list 'flymake-allowed-file-name-masks
-  ;;              '("\\.tex\\'" tex-textidote-flymake-init))
-
   :bind
   ("M-n" . flymake-goto-next-error)
   ("M-p" . flymake-goto-prev-error)
@@ -233,7 +218,7 @@
               "--check"   (eval (if ispell-current-dictionary (substring ispell-current-dictionary 0 2) "en"))
 	      "--firstlang" "fr"
               ;; Try to honor local aspell dictionary and replacements if they exist
-              ;; "--dict"    (eval (expand-file-name "~/.aspell.en.pws"))
+              "--dict"    (eval (expand-file-name "~/.emacs.d/.hunspell_en_US"))
               ;; "--replace" (eval (expand-file-name "~/.aspell.en.prepl"))
               ;; Using source ensures that a single temporary file in a different dir is created
               ;; such that textidote won't process other files. This serves as a hacky workaround for
@@ -483,10 +468,10 @@
     ;;   (insert (format "%s\n" font)))
     (add-hook 'text-mode-hook 'prettify-symbols-mode)
     )
-  :bind(("C-x C-b" . ibuffer)
-	("<f5>" . revert-buffer)
-	(:map compilation-mode-map
-	      ("r" . recompile)))
+  :bind (("C-x C-b" . ibuffer)
+	 ("<f5>" . revert-buffer)
+	 (:map compilation-mode-map
+	       ("r" . recompile)))
   :hook
   (prog-mode . display-fill-column-indicator-mode)
   )
@@ -669,7 +654,11 @@
 	   ("-d" "en_US")
 	   nil
 	   utf-8))
-	ispell-hunspell-dictionary-alist ispell-local-dictionary-alist)
+	ispell-hunspell-dictionary-alist ispell-local-dictionary-alist
+	ispell-personal-dictionary "~/.emacs.d/.hunspell_en_US"
+	)
+  :bind
+  ("C-M-$" . ispell-word)
   )
 
 (use-package flyspell-correct
