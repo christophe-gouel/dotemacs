@@ -706,11 +706,14 @@
   ;; automatically some default minor modes for prog-mode.
   :hook ((gams-mode . rainbow-delimiters-mode)
 	 (gams-mode . smartparens-mode)
-	 (gams-mode . display-fill-column-indicator-mode))
+	 (gams-mode . display-fill-column-indicator-mode)
+	 (gams-mode . (lambda ()
+			(make-local-variable 'company-minimum-prefix-length)
+			(setq company-minimum-prefix-length 1))))
   :custom
   (gams-process-command-option "ll=0 lo=3 pw=153 ps=9999")
   (gams-statement-upcase t)
-  (gams-fill-column 100)
+  (gams-fill-column 90)
   (gams-recenter-font-lock t)
   (gams-statement-name "Parameter")
   (gams-dollar-control-name "exit")
