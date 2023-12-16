@@ -643,17 +643,11 @@
   (setq ispell-program-name (executable-find "hunspell")
 	flyspell-issue-welcome-flag nil
 	ispell-really-hunspell t
-	ispell-dictionary "en_US"
+	ispell-dictionary "fr_FR,en_US"
 	ispell-local-dictionary "en_US"
 	ispell-local-dictionary-alist
-	'(("en_US"
-	   "[[:alpha:]]"
-	   "[^[:alpha:]]"
-	   "[']"
-	   nil
-	   ("-d" "en_US")
-	   nil
-	   utf-8))
+	'(("en_US" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "en_US") nil utf-8)
+	  ("fr_FR" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "fr_FR") nil utf-8))
 	ispell-hunspell-dictionary-alist ispell-local-dictionary-alist
 	ispell-personal-dictionary "~/.emacs.d/.hunspell_en_US"
 	)
