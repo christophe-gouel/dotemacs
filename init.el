@@ -5,7 +5,8 @@
 ;;   Rscript -e "install.packages('languageserver')"
 ;;   Curl --output %HOME%/.local/bin/digestif.cmd https://raw.githubusercontent.com/astoff/digestif/master/scripts/digestif.cmd
 ;; ```
-;; - Languagetool: to download from <https://languagetool.org/download/>
+;; - textidote: Download from <https://github.com/sylvainhalle/textidote/releases>
+;;   and copy to ~/.local/jar/textidote.jar 
 ;; - Autocompletion in Python on Windows.
 ;; ```{bash}
 ;;   pip3 install --user pyreadline3
@@ -210,8 +211,8 @@
     "A LaTeX grammar/spelling checker using textidote.
 
   See https://github.com/sylvainhalle/textidote"
-    :modes (latex-mode plain-tex-mode)
-    :command ("java" "-jar" (eval (expand-file-name "~/.local/jar/textidote.jar-0.9.jar"))
+    :modes (latex-mode plain-tex-mode markdown-mode)
+    :command ("java" "-jar" (eval (expand-file-name "~/.local/jar/textidote.jar"))
               "--read-all"
               "--output" "singleline"
               "--no-color"
@@ -666,22 +667,6 @@
   :after flyspell-correct
   )
 
-;;; ==============
-;;;  languagetool
-;;; ==============
-;; (use-package flymake-languagetool
-;;   :if is-mswindows
-;;   :hook ((text-mode       . flymake-languagetool-load)
-;;          (latex-mode      . flymake-languagetool-load)
-;;          (org-mode        . flymake-languagetool-load)
-;;          (markdown-mode   . flymake-languagetool-load)
-;; 	 )
-;;   :custom
-;;   (flymake-languagetool-server-jar
-;;    (substitute-in-file-name "${HOME}/Documents/LanguageTool-6.2/languagetool-server.jar"))
-;;   (flymake-languagetool-check-spelling t)
-;;   )
-
 ;;; ==========
 ;;;  Polymode
 ;;; ==========
@@ -828,6 +813,7 @@
   (TeX-mode . imenu-add-menubar-index)
   (TeX-mode . turn-on-reftex)
   (TeX-mode . TeX-fold-buffer)
+  (TeX-mode . flymake-mode)
   :hook
   (TeX-mode . TeX-fold-mode)
   ;; Custom functions to compile, preview, and view documents
@@ -1298,6 +1284,7 @@ same directory as the working and insert a link to this file."
       (reftex-citation)))
   :hook
   (markdown-mode . imenu-add-menubar-index)
+  (markdown-mode . flymake-mode)
   :bind (:map markdown-mode-map
 	      ("C-c [" . my/markdown-reftex-citation))
   )
