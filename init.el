@@ -635,16 +635,16 @@
 (use-package docker
   :bind ("C-c d" . docker))
 
-;;; ========
-;;;  Ispell
-;;; ========
+;; ==================
+;;   Spell checking
+;; ==================
 (use-package flyspell
   :hook (text-mode . flyspell-mode)
   :config
   (setq ispell-program-name (executable-find "hunspell")
 	flyspell-issue-welcome-flag nil
 	ispell-really-hunspell t
-	ispell-dictionary "fr_FR,en_US"
+	ispell-dictionary "en_US"
 	ispell-local-dictionary "en_US"
 	ispell-local-dictionary-alist
 	'(("en_US" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "en_US") nil utf-8)
