@@ -209,7 +209,6 @@
   :config
   (flycheck-define-checker tex-textidote
     "A LaTeX grammar/spelling checker using textidote.
-
   See https://github.com/sylvainhalle/textidote"
     :modes (latex-mode plain-tex-mode markdown-mode)
     :command ("java" "-jar" (eval (expand-file-name "~/.local/jar/textidote.jar"))
@@ -218,12 +217,7 @@
               "--no-color"
               "--check"   (eval (if ispell-current-dictionary (substring ispell-current-dictionary 0 2) "en"))
 	      "--firstlang" "fr"
-              ;; Try to honor local aspell dictionary and replacements if they exist
               "--dict"    (eval (expand-file-name "~/.emacs.d/.hunspell_en_US"))
-              ;; "--replace" (eval (expand-file-name "~/.aspell.en.prepl"))
-              ;; Using source ensures that a single temporary file in a different dir is created
-              ;; such that textidote won't process other files. This serves as a hacky workaround for
-              ;; https://github.com/sylvainhalle/textidote/issues/200.
               source)
     :error-patterns ((warning line-start (file-name)
                               "(L" line "C" column "-" (or (seq "L" end-line "C" end-column) "?") "): "
