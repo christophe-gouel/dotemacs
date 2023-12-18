@@ -211,7 +211,7 @@
     "A LaTeX grammar/spelling checker using textidote.
   See https://github.com/sylvainhalle/textidote"
     :modes (latex-mode plain-tex-mode markdown-mode)
-    :command ("java" "-jar" (eval (expand-file-name "~/.local/jar/textidote.jar"))
+    :command ("java" "-Dfile.encoding=UTF-" "-jar" (eval (expand-file-name "~/.local/jar/textidote.jar"))
               "--read-all"
               "--output" "singleline"
               "--no-color"
@@ -645,6 +645,7 @@
 	  ("fr_FR" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "fr_FR") nil utf-8))
 	ispell-hunspell-dictionary-alist ispell-local-dictionary-alist
 	ispell-personal-dictionary "~/.emacs.d/.hunspell_en_US"
+	ispell-silently-savep t
 	)
   :bind
   ("C-M-$" . ispell-word)
@@ -950,6 +951,8 @@
   (markdown-mode . texfrag-mode)
   (eww-mode . texfrag-mode)
   )
+
+(use-package math-preview)
 
 ;;; ==========
 ;;;  doc-view
