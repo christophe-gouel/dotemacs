@@ -713,7 +713,8 @@
     (setq gams-system-directory "/opt/gams/gamsLast_linux_x64_64_sfx"
 	  gams-docs-directory "/opt/gams/gamsLast_linux_x64_64_sfx/docs"))
   :bind (:map gams-mode-map
-	      ("C-c f" . my/find-in-gams-files))
+	      ("C-c f" . my/find-in-gams-files)
+	      ("C-c =" . gams-show-identifier-list))
   )
 
 ; Polymode for gams
@@ -1371,9 +1372,16 @@ same directory as the working and insert a link to this file."
   :custom
   (bibtex-completion-bibliography
    (substitute-in-file-name "${BIBINPUTS}/References.bib"))
+  ;; Pdf files
   (bibtex-completion-library-path
    (substitute-in-file-name "${HOME}/Dropbox (Inrae EcoPub)/Bibliography/Papers"))
   (bibtex-completion-pdf-symbol "⌘")
+  (bibtex-completion-pdf-field "file")
+  ;; Notes
+  (bibtex-completion-notes-path
+   (substitute-in-file-name "${HOME}/Dropbox (Inrae EcoPub)/Bibliography/notes"))
+  (bibtex-completion-notes-symbol "✎")
+  (bibtex-completion-notes-extension ".md")
   )
 
 ;;; =======
