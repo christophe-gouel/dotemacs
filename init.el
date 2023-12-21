@@ -1,14 +1,18 @@
 ;; To install manually:
 ;; - LSP servers
-;; ```{bash}
+;; ``` bash
 ;;   pip3 install --user python-lsp-server[all] jupyter[all]
 ;;   Rscript -e "install.packages('languageserver')"
 ;;   Curl --output %HOME%/.local/bin/digestif.cmd https://raw.githubusercontent.com/astoff/digestif/master/scripts/digestif.cmd
 ;; ```
 ;; - textidote: Download from <https://github.com/sylvainhalle/textidote/releases>
-;;   and copy to ~/.local/jar/textidote.jar 
+;;   and copy to ~/.local/jar/textidote.jar
+;; - math-preview:
+;; ``` bash
+;; npm install -g git+https://gitlab.com/matsievskiysv/math-preview
+;; ```
 ;; - Autocompletion in Python on Windows.
-;; ```{bash}
+;; ``` bash
 ;;   pip3 install --user pyreadline3
 ;; ```
 ;; - M-x jedi:install-server
@@ -600,6 +604,7 @@
   :bind ("C-c v" . my/visual-fill)
   :hook
   (TeX-mode    . my/visual-fill)
+  (markdown-mode    . my/visual-fill)
   (bibtex-mode . my/visual-fill)
   )
 
@@ -953,6 +958,8 @@
   (eww-mode . texfrag-mode)
   )
 
+;; This package has a pb under Windows and some code should be commented
+;; out. See <https://gitlab.com/matsievskiysv/math-preview/-/issues/29>.
 (use-package math-preview)
 
 ;;; ==========
@@ -1238,6 +1245,7 @@
   (markdown-enable-prefix-prompts nil)
   (markdown-header-scaling nil)
   (markdown-hide-markup nil)
+  (markdown-hide-urls t)
   (markdown-fontify-code-blocks-natively t)
   (markdown-enable-highlighting-syntax t)
   :config
@@ -1270,7 +1278,7 @@ same directory as the working and insert a link to this file."
   (defvar markdown-cite-format)
   (setq markdown-cite-format
 	'(
-          (?\C-m . "[@%l]")
+          (?\C-m . "@%l")
           (?p . "[@%l]")
           (?t . "@%l")
           ))
@@ -1282,7 +1290,7 @@ same directory as the working and insert a link to this file."
       (reftex-citation)))
   :hook
   (markdown-mode . imenu-add-menubar-index)
-  (markdown-mode . flymake-mode)
+  (markdown-mode . (lambda () (math-preview-all)))
   :bind (:map markdown-mode-map
 	      ("C-c [" . my/markdown-reftex-citation))
   )
@@ -1376,12 +1384,13 @@ same directory as the working and insert a link to this file."
   (bibtex-completion-library-path
    (substitute-in-file-name "${HOME}/Dropbox (Inrae EcoPub)/Bibliography/Papers"))
   (bibtex-completion-pdf-symbol "⌘")
-  (bibtex-completion-pdf-field "file")
   ;; Notes
   (bibtex-completion-notes-path
    (substitute-in-file-name "${HOME}/Dropbox (Inrae EcoPub)/Bibliography/notes"))
   (bibtex-completion-notes-symbol "✎")
   (bibtex-completion-notes-extension ".md")
+  (bibtex-completion-notes-template-multiple-files
+   "---\ntitle: Notes on: ${author-or-editor-abbrev} (${year}): ${title}\n---\n\n")
   )
 
 ;;; =======
