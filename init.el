@@ -978,7 +978,7 @@
 ;;; ===============================================
 ;;;  Matlab - http://matlab-emacs.sourceforge.net/
 ;;; ===============================================
-(use-package  matlab
+(use-package matlab
   :ensure matlab-mode)
 
 ;; Matlab mode

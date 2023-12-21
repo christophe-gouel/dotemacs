@@ -1,0 +1,99 @@
+#+title: My literate Emacs config
+#+author: Christophe Gouel
+#+email: christophe.gouel@inrae.fr
+
+* Package management
+
+* Emacs startup
+
+* Appearance
+
+** Standard Emacs options
+
+** Hex color codes
+
+** Icons
+
+** Ligatures
+
+** Modeline
+
+** Parentheses
+
+** Theme
+
+* Keys
+
+** Insert Greek letters in Unicode
+
+** Parentheses
+
+* Auto-completion
+
+** Company
+
+** Ivy and friends
+
+* Git
+
+* Shells
+
+** ChatGPT
+
+** Other shells
+
+* Text
+
+** BibTeX
+
+** LaTeX
+
+** Markdown
+
+** Obsidian
+
+** Org
+
+** Polymode
+
+** Preview of mathematical formulas
+
+** Spell and grammar checking
+
+** Word wrapping and paragraph filling
+
+** YAML
+
+* Programming
+
+** Programming tools
+
+*** Code linting
+
+*** Code styling
+
+*** Docker
+
+*** Eldoc
+
+*** GitHub copilot
+
+*** Language Server Protocol
+
+*** Projects
+
+*** Snippets
+
+** Programming languages
+
+*** Emacs Speaks Statistics (ESS)
+
+*** GAMS
+
+*** Julia
+
+*** MATLAB
+
+*** Python
+
+*** Stata
