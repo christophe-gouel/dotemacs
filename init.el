@@ -708,17 +708,12 @@
   (gams-indent-number-mpsge 2)
   (gams-indent-number-equation 2)
   :config
-  (defun my/find-in-gams-files (string)
-    "Find a regular expression in GAMS files"
-    (interactive "sRegular expression to find: ")
-    (grep (concat "grep -nHI -i -r -e " string " --include=\*.{gms,inc} *" )))
   (if is-mswindows
       (setq gams-system-directory "C:/GAMS/Last/"
 	    gams-docs-directory "C:/GAMS/Last/docs")
     (setq gams-system-directory "/opt/gams/gamsLast_linux_x64_64_sfx"
 	  gams-docs-directory "/opt/gams/gamsLast_linux_x64_64_sfx/docs"))
   :bind (:map gams-mode-map
-	      ("C-c f" . my/find-in-gams-files)
 	      ("C-c =" . gams-show-identifier-list))
   )
 
@@ -997,12 +992,6 @@
   (mlint-minor-mode))                   ; Activate mlint minor mode
 (add-hook 'matlab-mode-hook 'my-matlab-mode-hook)
 
-(defun my/find-in-m-files (string)
-  "Find a regular expression in m files."
-  (interactive "sRegular expression to find: ")
-  (grep (concat "grep -nHI -i -r -e " string " --include=*.m *" )))
-(define-key matlab-mode-map "\C-cf" 'my/find-in-m-files)
-
 ;; mlint
 (if is-mswindows
     (setq mlint-programs (quote ("C:/Program Files/MATLAB/RLast/bin/win64/mlint.exe")))
@@ -1020,13 +1009,26 @@
 ;;; ============
 (use-package projectile
   :diminish projectile-mode
-  :config (projectile-mode)
+  :config
+  (projectile-mode)
+  (defun my/ripgrep-in-same-extension (expression)
+    "Search for EXPRESSION in files with the same extension as the
+current buffer within the project."
+    (interactive
+     (list (read-from-minibuffer "Ripgrep search for: " (thing-at-point 'symbol))))
+    (let* ((extension (file-name-extension (buffer-file-name)))
+           (glob (if extension (concat "*." extension) "*")))
+      (ripgrep-regexp expression
+                      (projectile-acquire-root)
+                      (list (format "-g %s" glob)))))
   :custom
   (projectile-completion-system 'ivy)
   (projectile-use-git-grep t)
   (projectile-switch-project-action #'projectile-dired)
   (projectile-enable-caching nil)
   (projectile-indexing-method 'alien)
+  :bind
+  ("C-c f" . my/ripgrep-in-same-extension)
   :bind-keymap
   ("C-c p" . projectile-command-map)
   :init
@@ -1034,6 +1036,8 @@
     (setq projectile-project-search-path '("~/Documents/git_projects")))
   )
 
+;; ripgrep package needed to have a proper interface for ripgrep. Also called by
+;; projectile
 (use-package ripgrep)
 
 ;;; ============================================
@@ -1195,12 +1199,6 @@
 (define-key inferior-ess-mode-map [home] 'comint-bol)
 
 (use-package rutils) ; To interact easily with renv
-
-(defun my/find-in-R-files (string)
-  "Find a regular expression in R files."
-  (interactive "sRegular expression to find: ")
-  (grep (concat "grep -nHI -i -r -e " string " --include=\*.{R,Rmd,qmd} *" )))
-(define-key ess-mode-map "\C-cf" 'my/find-in-R-files)
 
 (add-hook 'ess-mode-hook
 	  #'(lambda ()
