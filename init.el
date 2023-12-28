@@ -1,32 +1,3 @@
-;; To install manually:
-;; - LSP servers
-;; ``` bash
-;;   pip3 install --user python-lsp-server[all]
-;;   Rscript -e "install.packages('languageserver')"
-;;   Curl --output %HOME%/.local/bin/digestif.cmd https://raw.githubusercontent.com/astoff/digestif/master/scripts/digestif.cmd
-;; ```
-;; - textidote: Download from <https://github.com/sylvainhalle/textidote/releases>
-;;   and copy to ~/.local/jar/textidote.jar
-;; - math-preview:
-;; ``` bash
-;; npm install -g git+https://gitlab.com/matsievskiysv/math-preview
-;; ```
-;; - Install IPython to be able to launch it from emacs
-;; ``` bash
-;;   pip3 install --user ipython
-;; ```
-;; - Autocompletion in Python on Windows.
-;; ``` bash
-;;   pip3 install --user pyreadline3
-;; ```
-;; - M-x jedi:install-server
-;; - Download and install fonts
-;;   - JetBrains from
-;;     - Nerf-fonts version: <https://www.nerdfonts.com/font-downloads>
-;;     - Standard version: <https://www.jetbrains.com/fr-fr/lp/mono/>
-;;   - <https://github.com/aliftype/xits>
-;; - fd command for a fast find: <https://github.com/sharkdp/fd>
-
 (defconst is-mswindows (equal window-system 'w32)
   "Boolean indicating whether Emacs is excuted within MS Windows.")
 
@@ -690,7 +661,7 @@
 ;;;  GAMS 
 ;;; ======
 (use-package gams-mode
-  ;; :load-path "c:/Users/Gouel/Documents/git_projects/code/gams-mode"
+  :load-path "c:/Users/Gouel/Documents/git_projects/code/gams-mode"
   :mode ("\\.gms\\'" "\\.inc\\'")
   ;; I don't know why but despite gams-mode being a prog-mode, it does not load
   ;; automatically some default minor modes for prog-mode.
