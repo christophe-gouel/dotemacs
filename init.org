@@ -1,6 +1,12 @@
 #+title: My literate Emacs config
 #+author: Christophe Gouel
 #+email: christophe.gouel@inrae.fr
+#+property: header-args:emacs-lisp :tangle test.el
+
+#+begin_src emacs-lisp
+(defconst is-mswindows (equal window-system 'w32)
+  "Boolean indicating whether Emacs is excuted within MS Windows.")
+#+end_src
 
 * Package management
 
@@ -21,6 +27,14 @@
 ** Parentheses
 
 ** Theme
+
+* Emacs behavior and tools
+
+** Dired
+
+** imenu
+
+** Proced
 
 * Keys
 
@@ -112,15 +126,15 @@ Download and install fonts
 
 ** Linters
 
-- LaTeX: to install ~textidote~, download =textidote.jar= from [[https://github.com/sylvainhalle/textidote/releases]] and copy to =~/.local/jar/textidote.jar=.
-- R: ~lintr~ will be installed with ~languageserver~.
+- LaTeX: to install =textidote=, download =textidote.jar= from [[https://github.com/sylvainhalle/textidote/releases]] and copy to =~/.local/jar/textidote.jar=.
+- R: =lintr= will be installed with =languageserver=.
 
 ** LSP servers
 
 #+begin_src sh
-  pip3 install --user python-lsp-server[all]
-  Rscript -e "install.packages('languageserver')"
-  Curl --output %HOME%/.local/bin/digestif.cmd https://raw.githubusercontent.com/astoff/digestif/master/scripts/digestif.cmd
+pip3 install --user python-lsp-server[all]
+Rscript -e "install.packages('languageserver')"
+Curl --output %HOME%/.local/bin/digestif.cmd https://raw.githubusercontent.com/astoff/digestif/master/scripts/digestif.cmd
 #+end_src
 
 ** Python
@@ -128,25 +142,25 @@ Download and install fonts
 Install IPython to be able to launch it from Emacs
 
 #+begin_src sh
-  pip3 install --user ipython
+pip3 install --user ipython
 #+end_src
 
-Python requires the package ~pyreadline3~ on Windows to enable auto-completion.
+Python requires the package =pyreadline3= on Windows to enable auto-completion.
 
 #+begin_src sh
-  pip3 install --user pyreadline3
+pip3 install --user pyreadline3
 #+end_src
 
-Install ~jedi~ server for =company-jedi=:
+Install =Jedi= server for =company-jedi=:
 
-#+begin_src emacs-lisp
-  (jedi:install-server)
+#+begin_src emacs-lisp :tangle no
+(jedi:install-server)
 #+end_src
 
 ** Stylers
 
 #+begin_src sh
-  Rscript -e "install.packages('styler')"
+Rscript -e "install.packages('styler')"
 #+end_src
 
 ** Other installations
@@ -164,5 +178,5 @@ Install
 On Windows, they can be installed with Chocolatey (requires admin rights):
 
 #+begin_src sh
-  choco install -y fd ripgrep
+choco install -y fd ripgrep
 #+end_src

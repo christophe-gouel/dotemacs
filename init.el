@@ -423,6 +423,7 @@
   :custom
   (org-hide-leading-stars t)
   (org-export-with-LaTeX-fragments t)       ; Export LaTeX fragment to HTML
+  (org-edit-src-content-indentation 0)
   (org-todo-keywords '((type "TODO(t)" "STARTED(s)" "WAITING(w)" "|" "DONE(d)")))
   (org-tag-alist '(("OFFICE" . ?o) ("COMPUTER" . ?c) ("HOME" . ?h) ("PROJECT" . ?p) ("CALL" . ?a) ("ERRANDS" . ?e) ("TASK" . ?t)))
   (org-confirm-babel-evaluate nil)
