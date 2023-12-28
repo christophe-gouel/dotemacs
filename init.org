@@ -80,6 +80,8 @@
 
 *** Language Server Protocol
 
+*** Literate programming
+
 *** Projects
 
 *** Snippets
@@ -97,3 +99,70 @@
 *** Python
 
 *** Stata
+
+* To install manually
+
+** Fonts
+
+Download and install fonts
+- JetBrains from
+  - Nerf-fonts version for the icons: [[https://www.nerdfonts.com/font-downloads]]
+  - Standard version for other uses: [[https://www.jetbrains.com/fr-fr/lp/mono/]]
+- [[https://github.com/aliftype/xits]]
+
+** Linters
+
+- LaTeX: to install ~textidote~, download =textidote.jar= from [[https://github.com/sylvainhalle/textidote/releases]] and copy to =~/.local/jar/textidote.jar=.
+- R: ~lintr~ will be installed with ~languageserver~.
+
+** LSP servers
+
+#+begin_src sh
+  pip3 install --user python-lsp-server[all]
+  Rscript -e "install.packages('languageserver')"
+  Curl --output %HOME%/.local/bin/digestif.cmd https://raw.githubusercontent.com/astoff/digestif/master/scripts/digestif.cmd
+#+end_src
+
+** Python
+
+Install IPython to be able to launch it from Emacs
+
+#+begin_src sh
+  pip3 install --user ipython
+#+end_src
+
+Python requires the package ~pyreadline3~ on Windows to enable auto-completion.
+
+#+begin_src sh
+  pip3 install --user pyreadline3
+#+end_src
+
+Install ~jedi~ server for =company-jedi=:
+
+#+begin_src emacs-lisp
+  (jedi:install-server)
+#+end_src
+
+** Stylers
+
+#+begin_src sh
+  Rscript -e "install.packages('styler')"
+#+end_src
+
+** Other installations
+
+=math-preview= for LaTeX blocks in text buffers.
+
+#+begin_src sh
+  npm install -g git+https://gitlab.com/matsievskiysv/math-preview
+#+end_src
+
+Install
+- =fd= to have a fast alternative to =find= (from [[https://github.com/sharkdp/fd]]).
+- =ripgrep= to have a fast alternative to =grep=.
+
+On Windows, they can be installed with Chocolatey (requires admin rights):
+
+#+begin_src sh
+  choco install -y fd ripgrep
+#+end_src

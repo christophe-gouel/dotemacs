@@ -1,7 +1,7 @@
 ;; To install manually:
 ;; - LSP servers
 ;; ``` bash
-;;   pip3 install --user python-lsp-server[all] jupyter[all]
+;;   pip3 install --user python-lsp-server[all]
 ;;   Rscript -e "install.packages('languageserver')"
 ;;   Curl --output %HOME%/.local/bin/digestif.cmd https://raw.githubusercontent.com/astoff/digestif/master/scripts/digestif.cmd
 ;; ```
@@ -10,6 +10,10 @@
 ;; - math-preview:
 ;; ``` bash
 ;; npm install -g git+https://gitlab.com/matsievskiysv/math-preview
+;; ```
+;; - Install IPython to be able to launch it from emacs
+;; ``` bash
+;;   pip3 install --user ipython
 ;; ```
 ;; - Autocompletion in Python on Windows.
 ;; ``` bash
@@ -421,7 +425,7 @@
   (org-export-with-LaTeX-fragments t)       ; Export LaTeX fragment to HTML
   (org-todo-keywords '((type "TODO(t)" "STARTED(s)" "WAITING(w)" "|" "DONE(d)")))
   (org-tag-alist '(("OFFICE" . ?o) ("COMPUTER" . ?c) ("HOME" . ?h) ("PROJECT" . ?p) ("CALL" . ?a) ("ERRANDS" . ?e) ("TASK" . ?t)))
-  (org-hide-leading-stars t)
+  (org-confirm-babel-evaluate nil)
   :config
   ;; Integration of RefTeX in org
   (defun my/org-mode-reftex-setup ()
@@ -432,8 +436,14 @@
 	 (reftex-parse-all))
     (define-key org-mode-map (kbd "C-c )") 'reftex-citation)
     )
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((emacs-lisp . t)
+     (python . t)
+     (R . t)
+     (shell . t)))
   :hook (org-mode . my/org-mode-reftex-setup)
-)
+  )
 
 ;;; ========================================
 ;;;  Look, feel, and general emacs behavior
@@ -1298,6 +1308,9 @@ same directory as the working and insert a link to this file."
   (markdown-mode . pandoc-mode)
   (pandoc-mode . pandoc-load-default-settings)
   )
+
+;; Package required to edit code blocks in indirect buffers
+(use-package edit-indirect)
 
 ;;; =======
 ;;;  Magit
