@@ -1,13 +1,25 @@
 #+title: My literate Emacs config
 #+author: Christophe Gouel
 #+email: christophe.gouel@inrae.fr
-#+property: header-args:emacs-lisp :tangle test.el
+#+property: header-args:emacs-lisp :results silent :tangle test.el
 
 * Preliminaries
 
 #+begin_src emacs-lisp
 (defconst is-mswindows (equal window-system 'w32)
   "Boolean indicating whether Emacs is excuted within MS Windows.")
+#+end_src
+
+#+begin_src emacs-lisp
+;;; init.el --- Emacs initialization file tangled from a README.org file
+;;
+;;  Author: Christophe Gouel <christophe.gouel@inrae.fr>
+;;  URL: https://github.com/christophe-gouel/dotemacs
+;;  ============================================================================
+
+;;; User setting
+;;  ----------------------------------------------------------------------------
+
 #+end_src
 
 ** Custom file
@@ -83,6 +95,13 @@ Define a file in which any customization is saved
 
 ** Standard Emacs options
 
+Remove tool-bar, menu, and scrool-bar
+#+begin_src emacs-lisp
+(menu-bar-mode 0)
+(scroll-bar-mode 0)
+(tool-bar-mode 0)
+#+end_src
+
 #+begin_src emacs-lisp
 (setq blink-cursor-blinks 0 ; curseur clignote indéfiniment
       cursor-type 'bar ; curseur étroit
@@ -93,8 +112,6 @@ Define a file in which any customization is saved
       pixel-scroll-precision-mode t
       )
 (set-face-background 'cursor "#CC0000") ; curseur rouge foncé
-(scroll-bar-mode 0)
-(tool-bar-mode 0)
 (when (display-graphic-p)
   (global-hl-line-mode +1) ; Highlight the current line
   ;; Fonts and unicode characters
@@ -245,6 +262,13 @@ Set up encoding to Unicode
       x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING))
 (if is-mswindows    ;; MS Windows clipboard is UTF-16LE
     (set-clipboard-coding-system 'utf-16le-dos))
+#+end_src
+
+** User settings
+
+#+begin_src emacs-lisp
+(setq user-full-name "Christophe Gouel"
+      user-mail-address "christophe.gouel@inrae.fr")
 #+end_src
 
 ** Other Emacs settings
@@ -398,9 +422,11 @@ Activate lower- and upper-case commands ("C-x C-l" and "C-x C-u")
 ** Custom keybindings
 
 #+begin_src emacs-lisp
-(define-key global-map (kbd "C-x C-b") 'ibuffer)
-(define-key global-map (kbd "<f5>") 'revert-buffer)
-(define-key compilation-mode-map (kbd "r") 'recompile)
+(keymap-global-set "C-x C-b" 'ibuffer)
+(keymap-global-set "C-<apps>" 'menu-bar-mode)
+(keymap-global-set "<f5>" 'revert-buffer)
+
+(keymap-set compilation-mode-map "r" 'recompile)
 #+end_src
 
 ** Keycast
@@ -1606,3 +1632,8 @@ On Windows, they can be installed with Chocolatey (requires admin rights):
 #+begin_src sh
 choco install -y delta fd hunspell ripgrep
 #+end_src
+
+# Local Variables:
+# eval: (add-hook 'after-save-hook (lambda ()(if (y-or-n-p "Reload?")(load-file user-init-file))) nil t)
+# eval: (add-hook 'after-save-hook (lambda ()(if (y-or-n-p "Tangle?")(org-babel-tangle))) nil t)
+# End:
