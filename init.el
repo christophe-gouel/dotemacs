@@ -1177,35 +1177,30 @@ current buffer within the project."
 (use-package julia-mode)
 
 (use-package matlab
-  :ensure matlab-mode)
-
-;; Matlab mode
-;;; Set up matlab-mode to load on .m files
-(autoload 'matlab-mode "matlab" "Enter MATLAB mode." t)
-(setq auto-mode-alist (cons '("\\.m\\'" . matlab-mode) auto-mode-alist))
-
-;;; Customization:
-(matlab-cedet-setup)
-(setq matlab-indent-function t)	; if you want function bodies indented
-(setq matlab-verify-on-save-flag nil) ; turn off auto-verify on save
-(setq matlab-indent-level 2)
-(setq matlab-comment-region-s "% ")
-(defun my-matlab-mode-hook ()
-  (setq matlab-show-mlint-warnings t)   ; Activate mlint
-  (mlint-minor-mode))                   ; Activate mlint minor mode
-(add-hook 'matlab-mode-hook 'my-matlab-mode-hook)
-
-;; mlint
-(if is-mswindows
-    (setq mlint-programs (quote ("C:/Program Files/MATLAB/RLast/bin/win64/mlint.exe")))
-  (setq mlint-programs (quote ("/usr/local/MATLAB/RLast/bin/glnxa64/mlint"))))
-
-;; Matlab shell
-(autoload 'matlab-shell "matlab" "Interactive MATLAB mode." t)
-(defun my/matlab-shell-mode-hook ()
-  '())
-(add-hook 'matlab-shell-mode-hook 'my/matlab-shell-mode-hook)
-(setq matlab-shell-command-switches '("-nodesktop -nosplash"))
+  :ensure matlab-mode
+  :commands (matlab-mode matlab-shell)
+  :mode ("\\.m\\'" . matlab-mode)
+  :custom
+  (matlab-indent-function t)	; if you want function bodies indented
+  (matlab-verify-on-save-flag nil) ; turn off auto-verify on save
+  (matlab-indent-level 2)
+  (matlab-comment-region-s "% ")
+  (matlab-shell-command-switches '("-nodesktop -nosplash"))
+  :config
+  (matlab-cedet-setup)
+  ;; mlint
+  (if is-mswindows
+      (setq mlint-programs (quote ("C:/Program Files/MATLAB/RLast/bin/win64/mlint.exe")))
+    (setq mlint-programs (quote ("/usr/local/MATLAB/RLast/bin/glnxa64/mlint"))))
+  (defun my/matlab-mode-hook ()
+    (setq matlab-show-mlint-warnings t)   ; Activate mlint
+    (mlint-minor-mode))                   ; Activate mlint minor mode
+  (defun my/matlab-shell-mode-hook ()
+    '())
+  :hook
+  (matlab-mode . my/matlab-mode-hook)
+  (matlab-shell-mode . my/matlab-shell-mode-hook)
+)
 
 (use-package python
   :ensure nil
