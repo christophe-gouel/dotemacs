@@ -353,22 +353,6 @@ Set up encoding to Unicode
   )
 #+end_src
 
-** Pager
-
-#+begin_src emacs-lisp
-(use-package pager
-  :bind
-  (("\C-v" . pager-page-down)
-   ([next] . pager-page-down)
-   ("\ev" . pager-page-up)
-   ([prior] . pager-page-up)
-   ([M-up] . pager-row-up)
-   ([M-kp-8] . pager-row-up)
-   ([M-down] . pager-row-down)
-   ([M-kp-2] . pager-row-down))
-  )
-#+end_src
-
 ** PDF viewers
 
 #+begin_src emacs-lisp

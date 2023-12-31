@@ -261,18 +261,6 @@
   (imenu-list-position 'right)
   )
 
-(use-package pager
-  :bind
-  (("\C-v" . pager-page-down)
-   ([next] . pager-page-down)
-   ("\ev" . pager-page-up)
-   ([prior] . pager-page-up)
-   ([M-up] . pager-row-up)
-   ([M-kp-8] . pager-row-up)
-   ([M-down] . pager-row-down)
-   ([M-kp-2] . pager-row-down))
-  )
-
 (use-package doc-view
   :if is-mswindows
   :config
