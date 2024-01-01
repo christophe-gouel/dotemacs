@@ -423,19 +423,20 @@
     :update-fn 'auto)
   )
 
-(use-package swiper)
-
-;; swiper is slow for large files so it is replaced by isearch for large files
-(defun my/search-method-according-to-numlines ()
-  "Determine the number of lines of current buffer and chooses a
+(use-package swiper
+  :config
+  ;; swiper is slow for large files so it is replaced by isearch for large files
+  (defun my/search-method-according-to-numlines ()
+    "Determine the number of lines of current buffer and chooses a
  search method accordingly."
-  (interactive)
-  (if (< (count-lines (point-min) (point-max)) 20000)
-      (swiper)
-    (isearch-forward)
+    (interactive)
+    (if (< (count-lines (point-min) (point-max)) 20000)
+	(swiper)
+      (isearch-forward)
+      )
     )
+  :bind ("C-s" . my/search-method-according-to-numlines)
   )
-(global-set-key "\C-s" 'my/search-method-according-to-numlines)
 
 (use-package ivy-xref
   :init
@@ -980,13 +981,12 @@ same directory as the working and insert a link to this file."
   ("C-c l" . eglot)
   )
 
-(use-package poly-R)
-
 (use-package poly-markdown)
 
-(use-package quarto-mode)
+(use-package poly-R
+  :mode ("\\.Rmd" . poly-markdown+r-mode))
 
-(add-to-list 'auto-mode-alist '("\\.Rmd" . poly-markdown+r-mode))
+(use-package quarto-mode)
 
 (use-package edit-indirect)
 
@@ -1022,6 +1022,8 @@ current buffer within the project."
 (use-package ripgrep)
 
 (use-package yasnippet
+  :custom
+  (yas-use-menu nil)
   :config
   (yas-global-mode 1)
   )
@@ -1038,7 +1040,10 @@ current buffer within the project."
          :map inferior-ess-r-mode-map
          ("C-S-m" . " |>")
          ("C-%"   . " %>%")
-	 ("M--"   . ess-insert-assign))
+	 ("M--"   . ess-insert-assign)
+	 :map inferior-ess-mode-map
+	 ("<home>" . comint-bol)
+	 )
   :custom
   (ess-roxy-str "#'")
   (ess-roxy-template-alist
@@ -1088,32 +1093,18 @@ current buffer within the project."
     (interactive)
     (let ((filename (read-file-name "R script: ")))
       (my/run-r-script filename (file-name-base filename))))
+
+  (defun my/inferior-ess-init ()
+    "Workaround for https://github.com/emacs-ess/ESS/issues/1193"
+    (add-hook 'comint-preoutput-filter-functions #'xterm-color-filter -90 t)
+    (setq-local ansi-color-for-comint-mode nil)
+    (smartparens-mode 1)
+    )
+  :hook
+  (inferior-ess-mode . my/inferior-ess-init)
   )
 
-(define-key inferior-ess-mode-map [home] 'comint-bol)
-
-(use-package rutils) ; To interact easily with renv
-
-(add-hook 'ess-mode-hook
-	  #'(lambda ()
-	      (outline-minor-mode)
-	      (setq outline-regexp "^# .*----")
-	      (defun outline-level ()
-		(cond (looking-at "^# .*----") 1)
-		(cond (looking-at "^## .*----") 2)
-		(cond (looking-at "^### .*----") 3)
-		(cond (looking-at "^#### .*----") 4)
-		((looking-at "^[a-zA-Z0-9_\.]+ ?<- ?function(.*{") 5)
-		(t 1000)
-		)))
-
-(defun my/inferior-ess-init ()
-  "Workaround for https://github.com/emacs-ess/ESS/issues/1193"
-  (add-hook 'comint-preoutput-filter-functions #'xterm-color-filter -90 t)
-  (setq-local ansi-color-for-comint-mode nil)
-  (smartparens-mode 1)
-  )
-(add-hook 'inferior-ess-mode-hook 'my/inferior-ess-init)
+(use-package rutils)
 
 (use-package gams-mode
   :load-path "c:/Users/Gouel/Documents/git_projects/code/gams-mode"
