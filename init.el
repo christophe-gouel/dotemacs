@@ -201,6 +201,7 @@
       default-major-mode 'text-mode ; mode par défaut
       delete-by-moving-to-trash t ; Sent deleted files to trash
       comment-column 0 ; Prevent indentation of lines starting with one comment
+      next-line-add-newlines t
       jit-lock-chunk-size 50000
       ;; set large file threshold at 100 megabytes
       large-file-warning-threshold 100000000
@@ -219,6 +220,12 @@
     (server-start))
 (when is-mswindows
     (setq tramp-default-method "plink"))
+
+(use-package dictionary
+  :ensure nil
+  :custom
+  (dictionary-server "dict.org")
+  )
 
 (use-package dired
   :ensure nil
@@ -523,25 +530,7 @@
   (TeX-mode . flymake-mode)
   :hook
   (TeX-mode . TeX-fold-mode)
-  ;; Custom functions to compile, preview, and view documents
-  (TeX-mode . (lambda ()
-		(define-key TeX-mode-map (kbd "<f9>")
-		  (lambda ()
-                    (interactive)
-                    (save-buffer)
-                    (TeX-command-menu "latex")))
-		(define-key TeX-mode-map (kbd "<f10>")
-		  (lambda ()
-                    (interactive)
-                    (preview-at-point)))
-		(define-key TeX-mode-map (kbd "<f12>")
-		  (lambda ()
-                    (interactive)
-                    (TeX-view)
-                    [return]))))
   :custom
-  (setq-default TeX-auto-parse-length 200)
-  (setq-default TeX-master nil)
   (TeX-auto-save t)
   (TeX-parse-self t)
   (LaTeX-item-indent 0)
@@ -595,12 +584,39 @@
   (TeX-fold-math-spec-list nil)
   (LaTeX-fold-math-spec-list nil)
   :config
+  (setq-default TeX-auto-parse-length 200
+		TeX-master nil)
   (if is-mswindows
       (setq preview-gs-command "C:\\Program Files\\gs\\gs10.01.1\\bin\\gswin64c.exe")
     (setq preview-gs-command "gs"))
-  :bind (:map TeX-mode-map
-	      ("C-c e" . TeX-next-error)
-	      ("M-RET" . latex-insert-item))
+
+  (defun my/tex-compile ()
+    "Compile TeX document"
+    (interactive)
+    (save-buffer)
+    (TeX-command-menu "latex")
+    )
+
+  ;; Beamer
+  (defun my/tex-frame ()
+    "Run pdflatex on current frame.  Frame must be declared as an environment."
+    (interactive)
+    (let (beg)
+      (save-excursion
+	(search-backward "\\begin{frame}")
+	(setq beg (point))
+	(forward-char 1)
+	(LaTeX-find-matching-end)
+	(TeX-pin-region beg (point))
+	(cl-letf (( (symbol-function 'TeX-command-query) (lambda (x) "LaTeX")))
+	  (TeX-command-region)))))
+  :bind
+  (:map TeX-mode-map
+	("C-c e" . TeX-next-error)
+	("M-RET" . latex-insert-item)
+	("S-<return>" . my/tex-frame)
+	("<f9>" . my/tex-compile)
+   )
   )
 
 (use-package reftex
@@ -620,23 +636,6 @@
 	      ("C-c F" . reftex-fancyref-Fref))
   )
 
-;; Beamer
-(defun my/tex-frame ()
-  "Run pdflatex on current frame.  Frame must be declared as an environment."
-  (interactive)
-  (let (beg)
-    (save-excursion
-      (search-backward "\\begin{frame}")
-      (setq beg (point))
-      (forward-char 1)
-      (LaTeX-find-matching-end)
-      (TeX-pin-region beg (point))
-      (letf (( (symbol-function 'TeX-command-query) (lambda (x) "LaTeX")))
-	(TeX-command-region)))))
-(add-hook 'TeX-mode-hook
-	  #'(lambda()
-	     (local-set-key [(shift return)] 'my/tex-frame)))
-
 (use-package cdlatex
   :hook
   (LaTeX-mode . turn-on-cdlatex)
@@ -644,18 +643,18 @@
   (LaTeX-mode . (lambda ()
 		  (make-local-variable 'company-idle-delay)
 		  (setq company-idle-delay 0.3)))
+  (cdlatex-tab . my/cdlatex-indent-maybe)
   :config
   ;; Prevent cdlatex from defining LaTeX math subscript everywhere
   (define-key cdlatex-mode-map "_" nil)
+  ;; Allow tab to be used to indent when the cursor is at the beginning of the line
+  (defun my/cdlatex-indent-maybe ()
+            (when (or (bolp) (looking-back "^[ \t]+"))
+              (LaTeX-indent-line)))
   :custom
   (cdlatex-command-alist
 	'(("equ*" "Insert equation* env"   "" cdlatex-environment ("equation*") t nil)))
   )
-;; Allow tab to be used to indent when the cursor is at the beginning of the line
-(add-hook 'cdlatex-tab-hook
-          (defun cdlatex-indent-maybe ()
-            (when (or (bolp) (looking-back "^[ \t]+"))
-              (LaTeX-indent-line))))
 
 (use-package markdown-mode
   :mode ("README\\.md\\'" . gfm-mode)
