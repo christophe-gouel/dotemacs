@@ -287,7 +287,10 @@
   (proced-enable-color-flag t)
 )
 
-(use-package recentf)
+(use-package recentf
+  :custom
+  (recentf-max-saved-items 50)
+  )
 
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
@@ -398,7 +401,8 @@
   )
 
 (use-package counsel
-  :config (counsel-mode)
+  :config
+  (counsel-mode)
   )
 
 (use-package ivy
@@ -406,7 +410,10 @@
   :custom
   (ivy-use-virtual-buffers t)
   (ivy-count-format "%d/%d ")
-  :config (ivy-mode)
+  :config
+  (ivy-mode)
+  (ivy-configure 'counsel-imenu
+    :update-fn 'auto)
   )
 
 (use-package swiper)
@@ -511,7 +518,6 @@
   :ensure auctex
   :hook
   (TeX-mode . latex-math-mode)
-  (TeX-mode . imenu-add-menubar-index)
   (TeX-mode . turn-on-reftex)
   (TeX-mode . TeX-fold-buffer)
   (TeX-mode . flymake-mode)
@@ -709,7 +715,6 @@ same directory as the working and insert a link to this file."
           (reftex-cite-key-separator "; @"))
       (reftex-citation)))
   :hook
-  (markdown-mode . imenu-add-menubar-index)
   (markdown-mode . (lambda () (math-preview-all)))
   :bind (:map markdown-mode-map
 	      ("C-c [" . my/markdown-reftex-citation))
@@ -766,7 +771,6 @@ same directory as the working and insert a link to this file."
      (shell . t)))
   :hook
   (org-mode . my/org-mode-reftex-setup)
-  (org-mode . imenu-add-menubar-index)
   )
 
 (use-package texfrag
