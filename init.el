@@ -268,6 +268,11 @@
   (imenu-list-position 'right)
   )
 
+(use-package imenu-anywhere
+  :bind
+  ("M-g M-i" . ivy-imenu-anywhere)
+  )
+
 (use-package doc-view
   :if is-mswindows
   :config
@@ -292,7 +297,7 @@
   :ensure nil
   :custom
   (proced-enable-color-flag t)
-)
+  )
 
 (use-package recentf
   :custom

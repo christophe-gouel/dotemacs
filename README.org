@@ -347,7 +347,9 @@ Set up encoding to Unicode
   :custom
   (imenu-auto-rescan t)
   )
+#+end_src
 
+#+begin_src emacs-lisp
 (use-package imenu-list
   :config
   (defun my/imenu-list-goto-entry ()
@@ -361,6 +363,13 @@ Set up encoding to Unicode
   :custom
   (imenu-list-focus-after-activation t)
   (imenu-list-position 'right)
+  )
+#+end_src
+
+#+begin_src emacs-lisp
+(use-package imenu-anywhere
+  :bind
+  ("M-g M-i" . ivy-imenu-anywhere)
   )
 #+end_src
 
@@ -397,7 +406,7 @@ Set up encoding to Unicode
   :ensure nil
   :custom
   (proced-enable-color-flag t)
-)
+  )
 #+end_src
 
 ** Recent files
