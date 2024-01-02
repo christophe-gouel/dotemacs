@@ -72,6 +72,7 @@
 
 (setq blink-cursor-blinks 0 ; curseur clignote indéfiniment
       cursor-type 'bar ; curseur étroit
+      custom-sage-themes t ; consider all themes as safe
       display-time-24hr-format t ; Affichage de l'heure format 24h
       column-number-mode t ; affichage du numéro de la colonne
       prettify-symbols-unprettify-at-point t
@@ -170,15 +171,29 @@
   (rainbow-delimiters-unmatched-face ((t (:background "yellow")))))
 
 (use-package doom-themes
-  :config
+  :custom
   ;; Global settings (defaults)
-  (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
-        doom-themes-enable-italic t) ; if nil, italics is universally disabled
+  (doom-themes-enable-bold t)   ; if nil, bold is universally disabled
+  (doom-themes-enable-italic t) ; if nil, italics is universally disabled
+  :config
   (load-theme 'doom-one t)
   ;; Enable flashing mode-line on errors
   (doom-themes-visual-bell-config)
   ;; Corrects (and improves) org-mode's native fontification.
-  (doom-themes-org-config))
+  (doom-themes-org-config)
+  (defun my/switch-to-light-theme ()
+    "Switch to doom-one-light them after disabling current theme"
+    (interactive)
+    (mapcar #'disable-theme custom-enabled-themes)
+    (load-theme 'doom-one-light t)
+    )
+  (defun my/switch-to-dark-theme ()
+    "Switch to doom-one them after disabling current theme"
+    (interactive)
+    (mapcar #'disable-theme custom-enabled-themes)
+    (load-theme 'doom-one t)
+    )
+  )
 
 (set-language-environment "UTF-8")
 (prefer-coding-system       'utf-8)
