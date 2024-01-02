@@ -215,10 +215,9 @@ To list all available fonts, use
 
 #+begin_src emacs-lisp
 (use-package rainbow-delimiters
-  :init
-  (progn
-    (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
-    (add-hook 'yaml-mode-hook 'rainbow-delimiters-mode))
+  :hook
+  (prog-mode . rainbow-delimiters-mode)
+  (yaml-mode . rainbow-delimiters-mode)
   :custom-face
   (rainbow-delimiters-depth-1-face ((t (:foreground "red"))))
   (rainbow-delimiters-depth-2-face ((t (:foreground "orange"))))
@@ -246,13 +245,13 @@ To list all available fonts, use
   ;; Corrects (and improves) org-mode's native fontification.
   (doom-themes-org-config)
   (defun my/switch-to-light-theme ()
-    "Switch to doom-one-light them after disabling current theme"
+    "Switch to doom-one-light theme after disabling current theme"
     (interactive)
     (mapcar #'disable-theme custom-enabled-themes)
     (load-theme 'doom-one-light t)
     )
   (defun my/switch-to-dark-theme ()
-    "Switch to doom-one them after disabling current theme"
+    "Switch to doom-one theme after disabling current theme"
     (interactive)
     (mapcar #'disable-theme custom-enabled-themes)
     (load-theme 'doom-one t)
