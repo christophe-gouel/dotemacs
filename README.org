@@ -194,6 +194,7 @@ To list all available fonts, use
       "#?" "#(" ";;" "_|_" "__" "~~" "~~>" "~>" "~-" "~@" "$>" "^=" "]#"))
   (ligature-set-ligatures 'prog-mode jb-ligatures)
   (ligature-set-ligatures 'text-mode jb-ligatures)
+  (ligature-set-ligatures 'comint-mode jb-ligatures)
   (ligature-set-ligatures 'special-mode jb-ligatures)
   ;; Enables ligature checks globally in all buffers. You can also do it
   ;; per mode with `ligature-mode'.
@@ -1283,7 +1284,9 @@ Configuration from [[https://robert.kra.hn/posts/2023-02-22-copilot-emacs-setup/
 *** Literate programming
 
 #+begin_src emacs-lisp
-(use-package poly-markdown)
+(use-package poly-markdown
+  :bind (:map polymode-eval-map ("p" . quarto-preview))
+  )
 
 (use-package poly-R
   :mode ("\\.Rmd" . poly-markdown+r-mode))

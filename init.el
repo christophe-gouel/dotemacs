@@ -142,6 +142,7 @@
       "#?" "#(" ";;" "_|_" "__" "~~" "~~>" "~>" "~-" "~@" "$>" "^=" "]#"))
   (ligature-set-ligatures 'prog-mode jb-ligatures)
   (ligature-set-ligatures 'text-mode jb-ligatures)
+  (ligature-set-ligatures 'comint-mode jb-ligatures)
   (ligature-set-ligatures 'special-mode jb-ligatures)
   ;; Enables ligature checks globally in all buffers. You can also do it
   ;; per mode with `ligature-mode'.
@@ -1020,7 +1021,9 @@ same directory as the working and insert a link to this file."
   ("C-c l" . eglot)
   )
 
-(use-package poly-markdown)
+(use-package poly-markdown
+  :bind (:map polymode-eval-map ("p" . quarto-preview))
+  )
 
 (use-package poly-R
   :mode ("\\.Rmd" . poly-markdown+r-mode))
