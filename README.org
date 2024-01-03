@@ -136,9 +136,10 @@ To list all available fonts, use
 
 #+begin_src emacs-lisp
 (use-package rainbow-mode
-  :quelpa (rainbow-mode
-	   :fetcher url
-	   :url "https://raw.githubusercontent.com/emacsmirror/rainbow-mode/master/rainbow-mode.el")
+  :quelpa
+  (rainbow-mode
+   :fetcher url
+   :url "https://raw.githubusercontent.com/emacsmirror/rainbow-mode/master/rainbow-mode.el")
   :hook (prog-mode . rainbow-mode))
 #+end_src
 
@@ -558,14 +559,15 @@ Activate lower- and upper-case commands ("C-x C-l" and "C-x C-u")
 (use-package company-jedi)
 
 (setq company-backends
-      (append '((:separate company-bibtex
-			   ;; deactivate company-reftex-labels because it is too slow
-			   ;; company-reftex-labels
-                           company-reftex-citations
-			   company-math-symbols-latex
-			   company-math-symbols-unicode
-			   company-latex-commands))
-              company-backends))
+      (append
+       '((:separate company-bibtex
+		    ;; deactivate company-reftex-labels because it is too slow
+		    ;; company-reftex-labels
+                    company-reftex-citations
+		    company-math-symbols-latex
+		    company-math-symbols-unicode
+		    company-latex-commands))
+       company-backends))
 #+end_src
 
 Use =company-box= for a better position of the autocompletion when using copilot.
@@ -712,11 +714,13 @@ Use =company-box= for a better position of the autocompletion when using copilot
    (substitute-in-file-name "${BIBINPUTS}/References.bib"))
   ;; Pdf files
   (bibtex-completion-library-path
-   (substitute-in-file-name "${HOME}/Dropbox (Inrae EcoPub)/Bibliography/Papers"))
+   (substitute-in-file-name
+    "${HOME}/Dropbox (Inrae EcoPub)/Bibliography/Papers"))
   (bibtex-completion-pdf-symbol "⌘")
   ;; Notes
   (bibtex-completion-notes-path
-   (substitute-in-file-name "${HOME}/Dropbox (Inrae EcoPub)/Bibliography/notes"))
+   (substitute-in-file-name
+    "${HOME}/Dropbox (Inrae EcoPub)/Bibliography/notes"))
   (bibtex-completion-notes-symbol "✎")
   (bibtex-completion-notes-extension ".md")
   (bibtex-completion-notes-template-multiple-files
@@ -784,7 +788,11 @@ Use =company-box= for a better position of the autocompletion when using copilot
      ("TM"
       ("texttrademark"))
      (1
-      ("part" "chapter" "section" "subsection" "subsubsection" "paragraph" "subparagraph" "part*" "chapter*" "section*" "subsection*" "subsubsection*" "paragraph*" "subparagraph*" "emph" "textit" "textsl" "textmd" "textrm" "textsf" "texttt" "textbf" "textsc" "textup"))))
+      ("part" "chapter" "section" "subsection" "subsubsection" "
+paragraph" "subparagraph" "part*" "chapter*" "section*" "
+subsection*" "subsubsection*" "paragraph*" "subparagraph*" "emph" "
+textit" "textsl" "textmd" "textrm" "textsf" "texttt" "textbf" "
+textsc" "textup"))))
   ;; Prevent folding of math to let prettify-symbols do the job
   (TeX-fold-math-spec-list-internal nil)
   (TeX-fold-math-spec-list nil)
@@ -793,7 +801,8 @@ Use =company-box= for a better position of the autocompletion when using copilot
   (setq-default TeX-auto-parse-length 200
 		TeX-master nil)
   (if is-mswindows
-      (setq preview-gs-command "C:\\Program Files\\gs\\gs10.01.1\\bin\\gswin64c.exe")
+      (setq preview-gs-command
+	    "C:\\Program Files\\gs\\gs10.01.1\\bin\\gswin64c.exe")
     (setq preview-gs-command "gs"))
 
   (defun my/tex-compile ()
@@ -858,7 +867,8 @@ Use =company-box= for a better position of the autocompletion when using copilot
   :config
   ;; Prevent cdlatex from defining LaTeX math subscript everywhere
   (define-key cdlatex-mode-map "_" nil)
-  ;; Allow tab to be used to indent when the cursor is at the beginning of the line
+  ;; Allow tab to be used to indent when the cursor is at the beginning of the
+  ;; line
   (defun my/cdlatex-indent-maybe ()
             (when (or (bolp) (looking-back "^[ \t]+"))
               (LaTeX-indent-line)))
@@ -904,16 +914,17 @@ same directory as the working and insert a link to this file."
                     (format-time-string "%Y-%m-%d_%a_%kh%Mm_")) ) ".png"))
     (unless (file-exists-p (file-name-directory filename))
       (make-directory (file-name-directory filename)))
-					; copy the screenshot to file
-    (shell-command (concat "powershell -command \"Add-Type -AssemblyName System.Windows.Forms;if ($([System.Windows.Forms.Clipboard]::ContainsImage())) {$image = [System.Windows.Forms.Clipboard]::GetImage();[System.Drawing.Bitmap]$image.Save('" filename "',[System.Drawing.Imaging.ImageFormat]::Png); Write-Output 'clipboard content saved as file'} else {Write-Output 'clipboard does not contain image data'}\""))
-					; insert into file if correctly taken
+    ;; copy the screenshot to file
+    (shell-command
+     (concat "powershell -command \"Add-Type -AssemblyName System.Windows.Forms;if ($([System.Windows.Forms.Clipboard]::ContainsImage())) {$image = [System.Windows.Forms.Clipboard]::GetImage();[System.Drawing.Bitmap]$image.Save('" filename "',[System.Drawing.Imaging.ImageFormat]::Png); Write-Output 'clipboard content saved as file'} else {Write-Output 'clipboard does not contain image data'}\""))
+    ;; insert into file if correctly taken
     (if (file-exists-p filename)
 	(insert (concat "![](" filename ")")))
     (markdown-display-inline-images)
     (newline)
     )
   ;; Code to use RefTeX to input references in markdown
-  ;; from <https://gist.github.com/kleinschmidt/5ab0d3c423a7ee013a2c01b3919b009a>
+  ;; from https://gist.github.com/kleinschmidt/5ab0d3c423a7ee013a2c01b3919b009a
   ;; define markdown citation formats
   (defvar markdown-cite-format)
   (setq markdown-cite-format
@@ -952,13 +963,15 @@ same directory as the working and insert a link to this file."
   :custom
   ;; This directory will be used for `obsidian-capture' if set.
   (obsidian-inbox-directory "Inbox")
-  :bind (:map obsidian-mode-map
-	      ;; Replace C-c C-o with Obsidian.el's implementation. It's ok to use another key binding.
-	      ("C-c C-o" . obsidian-follow-link-at-point)
-	      ;; Jump to backlinks
-	      ("C-c C-b" . obsidian-backlink-jump)
-	      ;; If you prefer you can use `obsidian-insert-link'
-	      ("C-c C-l" . obsidian-insert-wikilink))
+  :bind
+  (:map obsidian-mode-map
+	;; Replace C-c C-o with Obsidian.el's implementation. It's ok to use
+	;; another key binding.
+	("C-c C-o" . obsidian-follow-link-at-point)
+	;; Jump to backlinks
+	("C-c C-b" . obsidian-backlink-jump)
+	;; If you prefer you can use `obsidian-insert-link'
+	("C-c C-l" . obsidian-insert-wikilink))
   )
 #+end_src
 
@@ -1120,7 +1133,8 @@ Use =visual-fill-column= for text mode
   :custom
   (flymake-no-changes-timeout nil)
   :config
-  (setq ess-use-flymake nil) ; Deactivate linter in ess because it does not seem to work well
+  ;; Deactivate linter in ess because it does not seem to work well
+  (setq ess-use-flymake nil)
   (remove-hook 'flymake-diagnostic-functions 'flymake-proc-legacy-flymake)
 
   :bind
@@ -1134,17 +1148,19 @@ Use =visual-fill-column= for text mode
     "A LaTeX grammar/spelling checker using textidote.
   See https://github.com/sylvainhalle/textidote"
     :modes (latex-mode plain-tex-mode markdown-mode)
-    :command ("java" "-Dfile.encoding=UTF-" "-jar" (eval (expand-file-name "~/.local/jar/textidote.jar"))
-              "--read-all"
-              "--output" "singleline"
-              "--no-color"
-              "--check"   (eval (if ispell-current-dictionary (substring ispell-current-dictionary 0 2) "en"))
-	      "--firstlang" "fr"
-              "--dict"    (eval (expand-file-name "~/.emacs.d/.hunspell_en_US"))
-              source)
-    :error-patterns ((warning line-start (file-name)
-                              "(L" line "C" column "-" (or (seq "L" end-line "C" end-column) "?") "): "
-                              (message (one-or-more (not "\""))) (one-or-more not-newline) line-end)))
+    :command
+    ("java" "-Dfile.encoding=UTF-" "-jar" (eval (expand-file-name "~/.local/jar/textidote.jar"))
+     "--read-all"
+     "--output" "singleline"
+     "--no-color"
+     "--check"   (eval (if ispell-current-dictionary (substring ispell-current-dictionary 0 2) "en"))
+     "--firstlang" "fr"
+     "--dict"    (eval (expand-file-name "~/.emacs.d/.hunspell_en_US"))
+     source)
+    :error-patterns
+    ((warning line-start (file-name)
+              "(L" line "C" column "-" (or (seq "L" end-line "C" end-column) "?") "): "
+              (message (one-or-more (not "\""))) (one-or-more not-newline) line-end)))
   (add-to-list 'flycheck-checkers 'tex-textidote)
   )
 
@@ -1159,9 +1175,10 @@ Use =visual-fill-column= for text mode
 #+begin_src emacs-lisp
 (use-package format-all
   :config
-  (setq-default format-all-formatters
-		'(("LaTeX"
-		   (latexindent "-m" "--yaml=modifyLineBreaks:textWrapOptions:columns:-1,defaultIndent:'  ',indentAfterItems:itemize:0;enumerate:0;description:0"))))
+  (setq-default
+   format-all-formatters
+   '(("LaTeX"
+      (latexindent "-m" "--yaml=modifyLineBreaks:textWrapOptions:columns:-1,defaultIndent:'  ',indentAfterItems:itemize:0;enumerate:0;description:0"))))
   )
 #+end_src
 
@@ -1192,7 +1209,8 @@ Configuration from [[https://robert.kra.hn/posts/2023-02-22-copilot-emacs-setup/
   (copilot-indent-warning-suppress t)
   :config
   (defun my/copilot-complete-or-accept ()
-    "Command that either triggers a completion or accepts one if one is available."
+    "Command that either triggers a completion or accepts one if
+ one is available."
     (interactive)
     ;; Check if the Copilot overlay is visible
     (if (copilot--overlay-visible)
@@ -1208,7 +1226,8 @@ Configuration from [[https://robert.kra.hn/posts/2023-02-22-copilot-emacs-setup/
       (copilot-complete)))
 
   (defvar my/copilot-manual-mode nil
-    "When `t' will only show completions when manually triggered, e.g. via M-C-<return>.")
+    "When `t' will only show completions when manually triggered,
+ e.g. via M-C-<return>.")
 
   (defun my/copilot-disable-predicate ()
     "When copilot should not automatically show completions."
@@ -1254,7 +1273,8 @@ Configuration from [[https://robert.kra.hn/posts/2023-02-22-copilot-emacs-setup/
 (use-package eglot
   :ensure nil
   :config
-  (setq eglot-ignored-server-capabilities '(:documentOnTypeFormattingProvider))  ; Prevent eglot from reformatting code automatically
+  ;; Prevent eglot from reformatting code automatically
+  (setq eglot-ignored-server-capabilities '(:documentOnTypeFormattingProvider))
   :bind
   ("C-c l" . eglot)
   )
@@ -1287,7 +1307,8 @@ Package =edit-indirect= required to edit code blocks in indirect buffers in =mar
     "Search for EXPRESSION in files with the same extension as the
 current buffer within the project."
     (interactive
-     (list (read-from-minibuffer "Ripgrep search for: " (thing-at-point 'symbol))))
+     (list
+      (read-from-minibuffer "Ripgrep search for: " (thing-at-point 'symbol))))
     (let* ((extension (file-name-extension (buffer-file-name)))
            (glob (if extension (concat "*." extension) "*")))
       (ripgrep-regexp expression
@@ -1359,7 +1380,7 @@ current buffer within the project."
   :config
   (setq ess-assign-list '(" <-" " <<- " " = " " -> " " ->> ")
 	ess-style 'RStudio  ; Set code indentation
-	ess-ask-for-ess-directory nil  ; Do not ask what is the project directory
+	ess-ask-for-ess-directory nil ; Do not ask what is the project directory
 	comint-scroll-to-bottom-on-input 'this
 	comint-scroll-to-bottom-on-output t
 	comint-move-point-for-output t)
@@ -1369,23 +1390,33 @@ current buffer within the project."
   (setq-default inferior-R-args "--no-restore-history --no-save ")
   ;; Background jobs for R as in RStudio
   (defun my/run-r-script (arg title)
-    (let* ((is-file (file-exists-p arg))
-	   (working-directory (if is-file default-directory (file-name-directory arg)))
-	   (combuf-name (format "*Rscript-%s*" title)) ; Generate a unique compilation buffer name
-           (combuf (get-buffer combuf-name)) ; Get the existing compilation buffer, if any
-           (compilation-buffer-name-function (lambda (_) combuf-name)) ; Set the compilation buffer name function
-           (compilation-ask-about-save nil) ; Automatically save modified buffers without asking
-	   )
+    (let*
+	((is-file (file-exists-p arg))
+	 (working-directory
+	  (if is-file default-directory (file-name-directory arg)))
+	 ;; Generate a unique compilation buffer name
+	 (combuf-name (format "*Rscript-%s*" title))
+	 ;; Get the existing compilation buffer, if any
+         (combuf (get-buffer combuf-name))
+         (compilation-buffer-name-function
+	  (lambda (_) combuf-name)) ; Set the compilation buffer name function
+	 ;; Automatically save modified buffers without asking
+         (compilation-ask-about-save nil)
+	 )
       (when combuf
 	(kill-buffer combuf)) ; Kill the existing compilation buffer
-      (setq combuf (get-buffer-create combuf-name)) ; Create a new compilation buffer
+      ;; Create a new compilation buffer
+      (setq combuf (get-buffer-create combuf-name))
       (with-current-buffer combuf
-	(setq default-directory working-directory) ; Set the default directory of the compilation buffer
-	(delete-region (point-min) (point-max)) ; Delete any existing content in the compilation buffer
+	;; Set the default directory of the compilation buffer
+	(setq default-directory working-directory)
+	;; Delete any existing content in the compilation buffer
+	(delete-region (point-min) (point-max))
 	(compilation-mode)) ; Enable compilation mode in the buffer
       (compile (format "Rscript %s" arg)) ; Execute the R script using Rscript
       (with-current-buffer combuf
-	(rename-buffer combuf-name)))) ; Rename the compilation buffer to its final name
+	;; Rename the compilation buffer to its final name
+	(rename-buffer combuf-name))))
 
   (defun my/run-r-script-on-current-buffer-file ()
     (interactive)
@@ -1505,7 +1536,8 @@ To interact easily with renv
   (matlab-cedet-setup)
   ;; mlint
   (if is-mswindows
-      (setq mlint-programs (quote ("C:/Program Files/MATLAB/RLast/bin/win64/mlint.exe")))
+      (setq mlint-programs
+	    (quote ("C:/Program Files/MATLAB/RLast/bin/win64/mlint.exe")))
     (setq mlint-programs (quote ("/usr/local/MATLAB/RLast/bin/glnxa64/mlint"))))
   (defun my/matlab-mode-hook ()
     (setq matlab-show-mlint-warnings t)   ; Activate mlint
