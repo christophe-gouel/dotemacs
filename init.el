@@ -731,14 +731,15 @@ same directory as the working and insert a link to this file."
     )
   ;; Code to use RefTeX to input references in markdown
   ;; from https://gist.github.com/kleinschmidt/5ab0d3c423a7ee013a2c01b3919b009a
-  ;; define markdown citation formats
-  (defvar markdown-cite-format)
-  (setq markdown-cite-format
-	'(
-          (?\C-m . "@%l")
-          (?p . "[@%l]")
-          (?t . "@%l")
-          ))
+  (defvar markdown-cite-format
+    '(
+      (?\C-m . "@%l")
+      (?p . "[@%l]")
+      (?t . "@%l")
+      (?y . "[-@%l]")
+      )
+    "Markdown citation formats"
+    )
   ;; wrap reftex-citation with local variables for markdown format
   (defun my/markdown-reftex-citation ()
     (interactive)
