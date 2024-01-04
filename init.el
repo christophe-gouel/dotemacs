@@ -293,7 +293,8 @@
   :if is-mswindows
   :config
   (setq doc-view-ghostscript-program
-	"C:\\Program Files\\gs\\gs10.01.1\\bin\\gswin64c.exe"))
+	"C:\\Program Files\\gs\\gs10.01.1\\bin\\gswin64c.exe")
+  )
 
 (use-package pdf-tools
   :init
@@ -544,6 +545,17 @@
   (bibtex-completion-notes-extension ".md")
   (bibtex-completion-notes-template-multiple-files
    "---\ntitle: Notes on: ${author-or-editor-abbrev} (${year}): ${title}\n---\n\n")
+  :config
+  ;; Add the option to open in an external viewer
+  (defun bibtex-completion-open-pdf-external (keys &optional fallback-action)
+    "Open pdf associated to a BibTeX entry with an external viewer"
+    (let ((bibtex-completion-pdf-open-function
+           (lambda (fpath) (start-process "SumatraPDF" "*ivy-bibtex-sumatrapdf*" "SumatraPDF.exe" fpath))))
+      (bibtex-completion-open-pdf keys fallback-action)))
+  (ivy-bibtex-ivify-action bibtex-completion-open-pdf-external ivy-bibtex-open-pdf-external)
+  (ivy-add-actions
+   'ivy-bibtex
+   '(("P" ivy-bibtex-open-pdf-external "Open PDF file in external viewer (if present)")))
   )
 
 (use-package tex
@@ -570,7 +582,7 @@
   (LaTeX-math-list
    '(
      (?\) "right)")
-   (?\( "left(")
+     (?\( "left(")
      (?/ "frac{}{}")
      ))
 
