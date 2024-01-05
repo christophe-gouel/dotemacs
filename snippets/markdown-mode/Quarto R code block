@@ -1,0 +1,12 @@
+# -*- mode: snippet -*-
+# name: Quarto R code block
+# key: qur
+# --
+
+\`\`\`{r}
+#| echo: $1
+#| label: $2
+
+$0
+
+\`\`\`

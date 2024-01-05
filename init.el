@@ -500,6 +500,10 @@
   (magit-post-refresh . diff-hl-magit-post-refresh)
   )
 
+(use-package generic-x
+  :ensure nil
+  :mode ("\\..*ignore$" . hosts-generic-mode))
+
 (use-package chatgpt-shell
   :custom
   (chatgpt-shell-openai-key

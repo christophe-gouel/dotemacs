@@ -667,6 +667,14 @@ Use =company-box= for a better position of the autocompletion when using copilot
   )
 #+end_src
 
+Add support for a basic syntax highlighting of =.gitignore= files (from [[http://heyrod.com/snippets/gitignore-mode.html]]).
+
+#+begin_src emacs-lisp
+(use-package generic-x
+  :ensure nil
+  :mode ("\\..*ignore$" . hosts-generic-mode))
+#+end_src
+
 * Shells
 
 ** ChatGPT
