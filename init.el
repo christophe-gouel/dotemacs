@@ -762,7 +762,7 @@ same directory as the working and insert a link to this file."
     (let ((reftex-cite-format markdown-cite-format)
           (reftex-cite-key-separator "; @"))
       (reftex-citation)))
-  :hook
+  ;; :hook
   ;; (markdown-mode . (lambda () (math-preview-all)))
   :bind (:map markdown-mode-map
 	      ("C-c [" . my/markdown-reftex-citation))
