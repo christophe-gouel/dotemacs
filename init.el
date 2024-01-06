@@ -568,7 +568,7 @@
   (TeX-mode . latex-math-mode)
   (TeX-mode . turn-on-reftex)
   (TeX-mode . TeX-fold-buffer)
-  (TeX-mode . flymake-mode)
+  ;; (TeX-mode . flymake-mode)
   :hook
   (TeX-mode . TeX-fold-mode)
   :custom
@@ -763,7 +763,7 @@ same directory as the working and insert a link to this file."
           (reftex-cite-key-separator "; @"))
       (reftex-citation)))
   :hook
-  (markdown-mode . (lambda () (math-preview-all)))
+  ;; (markdown-mode . (lambda () (math-preview-all)))
   :bind (:map markdown-mode-map
 	      ("C-c [" . my/markdown-reftex-citation))
   )
@@ -825,11 +825,18 @@ same directory as the working and insert a link to this file."
 
 (use-package texfrag
   :hook
-  (markdown-mode . texfrag-mode)
   (eww-mode . texfrag-mode)
   )
 
-(use-package math-preview)
+(use-package math-preview
+  :bind 
+  ("C-c m d" . math-preview-all)
+  ("C-c m p" . math-preview-at-point)
+  ("C-c m r" . math-preview-region)
+  ("C-c m c d" . math-preview-clear-all)
+  ("C-c m c p" . math-preview-clear-at-point)
+  ("C-c m c r" . math-preview-clear-region)
+)
 
 (use-package flyspell
   :hook (text-mode . flyspell-mode)
@@ -917,7 +924,6 @@ same directory as the working and insert a link to this file."
   ;; Deactivate linter in ess because it does not seem to work well
   (setq ess-use-flymake nil)
   (remove-hook 'flymake-diagnostic-functions 'flymake-proc-legacy-flymake)
-
   :bind
   ("M-n" . flymake-goto-next-error)
   ("M-p" . flymake-goto-prev-error)
