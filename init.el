@@ -71,14 +71,14 @@
 (tooltip-mode 0)
 
 (setq blink-cursor-blinks 0 ; curseur clignote indéfiniment
-      cursor-type 'bar ; curseur étroit
-      custom-sage-themes t ; consider all themes as safe
+      custom-safe-themes t ; consider all themes as safe
       display-time-24hr-format t ; Affichage de l'heure format 24h
       column-number-mode t ; affichage du numéro de la colonne
       prettify-symbols-unprettify-at-point t
       show-trailing-whitespace t
       pixel-scroll-precision-mode t
       )
+(setq-default cursor-type 'bar) ; curseur étroit
 (set-face-background 'cursor "#CC0000") ; curseur rouge foncé
 (when (display-graphic-p)
   (global-hl-line-mode +1) ; Highlight the current line
