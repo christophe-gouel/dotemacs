@@ -211,6 +211,9 @@
 (setq user-full-name "Christophe Gouel"
       user-mail-address "christophe.gouel@inrae.fr")
 
+(setq initial-major-mode 'markdown-mode
+      initial-scratch-message nil)
+
 (setq show-paren-mode t ; coupler les parenthèses
       auth-sources '("~/.authinfo") ; Define file that stores secrets
       backup-directory-alist '(("." . "~/.emacs.d/backup"))

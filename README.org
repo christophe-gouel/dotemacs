@@ -287,6 +287,15 @@ Set up encoding to Unicode
       user-mail-address "christophe.gouel@inrae.fr")
 #+end_src
 
+** Scratch buffer
+
+Make the scratch buffer a markdown buffet and remove the scratch message.
+
+#+begin_src emacs-lisp
+(setq initial-major-mode 'markdown-mode
+      initial-scratch-message nil)
+#+end_src
+
 ** Other Emacs settings
 
 #+begin_src emacs-lisp
@@ -1709,6 +1718,13 @@ On Windows, they can be installed with Chocolatey (requires admin rights):
 
 #+begin_src sh
 choco install -y delta fd hunspell ripgrep
+#+end_src
+
+On Linux/Ubuntu
+
+#+begin_src sh
+sudo snap install git-delta-snap
+sudo snap alias git-delta-snap.delta delta
 #+end_src
 
 # Local Variables:
