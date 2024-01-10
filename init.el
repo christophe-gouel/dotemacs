@@ -287,9 +287,11 @@
 
 (use-package doc-view
   :if is-mswindows
-  :config
-  (setq doc-view-ghostscript-program
-	"C:\\Program Files\\gs\\gs10.01.1\\bin\\gswin64c.exe")
+  :custom
+  (doc-view-ghostscript-program (executable-find "rungs"))
+  ;; :config
+  ;; (setq doc-view-ghostscript-program
+  ;; 	"C:\\Program Files\\gs\\gs10.01.1\\bin\\gswin64c.exe")
   )
 
 (use-package pdf-tools
@@ -627,10 +629,10 @@ textsc" "textup"))))
   :config
   (setq-default TeX-auto-parse-length 200
 		TeX-master nil)
-  (if is-mswindows
-      (setq preview-gs-command
-	    "C:\\Program Files\\gs\\gs10.01.1\\bin\\gswin64c.exe")
-    (setq preview-gs-command "gs"))
+  ;; (if is-mswindows
+  ;;     (setq preview-gs-command
+  ;; 	    "C:\\Program Files\\gs\\gs10.01.1\\bin\\gswin64c.exe")
+  ;;   (setq preview-gs-command "gs"))
 
   (defun my/tex-compile ()
     "Compile TeX document"
