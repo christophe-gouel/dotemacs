@@ -33,18 +33,12 @@ Define a file in which any customization is saved
 ** Package management
 
 #+begin_src emacs-lisp
-(require 'package)
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
-(package-initialize)
-
-;; use-package setup
-;; Bootstrap use-package for emacs version below 29
-(when (< emacs-major-version 29)
-    (unless (package-installed-p 'use-package)
-      (package-refresh-contents) ; update archives
-      (package-install 'use-package)) ; grab the newest use-package
-    (require 'use-package)
-    )
+(use-package package
+  :ensure nil
+  :config
+  (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
+  (package-initialize)
+  )
 
 (use-package use-package
   :ensure nil
@@ -52,15 +46,20 @@ Define a file in which any customization is saved
   ;; Always download packages if not available
   (use-package-always-ensure t)
   )
+#+end_src
 
-;; To keep GPG keys up to date
+To keep GPG keys up to date
+#+begin_src emacs-lisp
 (use-package gnu-elpa-keyring-update)
+#+end_src
 
-;; Quelpa
+Quelpa
+#+begin_src emacs-lisp
 (use-package quelpa
   :custom
   (quelpa-update-melpa-p nil) ; Prevent update at all startup
   )
+
 (use-package quelpa-use-package)
 #+end_src
 

@@ -13,18 +13,12 @@
 (when (file-exists-p custom-file)
   (load custom-file))
 
-(require 'package)
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
-(package-initialize)
-
-;; use-package setup
-;; Bootstrap use-package for emacs version below 29
-(when (< emacs-major-version 29)
-    (unless (package-installed-p 'use-package)
-      (package-refresh-contents) ; update archives
-      (package-install 'use-package)) ; grab the newest use-package
-    (require 'use-package)
-    )
+(use-package package
+  :ensure nil
+  :config
+  (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
+  (package-initialize)
+  )
 
 (use-package use-package
   :ensure nil
@@ -33,14 +27,13 @@
   (use-package-always-ensure t)
   )
 
-;; To keep GPG keys up to date
 (use-package gnu-elpa-keyring-update)
 
-;; Quelpa
 (use-package quelpa
   :custom
   (quelpa-update-melpa-p nil) ; Prevent update at all startup
   )
+
 (use-package quelpa-use-package)
 
 (use-package dashboard
