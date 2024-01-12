@@ -759,6 +759,12 @@ Add support for a basic syntax highlighting of =.gitignore= files (from [[http:/
   )
 #+end_src
 
+** csv files
+
+#+begin_src emacs-lisp
+(use-package csv-mode)
+#+end_src
+
 ** LaTeX
 
 #+begin_src emacs-lisp

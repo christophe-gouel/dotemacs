@@ -560,6 +560,8 @@
    '(("P" ivy-bibtex-open-pdf-external "Open PDF file in external viewer (if present)")))
   )
 
+(use-package csv-mode)
+
 (use-package tex
   :ensure auctex
   :hook
