@@ -762,7 +762,10 @@ Add support for a basic syntax highlighting of =.gitignore= files (from [[http:/
 ** csv files
 
 #+begin_src emacs-lisp
-(use-package csv-mode)
+(use-package csv-mode
+  :hook
+  (csv-mode . csv-guess-set-separator)
+  )
 #+end_src
 
 ** LaTeX
