@@ -1091,11 +1091,10 @@ current buffer within the project."
 (use-package ripgrep)
 
 (use-package yasnippet
-  :init
-  (unbind-key "<tab>" yas-minor-mode-map)
-  (unbind-key "TAB" yas-minor-mode-map)
   :custom
   (yas-use-menu nil)
+  (unbind-key "<tab>" yas-minor-mode-map)
+  (unbind-key "TAB" yas-minor-mode-map)
   :config
   (yas-global-mode 1)
   :bind (:map yas-minor-mode-map

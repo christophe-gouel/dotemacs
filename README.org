@@ -1392,11 +1392,10 @@ Use "C-TAB" for moving to next field to avoid conflict with autocompletion.
 
 #+begin_src emacs-lisp
 (use-package yasnippet
-  :init
-  (unbind-key "<tab>" yas-minor-mode-map)
-  (unbind-key "TAB" yas-minor-mode-map)
   :custom
   (yas-use-menu nil)
+  (unbind-key "<tab>" yas-minor-mode-map)
+  (unbind-key "TAB" yas-minor-mode-map)
   :config
   (yas-global-mode 1)
   :bind (:map yas-minor-mode-map
