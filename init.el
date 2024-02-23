@@ -1054,7 +1054,11 @@ same directory as the working and insert a link to this file."
 (use-package poly-R
   :mode ("\\.Rmd" . poly-markdown+r-mode))
 
-(use-package quarto-mode)
+(quelpa '(quarto-mode
+	  :fetcher github
+	  :repo "christophe-gouel/quarto-emacs"
+          :branch "transient"))
+;; (use-package quarto-mode)
 
 (use-package edit-indirect)
 
