@@ -207,6 +207,10 @@
 (setq initial-major-mode 'markdown-mode
       initial-scratch-message nil)
 
+(setq comint-scroll-to-bottom-on-input 'this
+      comint-scroll-to-bottom-on-output t
+      comint-move-point-for-output t)
+
 (setq show-paren-mode t ; coupler les parenthèses
       auth-sources '("~/.authinfo") ; Define file that stores secrets
       backup-directory-alist '(("." . "~/.emacs.d/backup"))
@@ -289,14 +293,11 @@
   :if is-mswindows
   :custom
   (doc-view-ghostscript-program (executable-find "rungs"))
-  ;; :config
-  ;; (setq doc-view-ghostscript-program
-  ;; 	"C:\\Program Files\\gs\\gs10.01.1\\bin\\gswin64c.exe")
   )
 
 (use-package pdf-tools
   :init
-  (pdf-tools-install)  ; Standard activation command
+  ;; (pdf-tools-install)  ; Standard activation command
   (pdf-loader-install) ; On demand loading, leads to faster startup time
   :config
   (setq TeX-view-program-selection '((output-pdf "PDF Tools"))
@@ -326,7 +327,9 @@
 (keymap-global-set "C-<apps>" 'menu-bar-mode)
 (keymap-global-set "<f5>" 'revert-buffer)
 
-(keymap-set compilation-mode-map "r" 'recompile)
+(use-package compile
+  :ensure nil
+  :bind (:map compilation-mode-map ("r" . recompile)))
 
 (use-package keycast)
 
@@ -777,25 +780,6 @@ same directory as the working and insert a link to this file."
   (pandoc-mode . pandoc-load-default-settings)
   )
 
-(use-package obsidian
-  :demand t
-  :config
-  (obsidian-specify-path "~/Dropbox (Inrae EcoPub)/obsidian")
-  (global-obsidian-mode t)
-  :custom
-  ;; This directory will be used for `obsidian-capture' if set.
-  (obsidian-inbox-directory "Inbox")
-  :bind
-  (:map obsidian-mode-map
-	;; Replace C-c C-o with Obsidian.el's implementation. It's ok to use
-	;; another key binding.
-	("C-c C-o" . obsidian-follow-link-at-point)
-	;; Jump to backlinks
-	("C-c C-b" . obsidian-backlink-jump)
-	;; If you prefer you can use `obsidian-insert-link'
-	("C-c C-l" . obsidian-insert-wikilink))
-  )
-
 (use-package org
   :ensure nil
   :mode ("\\.org\\'" . org-mode)
@@ -1107,6 +1091,8 @@ current buffer within the project."
   )
 
 (use-package ess
+  :init
+  (require 'ess-site)
   :bind (:map ess-r-mode-map
 	 ;; Shortcut for pipe |>
          ("C-S-m" . " |>")
@@ -1130,19 +1116,17 @@ current buffer within the project."
      ("param" . "")
      ("return" . "")))
   (ess-nuke-trailing-whitespace-p t)
-  :config
-  (setq ess-assign-list '(" <-" " <<- " " = " " -> " " ->> ")
-	ess-style 'RStudio  ; Set code indentation
-	ess-ask-for-ess-directory nil ; Do not ask what is the project directory
-	comint-scroll-to-bottom-on-input 'this
-	comint-scroll-to-bottom-on-output t
-	comint-move-point-for-output t)
+  (ess-assign-list '(" <-" " <<- " " = " " -> " " ->> "))
+  (ess-style 'RStudio)  ; Set code indentation
+  (ess-ask-for-ess-directory nil) ; Do not ask what is the project directory
   ;; Following the "source is real" philosophy put forward by ESS, one should
   ;; not need the command history and should not save the workspace at the end
   ;; of an R session. Hence, both options are disabled here.
-  (setq-default inferior-R-args "--no-restore-history --no-save ")
+  (inferior-R-args "--no-restore-history --no-save ")
+  :config
   ;; Background jobs for R as in RStudio
   (defun my/run-r-script (arg title)
+    "Run Rscript in a compile buffer"
     (let*
 	((is-file (file-exists-p arg))
 	 (working-directory
@@ -1172,12 +1156,14 @@ current buffer within the project."
 	(rename-buffer combuf-name))))
 
   (defun my/run-r-script-on-current-buffer-file ()
+    "Run Rscript on the file associated to the current buffer"
     (interactive)
     (let ((filename (buffer-file-name)))
       (when filename
 	(my/run-r-script filename (file-name-base filename)))))
 
   (defun my/run-r-script-on-file ()
+    "Run Rscript on the file associated to a file"
     (interactive)
     (let ((filename (read-file-name "R script: ")))
       (my/run-r-script filename (file-name-base filename))))
@@ -1192,7 +1178,9 @@ current buffer within the project."
   (inferior-ess-mode . my/inferior-ess-init)
   )
 
-(use-package rutils)
+(use-package rutils
+  :defer t
+  :after ess)
 
 (use-package gams-mode
   :load-path "c:/Users/Gouel/Documents/git_projects/code/gams-mode"
