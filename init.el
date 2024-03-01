@@ -17,22 +17,19 @@
   :ensure nil
   :config
   (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
-  (package-initialize)
-  )
+  (package-initialize))
 
 (use-package use-package
   :ensure nil
   :custom
   ;; Always download packages if not available
-  (use-package-always-ensure t)
-  )
+  (use-package-always-ensure t))
 
 (use-package gnu-elpa-keyring-update)
 
 (use-package quelpa
   :custom
-  (quelpa-update-melpa-p nil) ; Prevent update at all startup
-  )
+  (quelpa-update-melpa-p nil)) ; Prevent update at all startup
 
 (use-package quelpa-use-package)
 
@@ -55,8 +52,7 @@
 	;; On vire le footer (je ne le lis pas)
 	dashboard-set-footer nil)
   ;; On démarre dashboard par défaut
-  (dashboard-setup-startup-hook)
-  )
+  (dashboard-setup-startup-hook))
 
 (menu-bar-mode 0)
 (scroll-bar-mode 0)
@@ -69,8 +65,7 @@
       column-number-mode t ; affichage du numéro de la colonne
       prettify-symbols-unprettify-at-point t
       show-trailing-whitespace t
-      pixel-scroll-precision-mode t
-      )
+      pixel-scroll-precision-mode t)
 (setq-default cursor-type 'bar) ; curseur étroit
 (set-face-background 'cursor "#CC0000") ; curseur rouge foncé
 (when (display-graphic-p)
@@ -79,8 +74,7 @@
   (add-to-list 'default-frame-alist
 	       '(font . "JetBrainsMono NF-10"))
   (set-fontset-font t 'unicode (font-spec :name "XITS Math") nil 'prepend)
-  (add-hook 'text-mode-hook 'prettify-symbols-mode)
-  )
+  (add-hook 'text-mode-hook 'prettify-symbols-mode))
 (add-hook 'prog-mode-hook (lambda ()
 			    (display-fill-column-indicator-mode)))
 
@@ -94,30 +88,25 @@
 (use-package nerd-icons
   :if (display-graphic-p)
   :custom
-  (nerd-icons-font-family "JetBrainsMono NF")
-  )
+  (nerd-icons-font-family "JetBrainsMono NF"))
 (use-package nerd-icons-dired
   :if (display-graphic-p)
   :hook
-  (dired-mode . nerd-icons-dired-mode)
-  )
+  (dired-mode . nerd-icons-dired-mode))
 (use-package nerd-icons-ivy-rich
   :if (display-graphic-p)
   :after counsel
   :init
   (nerd-icons-ivy-rich-mode 1)
-  (ivy-rich-mode 1)
-  )
+  (ivy-rich-mode 1))
 (use-package nerd-icons-ibuffer
   :if (display-graphic-p)
   :hook
-  (ibuffer-mode . nerd-icons-ibuffer-mode)
-  )
+  (ibuffer-mode . nerd-icons-ibuffer-mode))
 (use-package nerd-icons-completion
   :if (display-graphic-p)
   :config
-  (nerd-icons-completion-mode)
-  )
+  (nerd-icons-completion-mode))
 
 (use-package ligature
   :config
@@ -139,15 +128,13 @@
   (ligature-set-ligatures 'special-mode jb-ligatures)
   ;; Enables ligature checks globally in all buffers. You can also do it
   ;; per mode with `ligature-mode'.
-  (global-ligature-mode t)
-  )
+  (global-ligature-mode t))
 
 (use-package doom-modeline
   :hook (after-init . doom-modeline-mode)
   :config
   (if (not (display-graphic-p))
-      (setq doom-modeline-icon nil))
-  )
+      (setq doom-modeline-icon nil)))
 
 (use-package rainbow-delimiters
   :hook
@@ -175,19 +162,16 @@
   (doom-themes-visual-bell-config)
   ;; Corrects (and improves) org-mode's native fontification.
   (doom-themes-org-config)
-  (defun my/switch-to-light-theme ()
+  (defun my-switch-to-light-theme ()
     "Switch to doom-one-light theme after disabling current theme"
     (interactive)
     (mapcar #'disable-theme custom-enabled-themes)
-    (load-theme 'doom-one-light t)
-    )
-  (defun my/switch-to-dark-theme ()
+    (load-theme 'doom-one-light t))
+  (defun my-switch-to-dark-theme ()
     "Switch to doom-one theme after disabling current theme"
     (interactive)
     (mapcar #'disable-theme custom-enabled-themes)
-    (load-theme 'doom-one t)
-    )
-  )
+    (load-theme 'doom-one t)))
 
 (set-language-environment "UTF-8")
 (prefer-coding-system       'utf-8)
@@ -224,11 +208,9 @@
       ;; Options to make lsp usable in emacs (from
       ;; https://emacs-lsp.github.io/lsp-mode/page/performance/)
       gc-cons-threshold (* 10 800000)
-      read-process-output-max (* 1024 1024)
-      )
+      read-process-output-max (* 1024 1024))
 (setq-default mouse-yank-at-point t     ; coller avec la souris
-	      case-fold-search t        ; recherche sans égard à la casse
-	      )
+	      case-fold-search t)        ; recherche sans égard à la casse
 (delete-selection-mode t)                ; entrée efface texte sélectionné
 (fset 'yes-or-no-p 'y-or-n-p)            ; Replace yes or no with y or n
 (auto-compression-mode t)
@@ -240,8 +222,7 @@
 (use-package dictionary
   :ensure nil
   :custom
-  (dictionary-server "dict.org")
-  )
+  (dictionary-server "dict.org"))
 
 (use-package dired
   :ensure nil
@@ -252,13 +233,11 @@
   :hook
   (dired-mode . (lambda ()
 		  (dired-hide-details-mode)))
-  (dired-mode . auto-revert-mode)
-  )
+  (dired-mode . auto-revert-mode))
 
 (use-package diredfl
   :hook
-  (dired-mode . diredfl-mode)
-  )
+  (dired-mode . diredfl-mode))
 
 (use-package expand-region
   :bind ("C-!" . er/expand-region))
@@ -266,34 +245,31 @@
 (use-package imenu
   :ensure nil
   :custom
-  (imenu-auto-rescan t)
-  )
+  (imenu-auto-rescan t))
 
 (use-package imenu-list
   :config
-  (defun my/imenu-list-goto-entry ()
+  (defun my-imenu-list-goto-entry ()
+    "Goto entry and exit imenu"
     (interactive)
     (imenu-list-goto-entry)
     (imenu-list-smart-toggle))
   :bind
   (("C-c =" . imenu-list-smart-toggle)
    :map imenu-list-major-mode-map
-	 ("M-<return>" . my/imenu-list-goto-entry))
+	 ("M-<return>" . my-imenu-list-goto-entry))
   :custom
   (imenu-list-focus-after-activation t)
-  (imenu-list-position 'right)
-  )
+  (imenu-list-position 'right))
 
 (use-package imenu-anywhere
   :bind
-  ("M-g M-i" . ivy-imenu-anywhere)
-  )
+  ("M-g M-i" . ivy-imenu-anywhere))
 
 (use-package doc-view
   :if is-mswindows
   :custom
-  (doc-view-ghostscript-program (executable-find "rungs"))
-  )
+  (doc-view-ghostscript-program (executable-find "rungs")))
 
 (use-package pdf-tools
   :init
@@ -306,19 +282,16 @@
   (add-hook 'TeX-after-compilation-finished-functions
 	    #'TeX-revert-document-buffer)
   :bind (:map pdf-view-mode-map
-	      ("C-s" . isearch-forward))
-  )
+	      ("C-s" . isearch-forward)))
 
 (use-package proced
   :ensure nil
   :custom
-  (proced-enable-color-flag t)
-  )
+  (proced-enable-color-flag t))
 
 (use-package recentf
   :custom
-  (recentf-max-saved-items 50)
-  )
+  (recentf-max-saved-items 50))
 
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
@@ -356,8 +329,7 @@
   ;; On va utiliser une fenêtre dédiée plutôt que le minibuffer
   (which-key-setup-side-window-bottom)
   ;; On l'active partout, tout le temps
-  (which-key-mode t)
-  )
+  (which-key-mode t))
 
 (use-package company
   :init
@@ -400,14 +372,12 @@
          ;; explicitly interacted with Company. Note that <return> is
          ;; for windowed Emacs and RET is for terminal Emacs.
          ("<return>" . company-complete-selection)
-         ("RET" . company-complete-selection)
-	 )
+         ("RET" . company-complete-selection))
 
   :bind* (;; The default keybinding for `completion-at-point' and
           ;; `complete-symbol' is M-TAB or equivalently C-M-i. Here we
           ;; make sure that no minor modes override this keybinding.
-          ("M-TAB" . company-manual-begin))
-  )
+          ("M-TAB" . company-manual-begin)))
 
 (use-package company-bibtex)
 (use-package company-math)
@@ -428,13 +398,11 @@
 (use-package company-box
   :hook (company-mode . company-box-mode)
   :custom
-  (company-box-doc-enable nil)
-  )
+  (company-box-doc-enable nil))
 
 (use-package counsel
   :config
-  (counsel-mode)
-  )
+  (counsel-mode))
 
 (use-package ivy
   :demand
@@ -444,39 +412,32 @@
   :config
   (ivy-mode)
   (ivy-configure 'counsel-imenu
-    :update-fn 'auto)
-  )
+    :update-fn 'auto))
 
 (use-package swiper
   :config
   ;; swiper is slow for large files so it is replaced by isearch for large files
-  (defun my/search-method-according-to-numlines ()
+  (defun my-search-method-according-to-numlines ()
     "Determine the number of lines of current buffer and chooses a
  search method accordingly."
     (interactive)
     (if (< (count-lines (point-min) (point-max)) 20000)
 	(swiper)
-      (isearch-forward)
-      )
-    )
-  :bind ("C-s" . my/search-method-according-to-numlines)
-  )
+      (isearch-forward)))
+  :bind ("C-s" . my-search-method-according-to-numlines))
 
 (use-package ivy-xref
   :init
-  (setq xref-show-definitions-function #'ivy-xref-show-defs)
-  )
+  (setq xref-show-definitions-function #'ivy-xref-show-defs))
 
 (use-package ivy-prescient
   :after counsel
   :config
-  (ivy-prescient-mode)
-  )
+  (ivy-prescient-mode))
 
 (use-package ivy-rich
   :after nerd-icons-ivy-rich
-  :init (ivy-rich-mode +1)
-  )
+  :init (ivy-rich-mode +1))
 
 (use-package magit
   :bind ("C-x g" . magit-status)
@@ -485,8 +446,7 @@
   :config
   ; Do not diff when committing
   (remove-hook 'server-switch-hook 'magit-commit-diff)
-  (remove-hook 'with-editor-filter-visit-hook 'magit-commit-diff)
-  )
+  (remove-hook 'with-editor-filter-visit-hook 'magit-commit-diff))
 
 (use-package magit-delta
   :hook (magit-mode . magit-delta-mode))
@@ -498,8 +458,7 @@
   (prog-mode . diff-hl-mode)
   (latex-mode . diff-hl-mode)
   (dired-mode . diff-hl-dired-mode)
-  (magit-post-refresh . diff-hl-magit-post-refresh)
-  )
+  (magit-post-refresh . diff-hl-magit-post-refresh))
 
 (use-package generic-x
   :ensure nil
@@ -508,20 +467,19 @@
 (use-package chatgpt-shell
   :custom
   (chatgpt-shell-openai-key
-      (auth-source-pick-first-password :host "api.openai.com"))
-  )
+      (auth-source-pick-first-password :host "api.openai.com")))
 
 (use-package gptel
   :custom
-  (gptel-use-curl nil)
-  )
+  (gptel-use-curl nil))
 
 (use-package eshell-git-prompt
   :config
   (eshell-git-prompt-use-theme 'powerline))
 
 (if is-mswindows    ;; MS Windows clipboard is UTF-16LE
-    (defun bash ()
+    (defun my-bash ()
+      "Run bash in Windows"
       (interactive)
       (let ((shell-file-name "C:\\Program Files\\Git\\bin\\bash.exe" ))
 	(shell "*bash*"))
@@ -552,21 +510,19 @@
    "---\ntitle: Notes on: ${author-or-editor-abbrev} (${year}): ${title}\n---\n\n")
   :config
   ;; Add the option to open in an external viewer
-  (defun bibtex-completion-open-pdf-external (keys &optional fallback-action)
+  (defun my-bibtex-completion-open-pdf-external (keys &optional fallback-action)
     "Open pdf associated to a BibTeX entry with an external viewer"
     (let ((bibtex-completion-pdf-open-function
            (lambda (fpath) (start-process "SumatraPDF" "*ivy-bibtex-sumatrapdf*" "SumatraPDF.exe" fpath))))
       (bibtex-completion-open-pdf keys fallback-action)))
-  (ivy-bibtex-ivify-action bibtex-completion-open-pdf-external ivy-bibtex-open-pdf-external)
+  (ivy-bibtex-ivify-action my-bibtex-completion-open-pdf-external ivy-bibtex-open-pdf-external)
   (ivy-add-actions
    'ivy-bibtex
-   '(("P" ivy-bibtex-open-pdf-external "Open PDF file in external viewer (if present)")))
-  )
+   '(("P" ivy-bibtex-open-pdf-external "Open PDF file in external viewer (if present)"))))
 
 (use-package csv-mode
   :hook
-  (csv-mode . csv-guess-set-separator)
-  )
+  (csv-mode . csv-guess-set-separator))
 
 (use-package tex
   :ensure auctex
@@ -642,15 +598,14 @@ textsc" "textup"))))
   ;; 	    "C:\\Program Files\\gs\\gs10.01.1\\bin\\gswin64c.exe")
   ;;   (setq preview-gs-command "gs"))
 
-  (defun my/tex-compile ()
-    "Compile TeX document"
+  (defun my-tex-compile ()
+    "Save and compile TeX document"
     (interactive)
     (save-buffer)
-    (TeX-command-menu "latex")
-    )
+    (TeX-command-menu "latex"))
 
   ;; Beamer
-  (defun my/tex-frame ()
+  (defun my-tex-frame ()
     "Run pdflatex on current frame.  Frame must be declared as an environment."
     (interactive)
     (let (beg)
@@ -666,10 +621,8 @@ textsc" "textup"))))
   (:map TeX-mode-map
 	("C-c e" . TeX-next-error)
 	("M-RET" . latex-insert-item)
-	("S-<return>" . my/tex-frame)
-	("<f9>" . my/tex-compile)
-   )
-  )
+	("S-<return>" . my-tex-frame)
+	("<f9>" . my-tex-compile)))
 
 (use-package reftex
   :custom
@@ -685,8 +638,7 @@ textsc" "textup"))))
   (reftex-use-multiple-selection-buffers t)
   :bind (:map reftex-mode-map
 	      ("C-c f" . reftex-fancyref-fref)
-	      ("C-c F" . reftex-fancyref-Fref))
-  )
+	      ("C-c F" . reftex-fancyref-Fref)))
 
 (use-package cdlatex
   :hook
@@ -695,19 +647,19 @@ textsc" "textup"))))
   (LaTeX-mode . (lambda ()
 		  (make-local-variable 'company-idle-delay)
 		  (setq company-idle-delay 0.3)))
-  (cdlatex-tab . my/cdlatex-indent-maybe)
+  (cdlatex-tab . my-cdlatex-indent-maybe)
   :config
   ;; Prevent cdlatex from defining LaTeX math subscript everywhere
   (define-key cdlatex-mode-map "_" nil)
   ;; Allow tab to be used to indent when the cursor is at the beginning of the
   ;; line
-  (defun my/cdlatex-indent-maybe ()
-            (when (or (bolp) (looking-back "^[ \t]+"))
-              (LaTeX-indent-line)))
+  (defun my-cdlatex-indent-maybe ()
+    "Indent in TeX when CDLaTeX is active"
+    (when (or (bolp) (looking-back "^[ \t]+"))
+      (LaTeX-indent-line)))
   :custom
   (cdlatex-command-alist
-	'(("equ*" "Insert equation* env"   "" cdlatex-environment ("equation*") t nil)))
-  )
+	'(("equ*" "Insert equation* env"   "" cdlatex-environment ("equation*") t nil))))
 
 (use-package markdown-mode
   :mode ("README\\.md\\'" . gfm-mode)
@@ -730,7 +682,7 @@ textsc" "textup"))))
   ;; Code to import screenshots in markdown files
   ;; from <https://www.nistara.net/post/2022-11-14-emacs-markdown-screenshots> and
   ;; <https://stackoverflow.com/questions/17435995/paste-an-image-on-clipboard-to-emacs-org-mode-file-without-saving-it/31868530#31868530>
-  (defun my/markdown-screenshot ()
+  (defun my-markdown-screenshot ()
     "Copy a screenshot into a time stamped unique-named file in the
 same directory as the working and insert a link to this file."
     (interactive)
@@ -749,8 +701,7 @@ same directory as the working and insert a link to this file."
     (if (file-exists-p filename)
 	(insert (concat "![](" filename ")")))
     (markdown-display-inline-images)
-    (newline)
-    )
+    (newline))
   ;; Code to use RefTeX to input references in markdown
   ;; from https://gist.github.com/kleinschmidt/5ab0d3c423a7ee013a2c01b3919b009a
   (defvar markdown-cite-format
@@ -758,12 +709,10 @@ same directory as the working and insert a link to this file."
       (?\C-m . "@%l")
       (?p . "[@%l]")
       (?t . "@%l")
-      (?y . "[-@%l]")
-      )
-    "Markdown citation formats"
-    )
-  ;; wrap reftex-citation with local variables for markdown format
-  (defun my/markdown-reftex-citation ()
+      (?y . "[-@%l]"))
+    "Markdown citation formats")
+  (defun my-markdown-reftex-citation ()
+    "Wrap reftex-citation with local variables for markdown format"
     (interactive)
     (let ((reftex-cite-format markdown-cite-format)
           (reftex-cite-key-separator "; @"))
@@ -771,14 +720,12 @@ same directory as the working and insert a link to this file."
   ;; :hook
   ;; (markdown-mode . (lambda () (math-preview-all)))
   :bind (:map markdown-mode-map
-	      ("C-c [" . my/markdown-reftex-citation))
-  )
+	      ("C-c [" . my-markdown-reftex-citation)))
 
 (use-package pandoc-mode
   :hook
   (markdown-mode . pandoc-mode)
-  (pandoc-mode . pandoc-load-default-settings)
-  )
+  (pandoc-mode . pandoc-load-default-settings))
 
 (use-package org
   :ensure nil
@@ -791,15 +738,14 @@ same directory as the working and insert a link to this file."
   (org-tag-alist '(("OFFICE" . ?o) ("COMPUTER" . ?c) ("HOME" . ?h) ("PROJECT" . ?p) ("CALL" . ?a) ("ERRANDS" . ?e) ("TASK" . ?t)))
   (org-confirm-babel-evaluate nil)
   :config
-  ;; Integration of RefTeX in org
-  (defun my/org-mode-reftex-setup ()
+  (defun my-org-mode-reftex-setup ()
+    "Integrate of RefTeX in org-mode"
     (load-library "reftex")
     (and (buffer-file-name)
 	 (file-exists-p (buffer-file-name))
          (global-auto-revert-mode t)
 	 (reftex-parse-all))
-    (define-key org-mode-map (kbd "C-c )") 'reftex-citation)
-    )
+    (define-key org-mode-map (kbd "C-c )") 'reftex-citation))
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((emacs-lisp . t)
@@ -807,13 +753,11 @@ same directory as the working and insert a link to this file."
      (R . t)
      (shell . t)))
   :hook
-  (org-mode . my/org-mode-reftex-setup)
-  )
+  (org-mode . my-org-mode-reftex-setup))
 
 (use-package texfrag
   :hook
-  (eww-mode . texfrag-mode)
-  )
+  (eww-mode . texfrag-mode))
 
 (use-package math-preview
   :bind 
@@ -822,8 +766,7 @@ same directory as the working and insert a link to this file."
   ("C-c m r" . math-preview-region)
   ("C-c m c d" . math-preview-clear-all)
   ("C-c m c p" . math-preview-clear-at-point)
-  ("C-c m c r" . math-preview-clear-region)
-)
+  ("C-c m c r" . math-preview-clear-region))
 
 (use-package flyspell
   :hook (text-mode . flyspell-mode)
@@ -838,11 +781,9 @@ same directory as the working and insert a link to this file."
 	  ("fr_FR" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "fr_FR") nil utf-8))
 	ispell-hunspell-dictionary-alist ispell-local-dictionary-alist
 	ispell-personal-dictionary "~/.emacs.d/.hunspell_en_US"
-	ispell-silently-savep t
-	)
+	ispell-silently-savep t)
   :bind
-  ("C-M-$" . ispell-word)
-  )
+  ("C-M-$" . ispell-word))
 
 (use-package flyspell-correct
   :after flyspell
@@ -852,16 +793,15 @@ same directory as the working and insert a link to this file."
 
 (use-package flyspell-correct-ivy
   :demand t
-  :after flyspell-correct
-  )
+  :after flyspell-correct)
 
-(defun my/unfill-paragraph ()
+(defun my-unfill-paragraph ()
   "Unfill paragraph."
   (interactive)
   (let ((fill-column (point-max)))
   (fill-paragraph nil)))
 
-(defun my/unfill-region (start end)
+(defun my-unfill-region (start end)
   "Unfill region."
   (interactive "r")
   (let ((fill-column (point-max)))
@@ -875,28 +815,27 @@ same directory as the working and insert a link to this file."
   :init
   (setq visual-fill-column-width 100)
   :config
-  (defun my/visual-fill ()
+  (defun my-visual-fill ()
     "Toggle visual fill column and visual line mode."
     (interactive)
     (visual-line-mode 'toggle)
     (visual-fill-column-mode 'toggle)
     (adaptive-wrap-prefix-mode 'toggle))
 
-  (defun my/center-text ()
+  (defun my-center-text ()
     "Center text in visual fill column."
     (interactive)
     (setq-local visual-fill-column-center-text t))
 
-  (defun my/uncenter-text ()
+  (defun my-uncenter-text ()
     "Uncenter text in visual fill column."
     (interactive)
     (setq-local visual-fill-column-center-text nil))
-  :bind ("C-c v" . my/visual-fill)
+  :bind ("C-c v" . my-visual-fill)
   :hook
-  (TeX-mode      . my/visual-fill)
-  (markdown-mode . my/visual-fill)
-  (bibtex-mode   . my/visual-fill)
-  )
+  (TeX-mode      . my-visual-fill)
+  (markdown-mode . my-visual-fill)
+  (bibtex-mode   . my-visual-fill))
 
 (use-package yaml-mode
   :mode ("\\.yml$" "\\.dvc" "dvc.lock")
@@ -913,8 +852,7 @@ same directory as the working and insert a link to this file."
   (remove-hook 'flymake-diagnostic-functions 'flymake-proc-legacy-flymake)
   :bind
   ("M-n" . flymake-goto-next-error)
-  ("M-p" . flymake-goto-prev-error)
-  )
+  ("M-p" . flymake-goto-prev-error))
 
 (use-package flycheck
   :config
@@ -935,21 +873,18 @@ same directory as the working and insert a link to this file."
     ((warning line-start (file-name)
               "(L" line "C" column "-" (or (seq "L" end-line "C" end-column) "?") "): "
               (message (one-or-more (not "\""))) (one-or-more not-newline) line-end)))
-  (add-to-list 'flycheck-checkers 'tex-textidote)
-  )
+  (add-to-list 'flycheck-checkers 'tex-textidote))
 
 (use-package flymake-flycheck
   :hook
-  (flymake-mode . flymake-flycheck-auto)
-  )
+  (flymake-mode . flymake-flycheck-auto))
 
 (use-package format-all
   :config
   (setq-default
    format-all-formatters
    '(("LaTeX"
-      (latexindent "-m" "--yaml=modifyLineBreaks:textWrapOptions:columns:-1,defaultIndent:'  ',indentAfterItems:itemize:0;enumerate:0;description:0"))))
-  )
+      (latexindent "-m" "--yaml=modifyLineBreaks:textWrapOptions:columns:-1,defaultIndent:'  ',indentAfterItems:itemize:0;enumerate:0;description:0")))))
 
 (use-package docker
   :bind ("C-c d" . docker))
@@ -964,7 +899,7 @@ same directory as the working and insert a link to this file."
   :custom
   (copilot-indent-warning-suppress t)
   :config
-  (defun my/copilot-complete-or-accept ()
+  (defun my-copilot-complete-or-accept ()
     "Command that either triggers a completion or accepts one if
  one is available."
     (interactive)
@@ -981,46 +916,43 @@ same directory as the working and insert a link to this file."
       ;; If the Copilot overlay is not visible, trigger completion
       (copilot-complete)))
 
-  (defvar my/copilot-manual-mode nil
+  (defvar my-copilot-manual-mode nil
     "When `t' will only show completions when manually triggered,
  e.g. via M-C-<return>.")
 
-  (defun my/copilot-disable-predicate ()
+  (defun my-copilot-disable-predicate ()
     "When copilot should not automatically show completions."
-    my/copilot-manual-mode)
+    my-copilot-manual-mode)
 
-  (defun my/copilot-change-activation ()
+  (defun my-copilot-change-activation ()
     "Switch between three activation modes:
        - automatic: copilot will automatically overlay completions
        - manual: you need to press a key (M-C-<return>) to trigger completions
        - off: copilot is completely disabled."
     (interactive)
-    (if (and copilot-mode my/copilot-manual-mode)
+    (if (and copilot-mode my-copilot-manual-mode)
 	(progn
           (message "deactivating copilot")
           (copilot-mode -1)
-          (setq my/copilot-manual-mode nil))
+          (setq my-copilot-manual-mode nil))
       (if copilot-mode
           (progn
             (message "activating copilot manual mode")
-            (setq my/copilot-manual-mode t))
+            (setq my-copilot-manual-mode t))
 	(message "activating copilot mode")
 	(copilot-mode))))
 
-  (add-to-list 'copilot-disable-predicates #'my/copilot-disable-predicate)
-  :hook (prog-mode . (lambda() (setq my/copilot-manual-mode t)))
+  (add-to-list 'copilot-disable-predicates #'my-copilot-disable-predicate)
+  :hook (prog-mode . (lambda() (setq my-copilot-manual-mode t)))
   :bind
-  (
-   ("C-M-c"         . my/copilot-change-activation)
+  (("C-M-c"         . my-copilot-change-activation)
    :map copilot-mode-map
    (("M-C-<next>"   . copilot-next-completion)
     ("M-C-<prior>"  . copilot-previous-completion)
     ("M-C-<right>"  . copilot-accept-completion-by-word)
     ("M-C-<down>"   . copilot-accept-completion-by-line)
-    ("M-C-<return>" . my/copilot-complete-or-accept)
-    ("M-C-g"        . copilot-clear-overlay))
-   )
-  )
+    ("M-C-<return>" . my-copilot-complete-or-accept)
+    ("M-C-g"        . copilot-clear-overlay))))
 
 (use-package eglot
   :ensure nil
@@ -1028,12 +960,10 @@ same directory as the working and insert a link to this file."
   ;; Prevent eglot from reformatting code automatically
   (setq eglot-ignored-server-capabilities '(:documentOnTypeFormattingProvider))
   :bind
-  ("C-c l" . eglot)
-  )
+  ("C-c l" . eglot))
 
 (use-package poly-markdown
-  :bind (:map polymode-eval-map ("p" . quarto-preview))
-  )
+  :bind (:map polymode-eval-map ("p" . quarto-preview)))
 
 (use-package poly-R
   :mode ("\\.Rmd" . poly-markdown+r-mode))
@@ -1050,7 +980,7 @@ same directory as the working and insert a link to this file."
   :diminish projectile-mode
   :config
   (projectile-mode)
-  (defun my/ripgrep-in-same-extension (expression)
+  (defun my-ripgrep-in-same-extension (expression)
     "Search for EXPRESSION in files with the same extension as the
 current buffer within the project."
     (interactive
@@ -1068,13 +998,12 @@ current buffer within the project."
   (projectile-enable-caching nil)
   (projectile-indexing-method 'alien)
   :bind
-  ("C-c f" . my/ripgrep-in-same-extension)
+  ("C-c f" . my-ripgrep-in-same-extension)
   :bind-keymap
   ("C-c p" . projectile-command-map)
   :init
   (when (file-directory-p "~/Documents/git_projects")
-    (setq projectile-project-search-path '("~/Documents/git_projects")))
-  )
+    (setq projectile-project-search-path '("~/Documents/git_projects"))))
 
 (use-package ripgrep)
 
@@ -1087,8 +1016,7 @@ current buffer within the project."
   (yas-global-mode 1)
   :bind (:map yas-minor-mode-map
 	      ("C-TAB"   . yas-next-field-or-maybe-expand)
-	      ("C-<tab>" . yas-next-field-or-maybe-expand))
-  )
+	      ("C-<tab>" . yas-next-field-or-maybe-expand)))
 
 (use-package ess
   :init
@@ -1100,14 +1028,13 @@ current buffer within the project."
 	 ("C-%"   . " %>%")
 	 ;; Shortcut for assign <-
 	 ("M--"   . ess-insert-assign)
-	 ("<f9>"  . my/run-r-script-on-current-buffer-file)
+	 ("<f9>"  . my-run-r-script-on-current-buffer-file)
          :map inferior-ess-r-mode-map
          ("C-S-m" . " |>")
          ("C-%"   . " %>%")
 	 ("M--"   . ess-insert-assign)
 	 :map inferior-ess-mode-map
-	 ("<home>" . comint-bol)
-	 )
+	 ("<home>" . comint-bol))
   :custom
   (ess-roxy-str "#'")
   (ess-roxy-template-alist
@@ -1125,7 +1052,7 @@ current buffer within the project."
   (inferior-R-args "--no-restore-history --no-save ")
   :config
   ;; Background jobs for R as in RStudio
-  (defun my/run-r-script (arg title)
+  (defun my-run-r-script (arg title)
     "Run Rscript in a compile buffer"
     (let*
 	((is-file (file-exists-p arg))
@@ -1138,8 +1065,7 @@ current buffer within the project."
          (compilation-buffer-name-function
 	  (lambda (_) combuf-name)) ; Set the compilation buffer name function
 	 ;; Automatically save modified buffers without asking
-         (compilation-ask-about-save nil)
-	 )
+         (compilation-ask-about-save nil))
       (when combuf
 	(kill-buffer combuf)) ; Kill the existing compilation buffer
       ;; Create a new compilation buffer
@@ -1155,28 +1081,26 @@ current buffer within the project."
 	;; Rename the compilation buffer to its final name
 	(rename-buffer combuf-name))))
 
-  (defun my/run-r-script-on-current-buffer-file ()
+  (defun my-run-r-script-on-current-buffer-file ()
     "Run Rscript on the file associated to the current buffer"
     (interactive)
     (let ((filename (buffer-file-name)))
       (when filename
-	(my/run-r-script filename (file-name-base filename)))))
+	(my-run-r-script filename (file-name-base filename)))))
 
-  (defun my/run-r-script-on-file ()
+  (defun my-run-r-script-on-file ()
     "Run Rscript on the file associated to a file"
     (interactive)
     (let ((filename (read-file-name "R script: ")))
-      (my/run-r-script filename (file-name-base filename))))
+      (my-run-r-script filename (file-name-base filename))))
 
-  (defun my/inferior-ess-init ()
+  (defun my-inferior-ess-init ()
     "Workaround for https://github.com/emacs-ess/ESS/issues/1193"
     (add-hook 'comint-preoutput-filter-functions #'xterm-color-filter -90 t)
     (setq-local ansi-color-for-comint-mode nil)
-    (smartparens-mode 1)
-    )
+    (smartparens-mode 1))
   :hook
-  (inferior-ess-mode . my/inferior-ess-init)
-  )
+  (inferior-ess-mode . my-inferior-ess-init))
 
 (use-package rutils
   :defer t
@@ -1218,8 +1142,7 @@ current buffer within the project."
     (setq gams-system-directory "/opt/gams/gamsLast_linux_x64_64_sfx"
 	  gams-docs-directory "/opt/gams/gamsLast_linux_x64_64_sfx/docs"))
   :bind (:map gams-mode-map
-	      ("C-c =" . gams-show-identifier-list))
-  )
+	      ("C-c =" . gams-show-identifier-list)))
 
 ; Polymode for gams
 (define-hostmode poly-gams-hostmode
@@ -1263,15 +1186,15 @@ current buffer within the project."
       (setq mlint-programs
 	    (quote ("C:/Program Files/MATLAB/RLast/bin/win64/mlint.exe")))
     (setq mlint-programs (quote ("/usr/local/MATLAB/RLast/bin/glnxa64/mlint"))))
-  (defun my/matlab-mode-hook ()
+  (defun my-matlab-mode-hook ()
+    "My matlab-mode hook"
     (setq matlab-show-mlint-warnings t)   ; Activate mlint
     (mlint-minor-mode))                   ; Activate mlint minor mode
-  (defun my/matlab-shell-mode-hook ()
+  (defun my-matlab-shell-mode-hook ()
     '())
   :hook
-  (matlab-mode . my/matlab-mode-hook)
-  (matlab-shell-mode . my/matlab-shell-mode-hook)
-)
+  (matlab-mode . my-matlab-mode-hook)
+  (matlab-shell-mode . my-matlab-shell-mode-hook))
 
 (use-package python
   :ensure nil
@@ -1283,19 +1206,17 @@ current buffer within the project."
 ;; Set encoding to utf-8 to allows utf-8 characters in Python REPL (from
 ;; https://stackoverflow.com/questions/14172576/why-unicodeencodeerror-raised-only-in-emacss-python-shell)
   (setenv "PYTHONIOENCODING" "utf-8")
-  (defun my/python-mode-hook ()
+  (defun my-python-mode-hook ()
     (add-to-list 'company-backends 'company-jedi))
   :hook
-  (python-mode . my/python-mode-hook)
-  (python-mode . flymake-mode)
-  )
+  (python-mode . my-python-mode-hook)
+  (python-mode . flymake-mode))
 
 (use-package conda
   :if is-mswindows
   :config
   (setq-default mode-line-format
-		(cons '(:exec conda-env-current-name) mode-line-format))
-  )
+		(cons '(:exec conda-env-current-name) mode-line-format)))
 
 (use-package poetry)
 
@@ -1309,8 +1230,7 @@ current buffer within the project."
 	      (substitute-in-file-name
 	       "${LOCALAPPDATA}/pypoetry/Cache/virtualenvs"))
     ;; Default virtualenv cache directory for poetry on *nix
-    (setenv "WORKON_HOME" "~/.cache/pypoetry/virtualenvs"))
-  )
+    (setenv "WORKON_HOME" "~/.cache/pypoetry/virtualenvs")))
 
 (use-package pydoc)
 
