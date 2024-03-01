@@ -1198,11 +1198,12 @@ current buffer within the project."
 
 (use-package python
   :ensure nil
+  :custom
+  (python-shell-interpreter "ipython3")
+  (python-shell-interpreter-args
+   "-i --simple-prompt --InteractiveShell.display_page=True")
+  (python-shell-prompt-detect-failure-warning nil)
   :config
-  (setq python-shell-interpreter "ipython3"
-	python-shell-interpreter-args
-	"-i --simple-prompt --InteractiveShell.display_page=True"
-	python-shell-prompt-detect-failure-warning nil)
 ;; Set encoding to utf-8 to allows utf-8 characters in Python REPL (from
 ;; https://stackoverflow.com/questions/14172576/why-unicodeencodeerror-raised-only-in-emacss-python-shell)
   (setenv "PYTHONIOENCODING" "utf-8")
