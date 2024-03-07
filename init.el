@@ -273,7 +273,7 @@
 
 (use-package pdf-tools
   :init
-  ;; (pdf-tools-install)  ; Standard activation command
+  (pdf-tools-install)  ; Standard activation command
   (pdf-loader-install) ; On demand loading, leads to faster startup time
   :config
   (setq TeX-view-program-selection '((output-pdf "PDF Tools"))
