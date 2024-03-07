@@ -477,15 +477,6 @@
   :config
   (eshell-git-prompt-use-theme 'powerline))
 
-(if is-mswindows    ;; MS Windows clipboard is UTF-16LE
-    (defun my-bash ()
-      "Run bash in Windows"
-      (interactive)
-      (let ((shell-file-name "C:\\Program Files\\Git\\bin\\bash.exe" ))
-	(shell "*bash*"))
-      ))
-(setq explicit-bash.exe-args '("--login" "-i"))
-
 (add-hook 'shell-mode-hook
       (lambda ()
         (face-remap-set-base 'comint-highlight-prompt :inherit nil)))
