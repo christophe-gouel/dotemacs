@@ -464,6 +464,20 @@
   :ensure nil
   :mode ("\\..*ignore$" . hosts-generic-mode))
 
+(use-package magit-gptcommit
+  :demand t
+  :after gptel magit
+  :config
+  ;; Enable magit-gptcommit-mode to watch staged changes and generate commit message automatically in magit status buffer
+  ;; This mode is optional, you can also use `magit-gptcommit-generate' to generate commit message manually
+  ;; `magit-gptcommit-generate' should only execute on magit status buffer currently
+  (magit-gptcommit-mode 1)
+  ;; Add gptcommit transient commands to `magit-commit'
+  ;; Eval (transient-remove-suffix 'magit-commit '(1 -1)) to remove gptcommit transient commands
+  (magit-gptcommit-status-buffer-setup)
+  :bind (:map git-commit-mode-map
+              ("C-c C-g" . magit-gptcommit-commit-accept)))
+
 (use-package chatgpt-shell
   :custom
   (chatgpt-shell-openai-key
@@ -729,29 +743,25 @@ same directory as the working and insert a link to this file."
   (org-tag-alist '(("OFFICE" . ?o) ("COMPUTER" . ?c) ("HOME" . ?h) ("PROJECT" . ?p) ("CALL" . ?a) ("ERRANDS" . ?e) ("TASK" . ?t)))
   (org-confirm-babel-evaluate nil)
   :config
-  (defun my-org-mode-reftex-setup ()
-    "Integrate of RefTeX in org-mode"
-    (load-library "reftex")
-    (and (buffer-file-name)
-	 (file-exists-p (buffer-file-name))
-         (global-auto-revert-mode t)
-	 (reftex-parse-all))
-    (define-key org-mode-map (kbd "C-c )") 'reftex-citation))
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((emacs-lisp . t)
      (python . t)
      (R . t)
-     (shell . t)))
-  :hook
-  (org-mode . my-org-mode-reftex-setup))
+     (shell . t))))
+
+(use-package oc
+  :ensure nil
+  :custom
+  (org-cite-global-bibliography
+   (list (substitute-in-file-name "${BIBINPUTS}/References.bib"))))
 
 (use-package texfrag
   :hook
   (eww-mode . texfrag-mode))
 
 (use-package math-preview
-  :bind 
+  :bind
   ("C-c m d" . math-preview-all)
   ("C-c m p" . math-preview-at-point)
   ("C-c m r" . math-preview-region)
@@ -826,7 +836,8 @@ same directory as the working and insert a link to this file."
   :hook
   (TeX-mode      . my-visual-fill)
   (markdown-mode . my-visual-fill)
-  (bibtex-mode   . my-visual-fill))
+  (bibtex-mode   . my-visual-fill)
+  (org-mode      . my-visual-fill))
 
 (use-package yaml-mode
   :mode ("\\.yml$" "\\.dvc" "dvc.lock")
