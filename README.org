@@ -221,7 +221,7 @@ To list all available fonts, use
 ** Theme
 
 #+begin_src emacs-lisp
-(use-package doom-theme
+(use-package doom-themes
   :if (display-graphic-p)
   :custom
   ;; Global settings (defaults)

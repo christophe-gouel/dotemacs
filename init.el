@@ -151,7 +151,7 @@
   (rainbow-delimiters-depth-8-face ((t (:foreground "black"))))
   (rainbow-delimiters-unmatched-face ((t (:background "yellow")))))
 
-(use-package doom-theme
+(use-package doom-themes
   :if (display-graphic-p)
   :custom
   ;; Global settings (defaults)
