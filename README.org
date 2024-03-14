@@ -221,7 +221,8 @@ To list all available fonts, use
 ** Theme
 
 #+begin_src emacs-lisp
-(use-package doom-themes
+(use-package doom-theme
+  :if (display-graphic-p)
   :custom
   ;; Global settings (defaults)
   (doom-themes-enable-bold t)   ; if nil, bold is universally disabled
