@@ -224,12 +224,16 @@
   :custom
   (dictionary-server "dict.org"))
 
+(use-package autorevert
+  :ensure nil
+  :custom
+  (auto-revert-verbose nil)) ; Prevent autorevert from generating messages
+
 (use-package dired
   :ensure nil
   :commands (dired dired-jump)
   :custom
   (dired-listing-switches "-agho --group-directories-first")
-  (auto-revert-verbose nil)
   :hook
   (dired-mode . (lambda ()
 		  (dired-hide-details-mode)))
@@ -238,6 +242,10 @@
 (use-package diredfl
   :hook
   (dired-mode . diredfl-mode))
+
+(use-package async
+  :custom
+  (dired-async-mode 1))
 
 (use-package expand-region
   :bind ("C-!" . er/expand-region))
@@ -887,6 +895,8 @@ same directory as the working and insert a link to this file."
    format-all-formatters
    '(("LaTeX"
       (latexindent "-m" "--yaml=modifyLineBreaks:textWrapOptions:columns:-1,defaultIndent:'  ',indentAfterItems:itemize:0;enumerate:0;description:0")))))
+
+(use-package dockerfile-mode)
 
 (use-package docker
   :bind ("C-c d" . docker))

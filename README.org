@@ -324,6 +324,17 @@ Make the scratch buffer a markdown buffet and remove the scratch message.
   (dictionary-server "dict.org"))
 #+end_src
 
+
+** Auto-revert
+
+#+begin_src emacs-lisp
+(use-package autorevert
+  :ensure nil
+  :custom
+  (auto-revert-verbose nil)) ; Prevent autorevert from generating messages
+#+end_src
+
+
 ** Dired
 
 #+begin_src emacs-lisp
@@ -332,7 +343,6 @@ Make the scratch buffer a markdown buffet and remove the scratch message.
   :commands (dired dired-jump)
   :custom
   (dired-listing-switches "-agho --group-directories-first")
-  (auto-revert-verbose nil)
   :hook
   (dired-mode . (lambda ()
 		  (dired-hide-details-mode)))
@@ -341,6 +351,14 @@ Make the scratch buffer a markdown buffet and remove the scratch message.
 (use-package diredfl
   :hook
   (dired-mode . diredfl-mode))
+#+end_src
+
+For dired operations to work async instead of freezing emacs.
+
+#+begin_src emacs-lisp
+(use-package async
+  :custom
+  (dired-async-mode 1))
 #+end_src
 
 ** Expand region
@@ -1159,6 +1177,10 @@ Use =visual-fill-column= for text mode
 #+end_src
 
 *** Docker
+
+#+begin_src emacs-lisp
+(use-package dockerfile-mode)
+#+end_src
 
 #+begin_src emacs-lisp
 (use-package docker
