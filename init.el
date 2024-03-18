@@ -244,9 +244,9 @@
   :hook
   (dired-mode . diredfl-mode))
 
-(use-package async
-  :custom
-  (dired-async-mode 1))
+;; (use-package async
+;;   :custom
+;;   (dired-async-mode 1))
 
 (use-package expand-region
   :bind ("C-!" . er/expand-region))
@@ -593,10 +593,6 @@ textsc" "textup"))))
   :config
   (setq-default TeX-auto-parse-length 200
 		TeX-master nil)
-  ;; (if is-mswindows
-  ;;     (setq preview-gs-command
-  ;; 	    "C:\\Program Files\\gs\\gs10.01.1\\bin\\gswin64c.exe")
-  ;;   (setq preview-gs-command "gs"))
 
   (defun my-tex-compile ()
     "Save and compile TeX document"
@@ -658,6 +654,7 @@ textsc" "textup"))))
     (when (or (bolp) (looking-back "^[ \t]+"))
       (LaTeX-indent-line)))
   :custom
+  ;; (cdlatex-math-symbol-prefix "²")
   (cdlatex-command-alist
 	'(("equ*" "Insert equation* env"   "" cdlatex-environment ("equation*") t nil))))
 
@@ -730,6 +727,8 @@ same directory as the working and insert a link to this file."
 (use-package org
   :ensure nil
   :mode ("\\.org\\'" . org-mode)
+  :hook
+  (org-mode . turn-on-org-cdlatex)
   :custom
   (org-hide-leading-stars t)
   (org-export-with-LaTeX-fragments t)       ; Export LaTeX fragment to HTML
@@ -737,7 +736,9 @@ same directory as the working and insert a link to this file."
   (org-todo-keywords '((type "TODO(t)" "STARTED(s)" "WAITING(w)" "|" "DONE(d)")))
   (org-tag-alist '(("OFFICE" . ?o) ("COMPUTER" . ?c) ("HOME" . ?h) ("PROJECT" . ?p) ("CALL" . ?a) ("ERRANDS" . ?e) ("TASK" . ?t)))
   (org-confirm-babel-evaluate nil)
+  (org-pretty-entities 1) ; equivalent of prettify symbols for org
   :config
+  (org-defkey org-cdlatex-mode-map "²" 'cdlatex-math-symbol)
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((emacs-lisp . t)
@@ -955,9 +956,11 @@ same directory as the working and insert a link to this file."
 
 (use-package eglot
   :ensure nil
-  :config
+  :custom
   ;; Prevent eglot from reformatting code automatically
-  (setq eglot-ignored-server-capabilities '(:documentOnTypeFormattingProvider))
+  (eglot-ignored-server-capabilities '(:documentOnTypeFormattingProvider))
+  ;; Set the buffer size to 0 to improve performances (https://www.gnu.org/software/emacs/manual/html_mono/eglot.html#Performance)
+  (eglot-events-buffer-config (:size 0 :format full))
   :bind
   ("C-c l" . eglot))
 
