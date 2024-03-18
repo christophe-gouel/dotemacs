@@ -980,7 +980,7 @@ same directory as the working and insert a link to this file."
      (shell . t))))
 #+end_src
 
-org-cite
+=org-cite= to handle bibliographic references.
 
 #+begin_src emacs-lisp
 (use-package oc
@@ -999,7 +999,7 @@ org-cite
   (eww-mode . texfrag-mode))
 #+end_src
 
-The package =math-preview= has a problem under Windows and some code should be commented out. See [[https://gitlab.com/matsievskiysv/math-preview/-/issues/29]].
+The package =math-preview= has a problem under Windows, and some code should be commented out. See [[https://gitlab.com/matsievskiysv/math-preview/-/issues/29]].
 #+begin_src emacs-lisp
 (use-package math-preview
   :bind
@@ -1110,6 +1110,8 @@ Use =visual-fill-column= for text mode
 
 *** Code linting
 
+Use built-in =flymake= for linting but need to install =flycheck= to access a checker for TeX files.
+
 #+begin_src emacs-lisp
 (use-package flymake
   :ensure nil
@@ -1173,7 +1175,7 @@ Use =visual-fill-column= for text mode
 
 *** Eldoc
 
-Prevent eldoc from showing the function doc in the minibuffer when the cursor is on the function
+Prevent =eldoc= from showing the function doc in the minibuffer when the cursor is on the function
 #+begin_src emacs-lisp
 (setq eldoc-echo-area-use-multiline-p nil)
 #+end_src
