@@ -362,6 +362,15 @@ For dired operations to work async instead of freezing emacs.
 ;;   (dired-async-mode 1))
 #+end_src
 
+** Compilation
+
+#+begin_src emacs-lisp
+(use-package compile
+  :ensure nil
+  :custom
+  (compilation-scroll-output 'first-error)) ; compilation buffer automatically scrolls and stops at first error
+#+end_src
+
 ** Expand region
 
 #+begin_src emacs-lisp
@@ -1355,7 +1364,7 @@ Use "C-TAB" for moving to next field to avoid conflict with autocompletion.
 	 ("C-%"   . " %>%")
 	 ;; Shortcut for assign <-
 	 ("M--"   . ess-insert-assign)
-	 ("<f9>"  . my-run-r-script-on-current-buffer-file)
+	 ("<f9>"  . my-run-rscript-on-current-buffer-file)
          :map inferior-ess-r-mode-map
          ("C-S-m" . " |>")
          ("C-%"   . " %>%")
@@ -1379,7 +1388,7 @@ Use "C-TAB" for moving to next field to avoid conflict with autocompletion.
   (inferior-R-args "--no-restore-history --no-save ")
   :config
   ;; Background jobs for R as in RStudio
-  (defun my-run-r-script (arg title)
+  (defun my-run-rscript (arg title)
     "Run Rscript in a compile buffer"
     (let*
 	((is-file (file-exists-p arg))
@@ -1408,18 +1417,18 @@ Use "C-TAB" for moving to next field to avoid conflict with autocompletion.
 	;; Rename the compilation buffer to its final name
 	(rename-buffer combuf-name))))
 
-  (defun my-run-r-script-on-current-buffer-file ()
+  (defun my-run-rscript-on-current-buffer-file ()
     "Run Rscript on the file associated to the current buffer"
     (interactive)
     (let ((filename (buffer-file-name)))
       (when filename
-	(my-run-r-script filename (file-name-base filename)))))
+	(my-run-rscript filename (file-name-base filename)))))
 
-  (defun my-run-r-script-on-file ()
+  (defun my-run-rscript-on-file ()
     "Run Rscript on the file associated to a file"
     (interactive)
     (let ((filename (read-file-name "R script: ")))
-      (my-run-r-script filename (file-name-base filename))))
+      (my-run-rscript filename (file-name-base filename))))
 
   (defun my-inferior-ess-init ()
     "Workaround for https://github.com/emacs-ess/ESS/issues/1193"

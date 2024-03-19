@@ -248,6 +248,11 @@
 ;;   :custom
 ;;   (dired-async-mode 1))
 
+(use-package compile
+  :ensure nil
+  :custom
+  (compilation-scroll-output 'first-error)) ; compilation buffer automatically scrolls and stops at first error
+
 (use-package expand-region
   :bind ("C-!" . er/expand-region))
 
@@ -1030,7 +1035,7 @@ current buffer within the project."
 	 ("C-%"   . " %>%")
 	 ;; Shortcut for assign <-
 	 ("M--"   . ess-insert-assign)
-	 ("<f9>"  . my-run-r-script-on-current-buffer-file)
+	 ("<f9>"  . my-run-rscript-on-current-buffer-file)
          :map inferior-ess-r-mode-map
          ("C-S-m" . " |>")
          ("C-%"   . " %>%")
@@ -1054,7 +1059,7 @@ current buffer within the project."
   (inferior-R-args "--no-restore-history --no-save ")
   :config
   ;; Background jobs for R as in RStudio
-  (defun my-run-r-script (arg title)
+  (defun my-run-rscript (arg title)
     "Run Rscript in a compile buffer"
     (let*
 	((is-file (file-exists-p arg))
@@ -1083,18 +1088,18 @@ current buffer within the project."
 	;; Rename the compilation buffer to its final name
 	(rename-buffer combuf-name))))
 
-  (defun my-run-r-script-on-current-buffer-file ()
+  (defun my-run-rscript-on-current-buffer-file ()
     "Run Rscript on the file associated to the current buffer"
     (interactive)
     (let ((filename (buffer-file-name)))
       (when filename
-	(my-run-r-script filename (file-name-base filename)))))
+	(my-run-rscript filename (file-name-base filename)))))
 
-  (defun my-run-r-script-on-file ()
+  (defun my-run-rscript-on-file ()
     "Run Rscript on the file associated to a file"
     (interactive)
     (let ((filename (read-file-name "R script: ")))
-      (my-run-r-script filename (file-name-base filename))))
+      (my-run-rscript filename (file-name-base filename))))
 
   (defun my-inferior-ess-init ()
     "Workaround for https://github.com/emacs-ess/ESS/issues/1193"
