@@ -730,13 +730,17 @@ same directory as the working and insert a link to this file."
   :hook
   (org-mode . turn-on-org-cdlatex)
   :custom
-  (org-hide-leading-stars t)
   (org-export-with-LaTeX-fragments t)       ; Export LaTeX fragment to HTML
   (org-edit-src-content-indentation 0)
   (org-todo-keywords '((type "TODO(t)" "STARTED(s)" "WAITING(w)" "|" "DONE(d)")))
   (org-tag-alist '(("OFFICE" . ?o) ("COMPUTER" . ?c) ("HOME" . ?h) ("PROJECT" . ?p) ("CALL" . ?a) ("ERRANDS" . ?e) ("TASK" . ?t)))
   (org-confirm-babel-evaluate nil)
+  ; Appareance
+  (org-hide-leading-stars t)
   (org-pretty-entities 1) ; equivalent of prettify symbols for org
+  (org-hide-emphasis-markers t) ; remove markup markers
+  (org-startup-indented t) ; Indent text relative to section
+  (org-ellipsis " [+]")
   :config
   (org-defkey org-cdlatex-mode-map "²" 'cdlatex-math-symbol)
   (org-babel-do-load-languages
@@ -745,6 +749,14 @@ same directory as the working and insert a link to this file."
      (python . t)
      (R . t)
      (shell . t))))
+
+(use-package org-appear
+  :hook
+  (org-mode . org-appear-mode))
+
+(use-package org-modern
+    :hook
+    (org-mode . global-org-modern-mode))
 
 (use-package oc
   :ensure nil
