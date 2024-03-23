@@ -740,8 +740,7 @@ same directory as the working and insert a link to this file."
   (org-todo-keywords '((type "TODO(t)" "STARTED(s)" "WAITING(w)" "|" "DONE(d)")))
   (org-tag-alist '(("OFFICE" . ?o) ("COMPUTER" . ?c) ("HOME" . ?h) ("PROJECT" . ?p) ("CALL" . ?a) ("ERRANDS" . ?e) ("TASK" . ?t)))
   (org-confirm-babel-evaluate nil)
-  ; Appareance
-  (org-hide-leading-stars t)
+  ;; Appareance
   (org-pretty-entities 1) ; equivalent of prettify symbols for org
   (org-hide-emphasis-markers t) ; remove markup markers
   (org-startup-indented t) ; Indent text relative to section
