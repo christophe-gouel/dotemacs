@@ -745,6 +745,9 @@ same directory as the working and insert a link to this file."
   (org-hide-emphasis-markers t) ; remove markup markers
   (org-startup-indented t) ; Indent text relative to section
   (org-ellipsis " [+]")
+  (org-highlight-latex-and-related '(native))
+  (org-startup-with-latex-preview t)
+  (org-format-latex-options (plist-put org-format-latex-options :scale 1.5))
   :config
   (org-defkey org-cdlatex-mode-map "²" 'cdlatex-math-symbol)
   (org-babel-do-load-languages
@@ -767,6 +770,10 @@ same directory as the working and insert a link to this file."
   :custom
   (org-cite-global-bibliography
    (list (substitute-in-file-name "${BIBINPUTS}/References.bib"))))
+
+(use-package org-fragtog
+  :hook
+  (org-mode . org-fragtog-mode))
 
 (use-package texfrag
   :hook
