@@ -742,6 +742,8 @@ same directory as the working and insert a link to this file."
   (org-confirm-babel-evaluate nil)
   ;; Appareance
   (org-pretty-entities 1) ; equivalent of prettify symbols for org
+  ; remove some prettification for sub- and superscripts because it makes editing difficult
+  (org-pretty-entities-include-sub-superscripts nil) 
   (org-hide-emphasis-markers t) ; remove markup markers
   (org-startup-indented t) ; Indent text relative to section
   (org-ellipsis " [+]")
