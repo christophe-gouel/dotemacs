@@ -9,10 +9,6 @@
 (defconst is-mswindows (equal window-system 'w32)
   "Boolean indicating whether Emacs is excuted within MS Windows.")
 
-(setq custom-file (concat user-emacs-directory "custom.el"))
-(when (file-exists-p custom-file)
-  (load custom-file))
-
 (use-package package
   :ensure nil
   :config
@@ -206,6 +202,8 @@
       jit-lock-chunk-size 50000
       ;; set large file threshold at 100 megabytes
       large-file-warning-threshold 100000000
+      ;; Force pup-up buffers to split window vertically and not horizontally
+      split-width-threshold 0
       ;; Options to make lsp usable in emacs (from
       ;; https://emacs-lsp.github.io/lsp-mode/page/performance/)
       gc-cons-threshold (* 10 800000)
@@ -745,11 +743,14 @@ same directory as the working and insert a link to this file."
   ; remove some prettification for sub- and superscripts because it makes editing difficult
   (org-pretty-entities-include-sub-superscripts nil) 
   (org-hide-emphasis-markers t) ; remove markup markers
-  (org-startup-indented t) ; Indent text relative to section
   (org-ellipsis " [+]")
   (org-highlight-latex-and-related '(native))
+  (org-startup-indented t) ; Indent text relative to section
+  (org-startup-with-inline-images t)
   (org-startup-with-latex-preview t)
-  (org-format-latex-options (plist-put org-format-latex-options :scale 1.5))
+  (org-cycle-inline-images-display t)
+  (org-image-actual-width 300px)
+  ;; (org-format-latex-options (plist-put org-format-latex-options :scale 1.5))
   :config
   (org-defkey org-cdlatex-mode-map "²" 'cdlatex-math-symbol)
   (org-babel-do-load-languages
@@ -1267,5 +1268,9 @@ current buffer within the project."
               ("C-c C-n" . numpydoc-generate)))
 
 (use-package ado-mode)
+
+(setq custom-file (concat user-emacs-directory "custom.el"))
+(when (file-exists-p custom-file)
+  (load custom-file))
 
 ;;; init.el ends here
