@@ -1696,8 +1696,8 @@ Rscript -e "install.packages('styler')"
 
 =math-preview= for LaTeX blocks in text buffers.
 
-#+begin_src sh
-  npm install -g git+https://gitlab.com/matsievskiysv/math-preview
+#+begin_src shell
+npm install -g git+https://gitlab.com/matsievskiysv/math-preview
 #+end_src
 
 Install
@@ -1708,16 +1708,21 @@ Install
 
 On Windows, they can be installed with Chocolatey (requires admin rights):
 
-#+begin_src sh
+#+begin_src shell
+#+end_src
+
+#+begin_src shell
 choco install -y delta fd hunspell ripgrep
 #+end_src
 
 On Linux/Ubuntu
 
-#+begin_src sh
+#+begin_src shell
 sudo snap install git-delta-snap
 sudo snap alias git-delta-snap.delta delta
 #+end_src
+
+On Windows, one has to make sure that a recent version of =grep= and a POSIX version of =find= (not Windows version) are available in the PATH (both come with =git=). If it is not possible to move POSIX =find= before Windows =find= in the PATH, it is necessary to set the variable =find-program= in =custom.el=.
 
 # Local Variables:
 # eval: (add-hook 'after-save-hook (lambda ()(if (y-or-n-p "Reload?")(load-file user-init-file))) nil t)
