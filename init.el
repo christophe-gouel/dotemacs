@@ -202,8 +202,6 @@
       jit-lock-chunk-size 50000
       ;; set large file threshold at 100 megabytes
       large-file-warning-threshold 100000000
-      ;; Force pup-up buffers to split window vertically and not horizontally
-      split-width-threshold 0
       ;; Options to make lsp usable in emacs (from
       ;; https://emacs-lsp.github.io/lsp-mode/page/performance/)
       gc-cons-threshold (* 10 800000)
@@ -640,13 +638,6 @@ textsc" "textup"))))
 	      ("C-c F" . reftex-fancyref-Fref)))
 
 (use-package cdlatex
-  :hook
-  (LaTeX-mode . turn-on-cdlatex)
-  ; Slow down company for a better use of cdlatex
-  (LaTeX-mode . (lambda ()
-		  (make-local-variable 'company-idle-delay)
-		  (setq company-idle-delay 0.3)))
-  (cdlatex-tab . my-cdlatex-indent-maybe)
   :config
   ;; Prevent cdlatex from defining LaTeX math subscript everywhere
   (define-key cdlatex-mode-map "_" nil)
@@ -656,10 +647,18 @@ textsc" "textup"))))
     "Indent in TeX when CDLaTeX is active"
     (when (or (bolp) (looking-back "^[ \t]+"))
       (LaTeX-indent-line)))
+  (defun my-slow-company ()
+    "Slow down company for a better use of CDLaTeX"
+    (make-local-variable 'company-idle-delay)
+		  (setq company-idle-delay 0.3))
   :custom
-  ;; (cdlatex-math-symbol-prefix "²")
   (cdlatex-command-alist
-	'(("equ*" "Insert equation* env"   "" cdlatex-environment ("equation*") t nil))))
+	'(("equ*" "Insert equation* env"   "" cdlatex-environment ("equation*") t nil)))
+  :hook
+  (LaTeX-mode . turn-on-cdlatex)
+  (LaTeX-mode . my-slow-company)
+  (org-mode . my-slow-company)
+  (cdlatex-tab . my-cdlatex-indent-maybe))
 
 (use-package markdown-mode
   :mode ("README\\.md\\'" . gfm-mode)
@@ -749,8 +748,6 @@ same directory as the working and insert a link to this file."
   (org-startup-with-inline-images t)
   (org-startup-with-latex-preview t)
   (org-cycle-inline-images-display t)
-  (org-image-actual-width 300px)
-  ;; (org-format-latex-options (plist-put org-format-latex-options :scale 1.5))
   :config
   (org-defkey org-cdlatex-mode-map "²" 'cdlatex-math-symbol)
   (org-babel-do-load-languages
