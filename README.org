@@ -441,6 +441,24 @@ For dired operations to work async instead of freezing emacs.
   (recentf-max-saved-items 50))
 #+end_src
 
+** Grep and friends
+
+#+begin_src emacs-lisp
+(use-package grep
+  :ensure nil
+  :custom
+  (find-program "fd"))
+#+end_src
+
+=ripgrep= package needed to have a proper interface for =ripgrep=. Also called by
+=projectile=.
+
+It should also be possible to directly substitute =grep= by =ripgrep= as explained in [[https://stegosaurusdormant.com/emacs-ripgrep/]].
+
+#+begin_src emacs-lisp
+(use-package ripgrep)
+#+end_src
+
 * Keys
 
 Activate lower- and upper-case commands ("C-x C-l" and "C-x C-u")
@@ -966,6 +984,7 @@ same directory as the working and insert a link to this file."
   (org-todo-keywords '((type "TODO(t)" "STARTED(s)" "WAITING(w)" "|" "DONE(d)")))
   (org-tag-alist '(("OFFICE" . ?o) ("COMPUTER" . ?c) ("HOME" . ?h) ("PROJECT" . ?p) ("CALL" . ?a) ("ERRANDS" . ?e) ("TASK" . ?t)))
   (org-confirm-babel-evaluate nil)
+  (org-refile-targets '((nil :maxlevel . 3)))
   ;; Appareance
   (org-pretty-entities 1) ; equivalent of prettify symbols for org
   ; remove some prettification for sub- and superscripts because it makes editing difficult
@@ -1347,13 +1366,6 @@ current buffer within the project."
   :init
   (when (file-directory-p "~/Documents/git_projects")
     (setq projectile-project-search-path '("~/Documents/git_projects"))))
-#+end_src
-
-=ripgrep= package needed to have a proper interface for =ripgrep=. Also called by
-=projectile=.
-
-#+begin_src emacs-lisp
-(use-package ripgrep)
 #+end_src
 
 *** Snippets
