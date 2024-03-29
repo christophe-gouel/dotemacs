@@ -481,7 +481,9 @@
 
 (use-package gptel
   :custom
-  (gptel-use-curl nil))
+  (gptel-use-curl nil)
+  :config
+  (add-to-list 'gptel-directives '(academic . "You are an editor specialized in academic paper in economics. You are here to help me generate the best text for my academic articles. I will provide you texts and I would like you to review them for any spelling, grammar, or punctuation errors. Do not stop at simple proofreading, if it is useful, propose to refine the content's structure, style, and clarity. Once you have finished editing the text, provide me with any necessary corrections or suggestions for improving the text.")))
 
 (use-package eshell-git-prompt
   :config
@@ -832,15 +834,17 @@ same directory as the working and insert a link to this file."
 (use-package adaptive-wrap)
 
 (use-package visual-fill-column
-  :init
-  (setq visual-fill-column-width 100)
+  :custom
+  (visual-fill-column-width 100)
   :config
   (defun my-visual-fill ()
-    "Toggle visual fill column and visual line mode."
+    "Toggle visual fill column, visual line mode, and adaptive wrap mode."
     (interactive)
     (visual-line-mode 'toggle)
     (visual-fill-column-mode 'toggle)
-    (adaptive-wrap-prefix-mode 'toggle))
+    ;; org-indent does play nicely with adaptive-wrap-prefix-mode so we exclude the later in org
+    (unless (member major-mode '(org-mode))
+      (adaptive-wrap-prefix-mode 'toggle)))
 
   (defun my-center-text ()
     "Center text in visual fill column."
@@ -853,10 +857,8 @@ same directory as the working and insert a link to this file."
     (setq-local visual-fill-column-center-text nil))
   :bind ("C-c v" . my-visual-fill)
   :hook
-  (TeX-mode      . my-visual-fill)
-  (markdown-mode . my-visual-fill)
   (bibtex-mode   . my-visual-fill)
-  (org-mode      . my-visual-fill))
+  (text-mode     . my-visual-fill))
 
 (use-package yaml-mode
   :mode ("\\.yml$" "\\.dvc" "dvc.lock")
