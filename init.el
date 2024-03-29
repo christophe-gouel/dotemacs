@@ -303,6 +303,13 @@
   :custom
   (recentf-max-saved-items 50))
 
+(use-package grep
+  :ensure nil
+  :custom
+  (find-program "fd"))
+
+(use-package ripgrep)
+
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
 
@@ -739,6 +746,7 @@ same directory as the working and insert a link to this file."
   (org-todo-keywords '((type "TODO(t)" "STARTED(s)" "WAITING(w)" "|" "DONE(d)")))
   (org-tag-alist '(("OFFICE" . ?o) ("COMPUTER" . ?c) ("HOME" . ?h) ("PROJECT" . ?p) ("CALL" . ?a) ("ERRANDS" . ?e) ("TASK" . ?t)))
   (org-confirm-babel-evaluate nil)
+  (org-refile-targets '((nil :maxlevel . 3)))
   ;; Appareance
   (org-pretty-entities 1) ; equivalent of prettify symbols for org
   ; remove some prettification for sub- and superscripts because it makes editing difficult
@@ -1031,8 +1039,6 @@ current buffer within the project."
   :init
   (when (file-directory-p "~/Documents/git_projects")
     (setq projectile-project-search-path '("~/Documents/git_projects"))))
-
-(use-package ripgrep)
 
 (use-package yasnippet
   :custom
