@@ -202,8 +202,6 @@
       jit-lock-chunk-size 50000
       ;; set large file threshold at 100 megabytes
       large-file-warning-threshold 100000000
-      ;; Force pup-up buffers to split window vertically and not horizontally
-      split-width-threshold 0
       ;; Options to make lsp usable in emacs (from
       ;; https://emacs-lsp.github.io/lsp-mode/page/performance/)
       gc-cons-threshold (* 10 800000)
@@ -483,7 +481,9 @@
 
 (use-package gptel
   :custom
-  (gptel-use-curl nil))
+  (gptel-use-curl nil)
+  :config
+  (add-to-list 'gptel-directives '(academic . "You are an editor specialized in academic paper in economics. You are here to help me generate the best text for my academic articles. I will provide you texts and I would like you to review them for any spelling, grammar, or punctuation errors. Do not stop at simple proofreading, if it is useful, propose to refine the content's structure, style, and clarity. Once you have finished editing the text, provide me with any necessary corrections or suggestions for improving the text.")))
 
 (use-package eshell-git-prompt
   :config
@@ -640,13 +640,6 @@ textsc" "textup"))))
 	      ("C-c F" . reftex-fancyref-Fref)))
 
 (use-package cdlatex
-  :hook
-  (LaTeX-mode . turn-on-cdlatex)
-  ; Slow down company for a better use of cdlatex
-  (LaTeX-mode . (lambda ()
-		  (make-local-variable 'company-idle-delay)
-		  (setq company-idle-delay 0.3)))
-  (cdlatex-tab . my-cdlatex-indent-maybe)
   :config
   ;; Prevent cdlatex from defining LaTeX math subscript everywhere
   (define-key cdlatex-mode-map "_" nil)
@@ -656,10 +649,18 @@ textsc" "textup"))))
     "Indent in TeX when CDLaTeX is active"
     (when (or (bolp) (looking-back "^[ \t]+"))
       (LaTeX-indent-line)))
+  (defun my-slow-company ()
+    "Slow down company for a better use of CDLaTeX"
+    (make-local-variable 'company-idle-delay)
+		  (setq company-idle-delay 0.3))
   :custom
-  ;; (cdlatex-math-symbol-prefix "²")
   (cdlatex-command-alist
-	'(("equ*" "Insert equation* env"   "" cdlatex-environment ("equation*") t nil))))
+	'(("equ*" "Insert equation* env"   "" cdlatex-environment ("equation*") t nil)))
+  :hook
+  (LaTeX-mode . turn-on-cdlatex)
+  (LaTeX-mode . my-slow-company)
+  (org-mode . my-slow-company)
+  (cdlatex-tab . my-cdlatex-indent-maybe))
 
 (use-package markdown-mode
   :mode ("README\\.md\\'" . gfm-mode)
@@ -749,8 +750,6 @@ same directory as the working and insert a link to this file."
   (org-startup-with-inline-images t)
   (org-startup-with-latex-preview t)
   (org-cycle-inline-images-display t)
-  (org-image-actual-width 300px)
-  ;; (org-format-latex-options (plist-put org-format-latex-options :scale 1.5))
   :config
   (org-defkey org-cdlatex-mode-map "²" 'cdlatex-math-symbol)
   (org-babel-do-load-languages
@@ -835,15 +834,17 @@ same directory as the working and insert a link to this file."
 (use-package adaptive-wrap)
 
 (use-package visual-fill-column
-  :init
-  (setq visual-fill-column-width 100)
+  :custom
+  (visual-fill-column-width 100)
   :config
   (defun my-visual-fill ()
-    "Toggle visual fill column and visual line mode."
+    "Toggle visual fill column, visual line mode, and adaptive wrap mode."
     (interactive)
     (visual-line-mode 'toggle)
     (visual-fill-column-mode 'toggle)
-    (adaptive-wrap-prefix-mode 'toggle))
+    ;; org-indent does play nicely with adaptive-wrap-prefix-mode so we exclude the later in org
+    (unless (member major-mode '(org-mode))
+      (adaptive-wrap-prefix-mode 'toggle)))
 
   (defun my-center-text ()
     "Center text in visual fill column."
@@ -856,10 +857,8 @@ same directory as the working and insert a link to this file."
     (setq-local visual-fill-column-center-text nil))
   :bind ("C-c v" . my-visual-fill)
   :hook
-  (TeX-mode      . my-visual-fill)
-  (markdown-mode . my-visual-fill)
   (bibtex-mode   . my-visual-fill)
-  (org-mode      . my-visual-fill))
+  (text-mode     . my-visual-fill))
 
 (use-package yaml-mode
   :mode ("\\.yml$" "\\.dvc" "dvc.lock")
