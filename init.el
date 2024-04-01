@@ -548,7 +548,7 @@
   (TeX-parse-self t)
   (LaTeX-item-indent 0)
   (LaTeX-default-options "12pt")
-  (LaTeX-math-abbrev-prefix "²")
+  ;; (LaTeX-math-abbrev-prefix "²")
   (TeX-source-specials-mode 1)
   (TeX-source-correlate-mode t)
   (TeX-source-correlate-method (quote synctex))
@@ -663,6 +663,7 @@ textsc" "textup"))))
   :custom
   (cdlatex-command-alist
 	'(("equ*" "Insert equation* env"   "" cdlatex-environment ("equation*") t nil)))
+  (cdlatex-math-symbol-prefix ?\262) ; correspond to key "²"
   :hook
   (LaTeX-mode . turn-on-cdlatex)
   (LaTeX-mode . my-slow-company)
