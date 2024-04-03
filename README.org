@@ -648,6 +648,9 @@ Use =company-box= for a better position of the autocompletion when using copilot
 
 #+begin_src emacs-lisp
 (use-package magit
+  :init
+  ;; this binds `magit-project-status' to `project-prefix-map' when project.el is loaded.
+  (require 'magit-extras)
   :bind ("C-x g" . magit-status)
   :custom
   (magit-diff-refine-hunk (quote all))
@@ -733,9 +736,7 @@ Add support for a basic syntax highlighting of =.gitignore= files (from [[http:/
    (substitute-in-file-name
     "${HOME}/Dropbox (Inrae EcoPub)/Bibliography/notes"))
   (bibtex-completion-notes-symbol "✎")
-  (bibtex-completion-notes-extension ".md")
-  (bibtex-completion-notes-template-multiple-files
-   "---\ntitle: Notes on: ${author-or-editor-abbrev} (${year}): ${title}\n---\n\n")
+  (bibtex-completion-watch-bibliography nil)
   :config
   ;; Add the option to open in an external viewer
   (defun my-bibtex-completion-open-pdf-external (keys &optional fallback-action)
@@ -766,11 +767,14 @@ Add support for a basic syntax highlighting of =.gitignore= files (from [[http:/
   (TeX-mode . latex-math-mode)
   (TeX-mode . turn-on-reftex)
   (TeX-mode . TeX-fold-buffer)
+  (org-mode . TeX-fold-buffer)
   ;; (TeX-mode . flymake-mode)
   :hook
   (TeX-mode . TeX-fold-mode)
+  (org-mode . TeX-fold-mode)
   :custom
   (TeX-auto-save t)
+  (TeX-save-query nil) ; don't ask to save the file before compiling
   (TeX-parse-self t)
   (LaTeX-item-indent 0)
   (LaTeX-default-options "12pt")
@@ -859,6 +863,8 @@ textsc" "textup"))))
 
 #+begin_src emacs-lisp
 (use-package reftex
+  :hook
+  (org-mode . reftex-mode)
   :custom
   (reftex-bibpath-environment-variables (quote ("BIBINPUTS")))
   (reftex-default-bibliography '("References.bib"))
@@ -981,6 +987,10 @@ same directory as the working and insert a link to this file."
   :mode ("\\.org\\'" . org-mode)
   :hook
   (org-mode . turn-on-org-cdlatex)
+  ;; No need to save RefTeX info in org
+  (org-mode . (lambda()
+		(make-local-variable 'reftex-save-parse-info)
+		(setq reftex-save-parse-info nil)))
   :custom
   (org-export-with-LaTeX-fragments t)       ; Export LaTeX fragment to HTML
   (org-edit-src-content-indentation 0)
@@ -1001,6 +1011,12 @@ same directory as the working and insert a link to this file."
   (org-cycle-inline-images-display t)
   :config
   (org-defkey org-cdlatex-mode-map "²" 'cdlatex-math-symbol)
+  ;; Font-locking of reference commands in org-mode
+  (font-lock-add-keywords
+   'org-mode
+   '(("\\(\\(?:\\\\\\(?:label\\|ref\\|eqref\\)\\)\\){\\(.+?\\)}"
+      (1 font-lock-keyword-face)
+      (2 font-lock-constant-face))))
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((emacs-lisp . t)
