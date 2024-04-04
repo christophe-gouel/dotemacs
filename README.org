@@ -2,7 +2,7 @@
 #+author: Christophe Gouel
 #+email: christophe.gouel@inrae.fr
 #+property: header-args:emacs-lisp :results silent :tangle init.el
-#+startup: overview
+#+startup: overview nolatexpreview
 
 * Preliminaries
 
