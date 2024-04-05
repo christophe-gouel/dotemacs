@@ -264,10 +264,10 @@ Set up encoding to Unicode
 
 ** Scratch buffer
 
-Make the scratch buffer a markdown buffet and remove the scratch message.
+Make the scratch buffer an =org-mode= buffer and remove the scratch message.
 
 #+begin_src emacs-lisp
-(setq initial-major-mode 'markdown-mode
+(setq initial-major-mode org-mode
       initial-scratch-message nil)
 #+end_src
 
