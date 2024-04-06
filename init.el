@@ -185,7 +185,7 @@
 (setq user-full-name "Christophe Gouel"
       user-mail-address "christophe.gouel@inrae.fr")
 
-(setq initial-major-mode org-mode
+(setq initial-major-mode 'org-mode
       initial-scratch-message nil)
 
 (setq comint-scroll-to-bottom-on-input 'this

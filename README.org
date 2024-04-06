@@ -267,7 +267,7 @@ Set up encoding to Unicode
 Make the scratch buffer an =org-mode= buffer and remove the scratch message.
 
 #+begin_src emacs-lisp
-(setq initial-major-mode org-mode
+(setq initial-major-mode 'org-mode
       initial-scratch-message nil)
 #+end_src
 
