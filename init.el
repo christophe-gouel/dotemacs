@@ -29,6 +29,10 @@
 
 (use-package quelpa-use-package)
 
+(unless (package-installed-p 'vc-use-package)
+  (package-vc-install "https://github.com/slotThe/vc-use-package"))
+(require 'vc-use-package)
+
 (use-package dashboard
   :if (display-graphic-p)
   :config
@@ -74,12 +78,13 @@
 (add-hook 'prog-mode-hook (lambda ()
 			    (display-fill-column-indicator-mode)))
 
-(use-package rainbow-mode
-  :quelpa
-  (rainbow-mode
-   :fetcher url
-   :url "https://raw.githubusercontent.com/emacsmirror/rainbow-mode/master/rainbow-mode.el")
-  :hook (prog-mode . rainbow-mode))
+(use-package rainbow-mode)
+;; (use-package rainbow-mode
+;;   :quelpa
+;;   (rainbow-mode
+;;    :fetcher url
+;;    :url "https://raw.githubusercontent.com/emacsmirror/rainbow-mode/master/rainbow-mode.el")
+;;   :hook (prog-mode . rainbow-mode))
 
 (use-package nerd-icons
   :if (display-graphic-p)
@@ -324,9 +329,7 @@
 (use-package keycast)
 
 (use-package greek-unicode-insert
-  :quelpa (greek-unicode-insert
-	   :fetcher github
-	   :repo "Malabarba/greek-unicode-insert")
+  :vc (:fetcher github :repo Malabarba/greek-unicode-insert)
   :bind ("²" . greek-unicode-insert-map))
 
 (use-package smartparens-config
@@ -942,10 +945,11 @@ same directory as the working and insert a link to this file."
 (setq eldoc-echo-area-use-multiline-p nil)
 
 (use-package copilot
-  :quelpa (copilot :fetcher github
-                   :repo "zerolfx/copilot.el"
-                   :branch "main"
-                   :files ("dist" "*.el"))
+  :quelpa (copilot
+	   :fetcher github
+	   :repo "zerolfx/copilot.el"
+	   :branch "main"
+	   :files ("dist" "*.el"))
   :custom
   (copilot-indent-warning-suppress t)
   :config
@@ -1020,11 +1024,13 @@ same directory as the working and insert a link to this file."
 (use-package poly-R
   :mode ("\\.Rmd" . poly-markdown+r-mode))
 
-(quelpa '(quarto-mode
-	  :fetcher github
-	  :repo "christophe-gouel/quarto-emacs"
-          :branch "transient"))
-;; (use-package quarto-mode)
+(unless (package-installed-p 'quarto-mode)
+  (package-vc-install 
+   '(quarto-mode
+     :url "https://github.com/christophe-gouel/quarto-emacs"
+     :branch "transient"
+     :rev :last-release)))
+(use-package quarto-mode)
 
 (use-package edit-indirect)
 

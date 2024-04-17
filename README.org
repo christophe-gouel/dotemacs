@@ -52,6 +52,14 @@ Quelpa
 (use-package quelpa-use-package)
 #+end_src
 
+=vc-use-package= is integrated in emacs 30 so this part can be removed when upgrading.
+
+#+begin_src emacs-lisp
+(unless (package-installed-p 'vc-use-package)
+  (package-vc-install "https://github.com/slotThe/vc-use-package"))
+(require 'vc-use-package)
+#+end_src
+
 * Emacs startup
 
 #+begin_src emacs-lisp
@@ -118,12 +126,13 @@ To list all available fonts, use
 ** Hex color codes
 
 #+begin_src emacs-lisp
-(use-package rainbow-mode
-  :quelpa
-  (rainbow-mode
-   :fetcher url
-   :url "https://raw.githubusercontent.com/emacsmirror/rainbow-mode/master/rainbow-mode.el")
-  :hook (prog-mode . rainbow-mode))
+(use-package rainbow-mode)
+;; (use-package rainbow-mode
+;;   :quelpa
+;;   (rainbow-mode
+;;    :fetcher url
+;;    :url "https://raw.githubusercontent.com/emacsmirror/rainbow-mode/master/rainbow-mode.el")
+;;   :hook (prog-mode . rainbow-mode))
 #+end_src
 
 ** Icons
@@ -489,9 +498,7 @@ Activate lower- and upper-case commands ("C-x C-l" and "C-x C-u")
 
 #+begin_src emacs-lisp
 (use-package greek-unicode-insert
-  :quelpa (greek-unicode-insert
-	   :fetcher github
-	   :repo "Malabarba/greek-unicode-insert")
+  :vc (:fetcher github :repo Malabarba/greek-unicode-insert)
   :bind ("²" . greek-unicode-insert-map))
 #+end_src
 
@@ -1253,10 +1260,11 @@ Prevent =eldoc= from showing the function doc in the minibuffer when the cursor 
 Configuration from [[https://robert.kra.hn/posts/2023-02-22-copilot-emacs-setup/]].
 #+begin_src emacs-lisp
 (use-package copilot
-  :quelpa (copilot :fetcher github
-                   :repo "zerolfx/copilot.el"
-                   :branch "main"
-                   :files ("dist" "*.el"))
+  :quelpa (copilot
+	   :fetcher github
+	   :repo "zerolfx/copilot.el"
+	   :branch "main"
+	   :files ("dist" "*.el"))
   :custom
   (copilot-indent-warning-suppress t)
   :config
@@ -1339,11 +1347,13 @@ Configuration from [[https://robert.kra.hn/posts/2023-02-22-copilot-emacs-setup/
 (use-package poly-R
   :mode ("\\.Rmd" . poly-markdown+r-mode))
 
-(quelpa '(quarto-mode
-	  :fetcher github
-	  :repo "christophe-gouel/quarto-emacs"
-          :branch "transient"))
-;; (use-package quarto-mode)
+(unless (package-installed-p 'quarto-mode)
+  (package-vc-install 
+   '(quarto-mode
+     :url "https://github.com/christophe-gouel/quarto-emacs"
+     :branch "transient"
+     :rev :last-release)))
+(use-package quarto-mode)
 #+end_src
 
 Package =edit-indirect= required to edit code blocks in indirect buffers in =markdown-mode=
