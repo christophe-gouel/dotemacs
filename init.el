@@ -308,12 +308,28 @@
   :custom
   (recentf-max-saved-items 50))
 
-(use-package grep
-  :ensure nil
-  :custom
-  (find-program "fd"))
+;; (use-package grep
+;;   :ensure nil
+;;   :custom
+;;   (find-program "fd"))
 
 (use-package ripgrep)
+
+(use-package outline
+  :ensure nil
+  :hook
+  (text-mode . outline-minor-mode))
+
+(use-package bicycle
+  :after outline
+  :bind (:map outline-minor-mode-map
+              ([C-tab] . bicycle-cycle)
+              ([S-tab] . bicycle-cycle-global)))
+
+(use-package outline-minor-faces
+  :after outline
+  :hook
+  (outline-minor-mode . outline-minor-faces-mode))
 
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
@@ -1078,19 +1094,19 @@ current buffer within the project."
   :init
   (require 'ess-site)
   :bind (:map ess-r-mode-map
-	 ;; Shortcut for pipe |>
-         ("C-S-m" . " |>")
-	 ;; Shortcut for pipe %>%
-	 ("C-%"   . " %>%")
-	 ;; Shortcut for assign <-
-	 ("M--"   . ess-insert-assign)
-	 ("<f9>"  . my-run-rscript-on-current-buffer-file)
-         :map inferior-ess-r-mode-map
-         ("C-S-m" . " |>")
-         ("C-%"   . " %>%")
-	 ("M--"   . ess-insert-assign)
-	 :map inferior-ess-mode-map
-	 ("<home>" . comint-bol))
+	      ;; Shortcut for pipe |>
+        ("C-S-m"   . " |>")
+	      ;; Shortcut for pipe %>%
+	      ("C-%"     . " %>%")
+	      ;; Shortcut for assign <-
+	      ("M--"     . ess-insert-assign)
+	      ("<f9>"    . my-run-rscript-on-current-buffer-file)
+        :map inferior-ess-r-mode-map
+        ("C-S-m" . " |>")
+        ("C-%"   . " %>%")
+	      ("M--"   . ess-insert-assign)
+	      :map inferior-ess-mode-map
+	      ("<home>" . comint-bol))
   :custom
   (ess-roxy-str "#'")
   (ess-roxy-template-alist
@@ -1156,7 +1172,17 @@ current buffer within the project."
     (setq-local ansi-color-for-comint-mode nil)
     (smartparens-mode 1))
   :hook
-  (inferior-ess-mode . my-inferior-ess-init))
+  (inferior-ess-mode . my-inferior-ess-init)
+  ;; Outlining like in RStudio
+  (ess-r-mode . (lambda ()
+    (outline-minor-mode)
+    (setq outline-regexp "^#+ +.*----")
+    (defun outline-level ()
+           (cond ((looking-at "^# ") 1)
+             ((looking-at "^## ") 2)
+             ((looking-at "^### ") 3)
+             ((looking-at "^#### ") 4)
+             (t 1000))))))
 
 (use-package rutils
   :defer t
