@@ -308,10 +308,11 @@
   :custom
   (recentf-max-saved-items 50))
 
-;; (use-package grep
-;;   :ensure nil
-;;   :custom
-;;   (find-program "fd"))
+(use-package grep
+  :ensure nil
+  :config
+  (if is-mswindows
+      (setq find-program "C:/Program Files/Git/usr/bin/find.exe")))
 
 (use-package ripgrep)
 

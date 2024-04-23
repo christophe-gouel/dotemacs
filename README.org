@@ -449,11 +449,14 @@ For dired operations to work async instead of freezing emacs.
 
 ** Grep and friends
 
+The =find= program included with Windows is not POSIX-compatible, so we need to use a different =find=. Since we cannot always change the PATH on all Windows computers, it is better to use the =find= provided by Git for Windows, which is always needed anyway.
+
 #+begin_src emacs-lisp
-;; (use-package grep
-;;   :ensure nil
-;;   :custom
-;;   (find-program "fd"))
+(use-package grep
+  :ensure nil
+  :config
+  (if is-mswindows
+      (setq find-program "C:/Program Files/Git/usr/bin/find.exe")))
 #+end_src
 
 =ripgrep= package needed to have a proper interface for =ripgrep=. Also called by
