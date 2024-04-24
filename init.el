@@ -319,7 +319,8 @@
 (use-package outline
   :ensure nil
   :hook
-  (text-mode . outline-minor-mode))
+  (text-mode . outline-minor-mode)
+  (prog-mode . outline-minor-mode))
 
 (use-package bicycle
   :after outline
@@ -1088,8 +1089,8 @@ current buffer within the project."
   :config
   (yas-global-mode 1)
   :bind (:map yas-minor-mode-map
-	      ("C-TAB"   . yas-next-field-or-maybe-expand)
-	      ("C-<tab>" . yas-next-field-or-maybe-expand)))
+	      ("M-C-TAB"   . yas-next-field-or-maybe-expand)
+	      ("M-C-<tab>" . yas-next-field-or-maybe-expand)))
 
 (use-package ess
   :init
@@ -1176,7 +1177,6 @@ current buffer within the project."
   (inferior-ess-mode . my-inferior-ess-init)
   ;; Outlining like in RStudio
   (ess-r-mode . (lambda ()
-    (outline-minor-mode)
     (setq outline-regexp "^#+ +.*----")
     (defun outline-level ()
            (cond ((looking-at "^# ") 1)
@@ -1194,12 +1194,21 @@ current buffer within the project."
   :mode ("\\.gms\\'" "\\.inc\\'")
   ;; I don't know why but despite gams-mode being a prog-mode, it does not load
   ;; automatically some default minor modes for prog-mode.
-  :hook ((gams-mode . rainbow-delimiters-mode)
-	 (gams-mode . smartparens-mode)
-	 (gams-mode . display-fill-column-indicator-mode)
-	 (gams-mode . (lambda ()
-			(make-local-variable 'company-minimum-prefix-length)
-			(setq company-minimum-prefix-length 1))))
+  :hook
+  (gams-mode . rainbow-delimiters-mode)
+  (gams-mode . smartparens-mode)
+  (gams-mode . display-fill-column-indicator-mode)
+  (gams-mode . (lambda ()
+		 (make-local-variable 'company-minimum-prefix-length)
+		 (setq company-minimum-prefix-length 1)))
+ (gams-mode . (lambda ()
+               (outline-minor-mode)
+               (setq outline-regexp "^\*+ +.*----")
+	       (defun outline-level ()
+		 (save-excursion
+		   (looking-at outline-regexp)
+		   (let ((match (match-string 0)))
+		     (- (length match) (length (replace-regexp-in-string "\*" "" match))))))))
   :custom
   (gams-process-command-option "ll=0 lo=3 pw=153 ps=9999")
   (gams-statement-upcase t)
