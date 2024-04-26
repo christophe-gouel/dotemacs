@@ -312,7 +312,7 @@
   :ensure nil
   :config
   (if is-mswindows
-      (setq find-program "C:/Program Files/Git/usr/bin/find.exe")))
+      (setq find-program "\"C:\\Program Files\\Git\\usr\\bin\\find.exe\"")))
 
 (use-package ripgrep)
 
@@ -1177,6 +1177,10 @@ current buffer within the project."
     (smartparens-mode 1))
   :hook
   (inferior-ess-mode . my-inferior-ess-init)
+  ;; Remove a useless hook added by ess to use its own project functions
+  (ess-r-mode . (lambda()
+		  (make-local-variable 'project-find-functions)
+		  (setq project-find-functions '(project-projectile project-try-vc))))
   ;; Outlining like in RStudio
   (ess-r-mode . (lambda ()
     (setq outline-regexp "^#+ +.*----")
