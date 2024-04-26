@@ -1198,7 +1198,9 @@ Use =visual-fill-column= for text modes
   :bind ("C-c v" . my-visual-fill)
   :hook
   (bibtex-mode   . my-visual-fill)
-  (text-mode     . my-visual-fill))
+  (text-mode     . (lambda()
+		         (unless (member major-mode '(csv-mode))
+			   (my-visual-fill)))))
 #+end_src
 
 ** YAML

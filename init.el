@@ -904,7 +904,9 @@ same directory as the working and insert a link to this file."
   :bind ("C-c v" . my-visual-fill)
   :hook
   (bibtex-mode   . my-visual-fill)
-  (text-mode     . my-visual-fill))
+  (text-mode     . (lambda()
+		         (unless (member major-mode '(csv-mode))
+			   (my-visual-fill)))))
 
 (use-package yaml-mode
   :mode ("\\.yml$" "\\.dvc" "dvc.lock")
