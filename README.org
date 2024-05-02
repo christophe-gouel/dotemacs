@@ -473,6 +473,8 @@ It should also be possible to directly substitute =grep= by =ripgrep= as explain
 #+begin_src emacs-lisp
 (use-package outline
   :ensure nil
+  :custom
+  (outline-minor-mode-use-buttons 'in-margins) ; add in-margin buttons to fold/unfold
   :hook
   (text-mode . outline-minor-mode)
   (prog-mode . outline-minor-mode))

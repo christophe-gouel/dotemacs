@@ -318,6 +318,8 @@
 
 (use-package outline
   :ensure nil
+  :custom
+  (outline-minor-mode-use-buttons 'in-margins)
   :hook
   (text-mode . outline-minor-mode)
   (prog-mode . outline-minor-mode))
