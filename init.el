@@ -318,6 +318,11 @@
 
 (use-package outline
   :ensure nil
+  :custom
+  (outline-minor-mode-cycle t)
+  (outline-minor-mode-use-buttons 'in-margins) ; add in-margin buttons to fold/unfold
+  :config
+  (unbind-key "RET" outline-overlay-button-map)
   :hook
   (text-mode . outline-minor-mode)
   (prog-mode . outline-minor-mode))
