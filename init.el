@@ -777,6 +777,8 @@ same directory as the working and insert a link to this file."
   (org-mode . (lambda()
 		(make-local-variable 'reftex-save-parse-info)
 		(setq reftex-save-parse-info nil)))
+  :bind (:map org-mode-map
+	      ("C-c o" . org-open-at-point))
   :custom
   (org-export-with-LaTeX-fragments t)       ; Export LaTeX fragment to HTML
   (org-edit-src-content-indentation 0)
@@ -827,6 +829,8 @@ same directory as the working and insert a link to this file."
 (use-package org-fragtog
   :hook
   (org-mode . org-fragtog-mode))
+
+(use-package ox-reveal)
 
 (use-package texfrag
   :hook
