@@ -319,7 +319,7 @@
 (use-package outline
   :ensure nil
   :custom
-  (outline-minor-mode-cycle t)
+  ;; (outline-minor-mode-cycle t)
   (outline-minor-mode-use-buttons 'in-margins) ; add in-margin buttons to fold/unfold
   :config
   (unbind-key "RET" outline-overlay-button-map)
@@ -830,7 +830,8 @@ same directory as the working and insert a link to this file."
   :hook
   (org-mode . org-fragtog-mode))
 
-(use-package ox-reveal)
+(use-package ox-reveal
+  :ensure htmlize) ; required for the fontification of code blocks
 
 (use-package texfrag
   :hook
@@ -1103,9 +1104,16 @@ current buffer within the project."
 	      ("M-C-TAB"   . yas-next-field-or-maybe-expand)
 	      ("M-C-<tab>" . yas-next-field-or-maybe-expand)))
 
+(use-package tree-sitter-ess-r
+  :hook (ess-r-mode . tree-sitter-ess-r-mode-activate))
+
+(use-package ts-fold
+    :vc (:fetcher github :repo emacs-tree-sitter/ts-fold))
+
 (use-package ess
   :init
   (require 'ess-site)
+  :mode ("renv.lock" . js-json-mode)
   :bind (:map ess-r-mode-map
 	      ;; Shortcut for pipe |>
         ("C-S-m"   . " |>")
@@ -1195,7 +1203,7 @@ current buffer within the project."
   (ess-r-mode . my-ess-remove-project-hook)
   ;; Outlining like in RStudio
   (ess-r-mode . (lambda ()
-    (setq outline-regexp "^#+ +.*----")
+    (setq outline-regexp "^#+ +.*\\(----\\|====\\|####\\)")
     (defun outline-level ()
            (cond ((looking-at "^# ") 1)
              ((looking-at "^## ") 2)

@@ -1103,8 +1103,11 @@ For a modern-looking =org-mode=, use =org-modern=.
   (org-mode . org-fragtog-mode))
 #+end_src
 
+=ox-reveal= to export presentation to =reveal.js=.
+
 #+begin_src emacs-lisp
-(use-package ox-reveal)
+(use-package ox-reveal
+  :ensure htmlize) ; required for the fontification of code blocks
 #+end_src
 
 ** Preview of mathematical formulas
@@ -1453,6 +1456,16 @@ Use "C-TAB" for moving to next field to avoid conflict with autocompletion.
 	      ("M-C-<tab>" . yas-next-field-or-maybe-expand)))
 #+end_src
 
+*** Tree sitter
+
+#+begin_src emacs-lisp
+(use-package tree-sitter-ess-r
+  :hook (ess-r-mode . tree-sitter-ess-r-mode-activate))
+
+(use-package ts-fold
+    :vc (:fetcher github :repo emacs-tree-sitter/ts-fold))
+#+end_src
+
 ** Programming languages
 *** Emacs Speaks Statistics (ESS)
 
@@ -1460,6 +1473,7 @@ Use "C-TAB" for moving to next field to avoid conflict with autocompletion.
 (use-package ess
   :init
   (require 'ess-site)
+  :mode ("renv.lock" . js-json-mode)
   :bind (:map ess-r-mode-map
 	      ;; Shortcut for pipe |>
         ("C-S-m"   . " |>")
@@ -1549,7 +1563,7 @@ Use "C-TAB" for moving to next field to avoid conflict with autocompletion.
   (ess-r-mode . my-ess-remove-project-hook)
   ;; Outlining like in RStudio
   (ess-r-mode . (lambda ()
-    (setq outline-regexp "^#+ +.*----")
+    (setq outline-regexp "^#+ +.*\\(----\\|====\\|####\\)")
     (defun outline-level ()
            (cond ((looking-at "^# ") 1)
              ((looking-at "^## ") 2)
