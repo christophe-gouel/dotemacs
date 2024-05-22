@@ -277,6 +277,10 @@
   (imenu-list-focus-after-activation t)
   (imenu-list-position 'right))
 
+(use-package flimenu
+  :config
+  (flimenu-global-mode))
+
 (use-package imenu-anywhere
   :bind
   ("M-g M-i" . ivy-imenu-anywhere))
@@ -319,7 +323,7 @@
 (use-package outline
   :ensure nil
   :custom
-  ;; (outline-minor-mode-cycle t)
+  (outline-minor-mode-cycle t)
   (outline-minor-mode-use-buttons 'in-margins) ; add in-margin buttons to fold/unfold
   :config
   (unbind-key "RET" outline-overlay-button-map)
@@ -780,7 +784,7 @@ same directory as the working and insert a link to this file."
   :bind (:map org-mode-map
 	      ("C-c o" . org-open-at-point))
   :custom
-  (org-export-with-LaTeX-fragments t)       ; Export LaTeX fragment to HTML
+  ;; (org-export-with-LaTeX-fragments t)       ; Export LaTeX fragment to HTML
   (org-edit-src-content-indentation 0)
   (org-todo-keywords '((type "TODO(t)" "STARTED(s)" "WAITING(w)" "|" "DONE(d)")))
   (org-tag-alist '(("OFFICE" . ?o) ("COMPUTER" . ?c) ("HOME" . ?h) ("PROJECT" . ?p) ("CALL" . ?a) ("ERRANDS" . ?e) ("TASK" . ?t)))
@@ -797,6 +801,7 @@ same directory as the working and insert a link to this file."
   (org-startup-with-inline-images t)
   (org-startup-with-latex-preview t)
   (org-cycle-inline-images-display t)
+  (org-imenu-depth 4)
   :config
   (org-defkey org-cdlatex-mode-map "²" 'cdlatex-math-symbol)
   ;; Font-locking of reference commands in org-mode
@@ -829,6 +834,11 @@ same directory as the working and insert a link to this file."
 (use-package org-fragtog
   :hook
   (org-mode . org-fragtog-mode))
+
+(use-package ox
+  :ensure nil
+  :custom
+  (org-odt-preferred-output-format "docx")) ; require soffice to be on the PATH
 
 (use-package ox-reveal
   :ensure htmlize) ; required for the fontification of code blocks

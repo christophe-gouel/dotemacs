@@ -400,6 +400,16 @@ For dired operations to work async instead of freezing emacs.
   (imenu-list-position 'right))
 #+end_src
 
+Flatten =imenu= so that we can jump to any subheading from the main menu.
+
+#+begin_src emacs-lisp
+(use-package flimenu
+  :config
+  (flimenu-global-mode))
+#+end_src
+
+Should I really keep this one, which seems redundant with =flimenu=?
+
 #+begin_src emacs-lisp
 (use-package imenu-anywhere
   :bind
@@ -1036,7 +1046,7 @@ same directory as the working and insert a link to this file."
   :bind (:map org-mode-map
 	      ("C-c o" . org-open-at-point))
   :custom
-  (org-export-with-LaTeX-fragments t)       ; Export LaTeX fragment to HTML
+  ;; (org-export-with-LaTeX-fragments t)       ; Export LaTeX fragment to HTML
   (org-edit-src-content-indentation 0)
   (org-todo-keywords '((type "TODO(t)" "STARTED(s)" "WAITING(w)" "|" "DONE(d)")))
   (org-tag-alist '(("OFFICE" . ?o) ("COMPUTER" . ?c) ("HOME" . ?h) ("PROJECT" . ?p) ("CALL" . ?a) ("ERRANDS" . ?e) ("TASK" . ?t)))
@@ -1053,6 +1063,7 @@ same directory as the working and insert a link to this file."
   (org-startup-with-inline-images t)
   (org-startup-with-latex-preview t)
   (org-cycle-inline-images-display t)
+  (org-imenu-depth 4)
   :config
   (org-defkey org-cdlatex-mode-map "²" 'cdlatex-math-symbol)
   ;; Font-locking of reference commands in org-mode
@@ -1101,6 +1112,15 @@ For a modern-looking =org-mode=, use =org-modern=.
 (use-package org-fragtog
   :hook
   (org-mode . org-fragtog-mode))
+#+end_src
+
+*** Org export
+
+#+begin_src emacs-lisp
+(use-package ox
+  :ensure nil
+  :custom
+  (org-odt-preferred-output-format "docx")) ; require soffice to be on the PATH
 #+end_src
 
 =ox-reveal= to export presentation to =reveal.js=.
