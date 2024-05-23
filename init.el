@@ -35,23 +35,16 @@
 
 (use-package dashboard
   :if (display-graphic-p)
+  :custom
+  (dashboard-projects-switch-function 'project-switch-project)
+  (dashboard-set-navigator t) ; raccourcis de rubrique
+  (dashboard-center-content t)
+  (dashboard-items '((recents   . 6)
+                     (projects  . 6)
+                     (bookmarks . 6)))
+  (dashboard-set-heading-icons t)
+  (dashboard-set-file-icons t)
   :config
-  ;; On active la prise en charge des projets avec projectile
-  (setq dashboard-projects-backend 'projectile
-	;; On ajoute les raccourcis de rubrique
-	dashboard-set-navigator t
-	;; On centre le contenu
-	dashboard-center-content t
-	;; On configure ce qu'on veut voir apparaître
-	dashboard-items '((recents  . 5)
-                          (projects . 5)
-                          (bookmarks . 5))
-	;; On met des icônes
-	dashboard-set-heading-icons t
-	dashboard-set-file-icons t
-	;; On vire le footer (je ne le lis pas)
-	dashboard-set-footer nil)
-  ;; On démarre dashboard par défaut
   (dashboard-setup-startup-hook))
 
 (menu-bar-mode 0)
@@ -318,12 +311,30 @@
   (if is-mswindows
       (setq find-program "\"C:\\Program Files\\Git\\usr\\bin\\find.exe\"")))
 
-(use-package ripgrep)
+(use-package ripgrep
+  :config
+  (defun my-ripgrep-in-same-extension (expression)
+    "Search for EXPRESSION in files with the same extension as the
+current buffer within the project or the current directory if not in a project."
+    (interactive
+     (list
+      (read-from-minibuffer "Ripgrep search for: " (thing-at-point 'symbol))))
+    (let* ((extension (file-name-extension (buffer-file-name)))
+           (glob (if extension (concat "*." extension) "*"))
+           ;; Check if we are inside a project. If not, use `nil`.
+           (project (if (ignore-errors (project-current)) (project-current) nil))
+           ;; Use project root if in a project, otherwise use `default-directory`.
+           (root (if project (project-root project) default-directory)))
+      (ripgrep-regexp expression
+                    root
+                    (list (format "-g %s" glob)))))
+  :bind
+  ("C-c f" . my-ripgrep-in-same-extension))
 
 (use-package outline
   :ensure nil
   :custom
-  (outline-minor-mode-cycle t)
+
   (outline-minor-mode-use-buttons 'in-margins) ; add in-margin buttons to fold/unfold
   :config
   (unbind-key "RET" outline-overlay-button-map)
@@ -1064,44 +1075,33 @@ same directory as the working and insert a link to this file."
 (use-package poly-R
   :mode ("\\.Rmd" . poly-markdown+r-mode))
 
-(unless (package-installed-p 'quarto-mode)
-  (package-vc-install 
-   '(quarto-mode
-     :url "https://github.com/christophe-gouel/quarto-emacs"
-     :branch "transient"
-     :rev :last-release)))
-(use-package quarto-mode)
+;; (unless (package-installed-p 'quarto-mode)
+;;   (package-vc-install 
+;;    '(quarto-mode
+;;      :url "https://github.com/christophe-gouel/quarto-emacs"
+;;      :branch "transient"
+;;      :rev :last-release)))
+(use-package quarto-mode
+  :load-path "c:/Users/Gouel/Documents/git_projects/code/quarto-emacs"
+  )
 
 (use-package edit-indirect)
 
-(use-package projectile
-  :diminish projectile-mode
-  :config
-  (projectile-mode)
-  (defun my-ripgrep-in-same-extension (expression)
-    "Search for EXPRESSION in files with the same extension as the
-current buffer within the project."
-    (interactive
-     (list
-      (read-from-minibuffer "Ripgrep search for: " (thing-at-point 'symbol))))
-    (let* ((extension (file-name-extension (buffer-file-name)))
-           (glob (if extension (concat "*." extension) "*")))
-      (ripgrep-regexp expression
-                      (projectile-acquire-root)
-                      (list (format "-g %s" glob)))))
-  :custom
-  (projectile-completion-system 'ivy)
-  (projectile-use-git-grep t)
-  (projectile-switch-project-action #'projectile-dired)
-  (projectile-enable-caching nil)
-  (projectile-indexing-method 'alien)
-  :bind
-  ("C-c f" . my-ripgrep-in-same-extension)
-  :bind-keymap
-  ("C-c p" . projectile-command-map)
-  :init
-  (when (file-directory-p "~/Documents/git_projects")
-    (setq projectile-project-search-path '("~/Documents/git_projects"))))
+;; (use-package projectile
+;;   :diminish projectile-mode
+;;   :config
+;;   (projectile-mode)
+;;   :custom
+;;   (projectile-completion-system 'ivy)
+;;   (projectile-use-git-grep t)
+;;   (projectile-switch-project-action #'projectile-dired)
+;;   (projectile-enable-caching nil)
+;;   (projectile-indexing-method 'alien)
+;;   :bind-keymap
+;;   ("C-c p" . projectile-command-map)
+;;   :init
+;;   (when (file-directory-p "~/Documents/git_projects")
+;;     (setq projectile-project-search-path '("~/Documents/git_projects"))))
 
 (use-package yasnippet
   :custom
@@ -1206,7 +1206,7 @@ current buffer within the project."
   (defun my-ess-remove-project-hook ()
     "Remove a useless hook added by ess to use its own project functions"
     (make-local-variable 'project-find-functions)
-    (setq project-find-functions '(project-projectile project-try-vc)))
+    (setq project-find-functions '(project-try-vc)))
   :hook
   (inferior-ess-mode . my-inferior-ess-init)
   (inferior-ess-mode . my-ess-remove-project-hook)
