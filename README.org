@@ -297,7 +297,7 @@ Make the scratch buffer an =org-mode= buffer and remove the scratch message.
       gc-cons-threshold (* 10 800000)
       read-process-output-max (* 1024 1024))
 (setq-default mouse-yank-at-point t     ; coller avec la souris
-	      case-fold-search t)        ; recherche sans égard à la casse
+              case-fold-search t)        ; recherche sans égard à la casse
 (delete-selection-mode t)                ; entrée efface texte sélectionné
 (fset 'yes-or-no-p 'y-or-n-p)            ; Replace yes or no with y or n
 (auto-compression-mode t)
@@ -522,6 +522,14 @@ Use =outline-minor-faces= to use a special face for outline sections.
   (outline-minor-mode . outline-minor-faces-mode))
 #+end_src
 
+** Windows management
+
+#+begin_src emacs-lisp
+(use-package windmove
+  :ensure nil
+  :config
+  (windmove-default-keybindings))
+#+end_src
 * Keys
 
 Activate lower- and upper-case commands ("C-x C-l" and "C-x C-u")
@@ -639,7 +647,9 @@ Activate lower- and upper-case commands ("C-x C-l" and "C-x C-u")
           ("M-TAB" . company-manual-begin)))
 
 (use-package company-bibtex)
-(use-package company-math)
+(use-package company-math
+  :custom
+  (company-math-allow-latex-symbols-in-faces t)) ; use LaTeX symbols everywhere (avoid unicode symbols to dominate outside LaTeX mode)
 (use-package company-reftex)
 (use-package company-jedi)
 
@@ -962,7 +972,9 @@ textsc" "textup"))))
 		  (setq company-idle-delay 0.3))
   :custom
   (cdlatex-command-alist
-	'(("equ*" "Insert equation* env"   "" cdlatex-environment ("equation*") t nil)))
+   '(("equ*" "Insert equation* env"   "" cdlatex-environment ("equation*") t nil)
+     ("frd" "Insert \\frac{\\partial }{\\partial }" "\\frac{\\partial ?}{\\partial }" cdlatex-position-cursor nil nil t)
+     ("su" "Insert \\sum" "\\sum?" cdlatex-position-cursor nil nil t)))
   (cdlatex-math-symbol-prefix ?\262) ; correspond to key "²"
   :hook
   (LaTeX-mode . turn-on-cdlatex)

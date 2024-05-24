@@ -205,7 +205,7 @@
       gc-cons-threshold (* 10 800000)
       read-process-output-max (* 1024 1024))
 (setq-default mouse-yank-at-point t     ; coller avec la souris
-	      case-fold-search t)        ; recherche sans égard à la casse
+              case-fold-search t)        ; recherche sans égard à la casse
 (delete-selection-mode t)                ; entrée efface texte sélectionné
 (fset 'yes-or-no-p 'y-or-n-p)            ; Replace yes or no with y or n
 (auto-compression-mode t)
@@ -353,6 +353,11 @@ current buffer within the project or the current directory if not in a project."
   :hook
   (outline-minor-mode . outline-minor-faces-mode))
 
+(use-package windmove
+  :ensure nil
+  :config
+  (windmove-default-keybindings))
+
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
 
@@ -438,7 +443,9 @@ current buffer within the project or the current directory if not in a project."
           ("M-TAB" . company-manual-begin)))
 
 (use-package company-bibtex)
-(use-package company-math)
+(use-package company-math
+  :custom
+  (company-math-allow-latex-symbols-in-faces t)) ; use LaTeX symbols everywhere (avoid unicode symbols to dominate outside LaTeX mode)
 (use-package company-reftex)
 (use-package company-jedi)
 
@@ -709,7 +716,9 @@ textsc" "textup"))))
 		  (setq company-idle-delay 0.3))
   :custom
   (cdlatex-command-alist
-	'(("equ*" "Insert equation* env"   "" cdlatex-environment ("equation*") t nil)))
+   '(("equ*" "Insert equation* env"   "" cdlatex-environment ("equation*") t nil)
+     ("frd" "Insert \\frac{\\partial }{\\partial }" "\\frac{\\partial ?}{\\partial }" cdlatex-position-cursor nil nil t)
+     ("su" "Insert \\sum" "\\sum?" cdlatex-position-cursor nil nil t)))
   (cdlatex-math-symbol-prefix ?\262) ; correspond to key "²"
   :hook
   (LaTeX-mode . turn-on-cdlatex)
