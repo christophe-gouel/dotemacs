@@ -1320,6 +1320,9 @@ same directory as the working and insert a link to this file."
     (mlint-minor-mode))                   ; Activate mlint minor mode
   (defun my-matlab-shell-mode-hook ()
     '())
+  :bind
+  (:map matlab-mode-map
+	("C-c C-z" . matlab-show-matlab-shell-buffer))
   :hook
   (matlab-mode . my-matlab-mode-hook)
   (matlab-shell-mode . my-matlab-shell-mode-hook))
