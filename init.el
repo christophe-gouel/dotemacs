@@ -145,28 +145,19 @@
   (rainbow-delimiters-depth-8-face ((t (:foreground "black"))))
   (rainbow-delimiters-unmatched-face ((t (:background "yellow")))))
 
-(use-package doom-themes
-  :if (display-graphic-p)
-  :custom
-  ;; Global settings (defaults)
-  (doom-themes-enable-bold t)   ; if nil, bold is universally disabled
-  (doom-themes-enable-italic t) ; if nil, italics is universally disabled
+(use-package modus-themes
+  :ensure t
   :config
-  (load-theme 'doom-one t)
-  ;; Enable flashing mode-line on errors
-  (doom-themes-visual-bell-config)
-  ;; Corrects (and improves) org-mode's native fontification.
-  (doom-themes-org-config)
-  (defun my-switch-to-light-theme ()
-    "Switch to doom-one-light theme after disabling current theme"
-    (interactive)
-    (mapcar #'disable-theme custom-enabled-themes)
-    (load-theme 'doom-one-light t))
-  (defun my-switch-to-dark-theme ()
-    "Switch to doom-one theme after disabling current theme"
-    (interactive)
-    (mapcar #'disable-theme custom-enabled-themes)
-    (load-theme 'doom-one t)))
+  (setq modus-themes-italic-constructs t)
+  (setq modus-themes-bold-constructs t)
+  (setq modus-themes-to-toggle '(modus-operandi-deuteranopia modus-vivendi-deuteranopia))
+  ;; Remove the mode-line border
+  (setq modus-themes-common-palette-overrides
+   '((border-mode-line-active unspecified)
+     (border-mode-line-inactive unspecified)))
+  (load-theme 'modus-vivendi-deuteranopia)
+  (define-key global-map (kbd "S-<f5>") #'modus-themes-toggle)
+  )
 
 (set-language-environment "UTF-8")
 (prefer-coding-system       'utf-8)

@@ -212,8 +212,8 @@ To list all available fonts, use
 
 ** Theme
 
-#+begin_src emacs-lisp
-(use-package doom-themes
+#+begin_src emacs-lisp :tangle no
+(use-package doom-themes		;
   :if (display-graphic-p)
   :custom
   ;; Global settings (defaults)
@@ -235,6 +235,22 @@ To list all available fonts, use
     (interactive)
     (mapcar #'disable-theme custom-enabled-themes)
     (load-theme 'doom-one t)))
+#+end_src
+
+#+begin_src emacs-lisp
+(use-package modus-themes
+  :ensure t
+  :config
+  (setq modus-themes-italic-constructs t)
+  (setq modus-themes-bold-constructs t)
+  (setq modus-themes-to-toggle '(modus-operandi-deuteranopia modus-vivendi-deuteranopia))
+  ;; Remove the mode-line border
+  (setq modus-themes-common-palette-overrides
+   '((border-mode-line-active unspecified)
+     (border-mode-line-inactive unspecified)))
+  (load-theme 'modus-vivendi-deuteranopia)
+  (define-key global-map (kbd "S-<f5>") #'modus-themes-toggle)
+  )
 #+end_src
 
 * Other Emacs settings and tools
@@ -1792,7 +1808,6 @@ Define a file in which any customization is saved
 #+end_src
 
 * To install manually
-
 ** Fonts
 
 Download and install fonts
@@ -1800,7 +1815,7 @@ Download and install fonts
   - Nerf-fonts version for the icons: [[https://www.nerdfonts.com/font-downloads]]
   - Standard version for other uses: [[https://www.jetbrains.com/fr-fr/lp/mono/]]
 - [[https://github.com/aliftype/xits]]
-
+  
 ** Linters
 
 - LaTeX: to install =textidote=, download =textidote.jar= from [[https://github.com/sylvainhalle/textidote/releases]] and copy to =~/.local/jar/textidote.jar=.
