@@ -34,7 +34,6 @@
 (require 'vc-use-package)
 
 (use-package dashboard
-  :if (display-graphic-p)
   :custom
   (dashboard-projects-switch-function 'project-switch-project)
   (dashboard-set-navigator t) ; raccourcis de rubrique
@@ -61,44 +60,33 @@
       pixel-scroll-precision-mode t)
 (setq-default cursor-type 'bar) ; curseur étroit
 (set-face-background 'cursor "#CC0000") ; curseur rouge foncé
-(when (display-graphic-p)
-  (global-hl-line-mode +1) ; Highlight the current line
-  ;; Fonts and unicode characters
-  (add-to-list 'default-frame-alist
-	       '(font . "JetBrainsMono NF-10"))
-  (set-fontset-font t 'unicode (font-spec :name "XITS Math") nil 'prepend)
-  (add-hook 'text-mode-hook 'prettify-symbols-mode))
+(global-hl-line-mode +1) ; Highlight the current line
+(add-hook 'text-mode-hook 'prettify-symbols-mode)
 (add-hook 'prog-mode-hook (lambda ()
 			    (display-fill-column-indicator-mode)))
+;; Fonts and unicode characters
+(when (display-graphic-p)
+  (add-to-list 'default-frame-alist
+	       '(font . "JetBrainsMono NF-10"))
+  (set-fontset-font t 'unicode (font-spec :name "XITS Math") nil 'prepend))
 
 (use-package rainbow-mode)
-;; (use-package rainbow-mode
-;;   :quelpa
-;;   (rainbow-mode
-;;    :fetcher url
-;;    :url "https://raw.githubusercontent.com/emacsmirror/rainbow-mode/master/rainbow-mode.el")
-;;   :hook (prog-mode . rainbow-mode))
 
 (use-package nerd-icons
-  :if (display-graphic-p)
   :custom
   (nerd-icons-font-family "JetBrainsMono NF"))
 (use-package nerd-icons-dired
-  :if (display-graphic-p)
   :hook
   (dired-mode . nerd-icons-dired-mode))
 (use-package nerd-icons-ivy-rich
-  :if (display-graphic-p)
   :after counsel
   :init
   (nerd-icons-ivy-rich-mode 1)
   (ivy-rich-mode 1))
 (use-package nerd-icons-ibuffer
-  :if (display-graphic-p)
   :hook
   (ibuffer-mode . nerd-icons-ibuffer-mode))
 (use-package nerd-icons-completion
-  :if (display-graphic-p)
   :config
   (nerd-icons-completion-mode))
 
@@ -125,10 +113,7 @@
   (global-ligature-mode t))
 
 (use-package doom-modeline
-  :hook (after-init . doom-modeline-mode)
-  :config
-  (if (not (display-graphic-p))
-      (setq doom-modeline-icon nil)))
+  :hook (after-init . doom-modeline-mode))
 
 (use-package rainbow-delimiters
   :hook
@@ -196,9 +181,9 @@
       gc-cons-threshold (* 10 800000)
       read-process-output-max (* 1024 1024))
 (setq-default mouse-yank-at-point t     ; coller avec la souris
-              case-fold-search t)        ; recherche sans égard à la casse
-(delete-selection-mode t)                ; entrée efface texte sélectionné
-(fset 'yes-or-no-p 'y-or-n-p)            ; Replace yes or no with y or n
+              case-fold-search t)       ; recherche sans égard à la casse
+(delete-selection-mode t)               ; entrée efface texte sélectionné
+(fset 'yes-or-no-p 'y-or-n-p)           ; Replace yes or no with y or n
 (auto-compression-mode t)
 (when (display-graphic-p)
     (server-start))
