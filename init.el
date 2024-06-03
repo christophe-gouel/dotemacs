@@ -58,14 +58,15 @@
       prettify-symbols-unprettify-at-point t
       show-trailing-whitespace t
       pixel-scroll-precision-mode t)
-(setq-default cursor-type 'bar) ; curseur étroit
-(set-face-background 'cursor "#CC0000") ; curseur rouge foncé
 (global-hl-line-mode +1) ; Highlight the current line
 (add-hook 'text-mode-hook 'prettify-symbols-mode)
 (add-hook 'prog-mode-hook (lambda ()
 			    (display-fill-column-indicator-mode)))
-;; Fonts and unicode characters
 (when (display-graphic-p)
+  ;; Cursor (in terminal mode, to be set in terminal options)
+  (setq-default cursor-type 'bar) ; curseur étroit
+  (set-face-background 'cursor "#CC0000") ; curseur rouge foncé
+  ;; Fonts and unicode characters
   (add-to-list 'default-frame-alist
 	       '(font . "JetBrainsMono NF-10"))
   (set-fontset-font t 'unicode (font-spec :name "XITS Math") nil 'prepend))
