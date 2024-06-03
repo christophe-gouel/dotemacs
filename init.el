@@ -1055,8 +1055,11 @@ same directory as the working and insert a link to this file."
   :bind
   ("C-c l" . eglot))
 
+(use-package emacs-lsp-booster
+  :vc (:fetcher github :repo blahgeek/emacs-lsp-booster))
 (use-package eglot-booster
   :vc (:fetcher github :repo jdtsmith/eglot-booster)
+  :ensure emacs-lsp-booster
 	:after eglot
 	:config	(eglot-booster-mode))
 
@@ -1066,15 +1069,16 @@ same directory as the working and insert a link to this file."
 (use-package poly-R
   :mode ("\\.Rmd" . poly-markdown+r-mode))
 
-;; (unless (package-installed-p 'quarto-mode)
-;;   (package-vc-install 
-;;    '(quarto-mode
-;;      :url "https://github.com/christophe-gouel/quarto-emacs"
-;;      :branch "transient"
-;;      :rev :last-release)))
-(use-package quarto-mode
-  :load-path "c:/Users/Gouel/Documents/git_projects/code/quarto-emacs"
-  )
+(unless (package-installed-p 'quarto-mode)
+  (package-vc-install 
+   '(quarto-mode
+     :url "https://github.com/christophe-gouel/quarto-emacs"
+     :branch "transient"
+     :rev :last-release)))
+(use-package quarto-mode)
+;; (use-package quarto-mode
+;;   :load-path "c:/Users/Gouel/Documents/git_projects/code/quarto-emacs"
+;;   )
 
 (use-package edit-indirect)
 

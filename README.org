@@ -1430,8 +1430,11 @@ Configuration from [[https://robert.kra.hn/posts/2023-02-22-copilot-emacs-setup/
 =eglot= tends to slow emacs quite frequently. The following package helps with that.
 
 #+begin_src emacs-lisp
+(use-package emacs-lsp-booster
+  :vc (:fetcher github :repo blahgeek/emacs-lsp-booster))
 (use-package eglot-booster
   :vc (:fetcher github :repo jdtsmith/eglot-booster)
+  :ensure emacs-lsp-booster
 	:after eglot
 	:config	(eglot-booster-mode))
 #+end_src
@@ -1445,15 +1448,16 @@ Configuration from [[https://robert.kra.hn/posts/2023-02-22-copilot-emacs-setup/
 (use-package poly-R
   :mode ("\\.Rmd" . poly-markdown+r-mode))
 
-;; (unless (package-installed-p 'quarto-mode)
-;;   (package-vc-install 
-;;    '(quarto-mode
-;;      :url "https://github.com/christophe-gouel/quarto-emacs"
-;;      :branch "transient"
-;;      :rev :last-release)))
-(use-package quarto-mode
-  :load-path "c:/Users/Gouel/Documents/git_projects/code/quarto-emacs"
-  )
+(unless (package-installed-p 'quarto-mode)
+  (package-vc-install 
+   '(quarto-mode
+     :url "https://github.com/christophe-gouel/quarto-emacs"
+     :branch "transient"
+     :rev :last-release)))
+(use-package quarto-mode)
+;; (use-package quarto-mode
+;;   :load-path "c:/Users/Gouel/Documents/git_projects/code/quarto-emacs"
+;;   )
 #+end_src
 
 Package =edit-indirect= required to edit code blocks in indirect buffers in =markdown-mode=
