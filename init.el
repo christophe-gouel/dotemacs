@@ -1054,6 +1054,11 @@ same directory as the working and insert a link to this file."
   :bind
   ("C-c l" . eglot))
 
+(use-package eglot-booster
+  :vc (:fetcher github :repo jdtsmith/eglot-booster)
+	:after eglot
+	:config	(eglot-booster-mode))
+
 (use-package poly-markdown
   :bind (:map polymode-eval-map ("p" . quarto-preview)))
 
