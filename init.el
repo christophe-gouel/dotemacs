@@ -67,8 +67,9 @@
   (setq-default cursor-type 'bar) ; curseur étroit
   (set-face-background 'cursor "#CC0000") ; curseur rouge foncé
   ;; Fonts and unicode characters
-  (add-to-list 'default-frame-alist
-	       '(font . "JetBrainsMono NF-10"))
+  ;;   Main font
+  (add-to-list 'default-frame-alist '(font . "JetBrainsMono NF-11"))
+  ;;   Additional font for some unicode characters missing in prettify symbols
   (set-fontset-font t 'unicode (font-spec :name "XITS Math") nil 'prepend))
 
 (use-package rainbow-mode)
@@ -1049,19 +1050,14 @@ same directory as the working and insert a link to this file."
   :ensure nil
   :custom
   ;; Prevent eglot from reformatting code automatically
-  (eglot-ignored-server-capabilities '(:documentOnTypeFormattingProvider))
+ '(eglot-ignored-server-capabilities
+   '(:documentFormattingProvider
+     :documentRangeFormattingProvider
+     :documentOnTypeFormattingProvider))
   ;; Set the buffer size to 0 to improve performances (https://www.gnu.org/software/emacs/manual/html_mono/eglot.html#Performance)
   (eglot-events-buffer-config (:size 0 :format full))
   :bind
   ("C-c l" . eglot))
-
-(use-package emacs-lsp-booster
-  :vc (:fetcher github :repo blahgeek/emacs-lsp-booster))
-(use-package eglot-booster
-  :vc (:fetcher github :repo jdtsmith/eglot-booster)
-  :ensure emacs-lsp-booster
-	:after eglot
-	:config	(eglot-booster-mode))
 
 (use-package poly-markdown
   :bind (:map polymode-eval-map ("p" . quarto-preview)))
@@ -1081,22 +1077,6 @@ same directory as the working and insert a link to this file."
 ;;   )
 
 (use-package edit-indirect)
-
-;; (use-package projectile
-;;   :diminish projectile-mode
-;;   :config
-;;   (projectile-mode)
-;;   :custom
-;;   (projectile-completion-system 'ivy)
-;;   (projectile-use-git-grep t)
-;;   (projectile-switch-project-action #'projectile-dired)
-;;   (projectile-enable-caching nil)
-;;   (projectile-indexing-method 'alien)
-;;   :bind-keymap
-;;   ("C-c p" . projectile-command-map)
-;;   :init
-;;   (when (file-directory-p "~/Documents/git_projects")
-;;     (setq projectile-project-search-path '("~/Documents/git_projects"))))
 
 (use-package yasnippet
   :custom
@@ -1315,9 +1295,13 @@ same directory as the working and insert a link to this file."
     (mlint-minor-mode))                   ; Activate mlint minor mode
   (defun my-matlab-shell-mode-hook ()
     '())
+  (defalias 'my-matlab-three-dots
+    "Add three dots and carriage return."
+   (kmacro "SPC . . . <return>"))
   :bind
   (:map matlab-mode-map
-	("C-c C-z" . matlab-show-matlab-shell-buffer))
+	("C-c C-z" . matlab-show-matlab-shell-buffer)
+	("C-c C-." . 'my-matlab-three-dots))
   :hook
   (matlab-mode . my-matlab-mode-hook)
   (matlab-shell-mode . my-matlab-shell-mode-hook))
