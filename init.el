@@ -597,7 +597,7 @@ current buffer within the project or the current directory if not in a project."
   (preview-default-option-list '("displaymath" "graphics" "textmath"))
 
   ;; Fold-mode
-
+  (TeX-fold-auto-reveal t)
   ;; Personalize the list of commands to be folded
   (TeX-fold-macro-spec-list
    '(("[f]"

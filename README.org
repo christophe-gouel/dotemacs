@@ -872,7 +872,7 @@ Add support for a basic syntax highlighting of =.gitignore= files (from [[http:/
   (preview-default-option-list '("displaymath" "graphics" "textmath"))
 
   ;; Fold-mode
-
+  (TeX-fold-auto-reveal t)
   ;; Personalize the list of commands to be folded
   (TeX-fold-macro-spec-list
    '(("[f]"
