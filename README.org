@@ -416,7 +416,6 @@ Should I really keep this one, which seems redundant with =flimenu=?
 
 #+begin_src emacs-lisp
 (use-package doc-view
-  :if is-mswindows
   :custom
   (doc-view-ghostscript-program (executable-find "rungs")))
 #+end_src
@@ -797,19 +796,18 @@ Add support for a basic syntax highlighting of =.gitignore= files (from [[http:/
 
 #+begin_src emacs-lisp
 (use-package ivy-bibtex
-  :if is-mswindows
   :custom
   (bibtex-completion-bibliography
    (substitute-in-file-name "${BIBINPUTS}/References.bib"))
   ;; Pdf files
   (bibtex-completion-library-path
    (substitute-in-file-name
-    "${HOME}/Dropbox (Inrae EcoPub)/Bibliography/Papers"))
+    "${DROPBOX}/Bibliography/Papers"))
   (bibtex-completion-pdf-symbol "⌘")
   ;; Notes
   (bibtex-completion-notes-path
    (substitute-in-file-name
-    "${HOME}/Dropbox (Inrae EcoPub)/Bibliography/notes"))
+    "${DROPBOX}/Bibliography/notes"))
   (bibtex-completion-notes-symbol "✎")
   (bibtex-completion-watch-bibliography nil)
   :config
@@ -1661,9 +1659,9 @@ To interact easily with renv
   :config
   (if is-mswindows
       (setq gams-system-directory "C:/GAMS/Last/"
-	    gams-docs-directory "C:/GAMS/Last/docs")
+	          gams-docs-directory "C:/GAMS/Last/docs")
     (setq gams-system-directory "/opt/gams/gamsLast_linux_x64_64_sfx"
-	  gams-docs-directory "/opt/gams/gamsLast_linux_x64_64_sfx/docs"))
+          gams-docs-directory "/opt/gams/gamsLast_linux_x64_64_sfx/docs"))
   :bind (:map gams-mode-map
 	      ("C-c =" . gams-show-identifier-list)))
 
