@@ -257,7 +257,6 @@
   ("M-g M-i" . ivy-imenu-anywhere))
 
 (use-package doc-view
-  :if is-mswindows
   :custom
   (doc-view-ghostscript-program (executable-find "rungs")))
 
@@ -530,19 +529,18 @@ current buffer within the project or the current directory if not in a project."
         (face-remap-set-base 'comint-highlight-prompt :inherit nil)))
 
 (use-package ivy-bibtex
-  :if is-mswindows
   :custom
   (bibtex-completion-bibliography
    (substitute-in-file-name "${BIBINPUTS}/References.bib"))
   ;; Pdf files
   (bibtex-completion-library-path
    (substitute-in-file-name
-    "${HOME}/Dropbox (Inrae EcoPub)/Bibliography/Papers"))
+    "${DROPBOX}/Bibliography/Papers"))
   (bibtex-completion-pdf-symbol "⌘")
   ;; Notes
   (bibtex-completion-notes-path
    (substitute-in-file-name
-    "${HOME}/Dropbox (Inrae EcoPub)/Bibliography/notes"))
+    "${DROPBOX}/Bibliography/notes"))
   (bibtex-completion-notes-symbol "✎")
   (bibtex-completion-watch-bibliography nil)
   :config
@@ -1241,9 +1239,9 @@ same directory as the working and insert a link to this file."
   :config
   (if is-mswindows
       (setq gams-system-directory "C:/GAMS/Last/"
-	    gams-docs-directory "C:/GAMS/Last/docs")
+	          gams-docs-directory "C:/GAMS/Last/docs")
     (setq gams-system-directory "/opt/gams/gamsLast_linux_x64_64_sfx"
-	  gams-docs-directory "/opt/gams/gamsLast_linux_x64_64_sfx/docs"))
+          gams-docs-directory "/opt/gams/gamsLast_linux_x64_64_sfx/docs"))
   :bind (:map gams-mode-map
 	      ("C-c =" . gams-show-identifier-list)))
 
