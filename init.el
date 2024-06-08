@@ -1296,8 +1296,8 @@ same directory as the working and insert a link to this file."
   (defun my-matlab-shell-mode-hook ()
     '())
   (defalias 'my-matlab-three-dots
-    "Add three dots and carriage return."
-   (kmacro "SPC . . . <return>"))
+   (kmacro "SPC . . . <return>")
+   "Add three dots and carriage return.")
   :bind
   (:map matlab-mode-map
 	("C-c C-z" . matlab-show-matlab-shell-buffer)
