@@ -228,6 +228,14 @@
 (use-package expand-region
   :bind ("C-!" . er/expand-region))
 
+(use-package ibuffer-project
+  :hook
+  (ibuffer .
+	   (lambda ()
+	     (setq ibuffer-filter-groups (ibuffer-project-generate-filter-groups))
+	     (unless (eq ibuffer-sorting-mode 'project-file-relative)
+	       (ibuffer-do-sort-by-project-file-relative)))))
+
 (use-package imenu
   :ensure nil
   :custom
