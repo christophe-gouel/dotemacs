@@ -382,11 +382,10 @@ current buffer within the project or the current directory if not in a project."
 (use-package company
   :init
   (add-hook 'after-init-hook 'global-company-mode)
-  :config
-  (setq
-   ;; Number the candidates (use M-1, M-2 etc to select completions).
-   company-show-numbers t
-   company-idle-delay 0)
+  :custom
+  ;; Number the candidates (use M-1, M-2 etc to select completions).
+  (company-show-numbers t)
+  (company-idle-delay 0)
   ;; company configuation from
   ;; <https://github.com/radian-software/radian/blob/develop/emacs/radian.el>
   :bind (;; Replace `completion-at-point' and `complete-symbol' with
@@ -430,22 +429,23 @@ current buffer within the project or the current directory if not in a project."
   ;;         ("M-TAB" . company-manual-begin))
   )
 
-(use-package company-bibtex)
 (use-package company-math
   :custom
   (company-math-allow-latex-symbols-in-faces t)) ; use LaTeX symbols everywhere (avoid unicode symbols to dominate outside LaTeX mode)
+
 (use-package company-reftex)
+
 (use-package company-jedi)
 
 (setq company-backends
       (append
-       '((:separate company-bibtex
-		    ;; deactivate company-reftex-labels because it is too slow
-		    ;; company-reftex-labels
-                    company-reftex-citations
-		    company-math-symbols-latex
-		    company-math-symbols-unicode
-		    company-latex-commands))
+       '((:separate
+	  ;; deactivate company-reftex-labels because it is too slow
+	  ;; company-reftex-labels
+	  company-reftex-citations
+	  company-math-symbols-latex
+	  company-math-symbols-unicode
+	  company-latex-commands))
        company-backends))
 
 (use-package company-box
@@ -620,7 +620,6 @@ current buffer within the project or the current directory if not in a project."
   (citar-notes-paths
    (list (substitute-in-file-name "${DROPBOX}/Bibliography/notes")))
   :hook
-  (LaTeX-mode . citar-capf-setup)
   (org-mode . citar-capf-setup)
   :bind
   (:map org-mode-map :package org ("C-c b" . #'org-cite-insert)))
