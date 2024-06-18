@@ -222,8 +222,13 @@
 
 (use-package compile
   :ensure nil
+  :bind (:map compilation-mode-map ("r" . recompile))
+  :hook
+  ;; Get proper coloring of compile buffers (does not seem to work under Windows, probably because cmd 
+  (compilation-filter . ansi-color-compilation-filter)
   :custom
-  (compilation-scroll-output 'first-error)) ; compilation buffer automatically scrolls and stops at first error
+  ;; compilation buffer automatically scrolls and stops at first error
+  (compilation-scroll-output 'first-error))
 
 (use-package expand-region
   :bind ("C-!" . er/expand-region))
@@ -349,13 +354,6 @@ current buffer within the project or the current directory if not in a project."
 (keymap-global-set "C-x C-b" 'ibuffer)
 (keymap-global-set "C-<apps>" 'menu-bar-mode)
 (keymap-global-set "<f5>" 'revert-buffer)
-
-(use-package compile
-  :ensure nil
-  :bind (:map compilation-mode-map ("r" . recompile))
-  :hook
-  ;; Get proper coloring of compile buffers
-  (compilation-filter . ansi-color-compilation-filter))
 
 (use-package keycast)
 
