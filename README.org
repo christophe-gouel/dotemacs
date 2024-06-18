@@ -563,7 +563,10 @@ Activate lower- and upper-case commands ("C-x C-l" and "C-x C-u")
 
 (use-package compile
   :ensure nil
-  :bind (:map compilation-mode-map ("r" . recompile)))
+  :bind (:map compilation-mode-map ("r" . recompile))
+  :hook
+  ;; Get proper coloring of compile buffers
+  (compilation-filter . ansi-color-compilation-filter))
 #+end_src
 
 ** Keycast
@@ -780,7 +783,6 @@ Add support for a basic syntax highlighting of =.gitignore= files (from [[http:/
 #+end_src
 
 * Shells
-
 ** ChatGPT
 
 #+begin_src emacs-lisp

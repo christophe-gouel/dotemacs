@@ -352,7 +352,10 @@ current buffer within the project or the current directory if not in a project."
 
 (use-package compile
   :ensure nil
-  :bind (:map compilation-mode-map ("r" . recompile)))
+  :bind (:map compilation-mode-map ("r" . recompile))
+  :hook
+  ;; Get proper coloring of compile buffers
+  (compilation-filter . ansi-color-compilation-filter))
 
 (use-package keycast)
 
