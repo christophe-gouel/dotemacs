@@ -224,7 +224,7 @@
   :ensure nil
   :bind (:map compilation-mode-map ("r" . recompile))
   :hook
-  ;; Get proper coloring of compile buffers (does not seem to work under Windows, probably because cmd 
+  ;; Get proper coloring of compile buffers (does not seem to work under Windows, probably because cmd does not support ANSI colors) 
   (compilation-filter . ansi-color-compilation-filter)
   :custom
   ;; compilation buffer automatically scrolls and stops at first error
@@ -1241,10 +1241,10 @@ same directory as the working and insert a link to this file."
      :url "https://github.com/christophe-gouel/quarto-emacs"
      :branch "transient"
      :rev :last-release)))
-(use-package quarto-mode)
-;; (use-package quarto-mode
-;;   :load-path "c:/Users/Gouel/Documents/git_projects/code/quarto-emacs"
-;;   )
+(use-package quarto-mode
+  ;; :load-path "c:/Users/Gouel/Documents/git_projects/code/quarto-emacs"
+  ;; :load-path "/home/gouel/Documents/git_projects/code/quarto-emacs"
+  )
 
 (use-package edit-indirect)
 
