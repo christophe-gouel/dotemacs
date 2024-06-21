@@ -856,6 +856,7 @@ same directory as the working and insert a link to this file."
   (org-refile-targets '((nil :maxlevel . 3)))
   ;; Appareance
   (org-pretty-entities 1) ; equivalent of prettify symbols for org
+  (org-cycle-hide-drawer-startup t)	; fold drawers at startup
   ; remove some prettification for sub- and superscripts because it makes editing difficult
   (org-pretty-entities-include-sub-superscripts nil) 
   (org-hide-emphasis-markers t) ; remove markup markers
@@ -895,7 +896,8 @@ same directory as the working and insert a link to this file."
   :ensure nil
   :custom
   (org-cite-global-bibliography
-   (list (substitute-in-file-name "${BIBINPUTS}/References.bib"))))
+   (list (substitute-in-file-name "${BIBINPUTS}/References.bib")))
+  (org-cite-csl-styles-dir (substitute-in-file-name "${DROPBOX}/Bibliography/csl")))
 
 (use-package org-fragtog
   :hook
