@@ -611,6 +611,13 @@ Activate lower- and upper-case commands ("C-x C-l" and "C-x C-u")
 #+end_src
 
 * Auto-completion
+** Prescient
+
+#+begin_src emacs-lisp
+(use-package prescient
+  :config
+  (prescient-persist-mode))
+#+end_src
 
 ** Company
 
@@ -691,6 +698,12 @@ Use =company-box= for a better position of the autocompletion when using copilot
   :hook (company-mode . company-box-mode)
   :custom
   (company-box-doc-enable nil))
+#+end_src
+
+#+begin_src emacs-lisp
+(use-package company-prescient
+  :config
+  (company-prescient-mode))
 #+end_src
 
 ** Ivy and friends
@@ -811,7 +824,7 @@ Add support for a basic syntax highlighting of =.gitignore= files (from [[http:/
 * Text
 ** BibTeX
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package ivy-bibtex
   :custom
   (bibtex-completion-bibliography
@@ -894,6 +907,11 @@ Add support for a basic syntax highlighting of =.gitignore= files (from [[http:/
    (list (substitute-in-file-name "${DROPBOX}/Bibliography/Papers")))
   (citar-notes-paths
    (list (substitute-in-file-name "${DROPBOX}/Bibliography/notes")))
+  (citar-templates
+   '((main . "${author editor:30%sn}     ${date year issued:4}     ${title:48}")
+     (suffix . "          ${=key= id:7}    ${=type=:12}    ${journal journaltitle}")
+     (preview . "${author editor:%etal} (${year issued date}) ${title}, ${journal journaltitle publisher container-title collection-title}.\n")
+        (note . "Notes on ${author editor:%etal}, ${title}")))
   :hook
   (org-mode . citar-capf-setup)
   :bind
@@ -1134,7 +1152,7 @@ same directory as the working and insert a link to this file."
 
 #+begin_src emacs-lisp
 (use-package org
-  :ensure nil
+  ;; :ensure nil
   :mode ("\\.org\\'" . org-mode)
   :hook
   (org-mode . turn-on-org-cdlatex)
@@ -1536,6 +1554,7 @@ Configuration from [[https://robert.kra.hn/posts/2023-02-22-copilot-emacs-setup/
 	   :files ("dist" "*.el"))
   :custom
   (copilot-indent-warning-suppress t)
+  (copilot-indent-offset-warning-disable t)
   :config
   (defun my-copilot-complete-or-accept ()
     "Command that either triggers a completion or accepts one if

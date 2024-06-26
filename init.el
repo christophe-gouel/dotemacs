@@ -380,6 +380,10 @@ current buffer within the project or the current directory if not in a project."
   ;; On l'active partout, tout le temps
   (which-key-mode t))
 
+(use-package prescient
+  :config
+  (prescient-persist-mode))
+
 (use-package company
   :init
   (add-hook 'after-init-hook 'global-company-mode)
@@ -453,6 +457,10 @@ current buffer within the project or the current directory if not in a project."
   :hook (company-mode . company-box-mode)
   :custom
   (company-box-doc-enable nil))
+
+(use-package company-prescient
+  :config
+  (company-prescient-mode))
 
 (use-package counsel
   :config
@@ -540,33 +548,6 @@ current buffer within the project or the current directory if not in a project."
       (lambda ()
         (face-remap-set-base 'comint-highlight-prompt :inherit nil)))
 
-(use-package ivy-bibtex
-  :custom
-  (bibtex-completion-bibliography
-   (substitute-in-file-name "${BIBINPUTS}/References.bib"))
-  ;; Pdf files
-  (bibtex-completion-library-path
-   (substitute-in-file-name
-    "${DROPBOX}/Bibliography/Papers"))
-  (bibtex-completion-pdf-symbol "⌘")
-  ;; Notes
-  (bibtex-completion-notes-path
-   (substitute-in-file-name
-    "${DROPBOX}/Bibliography/notes"))
-  (bibtex-completion-notes-symbol "✎")
-  (bibtex-completion-watch-bibliography nil)
-  :config
-  ;; Add the option to open in an external viewer
-  (defun my-bibtex-completion-open-pdf-external (keys &optional fallback-action)
-    "Open pdf associated to a BibTeX entry with an external viewer"
-    (let ((bibtex-completion-pdf-open-function
-           (lambda (fpath) (start-process "SumatraPDF" "*ivy-bibtex-sumatrapdf*" "SumatraPDF.exe" fpath))))
-      (bibtex-completion-open-pdf keys fallback-action)))
-  (ivy-bibtex-ivify-action my-bibtex-completion-open-pdf-external ivy-bibtex-open-pdf-external)
-  (ivy-add-actions
-   'ivy-bibtex
-   '(("P" ivy-bibtex-open-pdf-external "Open PDF file in external viewer (if present)"))))
-
 (use-package citar
   :after (org nerd-icons)
   :config
@@ -620,6 +601,11 @@ current buffer within the project or the current directory if not in a project."
    (list (substitute-in-file-name "${DROPBOX}/Bibliography/Papers")))
   (citar-notes-paths
    (list (substitute-in-file-name "${DROPBOX}/Bibliography/notes")))
+  (citar-templates
+   '((main . "${author editor:30%sn}     ${date year issued:4}     ${title:48}")
+     (suffix . "          ${=key= id:7}    ${=type=:12}    ${journal journaltitle}")
+     (preview . "${author editor:%etal} (${year issued date}) ${title}, ${journal journaltitle publisher container-title collection-title}.\n")
+        (note . "Notes on ${author editor:%etal}, ${title}")))
   :hook
   (org-mode . citar-capf-setup)
   :bind
@@ -838,7 +824,7 @@ same directory as the working and insert a link to this file."
   (pandoc-mode . pandoc-load-default-settings))
 
 (use-package org
-  :ensure nil
+  ;; :ensure nil
   :mode ("\\.org\\'" . org-mode)
   :hook
   (org-mode . turn-on-org-cdlatex)
@@ -1162,6 +1148,7 @@ same directory as the working and insert a link to this file."
 	   :files ("dist" "*.el"))
   :custom
   (copilot-indent-warning-suppress t)
+  (copilot-indent-offset-warning-disable t)
   :config
   (defun my-copilot-complete-or-accept ()
     "Command that either triggers a completion or accepts one if
