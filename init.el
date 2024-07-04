@@ -351,6 +351,9 @@ current buffer within the project or the current directory if not in a project."
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
 
+;; Remove a bug appearing on Linux GTK (https://lists.gnu.org/archive/html/bug-gnu-emacs/2021-07/msg00071.html)
+(when (equal window-system 'pgtk)
+  (pgtk-use-im-context nil))
 (keymap-global-set "C-x C-b" 'ibuffer)
 (keymap-global-set "C-<apps>" 'menu-bar-mode)
 (keymap-global-set "C-<menu>" 'menu-bar-mode) ; For Linux

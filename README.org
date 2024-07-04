@@ -562,6 +562,9 @@ Activate lower- and upper-case commands ("C-x C-l" and "C-x C-u")
 ** Custom keybindings
 
 #+begin_src emacs-lisp
+;; Remove a bug appearing on Linux GTK (https://lists.gnu.org/archive/html/bug-gnu-emacs/2021-07/msg00071.html)
+(when (equal window-system 'pgtk)
+  (pgtk-use-im-context nil))
 (keymap-global-set "C-x C-b" 'ibuffer)
 (keymap-global-set "C-<apps>" 'menu-bar-mode)
 (keymap-global-set "C-<menu>" 'menu-bar-mode) ; For Linux
