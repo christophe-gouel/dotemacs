@@ -353,6 +353,7 @@ current buffer within the project or the current directory if not in a project."
 
 (keymap-global-set "C-x C-b" 'ibuffer)
 (keymap-global-set "C-<apps>" 'menu-bar-mode)
+(keymap-global-set "C-<menu>" 'menu-bar-mode) ; For Linux
 (keymap-global-set "<f5>" 'revert-buffer)
 
 (use-package keycast)
@@ -1360,7 +1361,7 @@ same directory as the working and insert a link to this file."
   :after ess)
 
 (use-package gams-mode
-  :load-path "c:/Users/Gouel/Documents/git_projects/code/gams-mode"
+  ;; :load-path "c:/Users/Gouel/Documents/git_projects/code/gams-mode"
   :mode ("\\.gms\\'" "\\.inc\\'")
   ;; I don't know why but despite gams-mode being a prog-mode, it does not load
   ;; automatically some default minor modes for prog-mode.
