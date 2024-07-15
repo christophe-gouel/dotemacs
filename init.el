@@ -338,7 +338,11 @@ current buffer within the project or the current directory if not in a project."
   :after outline
   :bind (:map outline-minor-mode-map
               ([C-tab] . bicycle-cycle)
-              ([S-tab] . bicycle-cycle-global)))
+              ([S-tab] . (lambda ()
+                           (interactive)
+                           (if (derived-mode-p 'org-mode)
+			       (org-cycle-global)
+                             (bicycle-cycle-global))))))
 
 (use-package outline-minor-faces
   :after outline
@@ -830,7 +834,7 @@ same directory as the working and insert a link to this file."
   (pandoc-mode . pandoc-load-default-settings))
 
 (use-package org
-  ;; :ensure nil
+  :ensure nil
   :mode ("\\.org\\'" . org-mode)
   :hook
   (org-mode . turn-on-org-cdlatex)

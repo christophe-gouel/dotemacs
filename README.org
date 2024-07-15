@@ -533,7 +533,11 @@ Use =bicycle= to easily cycle visibility in outline minor mode (à la =orgmode=)
   :after outline
   :bind (:map outline-minor-mode-map
               ([C-tab] . bicycle-cycle)
-              ([S-tab] . bicycle-cycle-global)))
+              ([S-tab] . (lambda ()
+                           (interactive)
+                           (if (derived-mode-p 'org-mode)
+			       (org-cycle-global)
+                             (bicycle-cycle-global))))))
 #+end_src
 
 Use =outline-minor-faces= to use a special face for outline sections.
@@ -1158,7 +1162,7 @@ same directory as the working and insert a link to this file."
 
 #+begin_src emacs-lisp
 (use-package org
-  ;; :ensure nil
+  :ensure nil
   :mode ("\\.org\\'" . org-mode)
   :hook
   (org-mode . turn-on-org-cdlatex)
