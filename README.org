@@ -533,10 +533,11 @@ Use =bicycle= to easily cycle visibility in outline minor mode (à la =orgmode=)
   :after outline
   :bind (:map outline-minor-mode-map
               ([C-tab] . bicycle-cycle)
+	      ;; bicycle-cycle-global should not be used in org-mode, hence this function
               ([S-tab] . (lambda ()
                            (interactive)
                            (if (derived-mode-p 'org-mode)
-			       (org-cycle-global)
+                               (org-cycle-global)
                              (bicycle-cycle-global))))))
 #+end_src
 
