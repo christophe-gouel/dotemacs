@@ -1167,11 +1167,11 @@ same directory as the working and insert a link to this file."
   :mode ("\\.org\\'" . org-mode)
   :hook
   (org-mode . turn-on-org-cdlatex)
-  (org-mode . reftex-mode)
+  ;; (org-mode . reftex-mode)
   ;; No need to save RefTeX info in org
-  (org-mode . (lambda()
-		(make-local-variable 'reftex-save-parse-info)
-		(setq reftex-save-parse-info nil)))
+  ;; (org-mode . (lambda()
+  ;; 		(make-local-variable 'reftex-save-parse-info)
+  ;; 		(setq reftex-save-parse-info nil)))
   :custom
   ;; (org-export-with-LaTeX-fragments t)       ; Export LaTeX fragment to HTML
   (org-edit-src-content-indentation 0)

@@ -338,10 +338,11 @@ current buffer within the project or the current directory if not in a project."
   :after outline
   :bind (:map outline-minor-mode-map
               ([C-tab] . bicycle-cycle)
+	      ;; bicycle-cycle-global should not be used in org-mode, hence this function
               ([S-tab] . (lambda ()
                            (interactive)
                            (if (derived-mode-p 'org-mode)
-			       (org-cycle-global)
+                               (org-cycle-global)
                              (bicycle-cycle-global))))))
 
 (use-package outline-minor-faces
@@ -838,11 +839,11 @@ same directory as the working and insert a link to this file."
   :mode ("\\.org\\'" . org-mode)
   :hook
   (org-mode . turn-on-org-cdlatex)
-  (org-mode . reftex-mode)
+  ;; (org-mode . reftex-mode)
   ;; No need to save RefTeX info in org
-  (org-mode . (lambda()
-		(make-local-variable 'reftex-save-parse-info)
-		(setq reftex-save-parse-info nil)))
+  ;; (org-mode . (lambda()
+  ;; 		(make-local-variable 'reftex-save-parse-info)
+  ;; 		(setq reftex-save-parse-info nil)))
   :custom
   ;; (org-export-with-LaTeX-fragments t)       ; Export LaTeX fragment to HTML
   (org-edit-src-content-indentation 0)
