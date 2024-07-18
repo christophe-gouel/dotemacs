@@ -946,11 +946,11 @@ Add support for a basic syntax highlighting of =.gitignore= files (from [[http:/
   (TeX-mode . latex-math-mode)
   (TeX-mode . turn-on-reftex)
   (TeX-mode . TeX-fold-buffer)
-  (org-mode . TeX-fold-buffer)
+  ;; (org-mode . TeX-fold-buffer)
   ;; (TeX-mode . flymake-mode)
   :hook
   (TeX-mode . TeX-fold-mode)
-  (org-mode . TeX-fold-mode)
+  ;; (org-mode . TeX-fold-mode)
   :custom
   (TeX-auto-save t)
   (TeX-save-query nil) ; don't ask to save the file before compiling
@@ -1195,11 +1195,11 @@ same directory as the working and insert a link to this file."
   :config
   (org-defkey org-cdlatex-mode-map "²" 'cdlatex-math-symbol)
   ;; Font-locking of reference commands in org-mode
-  (font-lock-add-keywords
-   'org-mode
-   '(("\\(\\(?:\\\\\\(?:label\\|ref\\|eqref\\)\\)\\){\\(.+?\\)}"
-      (1 font-lock-keyword-face)
-      (2 font-lock-constant-face))))
+  ;; (font-lock-add-keywords
+  ;;  'org-mode
+  ;;  '(("\\(\\(?:\\\\\\(?:label\\|ref\\|eqref\\)\\)\\){\\(.+?\\)}"
+  ;;     (1 font-lock-keyword-face)
+  ;;     (2 font-lock-constant-face))))
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((emacs-lisp . t)
@@ -1207,7 +1207,8 @@ same directory as the working and insert a link to this file."
      (R . t)
      (shell . t)))
   :bind (:map org-mode-map
-	      ("C-c o" . org-open-at-point)))
+	      ("C-c o" . org-open-at-point)
+	      ("C-c =" . imenu-list)))
 #+end_src
 
 Use =org-appear= for markup markers to appear automatically.
@@ -1226,23 +1227,36 @@ For a modern-looking =org-mode=, use =org-modern=.
     (org-mode . global-org-modern-mode))
 #+end_src
 
-=org-cite= for citations.
-
-#+begin_src emacs-lisp
-(use-package oc
-  :ensure nil
-  :custom
-  (org-cite-global-bibliography
-   (list (substitute-in-file-name "${BIBINPUTS}/References.bib")))
-  (org-cite-csl-styles-dir (substitute-in-file-name "${DROPBOX}/Bibliography/csl")))
-#+end_src
-
 =org-fragtog= for an automatic toggling of LaTeX fragments.
 
 #+begin_src emacs-lisp
 (use-package org-fragtog
   :hook
   (org-mode . org-fragtog-mode))
+#+end_src
+
+*** Bibliographic references and cross-references in org
+
+=org-cite= for citations.
+
+#+begin_src emacs-lisp
+(use-package oc
+  :ensure nil
+  :after org
+  :custom
+  (org-cite-global-bibliography
+   (list (substitute-in-file-name "${BIBINPUTS}/References.bib")))
+  (org-cite-csl-styles-dir (substitute-in-file-name "${DROPBOX}/Bibliography/csl"))
+  :bind (:map org-mode-map ("C-c [" . org-cite-insert)))
+#+end_src
+
+=oxr= to handle cross-references in org using the native org links.
+
+#+begin_src emacs-lisp
+(use-package oxr
+  :after org
+  :vc (:fetcher github :repo bdarcus/oxr)
+  :bind (:map org-mode-map ("C-c ]" . oxr-insert-ref)))
 #+end_src
 
 *** Org export

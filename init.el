@@ -632,11 +632,11 @@ current buffer within the project or the current directory if not in a project."
   (TeX-mode . latex-math-mode)
   (TeX-mode . turn-on-reftex)
   (TeX-mode . TeX-fold-buffer)
-  (org-mode . TeX-fold-buffer)
+  ;; (org-mode . TeX-fold-buffer)
   ;; (TeX-mode . flymake-mode)
   :hook
   (TeX-mode . TeX-fold-mode)
-  (org-mode . TeX-fold-mode)
+  ;; (org-mode . TeX-fold-mode)
   :custom
   (TeX-auto-save t)
   (TeX-save-query nil) ; don't ask to save the file before compiling
@@ -867,11 +867,11 @@ same directory as the working and insert a link to this file."
   :config
   (org-defkey org-cdlatex-mode-map "²" 'cdlatex-math-symbol)
   ;; Font-locking of reference commands in org-mode
-  (font-lock-add-keywords
-   'org-mode
-   '(("\\(\\(?:\\\\\\(?:label\\|ref\\|eqref\\)\\)\\){\\(.+?\\)}"
-      (1 font-lock-keyword-face)
-      (2 font-lock-constant-face))))
+  ;; (font-lock-add-keywords
+  ;;  'org-mode
+  ;;  '(("\\(\\(?:\\\\\\(?:label\\|ref\\|eqref\\)\\)\\){\\(.+?\\)}"
+  ;;     (1 font-lock-keyword-face)
+  ;;     (2 font-lock-constant-face))))
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((emacs-lisp . t)
@@ -879,7 +879,8 @@ same directory as the working and insert a link to this file."
      (R . t)
      (shell . t)))
   :bind (:map org-mode-map
-	      ("C-c o" . org-open-at-point)))
+	      ("C-c o" . org-open-at-point)
+	      ("C-c =" . imenu-list)))
 
 (use-package org-appear
   :hook
@@ -889,16 +890,23 @@ same directory as the working and insert a link to this file."
     :hook
     (org-mode . global-org-modern-mode))
 
-(use-package oc
-  :ensure nil
-  :custom
-  (org-cite-global-bibliography
-   (list (substitute-in-file-name "${BIBINPUTS}/References.bib")))
-  (org-cite-csl-styles-dir (substitute-in-file-name "${DROPBOX}/Bibliography/csl")))
-
 (use-package org-fragtog
   :hook
   (org-mode . org-fragtog-mode))
+
+(use-package oc
+  :ensure nil
+  :after org
+  :custom
+  (org-cite-global-bibliography
+   (list (substitute-in-file-name "${BIBINPUTS}/References.bib")))
+  (org-cite-csl-styles-dir (substitute-in-file-name "${DROPBOX}/Bibliography/csl"))
+  :bind (:map org-mode-map ("C-c [" . org-cite-insert)))
+
+(use-package oxr
+  :after org
+  :vc (:fetcher github :repo bdarcus/oxr)
+  :bind (:map org-mode-map ("C-c ]" . oxr-insert-ref)))
 
 (use-package ox
   :ensure nil
