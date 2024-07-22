@@ -864,6 +864,7 @@ same directory as the working and insert a link to this file."
   (org-startup-with-latex-preview t)
   (org-cycle-inline-images-display t)
   (org-imenu-depth 4)
+  (org-blank-before-new-entry '((heading . auto) (plain-list-item . nil))) ; Control the insertion of blank line after M-Ret
   :config
   (org-defkey org-cdlatex-mode-map "²" 'cdlatex-math-symbol)
   ;; Font-locking of reference commands in org-mode
@@ -1379,8 +1380,7 @@ same directory as the working and insert a link to this file."
   :after ess)
 
 (use-package gams-mode
-  ;; :load-path "c:/Users/Gouel/Documents/git_projects/code/gams-mode"
-  :mode ("\\.gms\\'" "\\.inc\\'")
+  :load-path "c:/Users/Gouel/Documents/git_projects/code/gams-mode"
   ;; I don't know why but despite gams-mode being a prog-mode, it does not load
   ;; automatically some default minor modes for prog-mode.
   :hook
@@ -1388,16 +1388,16 @@ same directory as the working and insert a link to this file."
   (gams-mode . smartparens-mode)
   (gams-mode . display-fill-column-indicator-mode)
   (gams-mode . (lambda ()
-		 (make-local-variable 'company-minimum-prefix-length)
-		 (setq company-minimum-prefix-length 1)))
- (gams-mode . (lambda ()
-               (outline-minor-mode)
-               (setq outline-regexp "^\*+ +.*----")
-	       (defun outline-level ()
-		 (save-excursion
-		   (looking-at outline-regexp)
-		   (let ((match (match-string 0)))
-		     (- (length match) (length (replace-regexp-in-string "\*" "" match))))))))
+                 (make-local-variable 'company-minimum-prefix-length)
+                 (setq company-minimum-prefix-length 1)))
+  (gams-mode . (lambda ()
+                 (outline-minor-mode)
+                 (setq outline-regexp "^\*+ +.*----")
+               (defun outline-level ()
+                 (save-excursion
+                   (looking-at outline-regexp)
+                   (let ((match (match-string 0)))
+                     (- (length match) (length (replace-regexp-in-string "\*" "" match))))))))
   :custom
   (gams-process-command-option "ll=0 lo=3 pw=153 ps=9999")
   (gams-statement-upcase t)
@@ -1419,34 +1419,17 @@ same directory as the working and insert a link to this file."
   :config
   (if is-mswindows
       (setq gams-system-directory "C:/GAMS/Last/"
-	          gams-docs-directory "C:/GAMS/Last/docs")
+                  gams-docs-directory "C:/GAMS/Last/docs")
     (setq gams-system-directory "/opt/gams/gamsLast_linux_x64_64_sfx"
           gams-docs-directory "/opt/gams/gamsLast_linux_x64_64_sfx/docs"))
   :bind (:map gams-mode-map
-	      ("C-c =" . gams-show-identifier-list)))
+              ("C-c =" . gams-show-identifier-list)))
 
-; Polymode for gams
-(define-hostmode poly-gams-hostmode
-  :mode 'gams-mode)
-
-(define-innermode poly-gams-yaml-innermode
-  :mode 'yaml-mode
-  :head-matcher ".?o?n?embeddedcode.* connect:$"
-  :tail-matcher ".*embeddedcode.*$"
-  :head-mode 'host
-  :tail-mode 'host)
-
-(define-innermode poly-gams-python-innermode
-  :mode 'python-mode
-  :head-matcher ".?o?n?embeddedcode.* python:$"
-  :tail-matcher ".*embeddedcode.*$"
-  :head-mode 'host
-  :tail-mode 'host)
-
-(define-polymode poly-gams-mode
-  :hostmode 'poly-gams-hostmode
-  :innermodes '(poly-gams-yaml-innermode
-		poly-gams-python-innermode))
+(use-package poly-gams
+  :vc (:fetcher github :repo ShiroTakeda/poly-gams)
+  ;; :load-path "c:/Users/Gouel/Documents/git_projects/code/gams-mode"
+  :mode (("\\.inc\\'" . poly-gams-mode)
+         ("\\.gms\\'" . poly-gams-mode)))
 
 (use-package julia-mode)
 
