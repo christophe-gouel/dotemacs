@@ -336,14 +336,18 @@ current buffer within the project or the current directory if not in a project."
 
 (use-package bicycle
   :after outline
+  :config
+  ;; bicycle-cycle-global should not be used in org-mode, hence this function
+  (defun my-bibycle-cycle-global ()
+    (interactive)
+    (if (derived-mode-p 'org-mode)
+        (org-cycle-global)
+      (bicycle-cycle-global)))
   :bind (:map outline-minor-mode-map
               ([C-tab] . bicycle-cycle)
-	      ;; bicycle-cycle-global should not be used in org-mode, hence this function
-              ([S-tab] . (lambda ()
-                           (interactive)
-                           (if (derived-mode-p 'org-mode)
-                               (org-cycle-global)
-                             (bicycle-cycle-global))))))
+              ([S-tab] . my-bibycle-cycle-global)
+              ([backtab] . my-bibycle-cycle-global)
+	      ))
 
 (use-package outline-minor-faces
   :after outline
@@ -358,9 +362,9 @@ current buffer within the project or the current directory if not in a project."
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
 
-;; Remove a bug appearing on Linux GTK (https://lists.gnu.org/archive/html/bug-gnu-emacs/2021-07/msg00071.html)
+;; Remove a bug appearing on Linux GTK and preventing the use of S-space (https://lists.gnu.org/archive/html/bug-gnu-emacs/2021-07/msg00071.html)
 (when (equal window-system 'pgtk)
-  (pgtk-use-im-context nil))
+  (setq pgtk-use-im-context-on-new-connection nil))
 (keymap-global-set "C-x C-b" 'ibuffer)
 (keymap-global-set "C-<apps>" 'menu-bar-mode)
 (keymap-global-set "C-<menu>" 'menu-bar-mode) ; For Linux
