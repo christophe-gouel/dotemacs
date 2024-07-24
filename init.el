@@ -209,16 +209,12 @@
   (dired-listing-switches "-agho --group-directories-first")
   :hook
   (dired-mode . (lambda ()
-		  (dired-hide-details-mode)))
+                  (dired-hide-details-mode)))
   (dired-mode . auto-revert-mode))
 
 (use-package diredfl
   :hook
   (dired-mode . diredfl-mode))
-
-;; (use-package async
-;;   :custom
-;;   (dired-async-mode 1))
 
 (use-package compile
   :ensure nil
@@ -256,7 +252,7 @@
   :bind
   (("C-c =" . imenu-list-smart-toggle)
    :map imenu-list-major-mode-map
-	 ("M-<return>" . my-imenu-list-goto-entry))
+   ("M-<return>" . my-imenu-list-goto-entry))
   :custom
   (imenu-list-focus-after-activation t)
   (imenu-list-position 'right))
@@ -264,10 +260,6 @@
 (use-package flimenu
   :config
   (flimenu-global-mode))
-
-(use-package imenu-anywhere
-  :bind
-  ("M-g M-i" . ivy-imenu-anywhere))
 
 (use-package doc-view
   :custom
@@ -326,7 +318,6 @@ current buffer within the project or the current directory if not in a project."
 (use-package outline
   :ensure nil
   :custom
-
   (outline-minor-mode-use-buttons 'in-margins) ; add in-margin buttons to fold/unfold
   :config
   (unbind-key "RET" outline-overlay-button-map)
@@ -389,7 +380,7 @@ current buffer within the project or the current directory if not in a project."
   :diminish which-key-mode
   :init
   (setq which-key-sort-uppercase-first nil
-		max-mini-window-height 15)
+        max-mini-window-height 15)
   ;; On va utiliser une fenêtre dédiée plutôt que le minibuffer
   (which-key-setup-side-window-bottom)
   ;; On l'active partout, tout le temps
@@ -636,11 +627,8 @@ current buffer within the project or the current directory if not in a project."
   (TeX-mode . latex-math-mode)
   (TeX-mode . turn-on-reftex)
   (TeX-mode . TeX-fold-buffer)
-  ;; (org-mode . TeX-fold-buffer)
-  ;; (TeX-mode . flymake-mode)
   :hook
   (TeX-mode . TeX-fold-mode)
-  ;; (org-mode . TeX-fold-mode)
   :custom
   (TeX-auto-save t)
   (TeX-save-query nil) ; don't ask to save the file before compiling
@@ -702,7 +690,7 @@ textsc" "textup"))))
   (LaTeX-fold-math-spec-list nil)
   :config
   (setq-default TeX-auto-parse-length 200
-		TeX-master nil)
+                TeX-master nil)
 
   (defun my-tex-compile ()
     "Save and compile TeX document"
@@ -750,8 +738,7 @@ textsc" "textup"))))
   :config
   ;; Prevent cdlatex from defining LaTeX math subscript everywhere
   (define-key cdlatex-mode-map "_" nil)
-  ;; Allow tab to be used to indent when the cursor is at the beginning of the
-  ;; line
+  ;; Allow tab to be used to indent when the cursor is at the beginning of the line
   (defun my-cdlatex-indent-maybe ()
     "Indent in TeX when CDLaTeX is active"
     (when (or (bolp) (looking-back "^[ \t]+"))
@@ -843,11 +830,6 @@ same directory as the working and insert a link to this file."
   :mode ("\\.org\\'" . org-mode)
   :hook
   (org-mode . turn-on-org-cdlatex)
-  ;; (org-mode . reftex-mode)
-  ;; No need to save RefTeX info in org
-  ;; (org-mode . (lambda()
-  ;; 		(make-local-variable 'reftex-save-parse-info)
-  ;; 		(setq reftex-save-parse-info nil)))
   :custom
   ;; (org-export-with-LaTeX-fragments t)       ; Export LaTeX fragment to HTML
   (org-edit-src-content-indentation 0)
@@ -871,12 +853,6 @@ same directory as the working and insert a link to this file."
   (org-blank-before-new-entry '((heading . auto) (plain-list-item . nil))) ; Control the insertion of blank line after M-Ret
   :config
   (org-defkey org-cdlatex-mode-map "²" 'cdlatex-math-symbol)
-  ;; Font-locking of reference commands in org-mode
-  ;; (font-lock-add-keywords
-  ;;  'org-mode
-  ;;  '(("\\(\\(?:\\\\\\(?:label\\|ref\\|eqref\\)\\)\\){\\(.+?\\)}"
-  ;;     (1 font-lock-keyword-face)
-  ;;     (2 font-lock-constant-face))))
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((emacs-lisp . t)
@@ -892,8 +868,8 @@ same directory as the working and insert a link to this file."
   (org-mode . org-appear-mode))
 
 (use-package org-modern
-    :hook
-    (org-mode . global-org-modern-mode))
+  :hook
+  (org-mode . global-org-modern-mode))
 
 (use-package org-fragtog
   :hook
@@ -1167,9 +1143,9 @@ same directory as the working and insert a link to this file."
 (use-package copilot
   :quelpa (copilot
 	   :fetcher github
-	   :repo "zerolfx/copilot.el"
+	   :repo "copilot-emacs/copilot.el"
 	   :branch "main"
-	   :files ("dist" "*.el"))
+	   :files ("*.el"))
   :custom
   (copilot-indent-warning-suppress t)
   (copilot-indent-offset-warning-disable t)
