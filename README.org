@@ -43,23 +43,6 @@ To keep GPG keys up to date
 (use-package gnu-elpa-keyring-update)
 #+end_src
 
-Quelpa
-#+begin_src emacs-lisp
-(use-package quelpa
-  :custom
-  (quelpa-update-melpa-p nil)) ; Prevent update at all startup
-
-(use-package quelpa-use-package)
-#+end_src
-
-=vc-use-package= is integrated in emacs 30 so this part can be removed when upgrading.
-
-#+begin_src emacs-lisp
-(unless (package-installed-p 'vc-use-package)
-  (package-vc-install "https://github.com/slotThe/vc-use-package"))
-(require 'vc-use-package)
-#+end_src
-
 * Emacs startup
 
 #+begin_src emacs-lisp
@@ -1491,11 +1474,7 @@ Prevent =eldoc= from showing the function doc in the minibuffer when the cursor 
 Configuration from [[https://robert.kra.hn/posts/2023-02-22-copilot-emacs-setup/]].
 #+begin_src emacs-lisp
 (use-package copilot
-  :quelpa (copilot
-	   :fetcher github
-	   :repo "copilot-emacs/copilot.el"
-	   :branch "main"
-	   :files ("*.el"))
+  :vc (:fetcher github :repo copilot-emacs/copilot.el)
   :custom
   (copilot-indent-warning-suppress t)
   (copilot-indent-offset-warning-disable t)

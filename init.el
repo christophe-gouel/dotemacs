@@ -23,16 +23,6 @@
 
 (use-package gnu-elpa-keyring-update)
 
-(use-package quelpa
-  :custom
-  (quelpa-update-melpa-p nil)) ; Prevent update at all startup
-
-(use-package quelpa-use-package)
-
-(unless (package-installed-p 'vc-use-package)
-  (package-vc-install "https://github.com/slotThe/vc-use-package"))
-(require 'vc-use-package)
-
 (use-package dashboard
   :custom
   (dashboard-projects-switch-function 'project-switch-project)
@@ -1141,11 +1131,7 @@ same directory as the working and insert a link to this file."
 (setq eldoc-echo-area-use-multiline-p nil)
 
 (use-package copilot
-  :quelpa (copilot
-	   :fetcher github
-	   :repo "copilot-emacs/copilot.el"
-	   :branch "main"
-	   :files ("*.el"))
+  :vc (:fetcher github :repo copilot-emacs/copilot.el)
   :custom
   (copilot-indent-warning-suppress t)
   (copilot-indent-offset-warning-disable t)
