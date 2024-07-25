@@ -521,9 +521,8 @@ current buffer within the project or the current directory if not in a project."
   (dired-mode . diff-hl-dired-mode)
   (magit-post-refresh . diff-hl-magit-post-refresh))
 
-(use-package generic-x
-  :ensure nil
-  :mode ("\\..*ignore$" . hosts-generic-mode))
+(use-package git-modes
+  :mode ("/.dockerignore\\'" . gitignore-mode)) ; works also with other ignore files
 
 (use-package chatgpt-shell
   :custom
@@ -1195,7 +1194,7 @@ same directory as the working and insert a link to this file."
   :ensure nil
   :custom
   ;; Prevent eglot from reformatting code automatically
- '(eglot-ignored-server-capabilities
+  (eglot-ignored-server-capabilities
    '(:documentFormattingProvider
      :documentRangeFormattingProvider
      :documentOnTypeFormattingProvider))
