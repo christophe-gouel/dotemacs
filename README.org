@@ -38,8 +38,8 @@
   (use-package-always-ensure t))
 #+end_src
 
-To keep GPG keys up to date
-#+begin_src emacs-lisp
+To keep GPG keys up to date (let's try to remove it temporarily to check if we really need it)
+#+begin_src emacs-lisp :tangle no
 (use-package gnu-elpa-keyring-update)
 #+end_src
 

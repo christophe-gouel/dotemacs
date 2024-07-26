@@ -21,8 +21,6 @@
   ;; Always download packages if not available
   (use-package-always-ensure t))
 
-(use-package gnu-elpa-keyring-update)
-
 (use-package dashboard
   :custom
   (dashboard-projects-switch-function 'project-switch-project)
