@@ -385,7 +385,7 @@ current buffer within the project or the current directory if not in a project."
   ;; Number the candidates (use M-1, M-2 etc to select completions).
   (company-show-numbers t)
   (company-idle-delay 0)
-  ;; company configuation from
+  ;; company configuration from
   ;; <https://github.com/radian-software/radian/blob/develop/emacs/radian.el>
   :bind (;; Replace `completion-at-point' and `complete-symbol' with
          ;; `company-manual-begin'. You might think this could be put
@@ -1214,8 +1214,7 @@ same directory as the working and insert a link to this file."
      :branch "transient"
      :rev :last-release)))
 (use-package quarto-mode
-  ;; :load-path "c:/Users/Gouel/Documents/git_projects/code/quarto-emacs"
-  ;; :load-path "/home/gouel/Documents/git_projects/code/quarto-emacs"
+  ;; :load-path "~/Documents/git_projects/code/quarto-emacs"
   )
 
 (use-package edit-indirect)
@@ -1240,7 +1239,11 @@ same directory as the working and insert a link to this file."
 (use-package ess
   :init
   (require 'ess-site)
-  :mode ("renv.lock" . js-json-mode)
+  :mode
+  ("renv.lock"   . js-json-mode)
+  (".Rhistory"   . ess-r-mode)
+  (".lintr"      . conf-mode)
+  ("\\.Rproj\\'" . conf-mode)
   :bind (:map ess-r-mode-map
 	      ;; Shortcut for pipe |>
         ("C-S-m"   . " |>")
@@ -1343,7 +1346,7 @@ same directory as the working and insert a link to this file."
   :after ess)
 
 (use-package gams-mode
-  :load-path "c:/Users/Gouel/Documents/git_projects/code/gams-mode"
+  :load-path "~/Documents/git_projects/code/gams-mode"
   ;; I don't know why but despite gams-mode being a prog-mode, it does not load
   ;; automatically some default minor modes for prog-mode.
   :hook
@@ -1389,8 +1392,8 @@ same directory as the working and insert a link to this file."
               ("C-c =" . gams-show-identifier-list)))
 
 (use-package poly-gams
-  :vc (:fetcher github :repo ShiroTakeda/poly-gams)
-  ;; :load-path "c:/Users/Gouel/Documents/git_projects/code/gams-mode"
+  ;; :vc (:fetcher github :repo ShiroTakeda/poly-gams)
+  :load-path "~/Documents/git_projects/code/poly-gams"
   :mode (("\\.inc\\'" . poly-gams-mode)
          ("\\.gms\\'" . poly-gams-mode)))
 
