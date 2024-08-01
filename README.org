@@ -1099,6 +1099,7 @@ same directory as the working and insert a link to this file."
   (org-cycle-inline-images-display t)
   (org-imenu-depth 4)
   (org-blank-before-new-entry '((heading . auto) (plain-list-item . nil))) ; Control the insertion of blank line after M-Ret
+  (org-fold-core-style 'overlays) ; Slower folding style to prevent some bugs when unfolding
   :config
   (org-defkey org-cdlatex-mode-map "²" 'cdlatex-math-symbol)
   (org-babel-do-load-languages
