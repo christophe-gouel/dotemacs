@@ -690,6 +690,7 @@ Use =company-box= for a better position of the autocompletion when using copilot
     :update-fn 'auto))
 
 (use-package swiper
+  :bind ("C-s" . my-search-method-according-to-numlines)
   :config
   ;; swiper is slow for large files so it is replaced by isearch for large files
   (defun my-search-method-according-to-numlines ()
@@ -698,8 +699,7 @@ Use =company-box= for a better position of the autocompletion when using copilot
     (interactive)
     (if (< (count-lines (point-min) (point-max)) 20000)
 	(swiper)
-      (isearch-forward)))
-  :bind ("C-s" . my-search-method-according-to-numlines))
+      (isearch-forward))))
 
 (use-package ivy-xref
   :init
@@ -763,11 +763,13 @@ Support for syntax highlighting of Git configuration files
 
 #+begin_src emacs-lisp
 (use-package chatgpt-shell
+  :defer t
   :custom
   (chatgpt-shell-openai-key
       (auth-source-pick-first-password :host "api.openai.com")))
 
 (use-package gptel
+  :defer t
   :custom
   (gptel-use-curl nil)
   :config
@@ -778,6 +780,7 @@ Support for syntax highlighting of Git configuration files
 
 #+begin_src emacs-lisp
 (use-package eshell-git-prompt
+  :defer t
   :config
   (eshell-git-prompt-use-theme 'powerline))
 
@@ -792,6 +795,10 @@ Support for syntax highlighting of Git configuration files
 #+begin_src emacs-lisp
 (use-package citar
   :after (org nerd-icons)
+    :hook
+  (org-mode . citar-capf-setup)
+  :bind
+  (:map org-mode-map :package org ("C-c b" . #'org-cite-insert))
   :config
   ;; Configuration to use nerd-icons in citar
   (defvar citar-indicator-files-icons
@@ -847,11 +854,7 @@ Support for syntax highlighting of Git configuration files
    '((main . "${author editor:30%sn}     ${date year issued:4}     ${title:48}")
      (suffix . "          ${=key= id:7}    ${=type=:12}    ${journal journaltitle}")
      (preview . "${author editor:%etal} (${year issued date}) ${title}, ${journal journaltitle publisher container-title collection-title}.\n")
-        (note . "Notes on ${author editor:%etal}, ${title}")))
-  :hook
-  (org-mode . citar-capf-setup)
-  :bind
-  (:map org-mode-map :package org ("C-c b" . #'org-cite-insert)))
+        (note . "Notes on ${author editor:%etal}, ${title}"))))
 #+end_src
 
 ** csv files
@@ -866,6 +869,7 @@ Support for syntax highlighting of Git configuration files
 
 #+begin_src emacs-lisp
 (use-package tex
+  :defer t
   :ensure auctex
   :hook
   (TeX-mode . latex-math-mode)
@@ -965,6 +969,9 @@ textsc" "textup"))))
 
 #+begin_src emacs-lisp
 (use-package reftex
+  :bind (:map reftex-mode-map
+	      ("C-c f" . reftex-fancyref-fref)
+	      ("C-c F" . reftex-fancyref-Fref))
   :custom
   (reftex-bibpath-environment-variables (quote ("BIBINPUTS")))
   (reftex-default-bibliography '("References.bib"))
@@ -975,16 +982,18 @@ textsc" "textup"))))
   ;; Increase reftex speed (especially on Windows)
   (reftex-enable-partial-scans t)
   (reftex-save-parse-info t)
-  (reftex-use-multiple-selection-buffers t)
-  :bind (:map reftex-mode-map
-	      ("C-c f" . reftex-fancyref-fref)
-	      ("C-c F" . reftex-fancyref-Fref)))
+  (reftex-use-multiple-selection-buffers t))
 #+end_src
 
 =CDLatex= for super fast input of TeX mathematical expressions.
 
 #+begin_src emacs-lisp
 (use-package cdlatex
+  :hook
+  (LaTeX-mode . turn-on-cdlatex)
+  (LaTeX-mode . my-slow-company)
+  (org-mode . my-slow-company)
+  (cdlatex-tab . my-cdlatex-indent-maybe)
   :config
   ;; Prevent cdlatex from defining LaTeX math subscript everywhere
   (define-key cdlatex-mode-map "_" nil)
@@ -1002,12 +1011,7 @@ textsc" "textup"))))
    '(("equ*" "Insert equation* env"   "" cdlatex-environment ("equation*") t nil)
      ("frd" "Insert \\frac{\\partial }{\\partial }" "\\frac{\\partial ?}{\\partial }" cdlatex-position-cursor nil nil t)
      ("su" "Insert \\sum" "\\sum?" cdlatex-position-cursor nil nil t)))
-  (cdlatex-math-symbol-prefix ?\262) ; correspond to key "²"
-  :hook
-  (LaTeX-mode . turn-on-cdlatex)
-  (LaTeX-mode . my-slow-company)
-  (org-mode . my-slow-company)
-  (cdlatex-tab . my-cdlatex-indent-maybe))
+  (cdlatex-math-symbol-prefix ?\262)) ; correspond to key "²"
 #+end_src
 
 ** Markdown
@@ -1176,6 +1180,7 @@ For a modern-looking =org-mode=, use =org-modern=.
 #+begin_src emacs-lisp
 (use-package ox
   :ensure nil
+  :defer t
   :custom
   (org-odt-preferred-output-format "docx")) ; require soffice to be on the PATH
 #+end_src
@@ -1184,6 +1189,7 @@ For a modern-looking =org-mode=, use =org-modern=.
 
 #+begin_src emacs-lisp
 (use-package ox-reveal
+  :defer t
   :ensure htmlize) ; required for the fontification of code blocks
 #+end_src
 
@@ -1315,8 +1321,6 @@ Use built-in =flymake= for linting but need to install =flycheck= to access a ch
   :custom
   (flymake-no-changes-timeout nil)
   :config
-  ;; Deactivate linter in ess because it does not seem to work well
-  (setq ess-use-flymake nil)
   (remove-hook 'flymake-diagnostic-functions 'flymake-proc-legacy-flymake)
 
 ;; (require 'json)
@@ -1454,6 +1458,7 @@ Use built-in =flymake= for linting but need to install =flycheck= to access a ch
 
 #+begin_src emacs-lisp
 (use-package format-all
+  :defer t
   :config
   (setq-default
    format-all-formatters
@@ -1578,13 +1583,15 @@ Configuration from [[https://robert.kra.hn/posts/2023-02-22-copilot-emacs-setup/
      :branch "transient"
      :rev :last-release)))
 (use-package quarto-mode
+  :defer t
   ;; :load-path "~/Documents/git_projects/code/quarto-emacs"
   )
 #+end_src
 
 Package =edit-indirect= required to edit code blocks in indirect buffers in =markdown-mode=
 #+begin_src emacs-lisp
-(use-package edit-indirect)
+(use-package edit-indirect
+  :defer t)
 #+end_src
 
 *** Snippets
@@ -1611,7 +1618,8 @@ Use "C-TAB" for moving to next field to avoid conflict with autocompletion.
   :hook (ess-r-mode . tree-sitter-ess-r-mode-activate))
 
 (use-package ts-fold
-    :vc (:fetcher github :repo emacs-tree-sitter/ts-fold))
+  :vc (:fetcher github :repo emacs-tree-sitter/ts-fold)
+  :defer t)
 #+end_src
 
 ** Programming languages
@@ -1641,6 +1649,8 @@ Use "C-TAB" for moving to next field to avoid conflict with autocompletion.
 	      :map inferior-ess-mode-map
 	      ("<home>" . comint-bol))
   :custom
+  ;; Deactivate linter in ess because it does not seem to work well
+  (ess-use-flymake nil)
   (ess-roxy-str "#'")
   (ess-roxy-template-alist
    '(("description" . ".. content for \\description{} (no empty lines) ..")
@@ -1855,11 +1865,13 @@ To interact easily with renv
 
 (use-package conda
   :if is-mswindows
+  :defer t
   :config
   (setq-default mode-line-format
 		(cons '(:exec conda-env-current-name) mode-line-format)))
 
-(use-package poetry)
+(use-package poetry
+  :defer t)
 
 (use-package pyvenv
   :custom
@@ -1883,7 +1895,8 @@ To interact easily with renv
 *** Stata
 
 #+begin_src emacs-lisp
-(use-package ado-mode)
+(use-package ado-mode
+  :defer t)
 #+end_src
 
 * Epilogue

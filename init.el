@@ -477,6 +477,7 @@ current buffer within the project or the current directory if not in a project."
     :update-fn 'auto))
 
 (use-package swiper
+  :bind ("C-s" . my-search-method-according-to-numlines)
   :config
   ;; swiper is slow for large files so it is replaced by isearch for large files
   (defun my-search-method-according-to-numlines ()
@@ -485,8 +486,7 @@ current buffer within the project or the current directory if not in a project."
     (interactive)
     (if (< (count-lines (point-min) (point-max)) 20000)
 	(swiper)
-      (isearch-forward)))
-  :bind ("C-s" . my-search-method-according-to-numlines))
+      (isearch-forward))))
 
 (use-package ivy-xref
   :init
@@ -529,17 +529,20 @@ current buffer within the project or the current directory if not in a project."
   :mode ("/.dockerignore\\'" . gitignore-mode)) ; works also with other ignore files
 
 (use-package chatgpt-shell
+  :defer t
   :custom
   (chatgpt-shell-openai-key
       (auth-source-pick-first-password :host "api.openai.com")))
 
 (use-package gptel
+  :defer t
   :custom
   (gptel-use-curl nil)
   :config
   (add-to-list 'gptel-directives '(academic . "You are an editor specialized in academic paper in economics. You are here to help me generate the best text for my academic articles. I will provide you texts and I would like you to review them for any spelling, grammar, or punctuation errors. Do not stop at simple proofreading, if it is useful, propose to refine the content's structure, style, and clarity. Once you have finished editing the text, provide me with any necessary corrections or suggestions for improving the text.")))
 
 (use-package eshell-git-prompt
+  :defer t
   :config
   (eshell-git-prompt-use-theme 'powerline))
 
@@ -549,6 +552,10 @@ current buffer within the project or the current directory if not in a project."
 
 (use-package citar
   :after (org nerd-icons)
+    :hook
+  (org-mode . citar-capf-setup)
+  :bind
+  (:map org-mode-map :package org ("C-c b" . #'org-cite-insert))
   :config
   ;; Configuration to use nerd-icons in citar
   (defvar citar-indicator-files-icons
@@ -604,17 +611,14 @@ current buffer within the project or the current directory if not in a project."
    '((main . "${author editor:30%sn}     ${date year issued:4}     ${title:48}")
      (suffix . "          ${=key= id:7}    ${=type=:12}    ${journal journaltitle}")
      (preview . "${author editor:%etal} (${year issued date}) ${title}, ${journal journaltitle publisher container-title collection-title}.\n")
-        (note . "Notes on ${author editor:%etal}, ${title}")))
-  :hook
-  (org-mode . citar-capf-setup)
-  :bind
-  (:map org-mode-map :package org ("C-c b" . #'org-cite-insert)))
+        (note . "Notes on ${author editor:%etal}, ${title}"))))
 
 (use-package csv-mode
   :hook
   (csv-mode . csv-guess-set-separator))
 
 (use-package tex
+  :defer t
   :ensure auctex
   :hook
   (TeX-mode . latex-math-mode)
@@ -712,6 +716,9 @@ textsc" "textup"))))
 	("<f9>" . my-tex-compile)))
 
 (use-package reftex
+  :bind (:map reftex-mode-map
+	      ("C-c f" . reftex-fancyref-fref)
+	      ("C-c F" . reftex-fancyref-Fref))
   :custom
   (reftex-bibpath-environment-variables (quote ("BIBINPUTS")))
   (reftex-default-bibliography '("References.bib"))
@@ -722,12 +729,14 @@ textsc" "textup"))))
   ;; Increase reftex speed (especially on Windows)
   (reftex-enable-partial-scans t)
   (reftex-save-parse-info t)
-  (reftex-use-multiple-selection-buffers t)
-  :bind (:map reftex-mode-map
-	      ("C-c f" . reftex-fancyref-fref)
-	      ("C-c F" . reftex-fancyref-Fref)))
+  (reftex-use-multiple-selection-buffers t))
 
 (use-package cdlatex
+  :hook
+  (LaTeX-mode . turn-on-cdlatex)
+  (LaTeX-mode . my-slow-company)
+  (org-mode . my-slow-company)
+  (cdlatex-tab . my-cdlatex-indent-maybe)
   :config
   ;; Prevent cdlatex from defining LaTeX math subscript everywhere
   (define-key cdlatex-mode-map "_" nil)
@@ -745,12 +754,7 @@ textsc" "textup"))))
    '(("equ*" "Insert equation* env"   "" cdlatex-environment ("equation*") t nil)
      ("frd" "Insert \\frac{\\partial }{\\partial }" "\\frac{\\partial ?}{\\partial }" cdlatex-position-cursor nil nil t)
      ("su" "Insert \\sum" "\\sum?" cdlatex-position-cursor nil nil t)))
-  (cdlatex-math-symbol-prefix ?\262) ; correspond to key "²"
-  :hook
-  (LaTeX-mode . turn-on-cdlatex)
-  (LaTeX-mode . my-slow-company)
-  (org-mode . my-slow-company)
-  (cdlatex-tab . my-cdlatex-indent-maybe))
+  (cdlatex-math-symbol-prefix ?\262)) ; correspond to key "²"
 
 (use-package markdown-mode
   :mode ("README\\.md\\'" . gfm-mode)
@@ -885,10 +889,12 @@ same directory as the working and insert a link to this file."
 
 (use-package ox
   :ensure nil
+  :defer t
   :custom
   (org-odt-preferred-output-format "docx")) ; require soffice to be on the PATH
 
 (use-package ox-reveal
+  :defer t
   :ensure htmlize) ; required for the fontification of code blocks
 
 (use-package texfrag
@@ -986,8 +992,6 @@ same directory as the working and insert a link to this file."
   :custom
   (flymake-no-changes-timeout nil)
   :config
-  ;; Deactivate linter in ess because it does not seem to work well
-  (setq ess-use-flymake nil)
   (remove-hook 'flymake-diagnostic-functions 'flymake-proc-legacy-flymake)
 
 ;; (require 'json)
@@ -1121,6 +1125,7 @@ same directory as the working and insert a link to this file."
 ;;   (flymake-mode . flymake-flycheck-auto))
 
 (use-package format-all
+  :defer t
   :config
   (setq-default
    format-all-formatters
@@ -1221,10 +1226,12 @@ same directory as the working and insert a link to this file."
      :branch "transient"
      :rev :last-release)))
 (use-package quarto-mode
+  :defer t
   ;; :load-path "~/Documents/git_projects/code/quarto-emacs"
   )
 
-(use-package edit-indirect)
+(use-package edit-indirect
+  :defer t)
 
 (use-package yasnippet
   :custom
@@ -1241,7 +1248,8 @@ same directory as the working and insert a link to this file."
   :hook (ess-r-mode . tree-sitter-ess-r-mode-activate))
 
 (use-package ts-fold
-    :vc (:fetcher github :repo emacs-tree-sitter/ts-fold))
+  :vc (:fetcher github :repo emacs-tree-sitter/ts-fold)
+  :defer t)
 
 (use-package ess
   :init
@@ -1266,6 +1274,8 @@ same directory as the working and insert a link to this file."
 	      :map inferior-ess-mode-map
 	      ("<home>" . comint-bol))
   :custom
+  ;; Deactivate linter in ess because it does not seem to work well
+  (ess-use-flymake nil)
   (ess-roxy-str "#'")
   (ess-roxy-template-alist
    '(("description" . ".. content for \\description{} (no empty lines) ..")
@@ -1459,11 +1469,13 @@ same directory as the working and insert a link to this file."
 
 (use-package conda
   :if is-mswindows
+  :defer t
   :config
   (setq-default mode-line-format
 		(cons '(:exec conda-env-current-name) mode-line-format)))
 
-(use-package poetry)
+(use-package poetry
+  :defer t)
 
 (use-package pyvenv
   :custom
@@ -1483,7 +1495,8 @@ same directory as the working and insert a link to this file."
   :bind (:map python-mode-map
               ("C-c C-n" . numpydoc-generate)))
 
-(use-package ado-mode)
+(use-package ado-mode
+  :defer t)
 
 (setq custom-file (concat user-emacs-directory "custom.el"))
 (when (file-exists-p custom-file)
