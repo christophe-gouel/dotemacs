@@ -60,7 +60,8 @@
   ;;   Additional font for some unicode characters missing in prettify symbols
   (set-fontset-font t 'unicode (font-spec :name "XITS Math") nil 'prepend))
 
-(use-package rainbow-mode)
+(use-package rainbow-mode
+  :hook (prog-mode . rainbow-mode))
 
 (use-package nerd-icons
   :custom
@@ -74,8 +75,7 @@
   (nerd-icons-ivy-rich-mode 1)
   (ivy-rich-mode 1))
 (use-package nerd-icons-ibuffer
-  :hook
-  (ibuffer-mode . nerd-icons-ibuffer-mode))
+  :hook (ibuffer-mode . nerd-icons-ibuffer-mode))
 (use-package nerd-icons-completion
   :config
   (nerd-icons-completion-mode))
@@ -106,9 +106,7 @@
   :hook (after-init . doom-modeline-mode))
 
 (use-package rainbow-delimiters
-  :hook
-  (prog-mode . rainbow-delimiters-mode)
-  (yaml-mode . rainbow-delimiters-mode)
+  :hook ((prog-mode yaml-mode) . rainbow-delimiters-mode)
   :custom-face
   (rainbow-delimiters-depth-1-face ((t (:foreground "red"))))
   (rainbow-delimiters-depth-2-face ((t (:foreground "orange"))))
@@ -131,8 +129,7 @@
    '((border-mode-line-active unspecified)
      (border-mode-line-inactive unspecified)))
   (load-theme 'modus-vivendi-deuteranopia)
-  (define-key global-map (kbd "S-<f5>") #'modus-themes-toggle)
-  )
+  (define-key global-map (kbd "S-<f5>") #'modus-themes-toggle))
 
 (set-language-environment "UTF-8")
 (prefer-coding-system       'utf-8)
@@ -152,9 +149,13 @@
 (setq initial-major-mode 'org-mode
       initial-scratch-message nil)
 
-(setq comint-scroll-to-bottom-on-input 'this
-      comint-scroll-to-bottom-on-output t
-      comint-move-point-for-output t)
+(use-package comint
+  :ensure nil
+  :defer t
+  :custom
+  (comint-scroll-to-bottom-on-input 'this)
+  (comint-scroll-to-bottom-on-output t)
+  (comint-move-point-for-output t))
 
 (setq show-paren-mode t ; coupler les parenthèses
       auth-sources '("~/.authinfo") ; Define file that stores secrets
@@ -175,13 +176,19 @@
 (delete-selection-mode t)               ; entrée efface texte sélectionné
 (fset 'yes-or-no-p 'y-or-n-p)           ; Replace yes or no with y or n
 (auto-compression-mode t)
-(when (display-graphic-p)
-    (server-start))
 (when is-mswindows
     (setq tramp-default-method "plink"))
 
+(use-package server
+  :ensure nil
+  :defer 1
+  :config
+  (when (and (display-graphic-p) (not (server-running-p)))
+    (server-start)))
+
 (use-package dictionary
   :ensure nil
+  :defer t
   :custom
   (dictionary-server "dict.org"))
 
@@ -227,33 +234,39 @@
 
 (use-package imenu
   :ensure nil
+  :defer t
   :custom
   (imenu-auto-rescan t))
 
 (use-package imenu-list
-  :config
-  (defun my-imenu-list-goto-entry ()
-    "Goto entry and exit imenu"
-    (interactive)
-    (imenu-list-goto-entry)
-    (imenu-list-smart-toggle))
   :bind
   (("C-c =" . imenu-list-smart-toggle)
    :map imenu-list-major-mode-map
    ("M-<return>" . my-imenu-list-goto-entry))
   :custom
   (imenu-list-focus-after-activation t)
-  (imenu-list-position 'right))
+  (imenu-list-position 'right)
+  :config
+  (defun my-imenu-list-goto-entry ()
+    "Goto entry and exit imenu"
+    (interactive)
+    (imenu-list-goto-entry)
+    (imenu-list-smart-toggle)))
 
 (use-package flimenu
+  :after imenu
   :config
   (flimenu-global-mode))
 
 (use-package doc-view
+  :ensure nil
+  :defer t
   :custom
   (doc-view-ghostscript-program (executable-find "rungs")))
 
 (use-package pdf-tools
+  :bind (:map pdf-view-mode-map
+	      ("C-s" . isearch-forward))
   :init
   (pdf-tools-install)  ; Standard activation command
   (pdf-loader-install) ; On demand loading, leads to faster startup time
@@ -264,12 +277,11 @@
 	TeX-view-program-list '(("PDF Tools" TeX-pdf-tools-sync-view))
 	TeX-source-correlate-start-server t)
   (add-hook 'TeX-after-compilation-finished-functions
-	    #'TeX-revert-document-buffer)
-  :bind (:map pdf-view-mode-map
-	      ("C-s" . isearch-forward)))
+	    #'TeX-revert-document-buffer))
 
 (use-package proced
   :ensure nil
+  :defer t
   :custom
   (proced-enable-color-flag t))
 
@@ -279,11 +291,14 @@
 
 (use-package grep
   :ensure nil
+  :defer t
   :config
   (if is-mswindows
       (setq find-program "\"C:\\Program Files\\Git\\usr\\bin\\find.exe\"")))
 
 (use-package ripgrep
+  :bind
+  ("C-c f" . my-ripgrep-in-same-extension)
   :config
   (defun my-ripgrep-in-same-extension (expression)
     "Search for EXPRESSION in files with the same extension as the
@@ -299,34 +314,29 @@ current buffer within the project or the current directory if not in a project."
            (root (if project (project-root project) default-directory)))
       (ripgrep-regexp expression
                     root
-                    (list (format "-g %s" glob)))))
-  :bind
-  ("C-c f" . my-ripgrep-in-same-extension))
+                    (list (format "-g %s" glob))))))
 
 (use-package outline
   :ensure nil
+  :hook ((prog-mode text-mode) . outline-minor-mode)
   :custom
   (outline-minor-mode-use-buttons 'in-margins) ; add in-margin buttons to fold/unfold
   :config
-  (unbind-key "RET" outline-overlay-button-map)
-  :hook
-  (text-mode . outline-minor-mode)
-  (prog-mode . outline-minor-mode))
+  (unbind-key "RET" outline-overlay-button-map))
 
 (use-package bicycle
   :after outline
+  :bind (:map outline-minor-mode-map
+	      ([C-tab] . bicycle-cycle)
+	      ([S-tab] . my-bibycle-cycle-global)
+	      ([backtab] . my-bibycle-cycle-global))
   :config
   ;; bicycle-cycle-global should not be used in org-mode, hence this function
   (defun my-bibycle-cycle-global ()
     (interactive)
     (if (derived-mode-p 'org-mode)
         (org-cycle-global)
-      (bicycle-cycle-global)))
-  :bind (:map outline-minor-mode-map
-              ([C-tab] . bicycle-cycle)
-              ([S-tab] . my-bibycle-cycle-global)
-              ([backtab] . my-bibycle-cycle-global)
-	      ))
+      (bicycle-cycle-global))))
 
 (use-package outline-minor-faces
   :after outline
@@ -355,14 +365,12 @@ current buffer within the project or the current directory if not in a project."
   :vc (:fetcher github :repo Malabarba/greek-unicode-insert)
   :bind ("²" . greek-unicode-insert-map))
 
-(use-package smartparens-config
-  :ensure smartparens
-  :init
-  (progn
-    (add-hook 'prog-mode-hook 'smartparens-mode)
-    (add-hook 'markdown-mode-hook 'smartparens-mode)
-    (add-hook 'yaml-mode-hook 'smartparens-mode))
-  :config (progn (show-smartparens-global-mode t)))
+(use-package smartparens
+  :ensure smartparens  ;; install the package
+  :hook (prog-mode markdown-mode yaml-mode)
+  :config
+  ;; load default config
+  (require 'smartparens-config))
 
 (use-package which-key
   :diminish which-key-mode
@@ -379,10 +387,8 @@ current buffer within the project or the current directory if not in a project."
   (prescient-persist-mode))
 
 (use-package company
-  :init
-  (add-hook 'after-init-hook 'global-company-mode)
+  :hook (after-init . global-company-mode)
   :custom
-  ;; Number the candidates (use M-1, M-2 etc to select completions).
   (company-show-numbers t)
   (company-idle-delay 0)
   ;; company configuration from
