@@ -363,6 +363,7 @@ current buffer within the project or the current directory if not in a project."
 (keymap-global-set "C-<apps>" 'menu-bar-mode)
 (keymap-global-set "C-<menu>" 'menu-bar-mode) ; For Linux
 (keymap-global-set "<f5>" 'revert-buffer)
+(global-set-key [remap dabbrev-expand] 'hippie-expand)
 
 (use-package keycast)
 
@@ -535,6 +536,7 @@ current buffer within the project or the current directory if not in a project."
 
 (use-package chatgpt-shell
   :defer t
+  :command chatgpt-shell-prompt-compose
   :custom
   (chatgpt-shell-openai-key
       (auth-source-pick-first-password :host "api.openai.com")))
@@ -1368,6 +1370,8 @@ same directory as the working and insert a link to this file."
 (use-package rutils
   :defer t
   :after ess)
+
+(use-package essgd)
 
 (use-package gams-mode
   :load-path "~/Documents/git_projects/code/gams-mode"

@@ -540,6 +540,7 @@ Activate lower- and upper-case commands ("C-x C-l" and "C-x C-u")
 (keymap-global-set "C-<apps>" 'menu-bar-mode)
 (keymap-global-set "C-<menu>" 'menu-bar-mode) ; For Linux
 (keymap-global-set "<f5>" 'revert-buffer)
+(global-set-key [remap dabbrev-expand] 'hippie-expand)
 #+end_src
 
 ** Keycast
@@ -769,6 +770,7 @@ Support for syntax highlighting of Git configuration files
 #+begin_src emacs-lisp
 (use-package chatgpt-shell
   :defer t
+  :command chatgpt-shell-prompt-compose
   :custom
   (chatgpt-shell-openai-key
       (auth-source-pick-first-password :host "api.openai.com")))
@@ -1746,6 +1748,12 @@ To interact easily with renv
 (use-package rutils
   :defer t
   :after ess)
+#+end_src
+
+To test to have R plots in emacs
+
+#+begin_src emacs-lisp
+(use-package essgd)
 #+end_src
 
 *** GAMS
