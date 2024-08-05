@@ -146,7 +146,8 @@
 (setq user-full-name "Christophe Gouel"
       user-mail-address "christophe.gouel@inrae.fr")
 
-(setq initial-major-mode 'org-mode
+(setq
+ ;; initial-major-mode 'org-mode
       initial-scratch-message nil)
 
 (use-package comint
@@ -260,19 +261,23 @@
 
 (use-package doc-view
   :ensure nil
+  :if (display-graphic-p)
   :defer t
   :custom
   (doc-view-ghostscript-program (executable-find "rungs")))
 
 (use-package pdf-tools
+  :if (display-graphic-p)
+  :mode  ("\\.pdf\\'" . pdf-view-mode)
   :bind (:map pdf-view-mode-map
 	      ("C-s" . isearch-forward))
-  :init
-  (pdf-tools-install)  ; Standard activation command
-  (pdf-loader-install) ; On demand loading, leads to faster startup time
+  ;; :init
+  ;; (pdf-tools-install)  ; Standard activation command
+  ;; (pdf-loader-install) ; On demand loading, leads to faster startup time
   :custom
   (pdf-view-display-size 'fit-page)
   :config
+  (pdf-tools-install)
   (setq TeX-view-program-selection '((output-pdf "PDF Tools"))
 	TeX-view-program-list '(("PDF Tools" TeX-pdf-tools-sync-view))
 	TeX-source-correlate-start-server t)
@@ -1251,9 +1256,11 @@ same directory as the working and insert a link to this file."
   :vc (:fetcher github :repo emacs-tree-sitter/ts-fold)
   :defer t)
 
-(use-package ess
-  :init
-  (require 'ess-site)
+;; (use-package ess
+;;   :init
+;;   (require 'ess-site)
+(use-package ess-site
+  :ensure ess
   :mode
   ("renv.lock"   . js-json-mode)
   (".Rhistory"   . ess-r-mode)
@@ -1414,7 +1421,8 @@ same directory as the working and insert a link to this file."
   :mode (("\\.inc\\'" . poly-gams-mode)
          ("\\.gms\\'" . poly-gams-mode)))
 
-(use-package julia-mode)
+(use-package julia-mode
+  :defer t)
 
 (use-package matlab
   :ensure matlab-mode

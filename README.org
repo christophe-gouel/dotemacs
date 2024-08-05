@@ -225,7 +225,8 @@ Set up encoding to Unicode
 Make the scratch buffer an =org-mode= buffer and remove the scratch message.
 
 #+begin_src emacs-lisp
-(setq initial-major-mode 'org-mode
+(setq
+ ;; initial-major-mode 'org-mode
       initial-scratch-message nil)
 #+end_src
 
@@ -391,6 +392,7 @@ Flatten =imenu= so that we can jump to any subheading from the main menu.
 #+begin_src emacs-lisp
 (use-package doc-view
   :ensure nil
+  :if (display-graphic-p)
   :defer t
   :custom
   (doc-view-ghostscript-program (executable-find "rungs")))
@@ -398,14 +400,17 @@ Flatten =imenu= so that we can jump to any subheading from the main menu.
 
 #+begin_src emacs-lisp
 (use-package pdf-tools
+  :if (display-graphic-p)
+  :mode  ("\\.pdf\\'" . pdf-view-mode)
   :bind (:map pdf-view-mode-map
 	      ("C-s" . isearch-forward))
-  :init
-  (pdf-tools-install)  ; Standard activation command
-  (pdf-loader-install) ; On demand loading, leads to faster startup time
+  ;; :init
+  ;; (pdf-tools-install)  ; Standard activation command
+  ;; (pdf-loader-install) ; On demand loading, leads to faster startup time
   :custom
   (pdf-view-display-size 'fit-page)
   :config
+  (pdf-tools-install)
   (setq TeX-view-program-selection '((output-pdf "PDF Tools"))
 	TeX-view-program-list '(("PDF Tools" TeX-pdf-tools-sync-view))
 	TeX-source-correlate-start-server t)
@@ -1626,9 +1631,11 @@ Use "C-TAB" for moving to next field to avoid conflict with autocompletion.
 *** Emacs Speaks Statistics (ESS)
 
 #+begin_src emacs-lisp
-(use-package ess
-  :init
-  (require 'ess-site)
+;; (use-package ess
+;;   :init
+;;   (require 'ess-site)
+(use-package ess-site
+  :ensure ess
   :mode
   ("renv.lock"   . js-json-mode)
   (".Rhistory"   . ess-r-mode)
@@ -1800,7 +1807,8 @@ To interact easily with renv
 *** Julia
 
 #+begin_src emacs-lisp
-(use-package julia-mode)
+(use-package julia-mode
+  :defer t)
 #+end_src
 
 *** MATLAB
