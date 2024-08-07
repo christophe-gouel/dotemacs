@@ -278,11 +278,12 @@
   (pdf-view-display-size 'fit-page)
   :config
   (pdf-tools-install)
-  (setq TeX-view-program-selection '((output-pdf "PDF Tools"))
-	TeX-view-program-list '(("PDF Tools" TeX-pdf-tools-sync-view))
-	TeX-source-correlate-start-server t)
-  (add-hook 'TeX-after-compilation-finished-functions
-	    #'TeX-revert-document-buffer))
+  ;; (setq TeX-view-program-selection '((output-pdf "PDF Tools"))
+  ;; 	TeX-view-program-list '(("PDF Tools" TeX-pdf-tools-sync-view))
+  ;; 	TeX-source-correlate-start-server t)
+  ;; (add-hook 'TeX-after-compilation-finished-functions
+  ;; 	    #'TeX-revert-document-buffer)
+  )
 
 (use-package proced
   :ensure nil
@@ -536,7 +537,7 @@ current buffer within the project or the current directory if not in a project."
 
 (use-package chatgpt-shell
   :defer t
-  :command chatgpt-shell-prompt-compose
+  :commands chatgpt-shell-prompt-compose
   :custom
   (chatgpt-shell-openai-key
       (auth-source-pick-first-password :host "api.openai.com")))
@@ -640,10 +641,6 @@ current buffer within the project or the current directory if not in a project."
   (LaTeX-item-indent 0)
   (LaTeX-default-options "12pt")
   ;; (LaTeX-math-abbrev-prefix "²")
-  (TeX-source-specials-mode 1)
-  (TeX-source-correlate-mode t)
-  (TeX-source-correlate-method (quote synctex))
-  (TeX-source-correlate-start-server (quote ask))
   (TeX-PDF-mode t)
   (TeX-electric-sub-and-superscript 1)
   (LaTeX-math-list
@@ -653,6 +650,13 @@ current buffer within the project or the current directory if not in a project."
      (?/ "frac{}{}")
      ))
 
+  ;; View PDF
+  (TeX-view-program-selection '((output-pdf "PDF Tools")))
+  (TeX-view-program-list '(("PDF Tools" TeX-pdf-tools-sync-view)))
+  (TeX-source-correlate-mode t)
+  (TeX-source-correlate-start-server t)
+  ;; (TeX-source-correlate-method (quote synctex))
+  
   ;; Preview
   (preview-auto-cache-preamble t)
   (preview-default-option-list '("displaymath" "graphics" "textmath"))
@@ -695,7 +699,9 @@ textsc" "textup"))))
   :config
   (setq-default TeX-auto-parse-length 200
                 TeX-master nil)
-
+  (add-hook 'TeX-after-compilation-finished-functions
+	    #'TeX-revert-document-buffer)
+  
   (defun my-tex-compile ()
     "Save and compile TeX document"
     (interactive)
@@ -1251,13 +1257,6 @@ same directory as the working and insert a link to this file."
 	      ("M-C-TAB"   . yas-next-field-or-maybe-expand)
 	      ("M-C-<tab>" . yas-next-field-or-maybe-expand)))
 
-(use-package tree-sitter-ess-r
-  :hook (ess-r-mode . tree-sitter-ess-r-mode-activate))
-
-(use-package ts-fold
-  :vc (:fetcher github :repo emacs-tree-sitter/ts-fold)
-  :defer t)
-
 ;; (use-package ess
 ;;   :init
 ;;   (require 'ess-site)
@@ -1276,10 +1275,12 @@ same directory as the working and insert a link to this file."
 	      ;; Shortcut for assign <-
 	      ("M--"     . ess-insert-assign)
 	      ("<f9>"    . my-run-rscript-on-current-buffer-file)
+	      ("C-c v" . ess-view-data-print)
         :map inferior-ess-r-mode-map
         ("C-S-m" . " |>")
         ("C-%"   . " %>%")
 	      ("M--"   . ess-insert-assign)
+	      ("C-c v" . ess-view-data-print)
 	      :map inferior-ess-mode-map
 	      ("<home>" . comint-bol))
   :custom
@@ -1295,10 +1296,21 @@ same directory as the working and insert a link to this file."
   (ess-assign-list '(" <-" " <<- " " = " " -> " " ->> "))
   (ess-style 'RStudio)  ; Set code indentation
   (ess-ask-for-ess-directory nil) ; Do not ask what is the project directory
-  ;; Following the "source is real" philosophy put forward by ESS, one should
-  ;; not need the command history and should not save the workspace at the end
-  ;; of an R session. Hence, both options are disabled here.
   (inferior-R-args "--no-restore-history --no-save ")
+  ;; Font-locking
+  (ess-R-font-lock-keywords
+   '((ess-R-fl-keyword:keywords . t)
+     (ess-R-fl-keyword:constants . t)
+     (ess-R-fl-keyword:modifiers . t)
+     (ess-R-fl-keyword:fun-defs . t)
+     (ess-R-fl-keyword:assign-ops . t)
+     (ess-R-fl-keyword:%op% . t)
+     (ess-fl-keyword:fun-calls . t)
+     (ess-fl-keyword:numbers . t)
+     (ess-fl-keyword:operators . t)
+     (ess-fl-keyword:delimiters . t)
+     (ess-fl-keyword:= . t)
+     (ess-R-fl-keyword:F&T . t)))
   :config
   ;; Background jobs for R as in RStudio
   (defun my-run-rscript (arg title)
@@ -1368,10 +1380,30 @@ same directory as the working and insert a link to this file."
              (t 1000))))))
 
 (use-package rutils
-  :defer t
-  :after ess)
+  :defer t)
 
-(use-package essgd)
+(use-package ess-view-data
+  :bind
+  (:map ess-view-data-mode-map
+	("f" . ess-view-data-filter)
+	("g" . ess-view-data-group)
+	("m" . ess-view-data-mutate)
+	("o" . ess-view-data-sort)
+	("q" . ess-view-data-quit)
+	("S" . ess-view-data-summarise)
+	("s" . ess-view-data-select)
+	("u" . ess-view-data-unique)
+	("l 2 w" . ess-view-data-long2wide)
+	("w 2 l" . ess-view-data-wide2long)
+	("C-c C-p" . ess-view-data-goto-previous-page)
+	("C-c C-n" . ess-view-data-goto-next-page))
+  :custom
+  (ess-view-data-current-update-print-backend 'kable)
+  (ess-view-data-rows-per-page 1000))
+
+(use-package essgd
+  :if (equal window-system 'pgtk)
+  :defer t)
 
 (use-package gams-mode
   :load-path "~/Documents/git_projects/code/gams-mode"
