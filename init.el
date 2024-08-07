@@ -1405,10 +1405,13 @@ same directory as the working and insert a link to this file."
   :if (equal window-system 'pgtk)
   :defer t)
 
+;; (unless (package-installed-p 'gams-mode)
+;;   (package-vc-install 
+;;    '(gams-mode
+;;      :url "https://github.com/christophe-gouel/gams-mode"
+;;      :branch "auto-mode")))
 (use-package gams-mode
-  :load-path "~/Documents/git_projects/code/gams-mode"
-  ;; I don't know why but despite gams-mode being a prog-mode, it does not load
-  ;; automatically some default minor modes for prog-mode.
+  ;; :load-path "c:/Users/Gouel/Documents/git_projects/code/gams-mode"
   :hook
   (gams-mode . rainbow-delimiters-mode)
   (gams-mode . smartparens-mode)
@@ -1426,22 +1429,18 @@ same directory as the working and insert a link to this file."
                      (- (length match) (length (replace-regexp-in-string "\*" "" match))))))))
   :custom
   (gams-process-command-option "ll=0 lo=3 pw=153 ps=9999")
-  (gams-statement-upcase t)
   (gams-fill-column 90)
-  (gams-recenter-font-lock t)
-  (gams-statement-name "Parameter")
-  (gams-dollar-control-name "exit")
   (gams-default-pop-window-height 20)
   ;; Remove the handling of parentheses by gams-mode to use smartparens instead
   (gams-close-paren-always nil)
   (gams-close-double-quotation-always nil)
   (gams-close-single-quotation-always nil)
   ;; Indent
-  (gams-indent-on t)
   (gams-indent-number 2)
   (gams-indent-number-loop 2)
   (gams-indent-number-mpsge 2)
   (gams-indent-number-equation 2)
+  ;; :mode ("\\.gms\\'" . gams-mode)
   :config
   (if is-mswindows
       (setq gams-system-directory "C:/GAMS/Last/"
@@ -1452,10 +1451,9 @@ same directory as the working and insert a link to this file."
               ("C-c =" . gams-show-identifier-list)))
 
 (use-package poly-gams
-  ;; :vc (:fetcher github :repo ShiroTakeda/poly-gams)
-  :load-path "~/Documents/git_projects/code/poly-gams"
-  :mode (("\\.inc\\'" . poly-gams-mode)
-         ("\\.gms\\'" . poly-gams-mode)))
+  :vc (:fetcher github :repo ShiroTakeda/poly-gams)
+  ;; :load-path "~/Documents/git_projects/code/poly-gams"
+  :mode ("\\.inc\\'" . poly-gams-mode))
 
 (use-package julia-mode
   :defer t)
