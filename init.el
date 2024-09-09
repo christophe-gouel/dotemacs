@@ -632,6 +632,7 @@ current buffer within the project or the current directory if not in a project."
   (TeX-mode . latex-math-mode)
   (TeX-mode . turn-on-reftex)
   (TeX-mode . TeX-fold-buffer)
+  (TeX-mode . flymake-mode)
   :hook
   (TeX-mode . TeX-fold-mode)
   :custom
@@ -907,7 +908,7 @@ same directory as the working and insert a link to this file."
   (org-odt-preferred-output-format "docx")) ; require soffice to be on the PATH
 
 (use-package ox-reveal
-  :defer t
+  :after ox
   :ensure htmlize) ; required for the fontification of code blocks
 
 (use-package texfrag

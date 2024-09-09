@@ -883,6 +883,7 @@ Support for syntax highlighting of Git configuration files
   (TeX-mode . latex-math-mode)
   (TeX-mode . turn-on-reftex)
   (TeX-mode . TeX-fold-buffer)
+  (TeX-mode . flymake-mode)
   :hook
   (TeX-mode . TeX-fold-mode)
   :custom
@@ -1202,7 +1203,7 @@ For a modern-looking =org-mode=, use =org-modern=.
 
 #+begin_src emacs-lisp
 (use-package ox-reveal
-  :defer t
+  :after ox
   :ensure htmlize) ; required for the fontification of code blocks
 #+end_src
 
