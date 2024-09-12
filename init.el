@@ -21,6 +21,15 @@
   ;; Always download packages if not available
   (use-package-always-ensure t))
 
+(use-package use-package-ensure-system-package)
+
+(use-package exec-path-from-shell
+  :if (equal window-system 'ns)
+  :config
+  (dolist (var '("DROPBOX" "BIBINPUTS" "BSTINPUTS"))
+    (add-to-list 'exec-path-from-shell-variables var))
+  (exec-path-from-shell-initialize))
+
 (use-package dashboard
   :custom
   (dashboard-projects-switch-function 'project-switch-project)
@@ -201,6 +210,9 @@
 (use-package dired
   :ensure nil
   :commands (dired dired-jump)
+  :config ; macOS ls is not the standard ls so we substitute it by GNU ls
+  (when (and (eq system-type 'darwin) (executable-find "gls"))
+    (setq insert-directory-program "gls"))
   :custom
   (dired-listing-switches "-agho --group-directories-first")
   :hook
@@ -320,7 +332,8 @@ current buffer within the project or the current directory if not in a project."
            (root (if project (project-root project) default-directory)))
       (ripgrep-regexp expression
                     root
-                    (list (format "-g %s" glob))))))
+                    (list (format "-g %s" glob)))))
+    :ensure-system-package rg)
 
 (use-package outline
   :ensure nil
@@ -369,7 +382,7 @@ current buffer within the project or the current directory if not in a project."
 (use-package keycast)
 
 (use-package greek-unicode-insert
-  :vc (:fetcher github :repo Malabarba/greek-unicode-insert)
+  :vc (:url "https://github.com/Malabarba/greek-unicode-insert")
   :bind ("²" . greek-unicode-insert-map))
 
 (use-package smartparens
@@ -521,7 +534,8 @@ current buffer within the project or the current directory if not in a project."
   (remove-hook 'with-editor-filter-visit-hook 'magit-commit-diff))
 
 (use-package magit-delta
-  :hook (magit-mode . magit-delta-mode))
+  :hook (magit-mode . magit-delta-mode)
+  :ensure-system-package (delta . git-delta))
 
 (use-package diff-hl
   :defer t
@@ -900,7 +914,7 @@ same directory as the working and insert a link to this file."
 
 (use-package oxr
   :after org
-  :vc (:fetcher github :repo bdarcus/oxr)
+  :vc (:url "https://github.com/bdarcus/oxr")
   :bind (:map org-mode-map ("C-c ]" . oxr-insert-ref)))
 
 (use-package ox
@@ -941,7 +955,8 @@ same directory as the working and insert a link to this file."
 	ispell-personal-dictionary "~/.emacs.d/.hunspell_en_US"
 	ispell-silently-savep t)
   :bind
-  ("C-M-$" . ispell-word))
+  ("C-M-$" . ispell-word)
+  :ensure-system-package hunspell)
 
 (use-package flyspell-correct
   :after flyspell
@@ -1151,12 +1166,15 @@ same directory as the working and insert a link to this file."
 (use-package dockerfile-mode)
 
 (use-package docker
-  :bind ("C-c d" . docker))
+  :bind ("C-c d" . docker)
+  :ensure-system-package docker)
 
 (setq eldoc-echo-area-use-multiline-p nil)
 
 (use-package copilot
-  :vc (:fetcher github :repo copilot-emacs/copilot.el)
+  :vc (:url "https://github.com/copilot-emacs/copilot.el"
+	     :rev :newest
+       :branch "main")
   :custom
   (copilot-indent-warning-suppress t)
   (copilot-indent-offset-warning-disable t)
@@ -1454,7 +1472,7 @@ same directory as the working and insert a link to this file."
               ("C-c =" . gams-show-identifier-list)))
 
 (use-package poly-gams
-  :vc (:fetcher github :repo ShiroTakeda/poly-gams)
+  ;; :vc (:fetcher github :repo ShiroTakeda/poly-gams)
   ;; :load-path "~/Documents/git_projects/code/poly-gams"
   :mode ("\\.inc\\'" . poly-gams-mode))
 
