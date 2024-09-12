@@ -23,12 +23,12 @@
 
 (use-package use-package-ensure-system-package)
 
-(use-package exec-path-from-shell
-  :if (equal window-system 'ns)
-  :config
-  (dolist (var '("DROPBOX" "BIBINPUTS" "BSTINPUTS"))
-    (add-to-list 'exec-path-from-shell-variables var))
-  (exec-path-from-shell-initialize))
+(when (equal window-system 'ns)
+  (use-package exec-path-from-shell
+    :config
+    (dolist (var '("DROPBOX" "BIBINPUTS" "BSTINPUTS"))
+      (add-to-list 'exec-path-from-shell-variables var))
+    (exec-path-from-shell-initialize)))
 
 (use-package dashboard
   :custom
