@@ -650,7 +650,9 @@ current buffer within the project or the current directory if not in a project."
      (?\( "left(")
      (?/ "frac{}{}")
      ))
-
+  (LaTeX-flymake-chktex-options
+   '("-n3")) ; You should enclose the previous parenthesis with ‘{}’.
+  
   ;; View PDF
   (TeX-view-program-selection '((output-pdf "PDF Tools")))
   (TeX-view-program-list '(("PDF Tools" TeX-pdf-tools-sync-view)))
