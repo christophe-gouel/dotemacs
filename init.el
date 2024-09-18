@@ -177,6 +177,7 @@
       jit-lock-chunk-size 50000
       ;; set large file threshold at 100 megabytes
       large-file-warning-threshold 100000000
+      ring-bell-function 'ignore ; disable the bell (useful for macOS)
       ;; Options to make lsp usable in emacs (from
       ;; https://emacs-lsp.github.io/lsp-mode/page/performance/)
       gc-cons-threshold (* 10 800000)
@@ -378,6 +379,13 @@ current buffer within the project or the current directory if not in a project."
 (keymap-global-set "C-<menu>" 'menu-bar-mode) ; For Linux
 (keymap-global-set "<f5>" 'revert-buffer)
 (global-set-key [remap dabbrev-expand] 'hippie-expand)
+
+(when (equal system-type 'darwin)
+  (setq mac-option-modifier 'meta)
+  (keymap-global-set "M-'" (lambda () (interactive) (insert "{")))
+  (keymap-global-set "M--" (lambda () (interactive) (insert "}")))
+  (keymap-global-set "M-(" (lambda () (interactive) (insert "[")))
+  (keymap-global-set "M-)" (lambda () (interactive) (insert "]"))))
 
 (use-package keycast)
 
@@ -1179,6 +1187,7 @@ same directory as the working and insert a link to this file."
   (copilot-indent-warning-suppress t)
   (copilot-indent-offset-warning-disable t)
   :config
+  (add-to-list 'copilot-major-mode-alist '("ess-r" . "r"))
   (defun my-copilot-complete-or-accept ()
     "Command that either triggers a completion or accepts one if
  one is available."
@@ -1294,16 +1303,19 @@ same directory as the working and insert a link to this file."
 	      ;; Shortcut for pipe %>%
 	      ("C-%"     . " %>%")
 	      ;; Shortcut for assign <-
-	      ("M--"     . ess-insert-assign)
+	      ("C--"     . ess-insert-assign)
 	      ("<f9>"    . my-run-rscript-on-current-buffer-file)
 	      ("C-c v" . ess-view-data-print)
         :map inferior-ess-r-mode-map
         ("C-S-m" . " |>")
         ("C-%"   . " %>%")
-	      ("M--"   . ess-insert-assign)
+	      ("C--"   . ess-insert-assign)
 	      ("C-c v" . ess-view-data-print)
 	      :map inferior-ess-mode-map
-	      ("<home>" . comint-bol))
+	      ("<home>" . comint-bol)
+	      :map ess-r-mode-map
+	      :filter (not (eq system-type 'darwin))
+	      ("M--"     . ess-insert-assign))
   :custom
   ;; Deactivate linter in ess because it does not seem to work well
   (ess-use-flymake nil)
@@ -1492,10 +1504,14 @@ same directory as the working and insert a link to this file."
   :config
   (matlab-cedet-setup)
   ;; mlint
-  (if is-mswindows
-      (setq mlint-programs
-	    (quote ("C:/Program Files/MATLAB/RLast/bin/win64/mlint.exe")))
+  (cond
+   ((eq system-type 'gnu/linux)
     (setq mlint-programs (quote ("/usr/local/MATLAB/RLast/bin/glnxa64/mlint"))))
+    ((eq system-type 'darwin)
+     (setq mlint-programs (quote ("/Applications/MATLAB_R2024b.app/bin/maca64/mlint"))))
+    ((eq system-type 'windows-nt)
+     (setq mlint-programs
+	    (quote ("C:/Program Files/MATLAB/RLast/bin/win64/mlint.exe")))))
   (defun my-matlab-mode-hook ()
     "My matlab-mode hook"
     (setq matlab-show-mlint-warnings t)   ; Activate mlint
