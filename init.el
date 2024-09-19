@@ -43,7 +43,8 @@
   :config
   (dashboard-setup-startup-hook))
 
-(menu-bar-mode 0)
+(unless (eq window-system 'ns)
+  (menu-bar-mode 0))
 (scroll-bar-mode 0)
 (tool-bar-mode 0)
 (tooltip-mode 0)
@@ -381,7 +382,11 @@ current buffer within the project or the current directory if not in a project."
 (global-set-key [remap dabbrev-expand] 'hippie-expand)
 
 (when (equal system-type 'darwin)
-  (setq mac-option-modifier 'meta)
+  (setq
+   mac-command-modifier 'none
+   mac-option-modifier 'meta)
+  (keymap-global-set "M-!" (lambda () (interactive) (insert "\\")))
+  (keymap-global-set "M-é" (lambda () (interactive) (insert "~")))
   (keymap-global-set "M-'" (lambda () (interactive) (insert "{")))
   (keymap-global-set "M--" (lambda () (interactive) (insert "}")))
   (keymap-global-set "M-(" (lambda () (interactive) (insert "[")))
@@ -871,6 +876,7 @@ same directory as the working and insert a link to this file."
   (org-todo-keywords '((type "TODO(t)" "STARTED(s)" "WAITING(w)" "|" "DONE(d)")))
   (org-tag-alist '(("OFFICE" . ?o) ("COMPUTER" . ?c) ("HOME" . ?h) ("PROJECT" . ?p) ("CALL" . ?a) ("ERRANDS" . ?e) ("TASK" . ?t)))
   (org-confirm-babel-evaluate nil)
+  (org-babel-python-command "python3")
   (org-refile-targets '((nil :maxlevel . 3)))
   ;; Appareance
   (org-pretty-entities 1) ; equivalent of prettify symbols for org
