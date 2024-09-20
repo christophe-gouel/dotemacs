@@ -6,7 +6,7 @@
 ;; You should make any changes there and regenerate it from Emacs org-mode
 ;; using org-babel-tangle (C-c C-v t)
 
-(defconst is-mswindows (equal window-system 'w32)
+(defconst is-mswindows (equal system-type 'windows-nt)
   "Boolean indicating whether Emacs is excuted within MS Windows.")
 
 (use-package package
@@ -66,7 +66,8 @@
   (set-face-background 'cursor "#CC0000") ; curseur rouge foncé
   ;; Fonts and unicode characters
   ;;   Main font
-  (add-to-list 'default-frame-alist '(font . "JetBrainsMono NF-11"))
+;  (add-to-list 'default-frame-alist '(font . "JetBrainsMono NF-11"))
+  (set-face-attribute 'default nil :family "JetBrainsMono NF" :height 150)
   ;;   Additional font for some unicode characters missing in prettify symbols
   (set-fontset-font t 'unicode (font-spec :name "XITS Math") nil 'prepend))
 
@@ -385,12 +386,19 @@ current buffer within the project or the current directory if not in a project."
   (setq
    mac-command-modifier 'none
    mac-option-modifier 'meta)
-  (keymap-global-set "M-!" (lambda () (interactive) (insert "\\")))
+  (keymap-global-set "<home>" 'move-beginning-of-line)
+  (keymap-global-set "<end>" 'move-end-of-line)
+  (keymap-global-set "§" (lambda () (interactive) (insert "-")))
   (keymap-global-set "M-é" (lambda () (interactive) (insert "~")))
+  (keymap-global-set "M-\"" (lambda () (interactive) (insert "#")))
   (keymap-global-set "M-'" (lambda () (interactive) (insert "{")))
-  (keymap-global-set "M--" (lambda () (interactive) (insert "}")))
   (keymap-global-set "M-(" (lambda () (interactive) (insert "[")))
-  (keymap-global-set "M-)" (lambda () (interactive) (insert "]"))))
+  (keymap-global-set "M-§" (lambda () (interactive) (insert "|")))
+  (keymap-global-set "M-è" (lambda () (interactive) (insert "`")))
+  (keymap-global-set "M-!" (lambda () (interactive) (insert "\\")))
+  (keymap-global-set "M-à" (lambda () (interactive) (insert "@")))
+  (keymap-global-set "M-)" (lambda () (interactive) (insert "]")))
+  (keymap-global-set "M--" (lambda () (interactive) (insert "}"))))
 
 (use-package keycast)
 
@@ -1441,8 +1449,9 @@ same directory as the working and insert a link to this file."
   (ess-view-data-rows-per-page 1000))
 
 (use-package essgd
-  :if (equal window-system 'pgtk)
-  :defer t)
+  ;; :load-path "~/Documents/git_projects/code/essgd"
+  :if (member window-system '(pgtk ns))
+  :commands (essgd-start))
 
 ;; (unless (package-installed-p 'gams-mode)
 ;;   (package-vc-install 
