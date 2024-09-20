@@ -6,9 +6,6 @@
 ;; You should make any changes there and regenerate it from Emacs org-mode
 ;; using org-babel-tangle (C-c C-v t)
 
-(defconst is-mswindows (equal system-type 'windows-nt)
-  "Boolean indicating whether Emacs is excuted within MS Windows.")
-
 (use-package package
   :ensure nil
   :config
@@ -151,7 +148,7 @@
 (set-keyboard-coding-system 'utf-8)
 (setq default-buffer-file-coding-system 'utf-8-unix
       x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING))
-(if is-mswindows    ;; MS Windows clipboard is UTF-16LE
+(if (equal system-type 'windows-nt)    ;; MS Windows clipboard is UTF-16LE
     (set-clipboard-coding-system 'utf-16le-dos))
 
 (setq user-full-name "Christophe Gouel"
@@ -189,7 +186,7 @@
 (delete-selection-mode t)               ; entrée efface texte sélectionné
 (fset 'yes-or-no-p 'y-or-n-p)           ; Replace yes or no with y or n
 (auto-compression-mode t)
-(when is-mswindows
+(when (equal system-type 'windows-nt)
     (setq tramp-default-method "plink"))
 
 (use-package server
@@ -314,7 +311,7 @@
   :ensure nil
   :defer t
   :config
-  (if is-mswindows
+  (if (equal system-type 'windows-nt)
       (setq find-program "\"C:\\Program Files\\Git\\usr\\bin\\find.exe\"")))
 
 (use-package ripgrep
@@ -1490,7 +1487,7 @@ same directory as the working and insert a link to this file."
   (gams-indent-number-equation 2)
   ;; :mode ("\\.gms\\'" . gams-mode)
   :config
-  (if is-mswindows
+  (if (equal system-type 'windows-nt)
       (setq gams-system-directory "C:/GAMS/Last/"
                   gams-docs-directory "C:/GAMS/Last/docs")
     (setq gams-system-directory "/opt/gams/gamsLast_linux_x64_64_sfx"
@@ -1562,7 +1559,7 @@ same directory as the working and insert a link to this file."
   (python-mode . flymake-mode))
 
 (use-package conda
-  :if is-mswindows
+  :if (equal system-type 'windows-nt)
   :defer t
   :config
   (setq-default mode-line-format
@@ -1575,7 +1572,7 @@ same directory as the working and insert a link to this file."
   :custom
   (pyvenv-virtualenvwrapper-supported "ipython3")
   :config
-  (if is-mswindows
+  (if (equal system-type 'windows-nt)
       ;; Default virtualenv cache directory for poetry on Microsoft Windows
       (setenv "WORKON_HOME"
 	      (substitute-in-file-name
