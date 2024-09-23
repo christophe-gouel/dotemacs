@@ -65,6 +65,7 @@
   ;;   Main font
 ;  (add-to-list 'default-frame-alist '(font . "JetBrainsMono NF-11"))
   (set-face-attribute 'default nil :family "JetBrainsMono NF" :height 150)
+  (set-face-attribute 'variable-pitch nil :family "Noto Sans" :height 1.2)
   ;;   Additional font for some unicode characters missing in prettify symbols
   (set-fontset-font t 'unicode (font-spec :name "XITS Math") nil 'prepend))
 
@@ -228,7 +229,7 @@
   :ensure nil
   :bind (:map compilation-mode-map ("r" . recompile))
   :hook
-  ;; Get proper coloring of compile buffers (does not seem to work under Windows, probably because cmd does not support ANSI colors) 
+  ;; Get proper coloring of compile buffers (does not seem to work under Windows, probably because cmd does not support ANSI colors)
   (compilation-filter . ansi-color-compilation-filter)
   :custom
   ;; compilation buffer automatically scrolls and stops at first error
@@ -439,7 +440,7 @@ current buffer within the project or the current directory if not in a project."
          ([remap complete-symbol] . company-manual-begin)
 
 	     ("C-c y" . company-yasnippet)
-	 
+
          ;; The following are keybindings that take effect whenever
          ;; the completions menu is visible, even if the user has not
          ;; explicitly interacted with Company.
@@ -637,7 +638,7 @@ current buffer within the project or the current directory if not in a project."
 	(list citar-indicator-files-icons
           citar-indicator-links-icons
           citar-indicator-notes-icons
-          citar-indicator-cited-icons)) 
+          citar-indicator-cited-icons))
   :custom
   (org-cite-insert-processor 'citar)
   (org-cite-follow-processor 'citar)
@@ -684,14 +685,14 @@ current buffer within the project or the current directory if not in a project."
      ))
   (LaTeX-flymake-chktex-options
    '("-n3")) ; You should enclose the previous parenthesis with ‘{}’.
-  
+
   ;; View PDF
   (TeX-view-program-selection '((output-pdf "PDF Tools")))
   (TeX-view-program-list '(("PDF Tools" TeX-pdf-tools-sync-view)))
   (TeX-source-correlate-mode t)
   (TeX-source-correlate-start-server t)
   ;; (TeX-source-correlate-method (quote synctex))
-  
+
   ;; Preview
   (preview-auto-cache-preamble t)
   (preview-default-option-list '("displaymath" "graphics" "textmath"))
@@ -736,7 +737,7 @@ textsc" "textup"))))
                 TeX-master nil)
   (add-hook 'TeX-after-compilation-finished-functions
 	    #'TeX-revert-document-buffer)
-  
+
   (defun my-tex-compile ()
     "Save and compile TeX document"
     (interactive)
@@ -766,7 +767,8 @@ textsc" "textup"))))
 (use-package reftex
   :bind (:map reftex-mode-map
 	      ("C-c f" . reftex-fancyref-fref)
-	      ("C-c F" . reftex-fancyref-Fref))
+	      ("C-c F" . reftex-fancyref-Fref)
+	      ("C-c -" . reftex-toc))
   :custom
   (reftex-bibpath-environment-variables (quote ("BIBINPUTS")))
   (reftex-default-bibliography '("References.bib"))
@@ -797,12 +799,13 @@ textsc" "textup"))))
     "Slow down company for a better use of CDLaTeX"
     (make-local-variable 'company-idle-delay)
 		  (setq company-idle-delay 0.3))
+  (unless (equal system-type 'darwin)
+    (setq cdlatex-math-symbol-prefix ?\262)) ; correspond to key "²"
   :custom
   (cdlatex-command-alist
    '(("equ*" "Insert equation* env"   "" cdlatex-environment ("equation*") t nil)
      ("frd" "Insert \\frac{\\partial }{\\partial }" "\\frac{\\partial ?}{\\partial }" cdlatex-position-cursor nil nil t)
-     ("su" "Insert \\sum" "\\sum?" cdlatex-position-cursor nil nil t)))
-  (cdlatex-math-symbol-prefix ?\262)) ; correspond to key "²"
+     ("su" "Insert \\sum" "\\sum?" cdlatex-position-cursor nil nil t))))
 
 (use-package markdown-mode
   :mode ("README\\.md\\'" . gfm-mode)
@@ -887,7 +890,7 @@ same directory as the working and insert a link to this file."
   (org-pretty-entities 1) ; equivalent of prettify symbols for org
   (org-cycle-hide-drawer-startup t)	; fold drawers at startup
   ; remove some prettification for sub- and superscripts because it makes editing difficult
-  (org-pretty-entities-include-sub-superscripts nil) 
+  (org-pretty-entities-include-sub-superscripts nil)
   (org-hide-emphasis-markers t) ; remove markup markers
   (org-ellipsis " [+]")
   (org-highlight-latex-and-related '(native))
@@ -899,7 +902,8 @@ same directory as the working and insert a link to this file."
   (org-blank-before-new-entry '((heading . auto) (plain-list-item . nil))) ; Control the insertion of blank line after M-Ret
   (org-fold-core-style 'overlays) ; Slower folding style to prevent some bugs when unfolding
   :config
-  (org-defkey org-cdlatex-mode-map "²" 'cdlatex-math-symbol)
+  (unless (equal system-type 'darwin)
+    (org-defkey org-cdlatex-mode-map "²" 'cdlatex-math-symbol))
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((emacs-lisp . t)
@@ -1119,7 +1123,7 @@ same directory as the working and insert a link to this file."
 ;;     (message "Running command: %s" (mapconcat 'identity cmd" "))
 
 ;;     (set-process-filter proc (lambda (proc output) (with-current-buffer (process-buffer proc) (insert output))))
-    
+
 ;;     (set-process-sentinel
 ;;      proc
 ;;      (lambda (proc event)
@@ -1130,7 +1134,7 @@ same directory as the working and insert a link to this file."
 ;;        (unless (zerop (process-exit-status proc))
 ;;          (message "Textidote process returned with errors: %s" (with-current-buffer proc-buf (buffer-string))))
 ;;        (kill-buffer (process-buffer proc))))
-    
+
 ;;     (process-send-string proc content)
 ;;     (process-send-eof proc)
 ;;     nil))
@@ -1274,7 +1278,7 @@ same directory as the working and insert a link to this file."
   :mode ("\\.Rmd" . poly-markdown+r-mode))
 
 (unless (package-installed-p 'quarto-mode)
-  (package-vc-install 
+  (package-vc-install
    '(quarto-mode
      :url "https://github.com/christophe-gouel/quarto-emacs"
      :branch "transient"
@@ -1446,12 +1450,14 @@ same directory as the working and insert a link to this file."
   (ess-view-data-rows-per-page 1000))
 
 (use-package essgd
-  ;; :load-path "~/Documents/git_projects/code/essgd"
   :if (member window-system '(pgtk ns))
-  :commands (essgd-start))
+  :commands (essgd-start)
+  ;; :hook
+  ;; (ess-r-post-run . essgd-start)
+  )
 
 ;; (unless (package-installed-p 'gams-mode)
-;;   (package-vc-install 
+;;   (package-vc-install
 ;;    '(gams-mode
 ;;      :url "https://github.com/christophe-gouel/gams-mode"
 ;;      :branch "auto-mode")))
