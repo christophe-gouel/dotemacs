@@ -66,7 +66,7 @@
 ;  (add-to-list 'default-frame-alist '(font . "JetBrainsMono NF-11"))
   (set-face-attribute 'default nil :family "JetBrainsMono NF" :height 150)
   (set-face-attribute 'variable-pitch nil :family "Noto Sans" :height 1.2)
-  ;;   Additional font for some unicode characters missing in prettify symbols
+  ;; Additional font for some unicode characters missing in prettify symbols
   (set-fontset-font t 'unicode (font-spec :name "XITS Math") nil 'prepend))
 
 (use-package rainbow-mode
@@ -402,7 +402,9 @@ current buffer within the project or the current directory if not in a project."
 
 (use-package greek-unicode-insert
   :vc (:url "https://github.com/Malabarba/greek-unicode-insert")
-  :bind ("²" . greek-unicode-insert-map))
+  :init (setq greek-unicode-insert-key "`"))
+;  :bind ("`" . greek-unicode-insert-map))
+; :bind ("²" . greek-unicode-insert-map))
 
 (use-package smartparens
   :ensure smartparens  ;; install the package
@@ -1458,10 +1460,42 @@ same directory as the working and insert a link to this file."
 
 (use-package essgd
   :if (member window-system '(pgtk ns))
-  :commands (essgd-start)
-  ;; :hook
-  ;; (ess-r-post-run . essgd-start)
-  )
+  :commands (essgd-start essgd-toggle-plot-buffer)
+  :config
+  (defvar essgd-prev-buffer nil
+    "The buffer used before switching to `*essgd*` buffer.")
+  (defun essgd-toggle-plot-buffer ()
+    "Switch to `*essgd*` buffer, and back to the previous buffer.
+If already in the `*essgd*` buffer, return to the last buffer (either script or process).
+The last key used will temporarily toggle the buffer. Assuming that it is bound to C-c
+C-a, you can navigate back and forth between essgd and script
+buffer with C-c C-a C-a C-a ...."
+    (interactive)
+    (let* ((essgd-buf-name "*essgd*")
+           (essgd-buffer (get-buffer essgd-buf-name)))
+      (if essgd-buffer
+          ;; Switch to *essgd* buffer if it exists and we are not in it.
+          (if (not (eq (current-buffer) essgd-buffer))
+              (progn
+		;; Store the current buffer as the 'previous' one.
+		(setq essgd-prev-buffer (current-buffer))
+		(pop-to-buffer essgd-buf-name))
+            ;; If already in *essgd* buffer, switch back to the previous buffer.
+            (if (and essgd-prev-buffer (buffer-live-p essgd-prev-buffer))
+		(pop-to-buffer essgd-prev-buffer)
+              (message "No previous buffer or *essgd* already the current buffer.")))
+	(message "No existing *essgd* buffer.")))
+    ;; Activate transient keymap to allow pressing the same key again
+    (when (called-interactively-p 'any)
+      (set-transient-map
+       (let ((map (make-sparse-keymap))
+             (key (vector last-command-event)))
+         (define-key map key #'essgd-toggle-plot-buffer)
+         map))))
+  :bind
+  (:map ess-r-mode-map ("C-c C-a" . essgd-toggle-plot-buffer)
+	:map essgd-mode-map ("C-c C-a" . essgd-toggle-plot-buffer)
+	:map inferior-ess-r-mode-map ("C-c C-a" . essgd-toggle-plot-buffer)))
 
 ;; (unless (package-installed-p 'gams-mode)
 ;;   (package-vc-install
