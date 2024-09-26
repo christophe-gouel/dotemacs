@@ -569,8 +569,15 @@ current buffer within the project or the current directory if not in a project."
   :mode ("/.dockerignore\\'" . gitignore-mode)) ; works also with other ignore files
 
 (use-package chatgpt-shell
-  :defer t
   :commands chatgpt-shell-prompt-compose
+  :config
+  (defun my-chatgpt-save-block ()
+    (interactive)
+    (chatgpt-shell-mark-block)
+    (kill-ring-save (region-beginning) (region-end)))
+  :bind (
+	 :map chatgpt-shell-mode-map ("C-c C-b" . my-chatgpt-save-block)
+	 :map chatgpt-shell-prompt-compose-view-mode-map ("C-c C-b" . my-chatgpt-save-block))
   :custom
   (chatgpt-shell-openai-key
       (auth-source-pick-first-password :host "api.openai.com")))
