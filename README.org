@@ -50,7 +50,7 @@ To keep GPG keys up to date (let's try to remove it temporarily to check if we r
 (when (equal window-system 'ns)
   (use-package exec-path-from-shell
     :config
-    (dolist (var '("DROPBOX" "BIBINPUTS" "BSTINPUTS"))
+    (dolist (var '("DROPBOX" "BIBINPUTS" "BSTINPUTS" "GH_TOKEN"))
       (add-to-list 'exec-path-from-shell-variables var))
     (exec-path-from-shell-initialize)))
 #+end_src
@@ -102,11 +102,14 @@ Remove menu, scrool-bar, tool-bar, and tooltip
   (set-face-background 'cursor "#CC0000") ; curseur rouge foncé
   ;; Fonts and unicode characters
   ;;   Main font
-;  (add-to-list 'default-frame-alist '(font . "JetBrainsMono NF-11"))
-  (set-face-attribute 'default nil :family "JetBrainsMono NF" :height 150)
+  (set-face-attribute 'default nil :family "JetBrainsMono NF" :height 120)
   (set-face-attribute 'variable-pitch nil :family "Noto Sans" :height 1.2)
-  ;; Additional font for some unicode characters missing in prettify symbols
+  ;;   Additional font for some unicode characters missing in prettify symbols
   (set-fontset-font t 'unicode (font-spec :name "XITS Math") nil 'prepend))
+(defun my-screen-27 ()
+  "Adjust font for 27 inch screen."
+  (interactive)
+  (set-face-attribute 'default nil :family "JetBrainsMono NF" :height 140))
 #+end_src
 
 To list all available fonts, use
@@ -570,6 +573,7 @@ MacOS specific keybindings
 (when (equal system-type 'darwin)
   (setq
    mac-command-modifier 'none
+   mac-function-modifier 'control
    mac-option-modifier 'meta)
   (keymap-global-set "<home>" 'move-beginning-of-line)
   (keymap-global-set "<end>" 'move-end-of-line)
@@ -597,11 +601,11 @@ MacOS specific keybindings
 ** Insert Greek letters in Unicode
 
 #+begin_src emacs-lisp
-(use-package greek-unicode-insert
-  :vc (:url "https://github.com/Malabarba/greek-unicode-insert")
-  :init (setq greek-unicode-insert-key "`"))
-;  :bind ("`" . greek-unicode-insert-map))
-; :bind ("²" . greek-unicode-insert-map))
+(unless (equal system-type 'darwin)
+  (use-package greek-unicode-insert
+    :vc (:url "https://github.com/Malabarba/greek-unicode-insert")
+    :bind ("²" . greek-unicode-insert-map)))
+; :init (setq greek-unicode-insert-key "`"))
 #+end_src
 
 ** Parentheses
@@ -1255,6 +1259,10 @@ For a modern-looking =org-mode=, use =org-modern=.
   :defer t
   :custom
   (org-odt-preferred-output-format "docx")) ; require soffice to be on the PATH
+
+(use-package ox-beamer
+  :ensure nil
+  :after ox)
 #+end_src
 
 =ox-reveal= to export presentation to =reveal.js=.

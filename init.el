@@ -23,7 +23,7 @@
 (when (equal window-system 'ns)
   (use-package exec-path-from-shell
     :config
-    (dolist (var '("DROPBOX" "BIBINPUTS" "BSTINPUTS"))
+    (dolist (var '("DROPBOX" "BIBINPUTS" "BSTINPUTS" "GH_TOKEN"))
       (add-to-list 'exec-path-from-shell-variables var))
     (exec-path-from-shell-initialize)))
 
@@ -63,11 +63,14 @@
   (set-face-background 'cursor "#CC0000") ; curseur rouge foncé
   ;; Fonts and unicode characters
   ;;   Main font
-;  (add-to-list 'default-frame-alist '(font . "JetBrainsMono NF-11"))
-  (set-face-attribute 'default nil :family "JetBrainsMono NF" :height 150)
+  (set-face-attribute 'default nil :family "JetBrainsMono NF" :height 120)
   (set-face-attribute 'variable-pitch nil :family "Noto Sans" :height 1.2)
-  ;; Additional font for some unicode characters missing in prettify symbols
+  ;;   Additional font for some unicode characters missing in prettify symbols
   (set-fontset-font t 'unicode (font-spec :name "XITS Math") nil 'prepend))
+(defun my-screen-27 ()
+  "Adjust font for 27 inch screen."
+  (interactive)
+  (set-face-attribute 'default nil :family "JetBrainsMono NF" :height 140))
 
 (use-package rainbow-mode
   :hook (prog-mode . rainbow-mode))
@@ -383,6 +386,7 @@ current buffer within the project or the current directory if not in a project."
 (when (equal system-type 'darwin)
   (setq
    mac-command-modifier 'none
+   mac-function-modifier 'control
    mac-option-modifier 'meta)
   (keymap-global-set "<home>" 'move-beginning-of-line)
   (keymap-global-set "<end>" 'move-end-of-line)
@@ -400,11 +404,11 @@ current buffer within the project or the current directory if not in a project."
 
 (use-package keycast)
 
-(use-package greek-unicode-insert
-  :vc (:url "https://github.com/Malabarba/greek-unicode-insert")
-  :init (setq greek-unicode-insert-key "`"))
-;  :bind ("`" . greek-unicode-insert-map))
-; :bind ("²" . greek-unicode-insert-map))
+(unless (equal system-type 'darwin)
+  (use-package greek-unicode-insert
+    :vc (:url "https://github.com/Malabarba/greek-unicode-insert")
+    :bind ("²" . greek-unicode-insert-map)))
+; :init (setq greek-unicode-insert-key "`"))
 
 (use-package smartparens
   :ensure smartparens  ;; install the package
@@ -954,6 +958,10 @@ same directory as the working and insert a link to this file."
   :defer t
   :custom
   (org-odt-preferred-output-format "docx")) ; require soffice to be on the PATH
+
+(use-package ox-beamer
+  :ensure nil
+  :after ox)
 
 (use-package ox-reveal
   :after ox
