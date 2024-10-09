@@ -67,10 +67,21 @@
   (set-face-attribute 'variable-pitch nil :family "Noto Sans" :height 1.2)
   ;;   Additional font for some unicode characters missing in prettify symbols
   (set-fontset-font t 'unicode (font-spec :name "XITS Math") nil 'prepend))
+
 (defun my-screen-27 ()
   "Adjust font for 27 inch screen."
   (interactive)
-  (set-face-attribute 'default nil :family "JetBrainsMono NF" :height 140))
+  (set-face-attribute 'default nil :family "JetBrainsMono NF" :height 140)
+  (setq org-format-latex-options
+          (plist-put org-format-latex-options :scale 1.8)
+        preview-scale-function 1.3))
+(defun my-screen-default ()
+  "Adjust font for default screen."
+  (interactive)
+  (set-face-attribute 'default nil :family "JetBrainsMono NF" :height 120)
+  (setq org-format-latex-options
+          (plist-put org-format-latex-options :scale 1.7)
+        preview-scale-function 1.2))
 
 (use-package rainbow-mode
   :hook (prog-mode . rainbow-mode))
@@ -400,22 +411,22 @@ current buffer within the project or the current directory if not in a project."
   (keymap-global-set "M-!" (lambda () (interactive) (insert "\\")))
   (keymap-global-set "M-à" (lambda () (interactive) (insert "@")))
   (keymap-global-set "M-)" (lambda () (interactive) (insert "]")))
-  (keymap-global-set "M--" (lambda () (interactive) (insert "}"))))
+  (keymap-global-set "M--" (lambda () (interactive) (insert "}")))
+  (keymap-global-set "M-e" (lambda () (interactive) (insert "€")))
+  )
 
 (use-package keycast)
 
-(unless (equal system-type 'darwin)
+(unless (eq system-type 'darwin)
   (use-package greek-unicode-insert
     :vc (:url "https://github.com/Malabarba/greek-unicode-insert")
     :bind ("²" . greek-unicode-insert-map)))
 ; :init (setq greek-unicode-insert-key "`"))
 
-(use-package smartparens
-  :ensure smartparens  ;; install the package
-  :hook (prog-mode markdown-mode yaml-mode)
+(use-package elec-pair
+  :ensure nil
   :config
-  ;; load default config
-  (require 'smartparens-config))
+  (electric-pair-mode))
 
 (use-package which-key
   :diminish which-key-mode
@@ -710,6 +721,7 @@ current buffer within the project or the current directory if not in a project."
   (preview-auto-cache-preamble t)
   (preview-default-option-list '("displaymath" "graphics" "textmath"))
   (preview-auto-reveal t)
+  (preview-scale-function 1.0)
 
   ;; Fold-mode
   (TeX-fold-auto-reveal t)
@@ -917,6 +929,8 @@ same directory as the working and insert a link to this file."
   :config
   (unless (equal system-type 'darwin)
     (org-defkey org-cdlatex-mode-map "²" 'cdlatex-math-symbol))
+  (setq org-format-latex-options
+	(plist-put org-format-latex-options :scale 1.6))
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((emacs-lisp . t)
@@ -948,10 +962,10 @@ same directory as the working and insert a link to this file."
   (org-cite-csl-styles-dir (substitute-in-file-name "${DROPBOX}/Bibliography/csl"))
   :bind (:map org-mode-map ("C-c [" . org-cite-insert)))
 
-(use-package oxr
-  :after org
-  :vc (:url "https://github.com/bdarcus/oxr")
-  :bind (:map org-mode-map ("C-c ]" . oxr-insert-ref)))
+;; (use-package oxr
+;;   :after org
+;;   :vc (:url "https://github.com/bdarcus/oxr")
+;;   :bind (:map org-mode-map ("C-c ]" . oxr-insert-ref)))
 
 (use-package ox
   :ensure nil
@@ -1319,9 +1333,6 @@ same directory as the working and insert a link to this file."
 	      ("M-C-TAB"   . yas-next-field-or-maybe-expand)
 	      ("M-C-<tab>" . yas-next-field-or-maybe-expand)))
 
-;; (use-package ess
-;;   :init
-;;   (require 'ess-site)
 (use-package ess-site
   :ensure ess
   :mode
