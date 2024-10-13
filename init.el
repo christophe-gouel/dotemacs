@@ -286,6 +286,18 @@
   :config
   (flimenu-global-mode))
 
+(use-package calc
+  :defer t)
+
+(use-package casual-calc
+  :after calc
+  :bind (:map
+         calc-mode-map
+         ("C-o" . casual-calc-tmenu)
+         :map
+         calc-alg-map
+         ("C-o" . casual-calc-tmenu)))
+
 (use-package doc-view
   :ensure nil
   :if (display-graphic-p)
@@ -417,7 +429,7 @@ current buffer within the project or the current directory if not in a project."
 
 (use-package keycast)
 
-(unless (eq system-type 'darwin)
+(unless (equal system-type 'darwin)
   (use-package greek-unicode-insert
     :vc (:url "https://github.com/Malabarba/greek-unicode-insert")
     :bind ("²" . greek-unicode-insert-map)))
@@ -962,10 +974,10 @@ same directory as the working and insert a link to this file."
   (org-cite-csl-styles-dir (substitute-in-file-name "${DROPBOX}/Bibliography/csl"))
   :bind (:map org-mode-map ("C-c [" . org-cite-insert)))
 
-;; (use-package oxr
-;;   :after org
-;;   :vc (:url "https://github.com/bdarcus/oxr")
-;;   :bind (:map org-mode-map ("C-c ]" . oxr-insert-ref)))
+(use-package oxr
+  :after org
+  :vc (:url "https://github.com/bdarcus/oxr")
+  :bind (:map org-mode-map ("C-c ]" . oxr-insert-ref)))
 
 (use-package ox
   :ensure nil

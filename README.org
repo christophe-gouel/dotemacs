@@ -420,6 +420,21 @@ Flatten =imenu= so that we can jump to any subheading from the main menu.
   (flimenu-global-mode))
 #+end_src
 
+** Calc
+
+#+begin_src emacs-lisp
+(use-package calc
+  :defer t)
+
+(use-package casual-calc
+  :after calc
+  :bind (:map
+         calc-mode-map
+         ("C-o" . casual-calc-tmenu)
+         :map
+         calc-alg-map
+         ("C-o" . casual-calc-tmenu)))
+#+end_src
 ** PDF viewers
 
 #+begin_src emacs-lisp
