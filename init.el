@@ -698,7 +698,6 @@ current buffer within the project or the current directory if not in a project."
   :ensure auctex
   :hook
   (TeX-mode . latex-math-mode)
-  (TeX-mode . turn-on-reftex)
   (TeX-mode . TeX-fold-buffer)
   (TeX-mode . flymake-mode)
   :hook
@@ -800,6 +799,8 @@ current buffer within the project or the current directory if not in a project."
 	("<f9>" . my-tex-compile)))
 
 (use-package reftex
+  :hook
+  (TeX-mode . turn-on-reftex)
   :bind (:map reftex-mode-map
 	      ("C-c f" . reftex-fancyref-fref)
 	      ("C-c F" . reftex-fancyref-Fref)
@@ -817,7 +818,9 @@ current buffer within the project or the current directory if not in a project."
   (reftex-use-multiple-selection-buffers t))
 
 (use-package preview-dvisvgm
-  :after latex)
+  :after latex
+  :custom
+  (preview-image-type 'dvisvgm))
 
 (use-package preview
   :ensure nil
@@ -825,17 +828,15 @@ current buffer within the project or the current directory if not in a project."
   :custom
   (preview-auto-cache-preamble t)
   (preview-auto-reveal t)
-  (preview-default-option-list '("displaymath" "graphics" "textmath"))
-  (preview-scale-function 1.5)
-  (preview-image-type 'dvisvgm)
-  ;; Options for preview-auto
-  (preview-leave-open-previews-visible t)
-  (preview-locating-previews-message nil)
-  (preview-protect-point t))
+  (preview-default-option-list '("displaymath" "textmath"))
+  (preview-scale-function 1.5))
 
 (use-package preview-auto
   :after latex
   :custom
+  (preview-leave-open-previews-visible t)
+  (preview-locating-previews-message nil)
+  (preview-protect-point t)
   (preview-auto-interval 0.1))
 
 (use-package cdlatex
