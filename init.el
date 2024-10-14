@@ -404,7 +404,6 @@ current buffer within the project or the current directory if not in a project."
 (keymap-global-set "C-<apps>" 'menu-bar-mode)
 (keymap-global-set "C-<menu>" 'menu-bar-mode) ; For Linux
 (keymap-global-set "<f5>" 'revert-buffer)
-(global-set-key [remap dabbrev-expand] 'hippie-expand)
 
 (when (equal system-type 'darwin)
   (setq
@@ -768,6 +767,12 @@ current buffer within the project or the current directory if not in a project."
   (add-hook 'TeX-after-compilation-finished-functions
 	    #'TeX-revert-document-buffer)
 
+  ;; To prevent TeX-view from jumping to the _region_.pdf file created by the preview
+  ;; from https://tex.stackexchange.com/questions/89399/auctex-how-to-jump-to-pdf-with-synctex-without-recompile-when-inline-preview
+  (defadvice TeX-view (around always-view-master-file activate)
+    (let ((TeX-current-process-region-p nil))
+      ad-do-it))
+
   (defun my-tex-compile ()
     "Save and compile TeX document"
     (interactive)
@@ -811,6 +816,9 @@ current buffer within the project or the current directory if not in a project."
   (reftex-save-parse-info t)
   (reftex-use-multiple-selection-buffers t))
 
+(use-package preview-dvisvgm
+  :after latex)
+
 (use-package preview
   :ensure nil
   :after latex
@@ -818,8 +826,8 @@ current buffer within the project or the current directory if not in a project."
   (preview-auto-cache-preamble t)
   (preview-auto-reveal t)
   (preview-default-option-list '("displaymath" "graphics" "textmath"))
-  (preview-scale-function 1.0)
-  ;; (preview-scale-image-type 'dvisvgm)
+  (preview-scale-function 1.5)
+  (preview-image-type 'dvisvgm)
   ;; Options for preview-auto
   (preview-leave-open-previews-visible t)
   (preview-locating-previews-message nil)
