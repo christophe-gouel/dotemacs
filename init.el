@@ -729,12 +729,6 @@ current buffer within the project or the current directory if not in a project."
   (TeX-source-correlate-start-server t)
   ;; (TeX-source-correlate-method (quote synctex))
 
-  ;; Preview
-  (preview-auto-cache-preamble t)
-  (preview-default-option-list '("displaymath" "graphics" "textmath"))
-  (preview-auto-reveal t)
-  (preview-scale-function 1.0)
-
   ;; Fold-mode
   (TeX-fold-auto-reveal t)
   ;; Personalize the list of commands to be folded
@@ -760,11 +754,10 @@ current buffer within the project or the current directory if not in a project."
      ("TM"
       ("texttrademark"))
      (1
-      ("part" "chapter" "section" "subsection" "subsubsection" "
-paragraph" "subparagraph" "part*" "chapter*" "section*" "
-subsection*" "subsubsection*" "paragraph*" "subparagraph*" "emph" "
-textit" "textsl" "textmd" "textrm" "textsf" "texttt" "textbf" "
-textsc" "textup"))))
+      ("part" "chapter" "section" "subsection" "subsubsection" "paragraph" "subparagraph"
+       "part*" "chapter*" "section*" "subsection*" "subsubsection*" "paragraph*"
+       "subparagraph*" "emph" "textit" "textsl" "textmd" "textrm" "textsf" "texttt" "textbf"
+       "textsc" "textup"))))
   ;; Prevent folding of math to let prettify-symbols do the job
   (TeX-fold-math-spec-list-internal nil)
   (TeX-fold-math-spec-list nil)
@@ -817,6 +810,25 @@ textsc" "textup"))))
   (reftex-enable-partial-scans t)
   (reftex-save-parse-info t)
   (reftex-use-multiple-selection-buffers t))
+
+(use-package preview
+  :ensure nil
+  :after latex
+  :custom
+  (preview-auto-cache-preamble t)
+  (preview-auto-reveal t)
+  (preview-default-option-list '("displaymath" "graphics" "textmath"))
+  (preview-scale-function 1.0)
+  ;; (preview-scale-image-type 'dvisvgm)
+  ;; Options for preview-auto
+  (preview-leave-open-previews-visible t)
+  (preview-locating-previews-message nil)
+  (preview-protect-point t))
+
+(use-package preview-auto
+  :after latex
+  :custom
+  (preview-auto-interval 0.1))
 
 (use-package cdlatex
   :hook
