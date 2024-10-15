@@ -394,9 +394,6 @@ current buffer within the project or the current directory if not in a project."
   :config
   (windmove-default-keybindings))
 
-(put 'downcase-region 'disabled nil)
-(put 'upcase-region 'disabled nil)
-
 ;; Remove a bug appearing on Linux GTK and preventing the use of S-space (https://lists.gnu.org/archive/html/bug-gnu-emacs/2021-07/msg00071.html)
 (when (equal window-system 'pgtk)
   (setq pgtk-use-im-context-on-new-connection nil))
@@ -404,6 +401,10 @@ current buffer within the project or the current directory if not in a project."
 (keymap-global-set "C-<apps>" 'menu-bar-mode)
 (keymap-global-set "C-<menu>" 'menu-bar-mode) ; For Linux
 (keymap-global-set "<f5>" 'revert-buffer)
+;; Replace upcase-word, downcase-word, and capitalize-word by DWIM versions
+(keymap-global-set "M-u" 'upcase-dwim)
+(keymap-global-set "M-l" 'downcase-dwim)
+(keymap-global-set "M-c" 'capitalize-dwim)
 
 (when (equal system-type 'darwin)
   (setq

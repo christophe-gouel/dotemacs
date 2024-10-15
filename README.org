@@ -574,12 +574,6 @@ Use =outline-minor-faces= to use a special face for outline sections.
 #+end_src
 * Keys
 
-Activate lower- and upper-case commands ("C-x C-l" and "C-x C-u")
-#+begin_src emacs-lisp
-(put 'downcase-region 'disabled nil)
-(put 'upcase-region 'disabled nil)
-#+end_src
-
 ** Custom keybindings
 
 #+begin_src emacs-lisp
@@ -590,6 +584,10 @@ Activate lower- and upper-case commands ("C-x C-l" and "C-x C-u")
 (keymap-global-set "C-<apps>" 'menu-bar-mode)
 (keymap-global-set "C-<menu>" 'menu-bar-mode) ; For Linux
 (keymap-global-set "<f5>" 'revert-buffer)
+;; Replace upcase-word, downcase-word, and capitalize-word by DWIM versions
+(keymap-global-set "M-u" 'upcase-dwim)
+(keymap-global-set "M-l" 'downcase-dwim)
+(keymap-global-set "M-c" 'capitalize-dwim)
 #+end_src
 
 MacOS specific keybindings
