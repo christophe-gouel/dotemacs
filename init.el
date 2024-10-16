@@ -74,14 +74,14 @@
   (set-face-attribute 'default nil :family "JetBrainsMono NF" :height 140)
   (setq org-format-latex-options
           (plist-put org-format-latex-options :scale 1.8)
-        preview-scale-function 1.3))
+        preview-scale-function 2))
 (defun my-screen-default ()
   "Adjust font for default screen."
   (interactive)
   (set-face-attribute 'default nil :family "JetBrainsMono NF" :height 120)
   (setq org-format-latex-options
           (plist-put org-format-latex-options :scale 1.7)
-        preview-scale-function 1.2))
+        preview-scale-function 1.5))
 
 (use-package rainbow-mode
   :hook (prog-mode . rainbow-mode))
@@ -756,7 +756,7 @@ current buffer within the project or the current directory if not in a project."
       ("part" "chapter" "section" "subsection" "subsubsection" "paragraph" "subparagraph"
        "part*" "chapter*" "section*" "subsection*" "subsubsection*" "paragraph*"
        "subparagraph*" "emph" "textit" "textsl" "textmd" "textrm" "textsf" "texttt" "textbf"
-       "textsc" "textup"))))
+       "textsc" "textup" "caption"))))
   ;; Prevent folding of math to let prettify-symbols do the job
   (TeX-fold-math-spec-list-internal nil)
   (TeX-fold-math-spec-list nil)
