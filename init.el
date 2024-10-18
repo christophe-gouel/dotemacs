@@ -92,16 +92,14 @@
 (use-package nerd-icons-dired
   :hook
   (dired-mode . nerd-icons-dired-mode))
-(use-package nerd-icons-ivy-rich
-  :after counsel
-  :init
-  (nerd-icons-ivy-rich-mode 1)
-  (ivy-rich-mode 1))
 (use-package nerd-icons-ibuffer
   :hook (ibuffer-mode . nerd-icons-ibuffer-mode))
 (use-package nerd-icons-completion
+  :after marginalia
   :config
-  (nerd-icons-completion-mode))
+  (nerd-icons-completion-mode)
+  :hook
+  (marginalia-mode . nerd-icons-completion-marginalia-setup))
 
 (use-package ligature
   :config
@@ -530,44 +528,43 @@ current buffer within the project or the current directory if not in a project."
   :config
   (company-prescient-mode))
 
-(use-package counsel
-  :config
-  (counsel-mode))
-
-(use-package ivy
-  :demand
-  :custom
-  (ivy-use-virtual-buffers t)
-  (ivy-count-format "%d/%d ")
-  :config
-  (ivy-mode)
-  (ivy-configure 'counsel-imenu
-    :update-fn 'auto))
-
-(use-package swiper
-  :bind ("C-s" . my-search-method-according-to-numlines)
-  :config
-  ;; swiper is slow for large files so it is replaced by isearch for large files
-  (defun my-search-method-according-to-numlines ()
-    "Determine the number of lines of current buffer and chooses a
- search method accordingly."
-    (interactive)
-    (if (< (count-lines (point-min) (point-max)) 20000)
-	(swiper)
-      (isearch-forward))))
-
-(use-package ivy-xref
+(use-package vertico
   :init
-  (setq xref-show-definitions-function #'ivy-xref-show-defs))
+  (vertico-mode)
+  :bind
+  (:map vertico-map
+	("<next>"  . vertico-scroll-up)
+	("<prior>" . vertico-scroll-down)))
 
-(use-package ivy-prescient
-  :after counsel
-  :config
-  (ivy-prescient-mode))
+(use-package vertico-directory
+  :after vertico
+  :ensure nil
+  :bind
+  (:map vertico-map	("DEL" . vertico-directory-delete-char)))
 
-(use-package ivy-rich
-  :after nerd-icons-ivy-rich
-  :init (ivy-rich-mode +1))
+(use-package orderless
+  :custom
+  (completion-styles '(orderless basic)))
+
+(use-package marginalia
+  :init
+  (marginalia-mode))
+
+(use-package consult
+  :bind
+  (("C-x b" . consult-buffer)
+   ("M-y"   . consult-yank-pop)
+   ;; M-s bindings in `search-map'
+   ("M-s c" . consult-locate)
+   ("M-s g" . consult-grep)
+   ("M-s G" . consult-git-grep)
+   ("M-s r" . consult-ripgrep)
+   ("M-s l" . consult-line)))
+
+(use-package vertico-prescient
+  :after vertico
+  :init
+  (vertico-prescient-mode))
 
 (use-package magit
   :init
@@ -1049,12 +1046,7 @@ same directory as the working and insert a link to this file."
 (use-package flyspell-correct
   :after flyspell
   :bind (:map flyspell-mode-map
-		  ("M-$" . flyspell-correct-at-point))
-  )
-
-(use-package flyspell-correct-ivy
-  :demand t
-  :after flyspell-correct)
+		  ("M-$" . flyspell-correct-at-point)))
 
 (defun my-unfill-paragraph ()
   "Unfill paragraph."
