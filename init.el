@@ -64,7 +64,7 @@
   ;; Fonts and unicode characters
   ;;   Main font
   (set-face-attribute 'default nil :family "JetBrainsMono NF" :height 120)
-  (set-face-attribute 'variable-pitch nil :family "Noto Sans" :height 1.2)
+  (set-face-attribute 'variable-pitch nil :family "Noto Serif" :height 1.2 :weight 'semi-light)
   ;;   Additional font for some unicode characters missing in prettify symbols
   (set-fontset-font t 'unicode (font-spec :name "XITS Math") nil 'prepend))
 
