@@ -1585,7 +1585,7 @@ buffer with C-c C-a C-a C-a ...."
   (gams-indent-number-loop 2)
   (gams-indent-number-mpsge 2)
   (gams-indent-number-equation 2)
-  ;; :mode ("\\.gms\\'" . gams-mode)
+  :mode ("\\.gms\\'" . gams-mode)
   :config
   (if (equal system-type 'windows-nt)
       (setq gams-system-directory "C:/GAMS/Last/"
@@ -1595,10 +1595,10 @@ buffer with C-c C-a C-a C-a ...."
   :bind (:map gams-mode-map
               ("C-c =" . gams-show-identifier-list)))
 
-(use-package poly-gams
-  ;; :vc (:fetcher github :repo ShiroTakeda/poly-gams)
-  ;; :load-path "~/Documents/git_projects/code/poly-gams"
-  :mode ("\\.inc\\'" . poly-gams-mode))
+;; (use-package poly-gams
+;;   ;; :vc (:fetcher github :repo ShiroTakeda/poly-gams)
+;;   ;; :load-path "~/Documents/git_projects/code/poly-gams"
+;;   :mode ("\\.inc\\'" . poly-gams-mode))
 
 (use-package julia-mode
   :defer t)
