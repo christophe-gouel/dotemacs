@@ -103,7 +103,7 @@ Remove menu, scrool-bar, tool-bar, and tooltip
   ;; Fonts and unicode characters
   ;;   Main font
   (set-face-attribute 'default nil :family "JetBrainsMono NF" :height 120)
-  (set-face-attribute 'variable-pitch nil :family "Noto Serif" :height 1.2 :weight 'semi-light)
+  (set-face-attribute 'variable-pitch nil :family "Noto Serif" :height 1.2)
   ;;   Additional font for some unicode characters missing in prettify symbols
   (set-fontset-font t 'unicode (font-spec :name "XITS Math") nil 'prepend))
 
@@ -129,6 +129,14 @@ To list all available fonts, use
   (insert (format "%s\n" font)))
 #+end_src
 
+Use =mixed-pitch= to have a proportional font for text and a monospace font for code:
+
+#+begin_src emacs-lisp
+(use-package mixed-pitch
+  :hook
+  (text-mode . mixed-pitch-mode))
+#+end_src
+
 ** Hex color codes displayed in color
 
 #+begin_src emacs-lisp
@@ -141,7 +149,7 @@ To list all available fonts, use
 #+begin_src emacs-lisp
 (use-package nerd-icons
   :custom
-  (nerd-icons-font-family "Symbols Nerd Font Mono"))
+  (nerd-icons-font-family "Symbols Nerd Font Mono")) ; JetBrains font did not work well
 (use-package nerd-icons-dired
   :hook
   (dired-mode . nerd-icons-dired-mode))
@@ -229,7 +237,6 @@ Set up encoding to Unicode
 #+begin_src emacs-lisp
 (set-language-environment "UTF-8")
 (prefer-coding-system       'utf-8)
-;; (setq locale-coding-system 'utf-8) ; Mess up dired buffer under windows
 (set-selection-coding-system 'utf-8)
 (set-default-coding-systems 'utf-8)
 (set-terminal-coding-system 'utf-8)
@@ -249,24 +256,8 @@ Set up encoding to Unicode
 
 ** Scratch buffer
 
-Make the scratch buffer an =org-mode= buffer and remove the scratch message.
-
 #+begin_src emacs-lisp
-(setq
- ;; initial-major-mode 'org-mode
-      initial-scratch-message nil)
-#+end_src
-
-** Shell
-
-#+begin_src emacs-lisp
-(use-package comint
-  :ensure nil
-  :defer t
-  :custom
-  (comint-scroll-to-bottom-on-input 'this)
-  (comint-scroll-to-bottom-on-output t)
-  (comint-move-point-for-output t))
+(setq initial-scratch-message nil)
 #+end_src
 
 ** Other Emacs settings
@@ -285,8 +276,9 @@ Make the scratch buffer an =org-mode= buffer and remove the scratch message.
       ring-bell-function 'ignore ; disable the bell (useful for macOS)
       ;; Options to make lsp usable in emacs (from
       ;; https://emacs-lsp.github.io/lsp-mode/page/performance/)
-      gc-cons-threshold (* 10 800000)
-      read-process-output-max (* 1024 1024))
+      ;; gc-cons-threshold (* 10 800000)
+      ;; read-process-output-max (* 1024 1024)
+      )
 (setq-default mouse-yank-at-point t     ; coller avec la souris
               case-fold-search t)       ; recherche sans égard à la casse
 (delete-selection-mode t)               ; entrée efface texte sélectionné
@@ -341,7 +333,11 @@ Make the scratch buffer an =org-mode= buffer and remove the scratch message.
   (dired-mode . (lambda ()
                   (dired-hide-details-mode)))
   (dired-mode . auto-revert-mode))
+#+end_src
 
+=diredfl= is for more font-locking in dired (e.g., file extensions):
+
+#+begin_src emacs-lisp
 (use-package diredfl
   :hook
   (dired-mode . diredfl-mode))
@@ -392,6 +388,8 @@ Gather buffers per project in =ibuffer= using =ibuffer-project=.
   (imenu-auto-rescan t))
 #+end_src
 
+Show imenu in a separate buffer with =imenu-list=:
+
 #+begin_src emacs-lisp
 (use-package imenu-list
   :bind
@@ -421,9 +419,6 @@ Flatten =imenu= so that we can jump to any subheading from the main menu.
 ** Calc
 
 #+begin_src emacs-lisp
-(use-package calc
-  :defer t)
-
 (use-package casual-calc
   :after calc
   :bind (:map
@@ -433,6 +428,7 @@ Flatten =imenu= so that we can jump to any subheading from the main menu.
          calc-alg-map
          ("C-o" . casual-calc-tmenu)))
 #+end_src
+
 ** PDF viewers
 
 #+begin_src emacs-lisp
@@ -450,19 +446,10 @@ Flatten =imenu= so that we can jump to any subheading from the main menu.
   :mode  ("\\.pdf\\'" . pdf-view-mode)
   :bind (:map pdf-view-mode-map
 	      ("C-s" . isearch-forward))
-  ;; :init
-  ;; (pdf-tools-install)  ; Standard activation command
-  ;; (pdf-loader-install) ; On demand loading, leads to faster startup time
   :custom
   (pdf-view-display-size 'fit-page)
   :config
-  (pdf-tools-install)
-  ;; (setq TeX-view-program-selection '((output-pdf "PDF Tools"))
-  ;; 	TeX-view-program-list '(("PDF Tools" TeX-pdf-tools-sync-view))
-  ;; 	TeX-source-correlate-start-server t)
-  ;; (add-hook 'TeX-after-compilation-finished-functions
-  ;; 	    #'TeX-revert-document-buffer)
-  )
+  (pdf-tools-install))
 #+end_src
 
 ** Proced
@@ -570,8 +557,8 @@ Use =outline-minor-faces= to use a special face for outline sections.
   :config
   (windmove-default-keybindings))
 #+end_src
-* Keys
 
+* Keys
 ** Custom keybindings
 
 #+begin_src emacs-lisp
@@ -579,7 +566,7 @@ Use =outline-minor-faces= to use a special face for outline sections.
 (when (equal window-system 'pgtk)
   (setq pgtk-use-im-context-on-new-connection nil))
 (keymap-global-set "C-x C-b" 'ibuffer)
-(keymap-global-set "C-<apps>" 'menu-bar-mode)
+(keymap-global-set "C-<apps>" 'menu-bar-mode) ; for Windows
 (keymap-global-set "C-<menu>" 'menu-bar-mode) ; For Linux
 (keymap-global-set "<f5>" 'revert-buffer)
 ;; Replace upcase-word, downcase-word, and capitalize-word by DWIM versions
@@ -593,7 +580,7 @@ MacOS specific keybindings
 #+begin_src emacs-lisp
 (when (equal system-type 'darwin)
   (setq
-   mac-command-modifier 'none
+   mac-command-modifier 'meta
    mac-function-modifier 'control
    mac-option-modifier 'meta)
   (keymap-global-set "<home>" 'move-beginning-of-line)
@@ -609,8 +596,7 @@ MacOS specific keybindings
   (keymap-global-set "M-à" (lambda () (interactive) (insert "@")))
   (keymap-global-set "M-)" (lambda () (interactive) (insert "]")))
   (keymap-global-set "M--" (lambda () (interactive) (insert "}")))
-  (keymap-global-set "M-e" (lambda () (interactive) (insert "€")))
-  )
+  (keymap-global-set "M-e" (lambda () (interactive) (insert "€"))))
 #+end_src
 
 ** Keycast
@@ -618,7 +604,8 @@ MacOS specific keybindings
 =keycast= displays the Emacs command name corresponding to keybindings.
 
 #+begin_src emacs-lisp
-(use-package keycast)
+(use-package keycast
+  :defer t)
 #+end_src
 
 ** Insert Greek letters in Unicode
@@ -731,16 +718,26 @@ MacOS specific keybindings
 
 (use-package company-jedi)
 
-(setq company-backends
-      (append
-       '((:separate
-	  ;; deactivate company-reftex-labels because it is too slow
-	  ;; company-reftex-labels
-	  company-reftex-citations
-	  company-math-symbols-latex
-	  company-math-symbols-unicode
-	  company-latex-commands))
-       company-backends))
+(if (not (equal system-type 'windows-nt))
+    (setq company-backends
+	  (append
+	   '((:separate
+	      company-reftex-labels
+	      company-reftex-citations
+	      company-math-symbols-latex
+	      company-math-symbols-unicode
+	      company-latex-commands))
+	   company-backends))
+  ;; deactivate company-reftex-labels on Windows because it is too slow
+  (setq company-backends
+	(append
+	 '((:separate
+	    company-reftex-citations
+	    company-math-symbols-latex
+	    company-math-symbols-unicode
+	    company-latex-commands))
+	 company-backends)))
+
 #+end_src
 
 Use =company-box= for a better position of the autocompletion when using copilot.
@@ -883,17 +880,34 @@ Support for syntax highlighting of Git configuration files
   (add-to-list 'gptel-directives '(academic . "You are an editor specialized in academic paper in economics. You are here to help me generate the best text for my academic articles. I will provide you texts and I would like you to review them for any spelling, grammar, or punctuation errors. Do not stop at simple proofreading, if it is useful, propose to refine the content's structure, style, and clarity. Once you have finished editing the text, provide me with any necessary corrections or suggestions for improving the text.")))
 #+end_src
 
-** Other shells
+** eshell
 
 #+begin_src emacs-lisp
 (use-package eshell-git-prompt
-  :defer t
+  :defer 2
   :config
   (eshell-git-prompt-use-theme 'powerline))
+#+end_src
 
-(add-hook 'shell-mode-hook
-      (lambda ()
-        (face-remap-set-base 'comint-highlight-prompt :inherit nil)))
+**  Other shells
+
+#+begin_src emacs-lisp
+(use-package comint
+  :ensure nil
+  :defer t
+  :custom
+  (comint-scroll-to-bottom-on-input 'this)
+  (comint-scroll-to-bottom-on-output t)
+  (comint-move-point-for-output t))
+#+end_src
+
+#+begin_src emacs-lisp
+(use-package shell
+  :ensure nil
+  :defer t
+  :hook
+  (shell-mode . (lambda ()
+		  (face-remap-set-base 'comint-highlight-prompt :inherit nil))))
 #+end_src
 
 * Text
@@ -902,7 +916,7 @@ Support for syntax highlighting of Git configuration files
 #+begin_src emacs-lisp
 (use-package citar
   :after (org nerd-icons)
-    :hook
+  :hook
   (org-mode . citar-capf-setup)
   :bind
   (:map org-mode-map :package org ("C-c b" . #'org-cite-insert))
@@ -982,6 +996,7 @@ Support for syntax highlighting of Git configuration files
   (TeX-mode . latex-math-mode)
   (TeX-mode . TeX-fold-buffer)
   (TeX-mode . flymake-mode)
+  (TeX-mode . my-center-text)
   :hook
   (TeX-mode . TeX-fold-mode)
   :custom
@@ -990,7 +1005,6 @@ Support for syntax highlighting of Git configuration files
   (TeX-parse-self t)
   (LaTeX-item-indent 0)
   (LaTeX-default-options "12pt")
-  ;; (LaTeX-math-abbrev-prefix "²")
   (TeX-PDF-mode t)
   (TeX-electric-sub-and-superscript 1)
   (LaTeX-math-list
@@ -1102,7 +1116,7 @@ Support for syntax highlighting of Git configuration files
   (reftex-use-multiple-selection-buffers t))
 #+end_src
 
-Use svg for previews. Much slower than png, but it is not blurry.
+Use svg for previews. Much slower than png, but it is not blurry on MacOS.
 
 #+begin_src emacs-lisp
 (use-package preview-dvisvgm
@@ -1223,8 +1237,6 @@ same directory as the working and insert a link to this file."
     (let ((reftex-cite-format markdown-cite-format)
           (reftex-cite-key-separator "; @"))
       (reftex-citation)))
-  ;; :hook
-  ;; (markdown-mode . (lambda () (math-preview-all)))
   :bind (:map markdown-mode-map
 	      ("C-c [" . my-markdown-reftex-citation)))
 
@@ -1243,7 +1255,6 @@ same directory as the working and insert a link to this file."
   :hook
   (org-mode . turn-on-org-cdlatex)
   :custom
-  ;; (org-export-with-LaTeX-fragments t)       ; Export LaTeX fragment to HTML
   (org-edit-src-content-indentation 0)
   (org-todo-keywords '((type "TODO(t)" "STARTED(s)" "WAITING(w)" "|" "DONE(d)")))
   (org-tag-alist '(("OFFICE" . ?o) ("COMPUTER" . ?c) ("HOME" . ?h) ("PROJECT" . ?p) ("CALL" . ?a) ("ERRANDS" . ?e) ("TASK" . ?t)))
@@ -1304,8 +1315,6 @@ For a modern-looking =org-mode=, use =org-modern=.
   :hook
   (org-mode . org-fragtog-mode))
 #+end_src
-
-
 
 *** Bibliographic references and cross-references in org
 
@@ -1435,7 +1444,8 @@ Use =visual-fill-column= for text modes
     (interactive)
     (visual-line-mode 'toggle)
     (visual-fill-column-mode 'toggle)
-    ;; org-indent does play nicely with adaptive-wrap-prefix-mode so we exclude the later in org
+    ;; org-indent does not play nicely with adaptive-wrap-prefix-mode so we exclude
+    ;; the later in org
     (unless (member major-mode '(org-mode))
       (adaptive-wrap-prefix-mode 'toggle)))
 

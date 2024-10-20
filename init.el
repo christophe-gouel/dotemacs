@@ -64,7 +64,7 @@
   ;; Fonts and unicode characters
   ;;   Main font
   (set-face-attribute 'default nil :family "JetBrainsMono NF" :height 120)
-  (set-face-attribute 'variable-pitch nil :family "Noto Serif" :height 1.2 :weight 'semi-light)
+  (set-face-attribute 'variable-pitch nil :family "Noto Serif" :height 1.2)
   ;;   Additional font for some unicode characters missing in prettify symbols
   (set-fontset-font t 'unicode (font-spec :name "XITS Math") nil 'prepend))
 
@@ -83,12 +83,16 @@
           (plist-put org-format-latex-options :scale 1.7)
         preview-scale-function 1.5))
 
+(use-package mixed-pitch
+  :hook
+  (text-mode . mixed-pitch-mode))
+
 (use-package rainbow-mode
   :hook (prog-mode . rainbow-mode))
 
 (use-package nerd-icons
   :custom
-  (nerd-icons-font-family "Symbols Nerd Font Mono"))
+  (nerd-icons-font-family "Symbols Nerd Font Mono")) ; JetBrains font did not work well
 (use-package nerd-icons-dired
   :hook
   (dired-mode . nerd-icons-dired-mode))
@@ -154,7 +158,6 @@
 
 (set-language-environment "UTF-8")
 (prefer-coding-system       'utf-8)
-;; (setq locale-coding-system 'utf-8) ; Mess up dired buffer under windows
 (set-selection-coding-system 'utf-8)
 (set-default-coding-systems 'utf-8)
 (set-terminal-coding-system 'utf-8)
@@ -167,17 +170,7 @@
 (setq user-full-name "Christophe Gouel"
       user-mail-address "christophe.gouel@inrae.fr")
 
-(setq
- ;; initial-major-mode 'org-mode
-      initial-scratch-message nil)
-
-(use-package comint
-  :ensure nil
-  :defer t
-  :custom
-  (comint-scroll-to-bottom-on-input 'this)
-  (comint-scroll-to-bottom-on-output t)
-  (comint-move-point-for-output t))
+(setq initial-scratch-message nil)
 
 (setq show-paren-mode t ; coupler les parenthèses
       auth-sources '("~/.authinfo") ; Define file that stores secrets
@@ -192,8 +185,9 @@
       ring-bell-function 'ignore ; disable the bell (useful for macOS)
       ;; Options to make lsp usable in emacs (from
       ;; https://emacs-lsp.github.io/lsp-mode/page/performance/)
-      gc-cons-threshold (* 10 800000)
-      read-process-output-max (* 1024 1024))
+      ;; gc-cons-threshold (* 10 800000)
+      ;; read-process-output-max (* 1024 1024)
+      )
 (setq-default mouse-yank-at-point t     ; coller avec la souris
               case-fold-search t)       ; recherche sans égard à la casse
 (delete-selection-mode t)               ; entrée efface texte sélectionné
@@ -284,9 +278,6 @@
   :config
   (flimenu-global-mode))
 
-(use-package calc
-  :defer t)
-
 (use-package casual-calc
   :after calc
   :bind (:map
@@ -308,19 +299,10 @@
   :mode  ("\\.pdf\\'" . pdf-view-mode)
   :bind (:map pdf-view-mode-map
 	      ("C-s" . isearch-forward))
-  ;; :init
-  ;; (pdf-tools-install)  ; Standard activation command
-  ;; (pdf-loader-install) ; On demand loading, leads to faster startup time
   :custom
   (pdf-view-display-size 'fit-page)
   :config
-  (pdf-tools-install)
-  ;; (setq TeX-view-program-selection '((output-pdf "PDF Tools"))
-  ;; 	TeX-view-program-list '(("PDF Tools" TeX-pdf-tools-sync-view))
-  ;; 	TeX-source-correlate-start-server t)
-  ;; (add-hook 'TeX-after-compilation-finished-functions
-  ;; 	    #'TeX-revert-document-buffer)
-  )
+  (pdf-tools-install))
 
 (use-package proced
   :ensure nil
@@ -396,7 +378,7 @@ current buffer within the project or the current directory if not in a project."
 (when (equal window-system 'pgtk)
   (setq pgtk-use-im-context-on-new-connection nil))
 (keymap-global-set "C-x C-b" 'ibuffer)
-(keymap-global-set "C-<apps>" 'menu-bar-mode)
+(keymap-global-set "C-<apps>" 'menu-bar-mode) ; for Windows
 (keymap-global-set "C-<menu>" 'menu-bar-mode) ; For Linux
 (keymap-global-set "<f5>" 'revert-buffer)
 ;; Replace upcase-word, downcase-word, and capitalize-word by DWIM versions
@@ -406,7 +388,7 @@ current buffer within the project or the current directory if not in a project."
 
 (when (equal system-type 'darwin)
   (setq
-   mac-command-modifier 'none
+   mac-command-modifier 'meta
    mac-function-modifier 'control
    mac-option-modifier 'meta)
   (keymap-global-set "<home>" 'move-beginning-of-line)
@@ -422,10 +404,10 @@ current buffer within the project or the current directory if not in a project."
   (keymap-global-set "M-à" (lambda () (interactive) (insert "@")))
   (keymap-global-set "M-)" (lambda () (interactive) (insert "]")))
   (keymap-global-set "M--" (lambda () (interactive) (insert "}")))
-  (keymap-global-set "M-e" (lambda () (interactive) (insert "€")))
-  )
+  (keymap-global-set "M-e" (lambda () (interactive) (insert "€"))))
 
-(use-package keycast)
+(use-package keycast
+  :defer t)
 
 (unless (equal system-type 'darwin)
   (use-package greek-unicode-insert
@@ -508,16 +490,25 @@ current buffer within the project or the current directory if not in a project."
 
 (use-package company-jedi)
 
-(setq company-backends
-      (append
-       '((:separate
-	  ;; deactivate company-reftex-labels because it is too slow
-	  ;; company-reftex-labels
-	  company-reftex-citations
-	  company-math-symbols-latex
-	  company-math-symbols-unicode
-	  company-latex-commands))
-       company-backends))
+(if (not (equal system-type 'windows-nt))
+    (setq company-backends
+	  (append
+	   '((:separate
+	      company-reftex-labels
+	      company-reftex-citations
+	      company-math-symbols-latex
+	      company-math-symbols-unicode
+	      company-latex-commands))
+	   company-backends))
+  ;; deactivate company-reftex-labels on Windows because it is too slow
+  (setq company-backends
+	(append
+	 '((:separate
+	    company-reftex-citations
+	    company-math-symbols-latex
+	    company-math-symbols-unicode
+	    company-latex-commands))
+	 company-backends)))
 
 (use-package company-box
   :hook (company-mode . company-box-mode)
@@ -616,17 +607,28 @@ current buffer within the project or the current directory if not in a project."
   (add-to-list 'gptel-directives '(academic . "You are an editor specialized in academic paper in economics. You are here to help me generate the best text for my academic articles. I will provide you texts and I would like you to review them for any spelling, grammar, or punctuation errors. Do not stop at simple proofreading, if it is useful, propose to refine the content's structure, style, and clarity. Once you have finished editing the text, provide me with any necessary corrections or suggestions for improving the text.")))
 
 (use-package eshell-git-prompt
-  :defer t
+  :defer 2
   :config
   (eshell-git-prompt-use-theme 'powerline))
 
-(add-hook 'shell-mode-hook
-      (lambda ()
-        (face-remap-set-base 'comint-highlight-prompt :inherit nil)))
+(use-package comint
+  :ensure nil
+  :defer t
+  :custom
+  (comint-scroll-to-bottom-on-input 'this)
+  (comint-scroll-to-bottom-on-output t)
+  (comint-move-point-for-output t))
+
+(use-package shell
+  :ensure nil
+  :defer t
+  :hook
+  (shell-mode . (lambda ()
+		  (face-remap-set-base 'comint-highlight-prompt :inherit nil))))
 
 (use-package citar
   :after (org nerd-icons)
-    :hook
+  :hook
   (org-mode . citar-capf-setup)
   :bind
   (:map org-mode-map :package org ("C-c b" . #'org-cite-insert))
@@ -698,6 +700,7 @@ current buffer within the project or the current directory if not in a project."
   (TeX-mode . latex-math-mode)
   (TeX-mode . TeX-fold-buffer)
   (TeX-mode . flymake-mode)
+  (TeX-mode . my-center-text)
   :hook
   (TeX-mode . TeX-fold-mode)
   :custom
@@ -706,7 +709,6 @@ current buffer within the project or the current directory if not in a project."
   (TeX-parse-self t)
   (LaTeX-item-indent 0)
   (LaTeX-default-options "12pt")
-  ;; (LaTeX-math-abbrev-prefix "²")
   (TeX-PDF-mode t)
   (TeX-electric-sub-and-superscript 1)
   (LaTeX-math-list
@@ -919,8 +921,6 @@ same directory as the working and insert a link to this file."
     (let ((reftex-cite-format markdown-cite-format)
           (reftex-cite-key-separator "; @"))
       (reftex-citation)))
-  ;; :hook
-  ;; (markdown-mode . (lambda () (math-preview-all)))
   :bind (:map markdown-mode-map
 	      ("C-c [" . my-markdown-reftex-citation)))
 
@@ -935,7 +935,6 @@ same directory as the working and insert a link to this file."
   :hook
   (org-mode . turn-on-org-cdlatex)
   :custom
-  ;; (org-export-with-LaTeX-fragments t)       ; Export LaTeX fragment to HTML
   (org-edit-src-content-indentation 0)
   (org-todo-keywords '((type "TODO(t)" "STARTED(s)" "WAITING(w)" "|" "DONE(d)")))
   (org-tag-alist '(("OFFICE" . ?o) ("COMPUTER" . ?c) ("HOME" . ?h) ("PROJECT" . ?p) ("CALL" . ?a) ("ERRANDS" . ?e) ("TASK" . ?t)))
@@ -1073,7 +1072,8 @@ same directory as the working and insert a link to this file."
     (interactive)
     (visual-line-mode 'toggle)
     (visual-fill-column-mode 'toggle)
-    ;; org-indent does play nicely with adaptive-wrap-prefix-mode so we exclude the later in org
+    ;; org-indent does not play nicely with adaptive-wrap-prefix-mode so we exclude
+    ;; the later in org
     (unless (member major-mode '(org-mode))
       (adaptive-wrap-prefix-mode 'toggle)))
 
