@@ -1136,18 +1136,6 @@ Use svg for previews. Much slower than png, but it is not blurry on MacOS.
   (preview-scale-function 1.5))
 #+end_src
 
-=preview-auto= to have automatic preview (launch it using "C-c C-p C-a"). It should not be launched automatically at the start of a LaTeX file, because then it launches before the TeX-master is defined.
-
-#+begin_src emacs-lisp
-(use-package preview-auto
-  :after latex
-  :custom
-  (preview-leave-open-previews-visible t)
-  (preview-locating-previews-message nil)
-  (preview-protect-point t)
-  (preview-auto-interval 0.1))
-#+end_src
-
 =CDLatex= for super fast input of TeX mathematical expressions.
 
 #+begin_src emacs-lisp

@@ -831,14 +831,6 @@ current buffer within the project or the current directory if not in a project."
   (preview-default-option-list '("displaymath" "textmath"))
   (preview-scale-function 1.5))
 
-(use-package preview-auto
-  :after latex
-  :custom
-  (preview-leave-open-previews-visible t)
-  (preview-locating-previews-message nil)
-  (preview-protect-point t)
-  (preview-auto-interval 0.1))
-
 (use-package cdlatex
   :hook
   (LaTeX-mode . turn-on-cdlatex)
