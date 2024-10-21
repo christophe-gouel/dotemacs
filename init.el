@@ -301,6 +301,7 @@
 	      ("C-s" . isearch-forward))
   :custom
   (pdf-view-display-size 'fit-page)
+  (pdf-view-selection-style 'glyph)
   :config
   (pdf-tools-install))
 
@@ -689,6 +690,50 @@ current buffer within the project or the current directory if not in a project."
      (preview . "${author editor:%etal} (${year issued date}) ${title}, ${journal journaltitle publisher container-title collection-title}.\n")
         (note . "Notes on ${author editor:%etal}, ${title}"))))
 
+(defun my-screenshot-to-file (arg)
+  "Take a screenshot or copy from the clipboard (depending on OS),
+  save it to a file in the 'images' folder, and copy the relative file path to the kill ring.
+  If called with a universal argument (C-u), prompt for the file name (including the folder)."
+  (interactive "P")
+  (let* ((default-dir (concat (file-name-directory (buffer-file-name)) "images/"))
+         ;; Prompt for filename if universal argument is used
+         (filename (if arg
+                       (expand-file-name (read-file-name "Save screenshot as: " default-dir))
+                     (expand-file-name (concat default-dir (format-time-string "%Y-%m-%d_%H%M%S") ".png"))))
+         (dir (file-name-directory filename))  ;; Extract directory from provided or default filename
+         (relative-filename (file-relative-name filename)))
+    ;; Ensure the directory exists
+    (unless (file-exists-p dir)
+      (make-directory dir t))
+    
+    ;; macOS screenshot
+    (cond
+     ((eq system-type 'darwin)
+      (call-process "screencapture" nil nil nil "-i" filename))
+
+     ;; Linux screenshot
+     ((eq system-type 'gnu/linux)
+      (call-process "import" nil nil nil filename))
+
+     ;; Windows clipboard
+     ((eq system-type 'windows-nt)
+      (let ((powershell-command
+             (concat "powershell -command \"Add-Type -AssemblyName System.Windows.Forms;"
+                     "if ($([System.Windows.Forms.Clipboard]::ContainsImage())) {"
+                     "$image = [System.Windows.Forms.Clipboard]::GetImage();"
+                     "[System.Drawing.Bitmap]$image.Save('" (shell-quote-argument filename) "',"
+                     "[System.Drawing.Imaging.ImageFormat]::Png);"
+                     "Write-Output 'clipboard content saved as file'} else {"
+                     "Write-Output 'clipboard does not contain image data'}\"")))
+        (shell-command powershell-command))))
+    
+    ;; Handle file existence and copy relative path to kill ring
+    (if (file-exists-p filename)
+        (progn
+          (kill-new relative-filename)
+          (message "Screenshot saved to %s and relative path copied to kill ring" relative-filename))
+      (message "Screenshot failed."))))
+
 (use-package csv-mode
   :hook
   (csv-mode . csv-guess-set-separator))
@@ -755,7 +800,7 @@ current buffer within the project or the current directory if not in a project."
       ("part" "chapter" "section" "subsection" "subsubsection" "paragraph" "subparagraph"
        "part*" "chapter*" "section*" "subsection*" "subsubsection*" "paragraph*"
        "subparagraph*" "emph" "textit" "textsl" "textmd" "textrm" "textsf" "texttt" "textbf"
-       "textsc" "textup" "caption"))))
+       "textsc" "textup" "caption" "frametitle" "framesubtitle"))))
   ;; Prevent folding of math to let prettify-symbols do the job
   (TeX-fold-math-spec-list-internal nil)
   (TeX-fold-math-spec-list nil)
@@ -817,11 +862,6 @@ current buffer within the project or the current directory if not in a project."
   (reftex-save-parse-info t)
   (reftex-use-multiple-selection-buffers t))
 
-(use-package preview-dvisvgm
-  :after latex
-  :custom
-  (preview-image-type 'dvisvgm))
-
 (use-package preview
   :ensure nil
   :after latex
@@ -854,7 +894,10 @@ current buffer within the project or the current directory if not in a project."
   :custom
   (cdlatex-command-alist
    '(("equ*" "Insert equation* env"   "" cdlatex-environment ("equation*") t nil)
+     ("fr" "Insert frame env"   "" cdlatex-environment ("frame") t nil)
      ("frd" "Insert \\frac{\\partial }{\\partial }" "\\frac{\\partial ?}{\\partial }" cdlatex-position-cursor nil nil t)
+     ("frt" "Insert \\frametitle{}" "\\frametitle{?}" cdlatex-position-cursor nil t nil)
+     ("frst" "Insert \\framesubtitle{}" "\\framesubtitle{?}" cdlatex-position-cursor nil t nil)
      ("su" "Insert \\sum" "\\sum?" cdlatex-position-cursor nil nil t))))
 
 (use-package markdown-mode
