@@ -811,9 +811,10 @@ current buffer within the project or the current directory if not in a project."
   (add-hook 'TeX-after-compilation-finished-functions
 	    #'TeX-revert-document-buffer)
 
-  ;; To prevent TeX-view from jumping to the _region_.pdf file created by the preview
-  ;; from https://tex.stackexchange.com/questions/89399/auctex-how-to-jump-to-pdf-with-synctex-without-recompile-when-inline-preview
-  (defadvice TeX-view (around always-view-master-file activate)
+  ;; To prevent TeX-view from jumping to the _region_.pdf file created by the
+  ;; preview from
+  ;; https://tex.stackexchange.com/questions/89399/auctex-how-to-jump-to-pdf-with-synctex-without-recompile-when-inline-preview
+  (define-advice TeX-view (:around always-view-master-file)
     (let ((TeX-current-process-region-p nil))
       ad-do-it))
 
@@ -1149,7 +1150,8 @@ same directory as the working and insert a link to this file."
    '(("LaTeX"
       (latexindent "-m" "--yaml=modifyLineBreaks:textWrapOptions:columns:-1,defaultIndent:'  ',indentAfterItems:itemize:0;enumerate:0;description:0")))))
 
-(use-package dockerfile-mode)
+(use-package dockerfile-mode
+  :defer t)
 
 (use-package docker
   :bind ("C-c d" . docker)
