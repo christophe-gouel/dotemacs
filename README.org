@@ -1039,111 +1039,113 @@ Take a screenshot and copy it to a file
 ** LaTeX
 
 #+begin_src emacs-lisp
-(use-package tex
-  :defer t
-  :ensure auctex
-  :hook
-  (TeX-mode . latex-math-mode)
-  (TeX-mode . TeX-fold-buffer)
-  (TeX-mode . flymake-mode)
-  (TeX-mode . my-center-text)
-  :hook
-  (TeX-mode . TeX-fold-mode)
-  :custom
-  (TeX-auto-save t)
-  (TeX-save-query nil) ; don't ask to save the file before compiling
-  (TeX-parse-self t)
-  (LaTeX-item-indent 0)
-  (LaTeX-default-options "12pt")
-  (TeX-PDF-mode t)
-  (TeX-electric-sub-and-superscript 1)
-  (LaTeX-math-list
-   '(
-     (?\) "right)")
-     (?\( "left(")
-     (?/ "frac{}{}")
-     ))
-  (LaTeX-flymake-chktex-options
-   '("-n3")) ; You should enclose the previous parenthesis with ‘{}’.
+    (use-package tex
+      :defer t
+      :ensure auctex
+      :hook
+      (TeX-mode . latex-math-mode)
+      (TeX-mode . TeX-fold-buffer)
+      (TeX-mode . flymake-mode)
+      (TeX-mode . my-center-text)
+      :hook
+      (TeX-mode . TeX-fold-mode)
+      :custom
+      (TeX-auto-save t)
+      (TeX-save-query nil) ; don't ask to save the file before compiling
+      (TeX-parse-self t)
+      (LaTeX-item-indent 0)
+      (LaTeX-default-options "12pt")
+      (TeX-PDF-mode t)
+      (TeX-electric-sub-and-superscript 1)
+      (LaTeX-math-list
+       '(
+         (?\) "right)")
+         (?\( "left(")
+         (?/ "frac{}{}")
+         ))
+      (LaTeX-flymake-chktex-options
+       '("-n3")) ; You should enclose the previous parenthesis with ‘{}’.
 
-  ;; View PDF
-  (TeX-view-program-selection '((output-pdf "PDF Tools")))
-  (TeX-view-program-list '(("PDF Tools" TeX-pdf-tools-sync-view)))
-  (TeX-source-correlate-mode t)
-  (TeX-source-correlate-start-server t)
-  ;; (TeX-source-correlate-method (quote synctex))
+      ;; View PDF
+      (TeX-view-program-selection '((output-pdf "PDF Tools")))
+      (TeX-view-program-list '(("PDF Tools" TeX-pdf-tools-sync-view)))
+      (TeX-source-correlate-mode t)
+      (TeX-source-correlate-start-server t)
+      ;; (TeX-source-correlate-method (quote synctex))
 
-  ;; Fold-mode
-  (TeX-fold-auto-reveal t)
-  ;; Personalize the list of commands to be folded
-  (TeX-fold-macro-spec-list
-   '(("[f]"
-      ("footnote" "marginpar"))
-     ("[c]"
-      ("citeyear" "citeauthor" "citep" "citet" "cite"))
-     ("[l]"
-      ("label"))
-     ("[r]"
-      ("ref" "pageref" "eqref" "footref" "fref" "Fref"))
-     ("[i]"
-      ("index" "glossary"))
-     ("[1]:||*"
-      ("item"))
-     ("..."
-      ("dots"))
-     ("(C)"
-      ("copyright"))
-     ("(R)"
-      ("textregistered"))
-     ("TM"
-      ("texttrademark"))
-     (1
-      ("part" "chapter" "section" "subsection" "subsubsection" "paragraph" "subparagraph"
-       "part*" "chapter*" "section*" "subsection*" "subsubsection*" "paragraph*"
-       "subparagraph*" "emph" "textit" "textsl" "textmd" "textrm" "textsf" "texttt" "textbf"
-       "textsc" "textup" "caption" "frametitle" "framesubtitle"))))
-  ;; Prevent folding of math to let prettify-symbols do the job
-  (TeX-fold-math-spec-list-internal nil)
-  (TeX-fold-math-spec-list nil)
-  (LaTeX-fold-math-spec-list nil)
-  :config
-  (setq-default TeX-auto-parse-length 200
-                TeX-master nil)
-  (add-hook 'TeX-after-compilation-finished-functions
-	    #'TeX-revert-document-buffer)
+      ;; Fold-mode
+      (TeX-fold-auto-reveal t)
+      ;; Personalize the list of commands to be folded
+      (TeX-fold-macro-spec-list
+       '(("[f]"
+          ("footnote" "marginpar"))
+         ("[c]"
+          ("citeyear" "citeauthor" "citep" "citet" "cite"))
+         ("[l]"
+          ("label"))
+         ("[r]"
+          ("ref" "pageref" "eqref" "footref" "fref" "Fref"))
+         ("[i]"
+          ("index" "glossary"))
+         ("[1]:||*"
+          ("item"))
+         ("..."
+          ("dots"))
+         ("(C)"
+          ("copyright"))
+         ("(R)"
+          ("textregistered"))
+         ("TM"
+          ("texttrademark"))
+         (1
+          ("part" "chapter" "section" "subsection" "subsubsection" "paragraph" "subparagraph"
+           "part*" "chapter*" "section*" "subsection*" "subsubsection*" "paragraph*"
+           "subparagraph*" "emph" "textit" "textsl" "textmd" "textrm" "textsf" "texttt" "textbf"
+           "textsc" "textup" "caption" "frametitle" "framesubtitle"))))
+      ;; Prevent folding of math to let prettify-symbols do the job
+      (TeX-fold-math-spec-list-internal nil)
+      (TeX-fold-math-spec-list nil)
+      (LaTeX-fold-math-spec-list nil)
+      :config
+      (setq-default TeX-auto-parse-length 200
+                    TeX-master nil)
+      (add-hook 'TeX-after-compilation-finished-functions
+    	    #'TeX-revert-document-buffer)
 
-  ;; To prevent TeX-view from jumping to the _region_.pdf file created by the
-  ;; preview from
-  ;; https://tex.stackexchange.com/questions/89399/auctex-how-to-jump-to-pdf-with-synctex-without-recompile-when-inline-preview
-  (define-advice TeX-view (:around always-view-master-file)
-    (let ((TeX-current-process-region-p nil))
-      ad-do-it))
+      ;; To prevent TeX-view from jumping to the _region_.pdf file created by the
+      ;; preview from
+      ;; https://tex.stackexchange.com/questions/89399/auctex-how-to-jump-to-pdf-with-synctex-without-recompile-when-inline-preview
+      (defun my-TeX-view-advice (orig-fun &rest args)
+	"Advice to ensure TeX-view always views the master file."
+	(let ((TeX-current-process-region-p nil))
+	  (apply orig-fun args)))
+      (advice-add 'TeX-view :around #'my-TeX-view-advice)
 
-  (defun my-tex-compile ()
-    "Save and compile TeX document"
-    (interactive)
-    (save-buffer)
-    (TeX-command-menu "latex"))
+      (defun my-tex-compile ()
+        "Save and compile TeX document"
+        (interactive)
+        (save-buffer)
+        (TeX-command-menu "latex"))
 
-  ;; Beamer
-  (defun my-tex-frame ()
-    "Run pdflatex on current frame.  Frame must be declared as an environment."
-    (interactive)
-    (let (beg)
-      (save-excursion
-	(search-backward "\\begin{frame}")
-	(setq beg (point))
-	(forward-char 1)
-	(LaTeX-find-matching-end)
-	(TeX-pin-region beg (point))
-	(cl-letf (( (symbol-function 'TeX-command-query) (lambda (x) "LaTeX")))
-	  (TeX-command-region)))))
-  :bind
-  (:map TeX-mode-map
-	("C-c e" . TeX-next-error)
-	("M-RET" . latex-insert-item)
-	("S-<return>" . my-tex-frame)
-	("<f9>" . my-tex-compile)))
+      ;; Beamer
+      (defun my-tex-frame ()
+        "Run pdflatex on current frame.  Frame must be declared as an environment."
+        (interactive)
+        (let (beg)
+          (save-excursion
+    	(search-backward "\\begin{frame}")
+    	(setq beg (point))
+    	(forward-char 1)
+    	(LaTeX-find-matching-end)
+    	(TeX-pin-region beg (point))
+    	(cl-letf (( (symbol-function 'TeX-command-query) (lambda (x) "LaTeX")))
+    	  (TeX-command-region)))))
+      :bind
+      (:map TeX-mode-map
+    	("C-c e" . TeX-next-error)
+    	("M-RET" . latex-insert-item)
+    	("S-<return>" . my-tex-frame)
+    	("<f9>" . my-tex-compile)))
 #+end_src
 
 #+begin_src emacs-lisp
@@ -1646,7 +1648,7 @@ Configuration from [[https://robert.kra.hn/posts/2023-02-22-copilot-emacs-setup/
      :documentRangeFormattingProvider
      :documentOnTypeFormattingProvider))
   ;; Set the buffer size to 0 to improve performances (https://www.gnu.org/software/emacs/manual/html_mono/eglot.html#Performance)
-  (eglot-events-buffer-config (:size 0 :format full))
+  ;; (eglot-events-buffer-config (:size 0 :format full))
   :bind
   ("C-c l" . eglot))
 #+end_src
@@ -1948,7 +1950,6 @@ buffer with C-c C-a C-a C-a ...."
   (matlab-comment-region-s "% ")
   (matlab-shell-command-switches '("-nodesktop -nosplash"))
   :config
-  (matlab-cedet-setup)
   ;; mlint
   (cond
    ((eq system-type 'gnu/linux)

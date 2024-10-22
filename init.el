@@ -814,9 +814,11 @@ current buffer within the project or the current directory if not in a project."
   ;; To prevent TeX-view from jumping to the _region_.pdf file created by the
   ;; preview from
   ;; https://tex.stackexchange.com/questions/89399/auctex-how-to-jump-to-pdf-with-synctex-without-recompile-when-inline-preview
-  (define-advice TeX-view (:around always-view-master-file)
-    (let ((TeX-current-process-region-p nil))
-      ad-do-it))
+  (defun my-TeX-view-advice (orig-fun &rest args)
+	"Advice to ensure TeX-view always views the master file."
+	(let ((TeX-current-process-region-p nil))
+	  (apply orig-fun args)))
+  (advice-add 'TeX-view :around #'my-TeX-view-advice)
 
   (defun my-tex-compile ()
     "Save and compile TeX document"
@@ -1232,7 +1234,7 @@ same directory as the working and insert a link to this file."
      :documentRangeFormattingProvider
      :documentOnTypeFormattingProvider))
   ;; Set the buffer size to 0 to improve performances (https://www.gnu.org/software/emacs/manual/html_mono/eglot.html#Performance)
-  (eglot-events-buffer-config (:size 0 :format full))
+  ;; (eglot-events-buffer-config (:size 0 :format full))
   :bind
   ("C-c l" . eglot))
 
@@ -1475,7 +1477,6 @@ buffer with C-c C-a C-a C-a ...."
   (matlab-comment-region-s "% ")
   (matlab-shell-command-switches '("-nodesktop -nosplash"))
   :config
-  (matlab-cedet-setup)
   ;; mlint
   (cond
    ((eq system-type 'gnu/linux)
