@@ -1281,7 +1281,6 @@ same directory as the working and insert a link to this file."
 	      ("C-%"     . " %>%")
 	      ;; Shortcut for assign <-
 	      ("C--"     . ess-insert-assign)
-	      ("<f9>"    . my-run-rscript-on-current-buffer-file)
 	      ("C-c v" . ess-view-data-print)
         :map inferior-ess-r-mode-map
         ("C-S-m" . " |>")
@@ -1322,49 +1321,6 @@ same directory as the working and insert a link to this file."
      (ess-fl-keyword:= . t)
      (ess-R-fl-keyword:F&T . t)))
   :config
-  ;; Background jobs for R as in RStudio
-  (defun my-run-rscript (arg title)
-    "Run Rscript in a compile buffer"
-    (let*
-	((is-file (file-exists-p arg))
-	 (working-directory
-	  (if is-file default-directory (file-name-directory arg)))
-	 ;; Generate a unique compilation buffer name
-	 (combuf-name (format "*Rscript-%s*" title))
-	 ;; Get the existing compilation buffer, if any
-         (combuf (get-buffer combuf-name))
-         (compilation-buffer-name-function
-	  (lambda (_) combuf-name)) ; Set the compilation buffer name function
-	 ;; Automatically save modified buffers without asking
-         (compilation-ask-about-save nil))
-      (when combuf
-	(kill-buffer combuf)) ; Kill the existing compilation buffer
-      ;; Create a new compilation buffer
-      (setq combuf (get-buffer-create combuf-name))
-      (with-current-buffer combuf
-	;; Set the default directory of the compilation buffer
-	(setq default-directory working-directory)
-	;; Delete any existing content in the compilation buffer
-	(delete-region (point-min) (point-max))
-	(compilation-mode)) ; Enable compilation mode in the buffer
-      (compile (format "Rscript %s" arg)) ; Execute the R script using Rscript
-      (with-current-buffer combuf
-	;; Rename the compilation buffer to its final name
-	(rename-buffer combuf-name))))
-
-  (defun my-run-rscript-on-current-buffer-file ()
-    "Run Rscript on the file associated to the current buffer"
-    (interactive)
-    (let ((filename (buffer-file-name)))
-      (when filename
-	(my-run-rscript filename (file-name-base filename)))))
-
-  (defun my-run-rscript-on-file ()
-    "Run Rscript on the file associated to a file"
-    (interactive)
-    (let ((filename (read-file-name "R script: ")))
-      (my-run-rscript filename (file-name-base filename))))
-
   (defun my-inferior-ess-init ()
     "Workaround for https://github.com/emacs-ess/ESS/issues/1193"
     (add-hook 'comint-preoutput-filter-functions #'xterm-color-filter -90 t)
@@ -1388,6 +1344,11 @@ same directory as the working and insert a link to this file."
              ((looking-at "^### ") 3)
              ((looking-at "^#### ") 4)
              (t 1000))))))
+
+(use-package ess-rscript
+  :load-path "~/.emacs.d/lisp/"
+  :after ess-site
+  :bind (:map ess-r-mode-map ("<f9>" . ess-rscript)))
 
 (use-package rutils
   :defer t)
