@@ -273,11 +273,6 @@
     (imenu-list-goto-entry)
     (imenu-list-smart-toggle)))
 
-(use-package flimenu
-  :after imenu
-  :config
-  (flimenu-global-mode))
-
 (use-package casual-calc
   :after calc
   :bind (:map
@@ -547,11 +542,17 @@ current buffer within the project or the current directory if not in a project."
   (("C-x b" . consult-buffer)
    ("M-y"   . consult-yank-pop)
    ;; M-s bindings in `search-map'
-   ("M-s c" . consult-locate)
    ("M-s g" . consult-grep)
    ("M-s G" . consult-git-grep)
    ("M-s r" . consult-ripgrep)
-   ("M-s l" . consult-line)))
+   ("M-s l" . consult-line)
+   ("M-s L" . consult-line-multi)
+   ;; Other custom bindings
+   ("M-g i" . consult-imenu)
+   ("M-g I" . consult-imenu-multi)
+   ("M-g o" . consult-outline)
+   :map org-mode-map
+   ("M-g o" . consult-org-heading)))
 
 (use-package vertico-prescient
   :after vertico

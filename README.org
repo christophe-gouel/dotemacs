@@ -407,9 +407,9 @@ Show imenu in a separate buffer with =imenu-list=:
     (imenu-list-smart-toggle)))
 #+end_src
 
-Flatten =imenu= so that we can jump to any subheading from the main menu.
+Flatten =imenu= so that we can jump to any subheading from the main menu. No longer needed with consult-imenu
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package flimenu
   :after imenu
   :config
@@ -755,7 +755,7 @@ Use =company-box= for a better position of the autocompletion when using copilot
   (company-prescient-mode))
 #+end_src
 
-** Vertico and friends
+** Vertico and friends (orderless, marginalia, consult)
 
 #+begin_src emacs-lisp
 (use-package vertico
@@ -797,11 +797,17 @@ Use =vertico-directory= to press =DEL= to jump back one directory instead of one
   (("C-x b" . consult-buffer)
    ("M-y"   . consult-yank-pop)
    ;; M-s bindings in `search-map'
-   ("M-s c" . consult-locate)
    ("M-s g" . consult-grep)
    ("M-s G" . consult-git-grep)
    ("M-s r" . consult-ripgrep)
-   ("M-s l" . consult-line)))
+   ("M-s l" . consult-line)
+   ("M-s L" . consult-line-multi)
+   ;; Other custom bindings
+   ("M-g i" . consult-imenu)
+   ("M-g I" . consult-imenu-multi)
+   ("M-g o" . consult-outline)
+   :map org-mode-map
+   ("M-g o" . consult-org-heading)))
 #+end_src
 
 #+begin_src emacs-lisp
