@@ -274,6 +274,7 @@
     (imenu-list-smart-toggle)))
 
 (use-package casual-calc
+  :ensure casual
   :after calc
   :bind (:map
          calc-mode-map

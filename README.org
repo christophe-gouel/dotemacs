@@ -420,6 +420,7 @@ Flatten =imenu= so that we can jump to any subheading from the main menu. No lon
 
 #+begin_src emacs-lisp
 (use-package casual-calc
+  :ensure casual
   :after calc
   :bind (:map
          calc-mode-map
