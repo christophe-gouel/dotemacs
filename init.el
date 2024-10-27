@@ -495,7 +495,8 @@ current buffer within the project or the current directory if not in a project."
 	      company-reftex-citations
 	      company-math-symbols-latex
 	      company-math-symbols-unicode
-	      company-latex-commands))
+	      company-latex-commands
+	      company-yasnippet))
 	   company-backends))
   ;; deactivate company-reftex-labels on Windows because it is too slow
   (setq company-backends
@@ -504,7 +505,8 @@ current buffer within the project or the current directory if not in a project."
 	    company-reftex-citations
 	    company-math-symbols-latex
 	    company-math-symbols-unicode
-	    company-latex-commands))
+	    company-latex-commands
+	    company-yasnippet))
 	 company-backends)))
 
 (use-package company-box
@@ -899,10 +901,10 @@ current buffer within the project or the current directory if not in a project."
   :custom
   (cdlatex-command-alist
    '(("equ*" "Insert equation* env"   "" cdlatex-environment ("equation*") t nil)
-     ("fr" "Insert frame env"   "" cdlatex-environment ("frame") t nil)
+     ("fra" "Insert frame env"   "" cdlatex-environment ("frame") t nil)
      ("frd" "Insert \\frac{\\partial }{\\partial }" "\\frac{\\partial ?}{\\partial }" cdlatex-position-cursor nil nil t)
-     ("frt" "Insert \\frametitle{}" "\\frametitle{?}" cdlatex-position-cursor nil t nil)
-     ("frst" "Insert \\framesubtitle{}" "\\framesubtitle{?}" cdlatex-position-cursor nil t nil)
+     ("frat" "Insert \\frametitle{}" "\\frametitle{?}" cdlatex-position-cursor nil t nil)
+     ("frast" "Insert \\framesubtitle{}" "\\framesubtitle{?}" cdlatex-position-cursor nil t nil)
      ("su" "Insert \\sum" "\\sum?" cdlatex-position-cursor nil nil t))))
 
 (use-package markdown-mode
@@ -1140,11 +1142,13 @@ same directory as the working and insert a link to this file."
 
 (use-package flymake
   :ensure nil
-  :defer t
   :custom
   (flymake-no-changes-timeout nil)
   :config
-  (remove-hook 'flymake-diagnostic-functions 'flymake-proc-legacy-flymake))
+  (remove-hook 'flymake-diagnostic-functions 'flymake-proc-legacy-flymake)
+  :bind
+  (("M-n" . flymake-goto-next-error)
+   ("M-p" . flymake-goto-prev-error)))
 
 (use-package format-all
   :defer t
@@ -1261,6 +1265,7 @@ same directory as the working and insert a link to this file."
   :defer t)
 
 (use-package yasnippet
+  :defer 1
   :custom
   (yas-use-menu nil)
   (unbind-key "<tab>" yas-minor-mode-map)
@@ -1415,20 +1420,18 @@ buffer with C-c C-a C-a C-a ...."
 	:map essgd-mode-map ("C-c C-a" . essgd-toggle-plot-buffer)
 	:map inferior-ess-r-mode-map ("C-c C-a" . essgd-toggle-plot-buffer)))
 
-;; (unless (package-installed-p 'gams-mode)
-;;   (package-vc-install
-;;    '(gams-mode
-;;      :url "https://github.com/christophe-gouel/gams-mode"
-;;      :branch "auto-mode")))
 (use-package gams-mode
-  ;; :load-path "c:/Users/Gouel/Documents/git_projects/code/gams-mode"
+  ;; :load-path "~/Documents/git_projects/code/gams-mode"
+  :vc (:url "https://github.com/christophe-gouel/gams-mode"
+	    :rev :newest
+	    :branch "auto-mode")
   :hook
-  (gams-mode . rainbow-delimiters-mode)
-  (gams-mode . smartparens-mode)
-  (gams-mode . display-fill-column-indicator-mode)
-  (gams-mode . (lambda ()
-                 (make-local-variable 'company-minimum-prefix-length)
-                 (setq company-minimum-prefix-length 1)))
+  ;; (gams-mode . rainbow-delimiters-mode)
+  ;; (gams-mode . smartparens-mode)
+  ;; (gams-mode . display-fill-column-indicator-mode)
+  ;; (gams-mode . (lambda ()
+  ;;                (make-local-variable 'company-minimum-prefix-length)
+  ;;                (setq company-minimum-prefix-length 1)))
   (gams-mode . (lambda ()
                  (outline-minor-mode)
                  (setq outline-regexp "^\*+ +.*----")
@@ -1450,20 +1453,21 @@ buffer with C-c C-a C-a C-a ...."
   (gams-indent-number-loop 2)
   (gams-indent-number-mpsge 2)
   (gams-indent-number-equation 2)
-  :mode ("\\.gms\\'" . gams-mode)
-  :config
-  (if (equal system-type 'windows-nt)
-      (setq gams-system-directory "C:/GAMS/Last/"
-                  gams-docs-directory "C:/GAMS/Last/docs")
-    (setq gams-system-directory "/opt/gams/gamsLast_linux_x64_64_sfx"
-          gams-docs-directory "/opt/gams/gamsLast_linux_x64_64_sfx/docs"))
+;  :mode ("\\.gms\\'" . gams-mode)
+  ;; :config
+  ;; (if (equal system-type 'windows-nt)
+  ;;     (setq gams-system-directory "C:/GAMS/Last/"
+  ;;                 gams-docs-directory "C:/GAMS/Last/docs")
+  ;;   (setq gams-system-directory "/opt/gams/gamsLast_linux_x64_64_sfx"
+  ;;         gams-docs-directory "/opt/gams/gamsLast_linux_x64_64_sfx/docs"))
   :bind (:map gams-mode-map
               ("C-c =" . gams-show-identifier-list)))
 
-;; (use-package poly-gams
-;;   ;; :vc (:fetcher github :repo ShiroTakeda/poly-gams)
-;;   ;; :load-path "~/Documents/git_projects/code/poly-gams"
-;;   :mode ("\\.inc\\'" . poly-gams-mode))
+(use-package poly-gams
+  :after gams-mode
+  ;; :vc (:fetcher github :repo ShiroTakeda/poly-gams)
+  ;; :load-path "~/Documents/git_projects/code/poly-gams"
+  :mode ("\\.inc\\'" . poly-gams-mode))
 
 (use-package julia-mode
   :defer t)
