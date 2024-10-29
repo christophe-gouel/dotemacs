@@ -2056,14 +2056,12 @@ Define a file in which any customization is saved
 ** Fonts
 
 Download and install fonts
-- JetBrains from
-  - Nerf-fonts version for the icons: [[https://www.nerdfonts.com/font-downloads]]
-  - Standard version for other uses: [[https://www.jetbrains.com/fr-fr/lp/mono/]]
+- JetBrains from [[https://www.jetbrains.com/fr-fr/lp/mono/]]
+- Symbols Nerd Font from [[https://www.nerdfonts.com/]]
 - [[https://github.com/aliftype/xits]]
 
 ** Linters
 
-- LaTeX: to install =textidote=, download =textidote.jar= from [[https://github.com/sylvainhalle/textidote/releases]] and copy to =~/.local/jar/textidote.jar=.
 - R: =lintr= will be installed with =languageserver=.
 
 ** LSP servers

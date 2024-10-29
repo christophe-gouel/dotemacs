@@ -1,0 +1,151 @@
+# -*- mode: snippet -*-
+# name: Beamer template
+# key: beamer
+# --
+
+\documentclass[
+  11pt,                            % Font size
+  aspectratio=169,                 % 16:9 aspect ratio
+  fleqn,                           % Flush equations left (can be commented for final version)
+  hyperref={
+    bookmarksopen=true,            % Open bookmarks in PDF viewer
+    pdfpagelayout=SinglePage,      % Single page layout
+    colorlinks=true,
+    pdfview=Fit,                   % Fit page in viewer
+    pdfstartview=Fit,
+    pdfauthor={Christophe Gouel},
+    pdftitle={$1}}%
+  ]{beamer}
+
+% Beamer settings
+\usetheme[numbering=fraction,block=fill]{metropolis} % Metropolis theme with options
+\setbeamertemplate{navigation symbols}{}             % Remove navigation symbols
+\setbeamertemplate{footline}[frame number]           % Set footline to display frame number
+\setbeamertemplate{itemize items}{-}                 % Use '-' for itemize items
+
+% Fonts and encoding
+\usepackage[default]{lato}            % Use Lato font as default sans-serif font
+\usepackage[T1]{fontenc}              % Use T1 font encoding
+\usepackage[utf8]{inputenc}           % Allow UTF-8 input encoding
+\usepackage[english]{babel}           % English language hyphenation and typographical rules
+
+% Mathematics
+\usepackage{amsmath}                  % Advanced mathematical typesetting
+\usepackage{mathtools}                % Mathematical tools (extends amsmath)
+
+% Graphics
+\usepackage{graphicx}                 % Include graphics
+\graphicspath{{.}} % Set graphics search path
+
+% Tables
+\usepackage{array}                    % Extended array and tabular environments
+\usepackage{booktabs}                 % Professional-quality tables
+\usepackage{tabularx}                 % Tables with adjustable-width columns
+\usepackage{dcolumn}                  % Align table columns on decimal point
+\newcolumntype{d}[1]{D{.}{.}{#1}}                 % Column type for decimal alignment
+
+% References
+\usepackage[%
+  backend=biber,%
+  style=authoryear-comp,
+  maxcitenames=2,
+  uniquename=false,
+  hyperref=true,
+  url=false,
+  doi=false,
+  isbn=false,
+  date=year
+  ]{biblatex}
+\addbibresource{References.bib}
+
+% Color
+\usepackage{color}                    % Color support
+\definecolor{blue}{RGB}{0,114,178}
+\definecolor{red}{RGB}{213,94,0}
+\definecolor{yellow}{RGB}{240,228,66}
+\definecolor{green}{RGB}{0,158,115}
+\definecolor{bleudefrance}{RGB}{0.19, 0.55, 0.91}
+
+% Commands for colored text
+\newcommand{\colblue}[1]{\color{blue}{#1}\color{black}{}}
+\newcommand{\colred}[1]{\color{red}{#1}\color{black}{}}
+\newcommand{\colyellow}[1]{\color{yellow}{#1}\color{black}{}}
+\newcommand{\colgreen}[1]{\color{green}{#1}\color{black}{}}
+\newcommand{\colpurple}[1]{\color{purple}{#1}\color{black}{}}
+
+% Environment for wider item spacing
+\newenvironment{wideitemize}{\itemize\addtolength{\itemsep}{10pt}}{\end{itemize}}
+
+% Commands for backup slides
+\newcommand{\backupbegin}{
+  \newcounter{framenumberappendix}
+  \setcounter{framenumberappendix}{\value{framenumber}}
+  \setbeamertemplate{footline}{}
+}
+\newcommand{\backupend}{
+  \addtocounter{framenumberappendix}{-\value{framenumber}}
+  \addtocounter{framenumber}{\value{framenumberappendix}}
+  \setbeamertemplate{footline}{
+    \vspace{-1cm}\small{\insertframenumber/\inserttotalframenumber}
+  }
+}
+
+% Title and author information
+\title{$1}%
+\date{} %
+\author{Christophe Gouel\inst{1,2}$2}%
+\institute[]{%
+  \inst{1} INRAE, Paris-Saclay Applied Economics \and%
+  \inst{2} CEPII%
+}
+
+% Line spacing
+\linespread{1.05}
+
+% Custom environment for transition frames
+\newenvironment{transitionframe}{
+  \setbeamercolor{normal text}{fg=white,bg=black}
+  \setbeamercolor{background canvas}{parent=normal text}
+  \setbeamertemplate{footline}[default]
+  \begin{frame}[noframenumbering]}{
+    \end{frame}
+}
+
+% Config for Emacs preview from https://emacs.stackexchange.com/questions/24436/auctex-previews-are-not-displayed-correctly-with-beamer
+\usepackage[displaymath, textmath]{preview}
+\PreviewEnvironment{align*}
+\PreviewEnvironment{multline*}
+\PreviewEnvironment{tabular}
+\PreviewEnvironment{verbatim}
+\PreviewEnvironment{lstlisting}
+\PreviewEnvironment*{frame}
+
+\begin{document}
+
+{
+  \setbeamertemplate{footline}[default]
+  \begin{frame}[noframenumbering]
+    \titlepage{}
+  \end{frame}
+}
+
+$0
+
+\appendix
+
+\backupbegin{}
+
+\begin{frame}[allowframebreaks]
+  \frametitle{References}
+
+  \printbibliography{}
+\end{frame}
+
+\backupend{}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: LaTeX
+%%% TeX-master: t
+%%% End:
