@@ -1015,7 +1015,7 @@ Take a screenshot and copy it to a file
 
      ;; Linux screenshot
      ((eq system-type 'gnu/linux)
-      (call-process "import" nil nil nil filename))
+      (call-process "myflameshot" nil nil nil filename))
 
      ;; Windows clipboard
      ((eq system-type 'windows-nt)
@@ -1195,7 +1195,10 @@ Use svg for previews. Much slower than png, but it is not blurry on MacOS.
   (preview-auto-cache-preamble t)
   (preview-auto-reveal t)
   (preview-default-option-list '("displaymath" "textmath"))
-  (preview-scale-function 1.5))
+  :config
+  (if (equal system-type 'gnu/linux)
+      (setopt preview-scale-function 0.7)
+    (setopt preview-scale-function 1.5)))
 #+end_src
 
 =CDLatex= for super fast input of TeX mathematical expressions.

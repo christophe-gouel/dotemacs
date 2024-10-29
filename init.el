@@ -717,7 +717,7 @@ current buffer within the project or the current directory if not in a project."
 
      ;; Linux screenshot
      ((eq system-type 'gnu/linux)
-      (call-process "import" nil nil nil filename))
+      (call-process "myflameshot" nil nil nil filename))
 
      ;; Windows clipboard
      ((eq system-type 'windows-nt)
@@ -813,15 +813,15 @@ current buffer within the project or the current directory if not in a project."
   (setq-default TeX-auto-parse-length 200
                 TeX-master nil)
   (add-hook 'TeX-after-compilation-finished-functions
-	    #'TeX-revert-document-buffer)
+    	#'TeX-revert-document-buffer)
 
   ;; To prevent TeX-view from jumping to the _region_.pdf file created by the
   ;; preview from
   ;; https://tex.stackexchange.com/questions/89399/auctex-how-to-jump-to-pdf-with-synctex-without-recompile-when-inline-preview
   (defun my-TeX-view-advice (orig-fun &rest args)
-	"Advice to ensure TeX-view always views the master file."
-	(let ((TeX-current-process-region-p nil))
-	  (apply orig-fun args)))
+    "Advice to ensure TeX-view always views the master file."
+    (let ((TeX-current-process-region-p nil))
+      (apply orig-fun args)))
   (advice-add 'TeX-view :around #'my-TeX-view-advice)
 
   (defun my-tex-compile ()
@@ -836,19 +836,19 @@ current buffer within the project or the current directory if not in a project."
     (interactive)
     (let (beg)
       (save-excursion
-	(search-backward "\\begin{frame}")
-	(setq beg (point))
-	(forward-char 1)
-	(LaTeX-find-matching-end)
-	(TeX-pin-region beg (point))
-	(cl-letf (( (symbol-function 'TeX-command-query) (lambda (x) "LaTeX")))
-	  (TeX-command-region)))))
+    (search-backward "\\begin{frame}")
+    (setq beg (point))
+    (forward-char 1)
+    (LaTeX-find-matching-end)
+    (TeX-pin-region beg (point))
+    (cl-letf (( (symbol-function 'TeX-command-query) (lambda (x) "LaTeX")))
+      (TeX-command-region)))))
   :bind
   (:map TeX-mode-map
-	("C-c e" . TeX-next-error)
-	("M-RET" . latex-insert-item)
-	("S-<return>" . my-tex-frame)
-	("<f9>" . my-tex-compile)))
+    ("C-c e" . TeX-next-error)
+    ("M-RET" . latex-insert-item)
+    ("S-<return>" . my-tex-frame)
+    ("<f9>" . my-tex-compile)))
 
 (use-package reftex
   :hook
@@ -876,7 +876,10 @@ current buffer within the project or the current directory if not in a project."
   (preview-auto-cache-preamble t)
   (preview-auto-reveal t)
   (preview-default-option-list '("displaymath" "textmath"))
-  (preview-scale-function 1.5))
+  :config
+  (if (equal system-type 'gnu/linux)
+      (setopt preview-scale-function 0.7)
+    (setopt preview-scale-function 1.5)))
 
 (use-package cdlatex
   :hook
