@@ -46,20 +46,20 @@
 (tool-bar-mode 0)
 (tooltip-mode 0)
 
-(setq blink-cursor-blinks 0 ; curseur clignote indéfiniment
-      custom-safe-themes t ; consider all themes as safe
-      display-time-24hr-format t ; Affichage de l'heure format 24h
-      column-number-mode t ; affichage du numéro de la colonne
-      prettify-symbols-unprettify-at-point t
-      show-trailing-whitespace t
-      pixel-scroll-precision-mode t)
+(setopt blink-cursor-blinks 0 ; curseur clignote indéfiniment
+        custom-safe-themes t ; consider all themes as safe
+        display-time-24hr-format t ; Affichage de l'heure format 24h
+        column-number-mode t ; affichage du numéro de la colonne
+        prettify-symbols-unprettify-at-point t
+        show-trailing-whitespace t
+        pixel-scroll-precision-mode t)
 (global-hl-line-mode +1) ; Highlight the current line
 (add-hook 'text-mode-hook 'prettify-symbols-mode)
 (add-hook 'prog-mode-hook (lambda ()
-			    (display-fill-column-indicator-mode)))
+                            (display-fill-column-indicator-mode)))
 (when (display-graphic-p)
   ;; Cursor (in terminal mode, to be set in terminal options)
-  (setq-default cursor-type 'bar) ; curseur étroit
+  (setopt cursor-type 'bar) ; curseur étroit
   (set-face-background 'cursor "#CC0000") ; curseur rouge foncé
   ;; Fonts and unicode characters
   ;;   Main font
@@ -72,16 +72,16 @@
   "Adjust font for 27 inch screen."
   (interactive)
   (set-face-attribute 'default nil :family "JetBrainsMono NF" :height 140)
-  (setq org-format-latex-options
-          (plist-put org-format-latex-options :scale 1.8)
-        preview-scale-function 2))
+  (setopt org-format-latex-options
+            (plist-put org-format-latex-options :scale 1.8)
+          preview-scale-function 2))
 (defun my-screen-default ()
   "Adjust font for default screen."
   (interactive)
   (set-face-attribute 'default nil :family "JetBrainsMono NF" :height 120)
-  (setq org-format-latex-options
-          (plist-put org-format-latex-options :scale 1.7)
-        preview-scale-function 1.5))
+  (setopt org-format-latex-options
+            (plist-put org-format-latex-options :scale 1.7)
+          preview-scale-function 1.5))
 
 (use-package mixed-pitch
   :hook
@@ -146,13 +146,14 @@
 (use-package modus-themes
   :ensure t
   :config
-  (setq modus-themes-italic-constructs t)
-  (setq modus-themes-bold-constructs t)
-  (setq modus-themes-to-toggle '(modus-operandi-deuteranopia modus-vivendi-deuteranopia))
-  ;; Remove the mode-line border
-  (setq modus-themes-common-palette-overrides
-   '((border-mode-line-active unspecified)
-     (border-mode-line-inactive unspecified)))
+  (setopt modus-themes-italic-constructs t
+	      modus-themes-bold-constructs t
+	      modus-themes-to-toggle
+	        '(modus-operandi-deuteranopia modus-vivendi-deuteranopia)
+          ;; Remove the mode-line border
+          modus-themes-common-palette-overrides
+            '((border-mode-line-active unspecified)
+	          (border-mode-line-inactive unspecified)))
   (load-theme 'modus-vivendi-deuteranopia)
   (define-key global-map (kbd "S-<f5>") #'modus-themes-toggle))
 
@@ -162,39 +163,34 @@
 (set-default-coding-systems 'utf-8)
 (set-terminal-coding-system 'utf-8)
 (set-keyboard-coding-system 'utf-8)
-(setq default-buffer-file-coding-system 'utf-8-unix
-      x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING))
+(setopt default-buffer-file-coding-system 'utf-8-unix
+        x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING))
 (if (equal system-type 'windows-nt)    ;; MS Windows clipboard is UTF-16LE
     (set-clipboard-coding-system 'utf-16le-dos))
 
-(setq user-full-name "Christophe Gouel"
-      user-mail-address "christophe.gouel@inrae.fr")
+(setopt user-full-name "Christophe Gouel"
+        user-mail-address "christophe.gouel@inrae.fr")
 
-(setq initial-scratch-message nil)
+(setopt initial-scratch-message nil)
 
-(setq show-paren-mode t ; coupler les parenthèses
-      auth-sources '("~/.authinfo") ; Define file that stores secrets
-      backup-directory-alist '(("." . "~/.emacs.d/backup"))
-      default-major-mode 'text-mode ; mode par défaut
-      delete-by-moving-to-trash t ; Sent deleted files to trash
-      comment-column 0 ; Prevent indentation of lines starting with one comment
-      next-line-add-newlines t
-      jit-lock-chunk-size 50000
-      ;; set large file threshold at 100 megabytes
-      large-file-warning-threshold 100000000
-      ring-bell-function 'ignore ; disable the bell (useful for macOS)
-      ;; Options to make lsp usable in emacs (from
-      ;; https://emacs-lsp.github.io/lsp-mode/page/performance/)
-      ;; gc-cons-threshold (* 10 800000)
-      ;; read-process-output-max (* 1024 1024)
-      )
-(setq-default mouse-yank-at-point t     ; coller avec la souris
-              case-fold-search t)       ; recherche sans égard à la casse
+(setopt show-paren-mode t ; coupler les parenthèses
+        auth-sources '("~/.authinfo") ; Define file that stores secrets
+        backup-directory-alist '(("." . "~/.emacs.d/backup"))
+        default-major-mode 'text-mode ; mode par défaut
+        delete-by-moving-to-trash t ; Sent deleted files to trash
+        comment-column 0 ; Prevent indentation of lines starting with one comment
+        next-line-add-newlines t
+        jit-lock-chunk-size 50000
+        ;; set large file threshold at 100 megabytes
+        large-file-warning-threshold 100000000
+        ring-bell-function 'ignore ; disable the bell (useful for macOS)
+        mouse-yank-at-point t     ; coller avec la souris
+        case-fold-search t)       ; recherche sans égard à la casse
 (delete-selection-mode t)               ; entrée efface texte sélectionné
 (fset 'yes-or-no-p 'y-or-n-p)           ; Replace yes or no with y or n
 (auto-compression-mode t)
 (when (equal system-type 'windows-nt)
-    (setq tramp-default-method "plink"))
+    (setopt tramp-default-method "plink"))
 
 (use-package server
   :ensure nil
@@ -709,7 +705,7 @@ current buffer within the project or the current directory if not in a project."
     ;; Ensure the directory exists
     (unless (file-exists-p dir)
       (make-directory dir t))
-    
+
     ;; macOS screenshot
     (cond
      ((eq system-type 'darwin)
@@ -730,7 +726,7 @@ current buffer within the project or the current directory if not in a project."
                      "Write-Output 'clipboard content saved as file'} else {"
                      "Write-Output 'clipboard does not contain image data'}\"")))
         (shell-command powershell-command))))
-    
+
     ;; Handle file existence and copy relative path to kill ring
     (if (file-exists-p filename)
         (progn
@@ -1004,8 +1000,11 @@ same directory as the working and insert a link to this file."
   :config
   (unless (equal system-type 'darwin)
     (org-defkey org-cdlatex-mode-map "²" 'cdlatex-math-symbol))
-  (setq org-format-latex-options
-	(plist-put org-format-latex-options :scale 1.6))
+  (if (equal system-type 'gnu/linux)
+      (setopt org-format-latex-options
+	      (plist-put org-format-latex-options :scale 0.7))
+    (setopt org-format-latex-options
+	    (plist-put org-format-latex-options :scale 1.6)))
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((emacs-lisp . t)
