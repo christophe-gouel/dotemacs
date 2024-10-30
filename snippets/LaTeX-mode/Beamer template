@@ -11,6 +11,8 @@
     bookmarksopen=true,            % Open bookmarks in PDF viewer
     pdfpagelayout=SinglePage,      % Single page layout
     colorlinks=true,
+    citecolor=cyan,
+    linkcolor=black,
     pdfview=Fit,                   % Fit page in viewer
     pdfstartview=Fit,
     pdfauthor={Christophe Gouel},
@@ -22,6 +24,30 @@
 \setbeamertemplate{navigation symbols}{}             % Remove navigation symbols
 \setbeamertemplate{footline}[frame number]           % Set footline to display frame number
 \setbeamertemplate{itemize items}{-}                 % Use '-' for itemize items
+
+% Support for framesubtitle with metropolis theme from https://tex.stackexchange.com/questions/514237/beamer-presentation-metropolis-theme-frametitle-framesubtitle
+\makeatletter
+\setbeamercolor{framesubtitle}{fg=mDarkTeal}
+\defbeamertemplate*{frametitle}{myframetitle}{
+    \nointerlineskip{}
+    \begin{beamercolorbox}[
+        wd=\paperwidth,
+        sep=0pt,
+        leftskip=\metropolis@frametitle@padding,
+        rightskip=\metropolis@frametitle@padding,
+        ]{frametitle}
+        \metropolis@frametitlestrut@start{}
+        \quad\insertframetitle{}
+        \nolinebreak{}
+        \metropolis@frametitlestrut@end{}
+    \end{beamercolorbox}\par
+    \usebeamerfont{framesubtitle}
+    \usebeamercolor[fg]{framesubtitle}
+    \vskip3pt
+    \insertframesubtitle{}
+}
+\makeatother
+\setbeamertemplate{frametitle}[myframetitle]
 
 % Fonts and encoding
 \usepackage[default]{lato}            % Use Lato font as default sans-serif font
@@ -48,6 +74,7 @@
 \usepackage[%
   backend=biber,%
   style=authoryear-comp,
+  giveninits=true,
   maxcitenames=2,
   uniquename=false,
   hyperref=true,
@@ -59,11 +86,6 @@
 \addbibresource{References.bib}
 
 % Color
-\usepackage{color}                    % Color support
-\definecolor{blue}{RGB}{0,114,178}
-\definecolor{red}{RGB}{213,94,0}
-\definecolor{yellow}{RGB}{240,228,66}
-\definecolor{green}{RGB}{0,158,115}
 \definecolor{bleudefrance}{RGB}{0.19, 0.55, 0.91}
 
 % Commands for colored text
@@ -136,8 +158,6 @@ $0
 \backupbegin{}
 
 \begin{frame}[allowframebreaks]
-  \frametitle{References}
-
   \printbibliography{}
 \end{frame}
 
