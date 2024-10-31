@@ -617,7 +617,7 @@ MacOS specific keybindings
 (unless (equal system-type 'darwin)
   (use-package greek-unicode-insert
     :vc (:url "https://github.com/Malabarba/greek-unicode-insert")
-    :bind ("²" . greek-unicode-insert-map)))
+    :bind (:map prog-mode-map ("²" . greek-unicode-insert-map))))
 ; :init (setq greek-unicode-insert-key "`"))
 #+end_src
 
@@ -1897,9 +1897,9 @@ buffer with C-c C-a C-a C-a ...."
 #+begin_src emacs-lisp
 (use-package gams-mode
   ;; :load-path "~/Documents/git_projects/code/gams-mode"
-  :vc (:url "https://github.com/christophe-gouel/gams-mode"
+  :vc (:url "https://github.com/ShiroTakeda/gams-mode"
 	    :rev :newest
-	    :branch "auto-mode")
+	    :branch "develop")
   :hook
   ;; (gams-mode . rainbow-delimiters-mode)
   ;; (gams-mode . smartparens-mode)
@@ -1928,7 +1928,7 @@ buffer with C-c C-a C-a C-a ...."
   (gams-indent-number-loop 2)
   (gams-indent-number-mpsge 2)
   (gams-indent-number-equation 2)
-;  :mode ("\\.gms\\'" . gams-mode)
+  :mode ("\\.inc\\'" . gams-mode)
   ;; :config
   ;; (if (equal system-type 'windows-nt)
   ;;     (setq gams-system-directory "C:/GAMS/Last/"
@@ -1938,11 +1938,11 @@ buffer with C-c C-a C-a C-a ...."
   :bind (:map gams-mode-map
               ("C-c =" . gams-show-identifier-list)))
 
-(use-package poly-gams
-  :after gams-mode
-  ;; :vc (:fetcher github :repo ShiroTakeda/poly-gams)
-  ;; :load-path "~/Documents/git_projects/code/poly-gams"
-  :mode ("\\.inc\\'" . poly-gams-mode))
+;; (use-package poly-gams
+;;   :after gams-mode
+;;   ;; :vc (:fetcher github :repo ShiroTakeda/poly-gams)
+;;   ;; :load-path "~/Documents/git_projects/code/poly-gams"
+;;   :mode ("\\.inc\\'" . poly-gams-mode))
 #+end_src
 
 *** Julia
