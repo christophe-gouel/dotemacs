@@ -1937,12 +1937,13 @@ buffer with C-c C-a C-a C-a ...."
   ;;         gams-docs-directory "/opt/gams/gamsLast_linux_x64_64_sfx/docs"))
   :bind (:map gams-mode-map
               ("C-c =" . gams-show-identifier-list)))
+#+end_src
 
-;; (use-package poly-gams
-;;   :after gams-mode
-;;   ;; :vc (:fetcher github :repo ShiroTakeda/poly-gams)
-;;   ;; :load-path "~/Documents/git_projects/code/poly-gams"
-;;   :mode ("\\.inc\\'" . poly-gams-mode))
+I don't know why but =poly-gams= does not work with =use-package=, so I have to turn to the traditional =require=:
+
+#+begin_src emacs-lisp
+(require 'poly-gams)
+(add-to-list 'auto-mode-alist '("\\.inc\\'" . poly-gams-mode))
 #+end_src
 
 *** Julia
