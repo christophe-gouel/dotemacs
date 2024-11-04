@@ -377,6 +377,15 @@ current buffer within the project or the current directory if not in a project."
   (text-mode . (lambda() (setq show-trailing-whitespace t)))
   (text-mode . prettify-symbols-mode))
 
+(use-package xwidget
+  :ensure nil
+  :defer t
+  :config
+  (defun my-open-chatgpt ()
+    "Open ChatGPT in xwidget."
+    (interactive)
+    (xwidget-webkit-browse-url "https://chatgpt.com")))
+
 ;; Remove a bug appearing on Linux GTK and preventing the use of S-space (https://lists.gnu.org/archive/html/bug-gnu-emacs/2021-07/msg00071.html)
 (when (equal window-system 'pgtk)
   (setq pgtk-use-im-context-on-new-connection nil))
@@ -1446,7 +1455,7 @@ buffer with C-c C-a C-a C-a ...."
   ;;                (setq company-minimum-prefix-length 1)))
   (gams-mode . (lambda ()
                  (outline-minor-mode)
-                 (setq outline-regexp "^\*+ +.*----")
+                 (setq-local outline-regexp "^\*+ +.*----")
                (defun outline-level ()
                  (save-excursion
                    (looking-at outline-regexp)
@@ -1465,14 +1474,13 @@ buffer with C-c C-a C-a C-a ...."
   (gams-indent-number-loop 2)
   (gams-indent-number-mpsge 2)
   (gams-indent-number-equation 2)
-  :mode ("\\.inc\\'" . gams-mode)
-  ;; :config
-  ;; (if (equal system-type 'windows-nt)
-  ;;     (setq gams-system-directory "C:/GAMS/Last/"
-  ;;                 gams-docs-directory "C:/GAMS/Last/docs")
-  ;;   (setq gams-system-directory "/opt/gams/gamsLast_linux_x64_64_sfx"
-  ;;         gams-docs-directory "/opt/gams/gamsLast_linux_x64_64_sfx/docs"))
+  ;; Use emacs to browse GAMS documentation
+  (browse-url-handlers
+   '(("https?://www.gams.com/.*" . xwidget-webkit-browse-url)
+     ("file://.*\\(gams\\|GAMS\\).*\\.html?$" . xwidget-webkit-browse-url)))
   :bind (:map gams-mode-map
+	      ("C-c C-o" . nil)
+	      ("C-c C-o" . gams-open-included-file)
               ("C-c =" . gams-show-identifier-list)))
 
 (require 'poly-gams)
