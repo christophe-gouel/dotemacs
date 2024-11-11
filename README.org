@@ -15,6 +15,7 @@
 ;; You should make any changes there and regenerate it from Emacs org-mode
 ;; using org-babel-tangle (C-c C-v t)
 
+;;; Code:
 #+end_src
 
 ** Package management
@@ -1421,9 +1422,24 @@ For a modern-looking =org-mode=, use =org-modern=.
   :defer t
   :custom
   (org-odt-preferred-output-format "docx")) ; require soffice to be on the PATH
+#+end_src
 
+Activate export to beamer and markdown
+
+#+begin_src emacs-lisp
 (use-package ox-beamer
   :ensure nil
+  :after ox)
+
+(use-package ox-md
+  :ensure nil
+  :after ox)
+#+end_src
+
+=ox-gfm= to export to GitHub Flavored Markdown.
+
+#+begin_src emacs-lisp
+(use-package ox-gfm
   :after ox)
 #+end_src
 
@@ -1559,6 +1575,8 @@ Use built-in =flymake= for linting.
   :ensure nil
   :custom
   (flymake-no-changes-timeout nil)
+  :hook
+  (prog-mode)
   :config
   (remove-hook 'flymake-diagnostic-functions 'flymake-proc-legacy-flymake)
   :bind
@@ -1754,27 +1772,28 @@ Tree-sitter leads to a complete failure of font-locking with =Rmd= qnad Quarto f
   (".Rhistory"   . ess-r-mode)
   (".lintr"      . conf-mode)
   ("\\.Rproj\\'" . conf-mode)
-  :bind (:map ess-r-mode-map
-	      ;; Shortcut for pipe |>
+  :bind
+  (:map ess-r-mode-map
+	;; Shortcut for pipe |>
         ("C-S-m"   . " |>")
-	      ;; Shortcut for pipe %>%
-	      ("C-%"     . " %>%")
-	      ;; Shortcut for assign <-
-	      ("C--"     . ess-insert-assign)
-	      ("C-c v" . ess-view-data-print)
-        :map inferior-ess-r-mode-map
-        ("C-S-m" . " |>")
-        ("C-%"   . " %>%")
-	      ("C--"   . ess-insert-assign)
-	      ("C-c v" . ess-view-data-print)
-	      :map inferior-ess-mode-map
-	      ("<home>" . comint-bol)
-	      :map ess-r-mode-map
-	      :filter (not (eq system-type 'darwin))
-	      ("M--"     . ess-insert-assign))
+	;; Shortcut for pipe %>%
+	("C-%"     . " %>%")
+	;; Shortcut for assign <-
+	("C--"     . ess-insert-assign)
+	("C-c v" . ess-view-data-print)
+	:map inferior-ess-r-mode-map
+	("C-S-m" . " |>")
+	("C-%"   . " %>%")
+	("C--"   . ess-insert-assign)
+	("C-c v" . ess-view-data-print)
+	:map inferior-ess-mode-map
+	("<home>" . comint-bol)
+	:map ess-r-mode-map
+	:filter (not (eq system-type 'darwin))
+	("M--"     . ess-insert-assign))
   :custom
   ;; Deactivate linter in ess because it does not seem to work well
-  (ess-use-flymake nil)
+  ;; (ess-use-flymake nil)
   (ess-roxy-str "#'")
   (ess-roxy-template-alist
    '(("description" . ".. content for \\description{} (no empty lines) ..")

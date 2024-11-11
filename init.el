@@ -6,6 +6,8 @@
 ;; You should make any changes there and regenerate it from Emacs org-mode
 ;; using org-babel-tangle (C-c C-v t)
 
+;;; Code:
+
 (use-package package
   :ensure nil
   :config
@@ -1070,6 +1072,13 @@ same directory as the working and insert a link to this file."
   :ensure nil
   :after ox)
 
+(use-package ox-md
+  :ensure nil
+  :after ox)
+
+(use-package ox-gfm
+  :after ox)
+
 (use-package ox-reveal
   :after ox
   :ensure htmlize) ; required for the fontification of code blocks
@@ -1165,6 +1174,8 @@ same directory as the working and insert a link to this file."
   :ensure nil
   :custom
   (flymake-no-changes-timeout nil)
+  :hook
+  (prog-mode)
   :config
   (remove-hook 'flymake-diagnostic-functions 'flymake-proc-legacy-flymake)
   :bind
@@ -1304,27 +1315,28 @@ same directory as the working and insert a link to this file."
   (".Rhistory"   . ess-r-mode)
   (".lintr"      . conf-mode)
   ("\\.Rproj\\'" . conf-mode)
-  :bind (:map ess-r-mode-map
-	      ;; Shortcut for pipe |>
+  :bind
+  (:map ess-r-mode-map
+	;; Shortcut for pipe |>
         ("C-S-m"   . " |>")
-	      ;; Shortcut for pipe %>%
-	      ("C-%"     . " %>%")
-	      ;; Shortcut for assign <-
-	      ("C--"     . ess-insert-assign)
-	      ("C-c v" . ess-view-data-print)
-        :map inferior-ess-r-mode-map
-        ("C-S-m" . " |>")
-        ("C-%"   . " %>%")
-	      ("C--"   . ess-insert-assign)
-	      ("C-c v" . ess-view-data-print)
-	      :map inferior-ess-mode-map
-	      ("<home>" . comint-bol)
-	      :map ess-r-mode-map
-	      :filter (not (eq system-type 'darwin))
-	      ("M--"     . ess-insert-assign))
+	;; Shortcut for pipe %>%
+	("C-%"     . " %>%")
+	;; Shortcut for assign <-
+	("C--"     . ess-insert-assign)
+	("C-c v" . ess-view-data-print)
+	:map inferior-ess-r-mode-map
+	("C-S-m" . " |>")
+	("C-%"   . " %>%")
+	("C--"   . ess-insert-assign)
+	("C-c v" . ess-view-data-print)
+	:map inferior-ess-mode-map
+	("<home>" . comint-bol)
+	:map ess-r-mode-map
+	:filter (not (eq system-type 'darwin))
+	("M--"     . ess-insert-assign))
   :custom
   ;; Deactivate linter in ess because it does not seem to work well
-  (ess-use-flymake nil)
+  ;; (ess-use-flymake nil)
   (ess-roxy-str "#'")
   (ess-roxy-template-alist
    '(("description" . ".. content for \\description{} (no empty lines) ..")
