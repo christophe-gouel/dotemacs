@@ -1263,6 +1263,10 @@ same directory as the working and insert a link to this file."
     ("M-C-<return>" . my-copilot-complete-or-accept)
     ("M-C-g"        . copilot-clear-overlay))))
 
+(use-package copilot-chat
+  :defer t
+  :hook (git-commit-setup . copilot-chat-insert-commit-message))
+
 (use-package eglot
   :ensure nil
   :custom

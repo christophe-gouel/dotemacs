@@ -1685,6 +1685,14 @@ Configuration from [[https://robert.kra.hn/posts/2023-02-22-copilot-emacs-setup/
     ("M-C-g"        . copilot-clear-overlay))))
 #+end_src
 
+Support for Copilot Chat
+
+#+begin_src emacs-lisp
+(use-package copilot-chat
+  :defer t
+  :hook (git-commit-setup . copilot-chat-insert-commit-message))
+#+end_src
+
 *** Language Server Protocol
 
 #+begin_src emacs-lisp

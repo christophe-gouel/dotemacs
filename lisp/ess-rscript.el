@@ -43,8 +43,11 @@ DIRECTORY is the working directory in which to run the script."
 
 ;;;###autoload
 (defun ess-rscript (&optional arg)
-  "Run the current R script using Rscript.
-With universal prefix ARG or if not in an R buffer, prompt for the script file and directory."
+  "Run an R script using Rscript.
+This function executes the current R script in the buffer using the
+Rscript command.  If a universal prefix argument ARG is provided, or if
+the current buffer is not an R buffer, the function will prompt the user
+to specify the script file and the working directory."
   (interactive "P")
   (let ((script (buffer-file-name))
         (directory default-directory))
