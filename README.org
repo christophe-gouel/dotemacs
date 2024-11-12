@@ -1622,7 +1622,7 @@ Configuration from [[https://robert.kra.hn/posts/2023-02-22-copilot-emacs-setup/
 #+begin_src emacs-lisp
 (use-package copilot
   :vc (:url "https://github.com/copilot-emacs/copilot.el"
-	     :rev :newest
+       :rev :newest
        :branch "main")
   :custom
   (copilot-indent-warning-suppress t)
@@ -1635,14 +1635,8 @@ Configuration from [[https://robert.kra.hn/posts/2023-02-22-copilot-emacs-setup/
     (interactive)
     ;; Check if the Copilot overlay is visible
     (if (copilot--overlay-visible)
-	(progn
-	  ;; Accept the completion
-          (copilot-accept-completion)
-          ;; ;; Open a new line
-          ;; (open-line 1)
-          ;; ;; Move to the next line
-          ;; (next-line)
-	  )
+	;; Accept the completion
+	(copilot-accept-completion)
       ;; If the Copilot overlay is not visible, trigger completion
       (copilot-complete)))
 
@@ -1673,7 +1667,9 @@ Configuration from [[https://robert.kra.hn/posts/2023-02-22-copilot-emacs-setup/
 	(copilot-mode))))
 
   (add-to-list 'copilot-disable-predicates #'my-copilot-disable-predicate)
-  :hook (prog-mode . (lambda() (setq my-copilot-manual-mode t)))
+  :hook
+  ;; (prog-mode . (lambda() (setq my-copilot-manual-mode t)))
+  (prog-mode . copilot-mode)
   :bind
   (("C-M-c"         . my-copilot-change-activation)
    :map copilot-mode-map
@@ -1753,20 +1749,6 @@ Use "M-C-TAB" for moving to next field to avoid conflict with autocompletion.
   :bind (:map yas-minor-mode-map
 	      ("M-C-TAB"   . yas-next-field-or-maybe-expand)
 	      ("M-C-<tab>" . yas-next-field-or-maybe-expand)))
-#+end_src
-
-*** Tree sitter
-
-Tree-sitter leads to a complete failure of font-locking with =Rmd= qnad Quarto files, so it is better to simply rely on ESS font-locking.
-
-#+begin_src emacs-lisp :tangle no
-(use-package tree-sitter-ess-r
-  :after ess
-  :hook (ess-r-mode . tree-sitter-ess-r-mode-activate))
-
-(use-package ts-fold
-  :vc (:fetcher github :repo emacs-tree-sitter/ts-fold)
-  :defer t)
 #+end_src
 
 ** Programming languages

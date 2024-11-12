@@ -1201,7 +1201,7 @@ same directory as the working and insert a link to this file."
 
 (use-package copilot
   :vc (:url "https://github.com/copilot-emacs/copilot.el"
-	     :rev :newest
+       :rev :newest
        :branch "main")
   :custom
   (copilot-indent-warning-suppress t)
@@ -1214,14 +1214,8 @@ same directory as the working and insert a link to this file."
     (interactive)
     ;; Check if the Copilot overlay is visible
     (if (copilot--overlay-visible)
-	(progn
-	  ;; Accept the completion
-          (copilot-accept-completion)
-          ;; ;; Open a new line
-          ;; (open-line 1)
-          ;; ;; Move to the next line
-          ;; (next-line)
-	  )
+	;; Accept the completion
+	(copilot-accept-completion)
       ;; If the Copilot overlay is not visible, trigger completion
       (copilot-complete)))
 
@@ -1252,7 +1246,9 @@ same directory as the working and insert a link to this file."
 	(copilot-mode))))
 
   (add-to-list 'copilot-disable-predicates #'my-copilot-disable-predicate)
-  :hook (prog-mode . (lambda() (setq my-copilot-manual-mode t)))
+  :hook
+  ;; (prog-mode . (lambda() (setq my-copilot-manual-mode t)))
+  (prog-mode . copilot-mode)
   :bind
   (("C-M-c"         . my-copilot-change-activation)
    :map copilot-mode-map
