@@ -902,8 +902,10 @@ current buffer within the project or the current directory if not in a project."
   :hook
   (LaTeX-mode . turn-on-cdlatex)
   (LaTeX-mode . my-slow-company)
+  (org-mode . turn-on-org-cdlatex)
   (org-mode . my-slow-company)
   (cdlatex-tab . my-cdlatex-indent-maybe)
+  :bind (:map org-mode-map ("$" . cdlatex-dollar))
   :config
   ;; Prevent cdlatex from defining LaTeX math subscript everywhere
   (define-key cdlatex-mode-map "_" nil)
@@ -994,8 +996,6 @@ same directory as the working and insert a link to this file."
 (use-package org
   :ensure nil
   :mode ("\\.org\\'" . org-mode)
-  :hook
-  (org-mode . turn-on-org-cdlatex)
   :custom
   (org-edit-src-content-indentation 0)
   (org-todo-keywords '((type "TODO(t)" "STARTED(s)" "WAITING(w)" "|" "DONE(d)")))
