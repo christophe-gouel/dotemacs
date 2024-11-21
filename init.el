@@ -806,7 +806,7 @@ current buffer within the project or the current directory if not in a project."
    '(("[f]"
       ("footnote" "marginpar"))
      ("[c]"
-      ("citeyear" "citeauthor" "citep" "citet" "cite"))
+      ("citeyear" "citeauthor" "citep" "citet" "cite" "textcite" "parencite"))
      ("[l]"
       ("label"))
      ("[r]"
@@ -833,6 +833,7 @@ current buffer within the project or the current directory if not in a project."
   (TeX-fold-math-spec-list nil)
   (LaTeX-fold-math-spec-list nil)
   :config
+  (unbind-key "C-c RET" LaTeX-mode-map)	; Free the key for gptel
   (setq-default TeX-auto-parse-length 200
                 TeX-master nil)
   (add-hook 'TeX-after-compilation-finished-functions
@@ -910,6 +911,7 @@ current buffer within the project or the current directory if not in a project."
   (LaTeX-mode . my-slow-company)
   (org-mode . turn-on-org-cdlatex)
   (org-mode . my-slow-company)
+  (markdown-mode . turn-on-cdlatex)
   (cdlatex-tab . my-cdlatex-indent-maybe)
   :bind (:map org-mode-map ("$" . cdlatex-dollar))
   :config
@@ -1100,7 +1102,12 @@ same directory as the working and insert a link to this file."
   ("C-c m r" . math-preview-region)
   ("C-c m c d" . math-preview-clear-all)
   ("C-c m c p" . math-preview-clear-at-point)
-  ("C-c m c r" . math-preview-clear-region))
+  ("C-c m c r" . math-preview-clear-region)
+  :config
+  (add-to-list 'math-preview-tex-marks '("\\begin{align}" "\\end{align}" 0 nil nil))
+  (add-to-list 'math-preview-tex-marks '("\\begin{align*}" "\\end{align*}" 0 nil nil))
+  (add-to-list 'math-preview-tex-marks '("\\begin{gather}" "\\end{gather}" 0 nil nil))
+  (add-to-list 'math-preview-tex-marks '("\\begin{gather*}" "\\end{gather*}" 0 nil nil)))
 
 (use-package flyspell
   :hook (text-mode . flyspell-mode)

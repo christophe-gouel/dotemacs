@@ -1069,113 +1069,114 @@ Take a screenshot and copy it to a file
 ** LaTeX
 
 #+begin_src emacs-lisp
-    (use-package tex
-      :defer t
-      :ensure auctex
-      :hook
-      (TeX-mode . latex-math-mode)
-      (TeX-mode . TeX-fold-buffer)
-      (TeX-mode . flymake-mode)
-      (TeX-mode . my-center-text)
-      :hook
-      (TeX-mode . TeX-fold-mode)
-      :custom
-      (TeX-auto-save t)
-      (TeX-save-query nil) ; don't ask to save the file before compiling
-      (TeX-parse-self t)
-      (LaTeX-item-indent 0)
-      (LaTeX-default-options "12pt")
-      (TeX-PDF-mode t)
-      (TeX-electric-sub-and-superscript 1)
-      (LaTeX-math-list
-       '(
-         (?\) "right)")
-         (?\( "left(")
-         (?/ "frac{}{}")
-         ))
-      (LaTeX-flymake-chktex-options
-       '("-n3")) ; You should enclose the previous parenthesis with ‘{}’.
+(use-package tex
+  :defer t
+  :ensure auctex
+  :hook
+  (TeX-mode . latex-math-mode)
+  (TeX-mode . TeX-fold-buffer)
+  (TeX-mode . flymake-mode)
+  (TeX-mode . my-center-text)
+  :hook
+  (TeX-mode . TeX-fold-mode)
+  :custom
+  (TeX-auto-save t)
+  (TeX-save-query nil) ; don't ask to save the file before compiling
+  (TeX-parse-self t)
+  (LaTeX-item-indent 0)
+  (LaTeX-default-options "12pt")
+  (TeX-PDF-mode t)
+  (TeX-electric-sub-and-superscript 1)
+  (LaTeX-math-list
+   '(
+     (?\) "right)")
+     (?\( "left(")
+     (?/ "frac{}{}")
+     ))
+  (LaTeX-flymake-chktex-options
+   '("-n3")) ; You should enclose the previous parenthesis with ‘{}’.
 
-      ;; View PDF
-      (TeX-view-program-selection '((output-pdf "PDF Tools")))
-      (TeX-view-program-list '(("PDF Tools" TeX-pdf-tools-sync-view)))
-      (TeX-source-correlate-mode t)
-      (TeX-source-correlate-start-server t)
-      ;; (TeX-source-correlate-method (quote synctex))
+  ;; View PDF
+  (TeX-view-program-selection '((output-pdf "PDF Tools")))
+  (TeX-view-program-list '(("PDF Tools" TeX-pdf-tools-sync-view)))
+  (TeX-source-correlate-mode t)
+  (TeX-source-correlate-start-server t)
+  ;; (TeX-source-correlate-method (quote synctex))
 
-      ;; Fold-mode
-      (TeX-fold-auto-reveal t)
-      ;; Personalize the list of commands to be folded
-      (TeX-fold-macro-spec-list
-       '(("[f]"
-          ("footnote" "marginpar"))
-         ("[c]"
-          ("citeyear" "citeauthor" "citep" "citet" "cite"))
-         ("[l]"
-          ("label"))
-         ("[r]"
-          ("ref" "pageref" "eqref" "footref" "fref" "Fref"))
-         ("[i]"
-          ("index" "glossary"))
-         ("[1]:||*"
-          ("item"))
-         ("..."
-          ("dots"))
-         ("(C)"
-          ("copyright"))
-         ("(R)"
-          ("textregistered"))
-         ("TM"
-          ("texttrademark"))
-         (1
-          ("part" "chapter" "section" "subsection" "subsubsection" "paragraph" "subparagraph"
-           "part*" "chapter*" "section*" "subsection*" "subsubsection*" "paragraph*"
-           "subparagraph*" "emph" "textit" "textsl" "textmd" "textrm" "textsf" "texttt" "textbf"
-           "textsc" "textup" "caption" "frametitle" "framesubtitle"))))
-      ;; Prevent folding of math to let prettify-symbols do the job
-      (TeX-fold-math-spec-list-internal nil)
-      (TeX-fold-math-spec-list nil)
-      (LaTeX-fold-math-spec-list nil)
-      :config
-      (setq-default TeX-auto-parse-length 200
-                    TeX-master nil)
-      (add-hook 'TeX-after-compilation-finished-functions
-    	    #'TeX-revert-document-buffer)
+  ;; Fold-mode
+  (TeX-fold-auto-reveal t)
+  ;; Personalize the list of commands to be folded
+  (TeX-fold-macro-spec-list
+   '(("[f]"
+      ("footnote" "marginpar"))
+     ("[c]"
+      ("citeyear" "citeauthor" "citep" "citet" "cite" "textcite" "parencite"))
+     ("[l]"
+      ("label"))
+     ("[r]"
+      ("ref" "pageref" "eqref" "footref" "fref" "Fref"))
+     ("[i]"
+      ("index" "glossary"))
+     ("[1]:||*"
+      ("item"))
+     ("..."
+      ("dots"))
+     ("(C)"
+      ("copyright"))
+     ("(R)"
+      ("textregistered"))
+     ("TM"
+      ("texttrademark"))
+     (1
+      ("part" "chapter" "section" "subsection" "subsubsection" "paragraph" "subparagraph"
+       "part*" "chapter*" "section*" "subsection*" "subsubsection*" "paragraph*"
+       "subparagraph*" "emph" "textit" "textsl" "textmd" "textrm" "textsf" "texttt" "textbf"
+       "textsc" "textup" "caption" "frametitle" "framesubtitle"))))
+  ;; Prevent folding of math to let prettify-symbols do the job
+  (TeX-fold-math-spec-list-internal nil)
+  (TeX-fold-math-spec-list nil)
+  (LaTeX-fold-math-spec-list nil)
+  :config
+  (unbind-key "C-c RET" LaTeX-mode-map)	; Free the key for gptel
+  (setq-default TeX-auto-parse-length 200
+                TeX-master nil)
+  (add-hook 'TeX-after-compilation-finished-functions
+	    #'TeX-revert-document-buffer)
 
-      ;; To prevent TeX-view from jumping to the _region_.pdf file created by the
-      ;; preview from
-      ;; https://tex.stackexchange.com/questions/89399/auctex-how-to-jump-to-pdf-with-synctex-without-recompile-when-inline-preview
-      (defun my-TeX-view-advice (orig-fun &rest args)
+  ;; To prevent TeX-view from jumping to the _region_.pdf file created by the
+  ;; preview from
+  ;; https://tex.stackexchange.com/questions/89399/auctex-how-to-jump-to-pdf-with-synctex-without-recompile-when-inline-preview
+  (defun my-TeX-view-advice (orig-fun &rest args)
 	"Advice to ensure TeX-view always views the master file."
 	(let ((TeX-current-process-region-p nil))
 	  (apply orig-fun args)))
-      (advice-add 'TeX-view :around #'my-TeX-view-advice)
+  (advice-add 'TeX-view :around #'my-TeX-view-advice)
 
-      (defun my-tex-compile ()
-        "Save and compile TeX document"
-        (interactive)
-        (save-buffer)
-        (TeX-command-menu "latex"))
+  (defun my-tex-compile ()
+    "Save and compile TeX document"
+    (interactive)
+    (save-buffer)
+    (TeX-command-menu "latex"))
 
-      ;; Beamer
-      (defun my-tex-frame ()
-        "Run pdflatex on current frame.  Frame must be declared as an environment."
-        (interactive)
-        (let (beg)
-          (save-excursion
-    	(search-backward "\\begin{frame}")
-    	(setq beg (point))
-    	(forward-char 1)
-    	(LaTeX-find-matching-end)
-    	(TeX-pin-region beg (point))
-    	(cl-letf (( (symbol-function 'TeX-command-query) (lambda (x) "LaTeX")))
-    	  (TeX-command-region)))))
-      :bind
-      (:map TeX-mode-map
-    	("C-c e" . TeX-next-error)
-    	("M-RET" . latex-insert-item)
-    	("S-<return>" . my-tex-frame)
-    	("<f9>" . my-tex-compile)))
+  ;; Beamer
+  (defun my-tex-frame ()
+    "Run pdflatex on current frame.  Frame must be declared as an environment."
+    (interactive)
+    (let (beg)
+      (save-excursion
+	(search-backward "\\begin{frame}")
+	(setq beg (point))
+	(forward-char 1)
+	(LaTeX-find-matching-end)
+	(TeX-pin-region beg (point))
+	(cl-letf (( (symbol-function 'TeX-command-query) (lambda (x) "LaTeX")))
+	  (TeX-command-region)))))
+  :bind
+  (:map TeX-mode-map
+	("C-c e" . TeX-next-error)
+	("M-RET" . latex-insert-item)
+	("S-<return>" . my-tex-frame)
+	("<f9>" . my-tex-compile)))
 #+end_src
 
 #+begin_src emacs-lisp
@@ -1231,6 +1232,7 @@ Use svg for previews. Much slower than png, but it is not blurry on MacOS.
   (LaTeX-mode . my-slow-company)
   (org-mode . turn-on-org-cdlatex)
   (org-mode . my-slow-company)
+  (markdown-mode . turn-on-cdlatex)
   (cdlatex-tab . my-cdlatex-indent-maybe)
   :bind (:map org-mode-map ("$" . cdlatex-dollar))
   :config
@@ -1475,8 +1477,13 @@ The package =math-preview= has a problem under Windows, and some code should be 
   ("C-c m r" . math-preview-region)
   ("C-c m c d" . math-preview-clear-all)
   ("C-c m c p" . math-preview-clear-at-point)
-  ("C-c m c r" . math-preview-clear-region))
-#+end_src
+  ("C-c m c r" . math-preview-clear-region)
+  :config
+  (add-to-list 'math-preview-tex-marks '("\\begin{align}" "\\end{align}" 0 nil nil))
+  (add-to-list 'math-preview-tex-marks '("\\begin{align*}" "\\end{align*}" 0 nil nil))
+  (add-to-list 'math-preview-tex-marks '("\\begin{gather}" "\\end{gather}" 0 nil nil))
+  (add-to-list 'math-preview-tex-marks '("\\begin{gather*}" "\\end{gather*}" 0 nil nil)))
+  #+end_src
 
 ** Spell checking
 
