@@ -4,26 +4,29 @@
 # --
 
 \documentclass[
-  11pt,                            % Font size
-  aspectratio=169,                 % 16:9 aspect ratio
-  fleqn,                           % Flush equations left (can be commented for final version)
-  hyperref={
-    bookmarksopen=true,            % Open bookmarks in PDF viewer
-    pdfpagelayout=SinglePage,      % Single page layout
-    colorlinks=true,
-    citecolor=cyan,
-    linkcolor=black,
-    pdfview=Fit,                   % Fit page in viewer
-    pdfstartview=Fit,
-    pdfauthor={Christophe Gouel},
-    pdftitle={$1}}%
-  ]{beamer}
+  11pt,             % Font size
+  aspectratio=169,  % 16:9 aspect ratio
+  fleqn             % Flush equations left (can be commented for final version)
+]{beamer}
 
 % Beamer settings
 \usetheme[numbering=fraction,block=fill]{metropolis} % Metropolis theme with options
 \setbeamertemplate{navigation symbols}{}             % Remove navigation symbols
 \setbeamertemplate{footline}[frame number]           % Set footline to display frame number
 \setbeamertemplate{itemize items}{-}                 % Use '-' for itemize items
+
+% hyperref options
+\hypersetup{
+  bookmarksopen=true,            % Open bookmarks in PDF viewer
+  colorlinks=true,
+  citecolor=cyan,
+  linkcolor=black,
+  pdfauthor={Christophe Gouel},
+  pdftitle={$1},
+  pdfpagelayout=SinglePage,      % Single page layout
+  pdfview=Fit,                   % Fit page in viewer
+  pdfstartview=Fit
+}
 
 % Support for framesubtitle with metropolis theme from https://tex.stackexchange.com/questions/514237/beamer-presentation-metropolis-theme-frametitle-framesubtitle
 \makeatletter
@@ -96,7 +99,7 @@
 \newcommand{\colpurple}[1]{\color{purple}{#1}\color{black}{}}
 
 % Environment for wider item spacing
-\newenvironment{wideitemize}{\itemize\addtolength{\itemsep}{10pt}}{\end{itemize}}
+\newenvironment{wideitemize}{\itemize\addtolength{\itemsep}{10pt}}{\end{itemize}} % chktex 10
 
 % Commands for backup slides
 \newcommand{\backupbegin}{
@@ -164,8 +167,3 @@ $0
 \backupend{}
 
 \end{document}
-
-%%% Local Variables:
-%%% mode: LaTeX
-%%% TeX-master: t
-%%% End:
