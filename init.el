@@ -628,11 +628,11 @@ current buffer within the project or the current directory if not in a project."
       (auth-source-pick-first-password :host "api.openai.com")))
 
 (use-package gptel
-  :defer t
-  :custom
-  (gptel-use-curl nil)
+  :bind ("C-c RET" . gptel-send)
+  ;; :custom
+  ;; (gptel-use-curl nil)
   :config
-  (add-to-list 'gptel-directives '(academic . "You are an editor specialized in academic paper in economics. You are here to help me generate the best text for my academic articles. I will provide you texts and I would like you to review them for any spelling, grammar, or punctuation errors. Do not stop at simple proofreading, if it is useful, propose to refine the content's structure, style, and clarity. Once you have finished editing the text, provide me with any necessary corrections or suggestions for improving the text.")))
+  (add-to-list 'gptel-directives '(academic . "You are an editor specialized in academic paper in economics. You are here to help me generate the best text for my academic articles. I will provide you texts and I would like you to review them for any spelling, grammar, or punctuation errors. Do not stop at simple proofreading, if it is useful, propose to refine the content's structure, style, and clarity. Once you have finished editing the text, provide me with any necessary corrections or suggestions for improving the text. Please respect any LaTeX, org, or markdown command. Avoid passive form.")))
 
 (use-package eshell-git-prompt
   :defer 2
