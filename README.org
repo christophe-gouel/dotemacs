@@ -1137,7 +1137,6 @@ Take a screenshot and copy it to a file
   (TeX-fold-math-spec-list nil)
   (LaTeX-fold-math-spec-list nil)
   :config
-  (unbind-key "C-c RET" LaTeX-mode-map)	; Free the key for gptel
   (setq-default TeX-auto-parse-length 200
                 TeX-master nil)
   (add-hook 'TeX-after-compilation-finished-functions
@@ -1158,7 +1157,6 @@ Take a screenshot and copy it to a file
     (save-buffer)
     (TeX-command-menu "latex"))
 
-  ;; Beamer
   (defun my-tex-frame ()
     "Run pdflatex on current frame.  Frame must be declared as an environment."
     (interactive)
@@ -1176,7 +1174,8 @@ Take a screenshot and copy it to a file
 	("C-c e" . TeX-next-error)
 	("M-RET" . latex-insert-item)
 	("S-<return>" . my-tex-frame)
-	("<f9>" . my-tex-compile)))
+	("<f9>" . my-tex-compile)
+	("C-c RET" . nil)))
 #+end_src
 
 #+begin_src emacs-lisp
@@ -1755,10 +1754,10 @@ Use "M-C-TAB" for moving to next field to avoid conflict with autocompletion.
   :defer 1
   :custom
   (yas-use-menu nil)
-  (unbind-key "<tab>" yas-minor-mode-map)
-  (unbind-key "TAB" yas-minor-mode-map)
   :config
   (yas-global-mode 1)
+  (unbind-key "<tab>" yas-minor-mode-map)
+  (unbind-key "TAB" yas-minor-mode-map)
   :bind (:map yas-minor-mode-map
 	      ("M-C-TAB"   . yas-next-field-or-maybe-expand)
 	      ("M-C-<tab>" . yas-next-field-or-maybe-expand)))

@@ -833,7 +833,6 @@ current buffer within the project or the current directory if not in a project."
   (TeX-fold-math-spec-list nil)
   (LaTeX-fold-math-spec-list nil)
   :config
-  (unbind-key "C-c RET" LaTeX-mode-map)	; Free the key for gptel
   (setq-default TeX-auto-parse-length 200
                 TeX-master nil)
   (add-hook 'TeX-after-compilation-finished-functions
@@ -854,7 +853,6 @@ current buffer within the project or the current directory if not in a project."
     (save-buffer)
     (TeX-command-menu "latex"))
 
-  ;; Beamer
   (defun my-tex-frame ()
     "Run pdflatex on current frame.  Frame must be declared as an environment."
     (interactive)
@@ -872,7 +870,8 @@ current buffer within the project or the current directory if not in a project."
 	("C-c e" . TeX-next-error)
 	("M-RET" . latex-insert-item)
 	("S-<return>" . my-tex-frame)
-	("<f9>" . my-tex-compile)))
+	("<f9>" . my-tex-compile)
+	("C-c RET" . nil)))
 
 (use-package reftex
   :hook
@@ -1313,10 +1312,10 @@ same directory as the working and insert a link to this file."
   :defer 1
   :custom
   (yas-use-menu nil)
-  (unbind-key "<tab>" yas-minor-mode-map)
-  (unbind-key "TAB" yas-minor-mode-map)
   :config
   (yas-global-mode 1)
+  (unbind-key "<tab>" yas-minor-mode-map)
+  (unbind-key "TAB" yas-minor-mode-map)
   :bind (:map yas-minor-mode-map
 	      ("M-C-TAB"   . yas-next-field-or-maybe-expand)
 	      ("M-C-<tab>" . yas-next-field-or-maybe-expand)))
