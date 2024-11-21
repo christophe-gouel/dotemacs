@@ -572,7 +572,13 @@ current buffer within the project or the current directory if not in a project."
    ("M-g I" . consult-imenu-multi)
    ("M-g o" . consult-outline)
    :map org-mode-map
-   ("M-g o" . consult-org-heading)))
+   ("M-g o" . consult-org-heading))
+  :config
+  ;; Disable preview for commands that can be slow
+  (consult-customize
+   consult--source-bookmark consult--source-file-register
+   consult--source-recent-file consult--source-project-recent-file
+   :preview-key "M-."))
 
 (use-package vertico-prescient
   :after vertico

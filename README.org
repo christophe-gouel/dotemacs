@@ -825,7 +825,13 @@ Use =vertico-directory= to press =DEL= to jump back one directory instead of one
    ("M-g I" . consult-imenu-multi)
    ("M-g o" . consult-outline)
    :map org-mode-map
-   ("M-g o" . consult-org-heading)))
+   ("M-g o" . consult-org-heading))
+  :config
+  ;; Disable preview for commands that can be slow
+  (consult-customize
+   consult--source-bookmark consult--source-file-register
+   consult--source-recent-file consult--source-project-recent-file
+   :preview-key "M-."))
 #+end_src
 
 #+begin_src emacs-lisp
