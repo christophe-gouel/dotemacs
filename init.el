@@ -267,6 +267,17 @@
     (imenu-list-goto-entry)
     (imenu-list-smart-toggle)))
 
+(use-package isearch
+  :ensure nil
+  :defer t
+  :custom
+  ;; Display a counter of the matches
+  (isearch-lazy-count t)
+  (lazy-count-prefix-format "(%s/%s) ")
+  ;; Make regular Isearch interpret the empty space as a regular expression that
+  ;; matches any character between the words you give it.
+  (search-whitespace-regexp ".*?"))
+
 (use-package casual-calc
   :ensure casual
   :after calc
@@ -311,6 +322,9 @@
   :config
   (if (equal system-type 'windows-nt)
       (setq find-program "\"C:\\Program Files\\Git\\usr\\bin\\find.exe\"")))
+
+(use-package wgrep
+  :bind (:map grep-mode-map ("e" . wgrep-change-to-wgrep-mode)))
 
 (use-package ripgrep
   :bind

@@ -400,6 +400,21 @@ Show imenu in a separate buffer with =imenu-list=:
     (imenu-list-smart-toggle)))
 #+end_src
 
+** isearch
+
+#+begin_src emacs-lisp
+(use-package isearch
+  :ensure nil
+  :defer t
+  :custom
+  ;; Display a counter of the matches
+  (isearch-lazy-count t)
+  (lazy-count-prefix-format "(%s/%s) ")
+  ;; Make regular Isearch interpret the empty space as a regular expression that
+  ;; matches any character between the words you give it.
+  (search-whitespace-regexp ".*?"))
+#+end_src
+
 ** Calc
 
 #+begin_src emacs-lisp
@@ -467,6 +482,13 @@ The =find= program included with Windows is not POSIX-compatible, so we need to 
   :config
   (if (equal system-type 'windows-nt)
       (setq find-program "\"C:\\Program Files\\Git\\usr\\bin\\find.exe\"")))
+#+end_src
+
+=wgrep= to make grep buffers editable:
+
+#+begin_src emacs-lisp
+(use-package wgrep
+  :bind (:map grep-mode-map ("e" . wgrep-change-to-wgrep-mode)))
 #+end_src
 
 =ripgrep= package needed to have a proper interface for =ripgrep=.
