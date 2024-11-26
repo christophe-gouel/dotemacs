@@ -177,7 +177,6 @@
         default-major-mode 'text-mode ; mode par défaut
         delete-by-moving-to-trash t ; Sent deleted files to trash
         comment-column 0 ; Prevent indentation of lines starting with one comment
-        next-line-add-newlines t
         jit-lock-chunk-size 50000
         ;; set large file threshold at 100 megabytes
         large-file-warning-threshold 100000000
@@ -319,6 +318,8 @@
 (use-package grep
   :ensure nil
   :defer t
+  :custom
+  (grep-use-headings t)
   :config
   (if (equal system-type 'windows-nt)
       (setq find-program "\"C:\\Program Files\\Git\\usr\\bin\\find.exe\"")))
@@ -391,7 +392,9 @@ current buffer within the project or the current directory if not in a project."
   :defer t
   :hook
   (text-mode . (lambda() (setq show-trailing-whitespace t)))
-  (text-mode . prettify-symbols-mode))
+  (text-mode . prettify-symbols-mode)
+  :custom
+  (sentence-end-double-space nil))
 
 (use-package xwidget
   :ensure nil
@@ -413,12 +416,14 @@ current buffer within the project or the current directory if not in a project."
 (keymap-global-set "M-u" 'upcase-dwim)
 (keymap-global-set "M-l" 'downcase-dwim)
 (keymap-global-set "M-c" 'capitalize-dwim)
+(define-key input-decode-map [?\C-m] [C-m]) ; Prevent C-m from being interpreted as RET
 
 (when (equal system-type 'darwin)
   (setq
    mac-command-modifier 'meta
    mac-function-modifier 'control
-   mac-option-modifier 'meta)
+   mac-option-modifier 'meta
+   mac-right-option-modifier 'none)
   (keymap-global-set "<home>" 'move-beginning-of-line)
   (keymap-global-set "<end>" 'move-end-of-line)
   (keymap-global-set "§" (lambda () (interactive) (insert "-")))
@@ -466,7 +471,7 @@ current buffer within the project or the current directory if not in a project."
   :hook (after-init . global-company-mode)
   :custom
   (company-show-numbers t)
-  (company-idle-delay 0)
+  (company-idle-delay 0.2)
   ;; company configuration from
   ;; <https://github.com/radian-software/radian/blob/develop/emacs/radian.el>
   :bind (;; Replace `completion-at-point' and `complete-symbol' with
@@ -642,7 +647,9 @@ current buffer within the project or the current directory if not in a project."
       (auth-source-pick-first-password :host "api.openai.com")))
 
 (use-package gptel
-  :bind ("C-c RET" . gptel-send)
+  :bind
+  (("C-c RET" . gptel-send)
+   ("C-c C-<return>" . gptel-send))
   ;; :custom
   ;; (gptel-use-curl nil)
   :config
@@ -793,6 +800,7 @@ current buffer within the project or the current directory if not in a project."
   (TeX-auto-save t)
   (TeX-save-query nil) ; don't ask to save the file before compiling
   (TeX-parse-self t)
+  (TeX-electric-escape t) ; Typing "\" will start on-the-fly completion of macros
   (LaTeX-item-indent 0)
   (LaTeX-default-options "12pt")
   (TeX-PDF-mode t)
@@ -881,11 +889,10 @@ current buffer within the project or the current directory if not in a project."
 	  (TeX-command-region)))))
   :bind
   (:map TeX-mode-map
-	("C-c e" . TeX-next-error)
-	("M-RET" . latex-insert-item)
+	("C-c e"      . TeX-next-error)
+	("M-RET"      . latex-insert-item)
 	("S-<return>" . my-tex-frame)
-	("<f9>" . my-tex-compile)
-	("C-c RET" . nil)))
+	("<f9>"       . my-tex-compile)))
 
 (use-package reftex
   :hook
@@ -1060,10 +1067,6 @@ same directory as the working and insert a link to this file."
 (use-package org-appear
   :hook
   (org-mode . org-appear-mode))
-
-(use-package org-modern
-  :hook
-  (org-mode . global-org-modern-mode))
 
 (use-package org-fragtog
   :hook
@@ -1333,6 +1336,9 @@ same directory as the working and insert a link to this file."
   :bind (:map yas-minor-mode-map
 	      ("M-C-TAB"   . yas-next-field-or-maybe-expand)
 	      ("M-C-<tab>" . yas-next-field-or-maybe-expand)))
+
+(use-package symbol-overlay
+  :hook (prog-mode . symbol-overlay-mode))
 
 (use-package ess-site
   :ensure ess

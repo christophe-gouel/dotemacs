@@ -267,7 +267,6 @@ Set up encoding to Unicode
         default-major-mode 'text-mode ; mode par défaut
         delete-by-moving-to-trash t ; Sent deleted files to trash
         comment-column 0 ; Prevent indentation of lines starting with one comment
-        next-line-add-newlines t
         jit-lock-chunk-size 50000
         ;; set large file threshold at 100 megabytes
         large-file-warning-threshold 100000000
@@ -479,6 +478,8 @@ The =find= program included with Windows is not POSIX-compatible, so we need to 
 (use-package grep
   :ensure nil
   :defer t
+  :custom
+  (grep-use-headings t)
   :config
   (if (equal system-type 'windows-nt)
       (setq find-program "\"C:\\Program Files\\Git\\usr\\bin\\find.exe\"")))
@@ -581,7 +582,9 @@ Use =outline-minor-faces= to use a special face for outline sections.
   :defer t
   :hook
   (text-mode . (lambda() (setq show-trailing-whitespace t)))
-  (text-mode . prettify-symbols-mode))
+  (text-mode . prettify-symbols-mode)
+  :custom
+  (sentence-end-double-space nil))
 #+end_src
 
 ** xwidget
@@ -621,7 +624,8 @@ MacOS specific keybindings
   (setq
    mac-command-modifier 'meta
    mac-function-modifier 'control
-   mac-option-modifier 'meta)
+   mac-option-modifier 'meta
+   mac-right-option-modifier 'none)
   (keymap-global-set "<home>" 'move-beginning-of-line)
   (keymap-global-set "<end>" 'move-end-of-line)
   (keymap-global-set "§" (lambda () (interactive) (insert "-")))
@@ -705,7 +709,7 @@ MacOS specific keybindings
   :hook (after-init . global-company-mode)
   :custom
   (company-show-numbers t)
-  (company-idle-delay 0)
+  (company-idle-delay 0.2)
   ;; company configuration from
   ;; <https://github.com/radian-software/radian/blob/develop/emacs/radian.el>
   :bind (;; Replace `completion-at-point' and `complete-symbol' with
@@ -926,7 +930,9 @@ Support for syntax highlighting of Git configuration files
       (auth-source-pick-first-password :host "api.openai.com")))
 
 (use-package gptel
-  :bind ("C-c RET" . gptel-send)
+  :bind
+  (("C-c RET" . gptel-send)
+   ("C-c C-<return>" . gptel-send))
   ;; :custom
   ;; (gptel-use-curl nil)
   :config
@@ -1105,6 +1111,7 @@ Take a screenshot and copy it to a file
   (TeX-auto-save t)
   (TeX-save-query nil) ; don't ask to save the file before compiling
   (TeX-parse-self t)
+  (TeX-electric-escape t) ; Typing "\" will start on-the-fly completion of macros
   (LaTeX-item-indent 0)
   (LaTeX-default-options "12pt")
   (TeX-PDF-mode t)
@@ -1193,11 +1200,10 @@ Take a screenshot and copy it to a file
 	  (TeX-command-region)))))
   :bind
   (:map TeX-mode-map
-	("C-c e" . TeX-next-error)
-	("M-RET" . latex-insert-item)
+	("C-c e"      . TeX-next-error)
+	("M-RET"      . latex-insert-item)
 	("S-<return>" . my-tex-frame)
-	("<f9>" . my-tex-compile)
-	("C-c RET" . nil)))
+	("<f9>"       . my-tex-compile)))
 #+end_src
 
 #+begin_src emacs-lisp
@@ -1405,7 +1411,7 @@ Use =org-appear= for markup markers to appear automatically.
 
 For a modern-looking =org-mode=, use =org-modern=.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package org-modern
   :hook
   (org-mode . global-org-modern-mode))
@@ -1783,6 +1789,13 @@ Use "M-C-TAB" for moving to next field to avoid conflict with autocompletion.
   :bind (:map yas-minor-mode-map
 	      ("M-C-TAB"   . yas-next-field-or-maybe-expand)
 	      ("M-C-<tab>" . yas-next-field-or-maybe-expand)))
+#+end_src
+
+*** Symbol overlay
+
+#+begin_src emacs-lisp
+(use-package symbol-overlay
+  :hook (prog-mode . symbol-overlay-mode))
 #+end_src
 
 ** Programming languages

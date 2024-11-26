@@ -99,7 +99,7 @@
 \newcommand{\colpurple}[1]{\color{purple}{#1}\color{black}{}}
 
 % Environment for wider item spacing
-\newenvironment{wideitemize}{\itemize\addtolength{\itemsep}{10pt}}{\end{itemize}} % chktex 10
+\newenvironment{wideitemize}{\itemize\addtolength{\itemsep}{10pt}}{\enditemize} % chktex 10
 
 % Commands for backup slides
 \newcommand{\backupbegin}{
