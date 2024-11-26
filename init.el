@@ -182,7 +182,8 @@
         large-file-warning-threshold 100000000
         ring-bell-function 'ignore ; disable the bell (useful for macOS)
         mouse-yank-at-point t     ; coller avec la souris
-        case-fold-search t)       ; recherche sans égard à la casse
+        case-fold-search t       ; recherche sans égard à la casse
+	enable-recursive-minibuffers t)
 (delete-selection-mode t)               ; entrée efface texte sélectionné
 (fset 'yes-or-no-p 'y-or-n-p)           ; Replace yes or no with y or n
 (auto-compression-mode t)
@@ -212,7 +213,7 @@
   :commands (dired dired-jump)
   :config ; macOS ls is not the standard ls so we substitute it by GNU ls
   (when (and (eq system-type 'darwin) (executable-find "gls"))
-    (setq insert-directory-program "gls"))
+    (setopt insert-directory-program "gls"))
   :custom
   (dired-listing-switches "-agho --group-directories-first")
   :hook
@@ -241,7 +242,7 @@
   :hook
   (ibuffer .
 	   (lambda ()
-	     (setq ibuffer-filter-groups (ibuffer-project-generate-filter-groups))
+	     (setopt ibuffer-filter-groups (ibuffer-project-generate-filter-groups))
 	     (unless (eq ibuffer-sorting-mode 'project-file-relative)
 	       (ibuffer-do-sort-by-project-file-relative)))))
 
@@ -322,7 +323,7 @@
   (grep-use-headings t)
   :config
   (if (equal system-type 'windows-nt)
-      (setq find-program "\"C:\\Program Files\\Git\\usr\\bin\\find.exe\"")))
+      (setopt find-program "\"C:\\Program Files\\Git\\usr\\bin\\find.exe\"")))
 
 (use-package wgrep
   :bind (:map grep-mode-map ("e" . wgrep-change-to-wgrep-mode)))
@@ -384,14 +385,14 @@ current buffer within the project or the current directory if not in a project."
   :ensure nil
   :defer t
   :hook
-  (prog-mode . (lambda() (setq show-trailing-whitespace t)))
+  (prog-mode . (lambda() (setq-local show-trailing-whitespace t)))
   (prog-mode . (lambda () (display-fill-column-indicator-mode))))
 
 (use-package text-mode
   :ensure nil
   :defer t
   :hook
-  (text-mode . (lambda() (setq show-trailing-whitespace t)))
+  (text-mode . (lambda() (setq-local show-trailing-whitespace t)))
   (text-mode . prettify-symbols-mode)
   :custom
   (sentence-end-double-space nil))
@@ -407,7 +408,7 @@ current buffer within the project or the current directory if not in a project."
 
 ;; Remove a bug appearing on Linux GTK and preventing the use of S-space (https://lists.gnu.org/archive/html/bug-gnu-emacs/2021-07/msg00071.html)
 (when (equal window-system 'pgtk)
-  (setq pgtk-use-im-context-on-new-connection nil))
+  (setopt pgtk-use-im-context-on-new-connection nil))
 (keymap-global-set "C-x C-b" 'ibuffer)
 (keymap-global-set "C-<apps>" 'menu-bar-mode) ; for Windows
 (keymap-global-set "C-<menu>" 'menu-bar-mode) ; For Linux
@@ -416,10 +417,9 @@ current buffer within the project or the current directory if not in a project."
 (keymap-global-set "M-u" 'upcase-dwim)
 (keymap-global-set "M-l" 'downcase-dwim)
 (keymap-global-set "M-c" 'capitalize-dwim)
-(define-key input-decode-map [?\C-m] [C-m]) ; Prevent C-m from being interpreted as RET
 
 (when (equal system-type 'darwin)
-  (setq
+  (setopt
    mac-command-modifier 'meta
    mac-function-modifier 'control
    mac-option-modifier 'meta
@@ -456,8 +456,8 @@ current buffer within the project or the current directory if not in a project."
 (use-package which-key
   :diminish which-key-mode
   :init
-  (setq which-key-sort-uppercase-first nil
-        max-mini-window-height 15)
+  (setopt which-key-sort-uppercase-first nil
+          max-mini-window-height 15)
   ;; On va utiliser une fenêtre dédiée plutôt que le minibuffer
   (which-key-setup-side-window-bottom)
   ;; On l'active partout, tout le temps
@@ -524,7 +524,7 @@ current buffer within the project or the current directory if not in a project."
 (use-package company-jedi)
 
 (if (not (equal system-type 'windows-nt))
-    (setq company-backends
+    (setopt company-backends
 	  (append
 	   '((:separate
 	      company-reftex-labels
@@ -535,7 +535,7 @@ current buffer within the project or the current directory if not in a project."
 	      company-yasnippet))
 	   company-backends))
   ;; deactivate company-reftex-labels on Windows because it is too slow
-  (setq company-backends
+  (setopt company-backends
 	(append
 	 '((:separate
 	    company-reftex-citations
@@ -653,7 +653,10 @@ current buffer within the project or the current directory if not in a project."
   ;; :custom
   ;; (gptel-use-curl nil)
   :config
-  (add-to-list 'gptel-directives '(academic . "You are an editor specialized in academic paper in economics. You are here to help me generate the best text for my academic articles. I will provide you texts and I would like you to review them for any spelling, grammar, or punctuation errors. Do not stop at simple proofreading, if it is useful, propose to refine the content's structure, style, and clarity. Once you have finished editing the text, provide me with any necessary corrections or suggestions for improving the text. Please respect any LaTeX, org, or markdown command. Avoid passive form.")))
+  (add-to-list 'gptel-directives
+	       '(academic . "You are an editor specialized in academic paper in economics. You are here to help me generate the best text for my academic articles. I will provide you texts and I would like you to review them for any spelling, grammar, or punctuation errors. Do not stop at simple proofreading, if it is useful, propose to refine the content's structure, style, and clarity. Once you have finished editing the text, provide me with any necessary corrections or suggestions for improving the text. Please respect any LaTeX, org, or markdown command. Avoid passive form."))
+  (add-to-list 'gptel-directives
+	       '(mathematics . "Solve this mathematical formula. Just output the solution in LaTeX without giving any explanation.")))
 
 (use-package eshell-git-prompt
   :defer 2
@@ -718,7 +721,7 @@ current buffer within the project or the current directory if not in a project."
      :function #'citar-is-cited
      :padding "  "
      :tag "is:cited"))
-  (setq citar-indicators
+  (setopt citar-indicators
 	(list citar-indicator-files-icons
           citar-indicator-links-icons
           citar-indicator-notes-icons
@@ -854,9 +857,11 @@ current buffer within the project or the current directory if not in a project."
   (TeX-fold-math-spec-list-internal nil)
   (TeX-fold-math-spec-list nil)
   (LaTeX-fold-math-spec-list nil)
+
+  (TeX-master 'dwim)
   :config
-  (setq-default TeX-auto-parse-length 200
-                TeX-master nil)
+  ;; (setq-default TeX-auto-parse-length 200
+  ;;               TeX-master nil)
   (add-hook 'TeX-after-compilation-finished-functions
 	    #'TeX-revert-document-buffer)
 
