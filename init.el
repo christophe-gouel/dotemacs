@@ -22,6 +22,11 @@
 
 (use-package use-package-ensure-system-package)
 
+(add-to-list 'display-buffer-alist
+             '("\\`\\*\\(Warnings\\|Compile-Log\\)\\*\\'"
+               (display-buffer-no-window)
+               (allow-no-window . t)))
+
 (when (equal window-system 'ns)
   (use-package exec-path-from-shell
     :config
@@ -225,6 +230,13 @@
   :hook
   (dired-mode . diredfl-mode))
 
+(use-package dired-subtree
+  :after dired
+  :bind
+  (:map dired-mode-map
+    ("<tab>" . dired-subtree-toggle)
+    ("TAB" . dired-subtree-toggle)))
+
 (use-package compile
   :ensure nil
   :bind (:map compilation-mode-map ("r" . recompile))
@@ -417,6 +429,8 @@ current buffer within the project or the current directory if not in a project."
 (keymap-global-set "M-u" 'upcase-dwim)
 (keymap-global-set "M-l" 'downcase-dwim)
 (keymap-global-set "M-c" 'capitalize-dwim)
+;; Unbinc "C-z" that minimizes emacs
+(global-unset-key (kbd "C-z"))
 
 (when (equal system-type 'darwin)
   (setopt
@@ -437,7 +451,8 @@ current buffer within the project or the current directory if not in a project."
   (keymap-global-set "M-à" (lambda () (interactive) (insert "@")))
   (keymap-global-set "M-)" (lambda () (interactive) (insert "]")))
   (keymap-global-set "M--" (lambda () (interactive) (insert "}")))
-  (keymap-global-set "M-e" (lambda () (interactive) (insert "€"))))
+  ;; (keymap-global-set "M-e" (lambda () (interactive) (insert "€")))
+  )
 
 (use-package keycast
   :defer t)
@@ -803,17 +818,10 @@ current buffer within the project or the current directory if not in a project."
   (TeX-auto-save t)
   (TeX-save-query nil) ; don't ask to save the file before compiling
   (TeX-parse-self t)
-  (TeX-electric-escape t) ; Typing "\" will start on-the-fly completion of macros
   (LaTeX-item-indent 0)
   (LaTeX-default-options "12pt")
   (TeX-PDF-mode t)
   (TeX-electric-sub-and-superscript 1)
-  (LaTeX-math-list
-   '(
-     (?\) "right)")
-     (?\( "left(")
-     (?/ "frac{}{}")
-     ))
   (LaTeX-flymake-chktex-options
    '("-n3")) ; You should enclose the previous parenthesis with ‘{}’.
 
@@ -1623,7 +1631,7 @@ buffer with C-c C-a C-a C-a ...."
 (use-package ado-mode
   :defer t)
 
-(setq custom-file (concat user-emacs-directory "custom.el"))
+(setq custom-file (locate-user-emacs-file "custom.el"))
 (when (file-exists-p custom-file)
   (load custom-file))
 

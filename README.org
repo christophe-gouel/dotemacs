@@ -40,9 +40,12 @@ To use the keyword =:ensure-system-package= that install system command automati
 (use-package use-package-ensure-system-package)
 #+end_src
 
-To keep GPG keys up to date (let's try to remove it temporarily to check if we really need it)
-#+begin_src emacs-lisp :tangle no
-(use-package gnu-elpa-keyring-update)
+Remove warnings from package installation:
+#+begin_src emacs-lisp
+(add-to-list 'display-buffer-alist
+             '("\\`\\*\\(Warnings\\|Compile-Log\\)\\*\\'"
+               (display-buffer-no-window)
+               (allow-no-window . t)))
 #+end_src
 
 ** Add environment variables (macOS only)
@@ -336,6 +339,15 @@ Set up encoding to Unicode
   (dired-mode . diredfl-mode))
 #+end_src
 
+#+begin_src emacs-lisp
+(use-package dired-subtree
+  :after dired
+  :bind
+  (:map dired-mode-map
+    ("<tab>" . dired-subtree-toggle)
+    ("TAB" . dired-subtree-toggle)))
+#+end_src
+
 ** Compilation
 
 #+begin_src emacs-lisp
@@ -616,6 +628,8 @@ Use =outline-minor-faces= to use a special face for outline sections.
 (keymap-global-set "M-u" 'upcase-dwim)
 (keymap-global-set "M-l" 'downcase-dwim)
 (keymap-global-set "M-c" 'capitalize-dwim)
+;; Unbinc "C-z" that minimizes emacs
+(global-unset-key (kbd "C-z"))
 #+end_src
 
 MacOS specific keybindings
@@ -640,7 +654,8 @@ MacOS specific keybindings
   (keymap-global-set "M-à" (lambda () (interactive) (insert "@")))
   (keymap-global-set "M-)" (lambda () (interactive) (insert "]")))
   (keymap-global-set "M--" (lambda () (interactive) (insert "}")))
-  (keymap-global-set "M-e" (lambda () (interactive) (insert "€"))))
+  ;; (keymap-global-set "M-e" (lambda () (interactive) (insert "€")))
+  )
 #+end_src
 
 ** Keycast
@@ -1115,17 +1130,10 @@ Take a screenshot and copy it to a file
   (TeX-auto-save t)
   (TeX-save-query nil) ; don't ask to save the file before compiling
   (TeX-parse-self t)
-  (TeX-electric-escape t) ; Typing "\" will start on-the-fly completion of macros
   (LaTeX-item-indent 0)
   (LaTeX-default-options "12pt")
   (TeX-PDF-mode t)
   (TeX-electric-sub-and-superscript 1)
-  (LaTeX-math-list
-   '(
-     (?\) "right)")
-     (?\( "left(")
-     (?/ "frac{}{}")
-     ))
   (LaTeX-flymake-chktex-options
    '("-n3")) ; You should enclose the previous parenthesis with ‘{}’.
 
@@ -2131,7 +2139,7 @@ I don't know why but =poly-gams= does not work with =use-package=, so I have to 
 
 Define a file in which any customization is saved
 #+begin_src emacs-lisp
-(setq custom-file (concat user-emacs-directory "custom.el"))
+(setq custom-file (locate-user-emacs-file "custom.el"))
 (when (file-exists-p custom-file)
   (load custom-file))
 #+end_src
