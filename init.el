@@ -57,8 +57,7 @@
         custom-safe-themes t ; consider all themes as safe
         display-time-24hr-format t ; Affichage de l'heure format 24h
         column-number-mode t ; affichage du numéro de la colonne
-        prettify-symbols-unprettify-at-point t
-        pixel-scroll-precision-mode t)
+        prettify-symbols-unprettify-at-point t)
 (global-hl-line-mode +1) ; Highlight the current line
 (when (display-graphic-p)
   ;; Cursor (in terminal mode, to be set in terminal options)
@@ -160,58 +159,36 @@
   (load-theme 'modus-vivendi-deuteranopia)
   (define-key global-map (kbd "S-<f5>") #'modus-themes-toggle))
 
-(set-language-environment "UTF-8")
-(prefer-coding-system       'utf-8)
-(set-selection-coding-system 'utf-8)
-(set-default-coding-systems 'utf-8)
-(set-terminal-coding-system 'utf-8)
-(set-keyboard-coding-system 'utf-8)
-(setopt default-buffer-file-coding-system 'utf-8-unix
-        x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING))
-(if (equal system-type 'windows-nt)    ;; MS Windows clipboard is UTF-16LE
-    (set-clipboard-coding-system 'utf-16le-dos))
-
-(setopt user-full-name "Christophe Gouel"
-        user-mail-address "christophe.gouel@inrae.fr")
-
-(setopt initial-scratch-message nil)
-
-(setopt show-paren-mode t ; coupler les parenthèses
-        auth-sources '("~/.authinfo") ; Define file that stores secrets
-        backup-directory-alist '(("." . "~/.emacs.d/backup"))
-        default-major-mode 'text-mode ; mode par défaut
-        delete-by-moving-to-trash t ; Sent deleted files to trash
-        comment-column 0 ; Prevent indentation of lines starting with one comment
-        jit-lock-chunk-size 50000
-        ;; set large file threshold at 100 megabytes
-        large-file-warning-threshold 100000000
-        ring-bell-function 'ignore ; disable the bell (useful for macOS)
-        mouse-yank-at-point t     ; coller avec la souris
-        case-fold-search t       ; recherche sans égard à la casse
-	enable-recursive-minibuffers t)
-(delete-selection-mode t)               ; entrée efface texte sélectionné
-(fset 'yes-or-no-p 'y-or-n-p)           ; Replace yes or no with y or n
-(auto-compression-mode t)
-(when (equal system-type 'windows-nt)
-    (setopt tramp-default-method "plink"))
-
-(use-package server
+(use-package autorevert
   :ensure nil
-  :defer 1
-  :config
-  (when (and (display-graphic-p) (not (server-running-p)))
-    (server-start)))
+  :custom
+  (auto-revert-verbose nil)) ; Prevent autorevert from generating messages
+
+(use-package casual-calc
+  :ensure casual
+  :after calc
+  :bind (:map
+         calc-mode-map
+         ("C-o" . casual-calc-tmenu)
+         :map
+         calc-alg-map
+         ("C-o" . casual-calc-tmenu)))
+
+(use-package compile
+  :ensure nil
+  :bind (:map compilation-mode-map ("r" . recompile))
+  :hook
+  ;; Get proper coloring of compile buffers (does not seem to work under Windows, probably because cmd does not support ANSI colors)
+  (compilation-filter . ansi-color-compilation-filter)
+  :custom
+  ;; compilation buffer automatically scrolls and stops at first error
+  (compilation-scroll-output 'first-error))
 
 (use-package dictionary
   :ensure nil
   :defer t
   :custom
   (dictionary-server "dict.org"))
-
-(use-package autorevert
-  :ensure nil
-  :custom
-  (auto-revert-verbose nil)) ; Prevent autorevert from generating messages
 
 (use-package dired
   :ensure nil
@@ -237,18 +214,52 @@
     ("<tab>" . dired-subtree-toggle)
     ("TAB" . dired-subtree-toggle)))
 
-(use-package compile
-  :ensure nil
-  :bind (:map compilation-mode-map ("r" . recompile))
-  :hook
-  ;; Get proper coloring of compile buffers (does not seem to work under Windows, probably because cmd does not support ANSI colors)
-  (compilation-filter . ansi-color-compilation-filter)
-  :custom
-  ;; compilation buffer automatically scrolls and stops at first error
-  (compilation-scroll-output 'first-error))
+(set-language-environment "UTF-8")
+(prefer-coding-system       'utf-8)
+(set-selection-coding-system 'utf-8)
+(set-default-coding-systems 'utf-8)
+(set-terminal-coding-system 'utf-8)
+(set-keyboard-coding-system 'utf-8)
+(setopt default-buffer-file-coding-system 'utf-8-unix
+        x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING))
+(if (equal system-type 'windows-nt)    ;; MS Windows clipboard is UTF-16LE
+    (set-clipboard-coding-system 'utf-16le-dos))
 
 (use-package expand-region
   :bind ("C-!" . er/expand-region))
+
+(use-package grep
+  :ensure nil
+  :defer t
+  :custom
+  (grep-use-headings t)
+  :config
+  (if (equal system-type 'windows-nt)
+      (setopt find-program "\"C:\\Program Files\\Git\\usr\\bin\\find.exe\"")))
+
+(use-package wgrep
+  :bind (:map grep-mode-map ("e" . wgrep-change-to-wgrep-mode)))
+
+(use-package ripgrep
+  :bind
+  ("C-c f" . my-ripgrep-in-same-extension)
+  :config
+  (defun my-ripgrep-in-same-extension (expression)
+    "Search for EXPRESSION in files with the same extension as the
+current buffer within the project or the current directory if not in a project."
+    (interactive
+     (list
+      (read-from-minibuffer "Ripgrep search for: " (thing-at-point 'symbol))))
+    (let* ((extension (file-name-extension (buffer-file-name)))
+           (glob (if extension (concat "*." extension) "*"))
+           ;; Check if we are inside a project. If not, use `nil`.
+           (project (if (ignore-errors (project-current)) (project-current) nil))
+           ;; Use project root if in a project, otherwise use `default-directory`.
+           (root (if project (project-root project) default-directory)))
+      (ripgrep-regexp expression
+                    root
+                    (list (format "-g %s" glob)))))
+    :ensure-system-package rg)
 
 (use-package ibuffer-project
   :hook
@@ -290,81 +301,10 @@
   ;; matches any character between the words you give it.
   (search-whitespace-regexp ".*?"))
 
-(use-package casual-calc
-  :ensure casual
-  :after calc
-  :bind (:map
-         calc-mode-map
-         ("C-o" . casual-calc-tmenu)
-         :map
-         calc-alg-map
-         ("C-o" . casual-calc-tmenu)))
-
 (use-package minibuffer
   :ensure nil
   :custom
   (read-file-name-completion-ignore-case nil))
-
-(use-package doc-view
-  :ensure nil
-  :if (display-graphic-p)
-  :defer t
-  :custom
-  (doc-view-ghostscript-program (executable-find "rungs")))
-
-(use-package pdf-tools
-  :if (display-graphic-p)
-  :mode  ("\\.pdf\\'" . pdf-view-mode)
-  :bind (:map pdf-view-mode-map
-	      ("C-s" . isearch-forward))
-  :custom
-  (pdf-view-display-size 'fit-page)
-  (pdf-view-selection-style 'glyph)
-  :config
-  (pdf-tools-install))
-
-(use-package proced
-  :ensure nil
-  :defer t
-  :custom
-  (proced-enable-color-flag t))
-
-(use-package recentf
-  :custom
-  (recentf-max-saved-items 50))
-
-(use-package grep
-  :ensure nil
-  :defer t
-  :custom
-  (grep-use-headings t)
-  :config
-  (if (equal system-type 'windows-nt)
-      (setopt find-program "\"C:\\Program Files\\Git\\usr\\bin\\find.exe\"")))
-
-(use-package wgrep
-  :bind (:map grep-mode-map ("e" . wgrep-change-to-wgrep-mode)))
-
-(use-package ripgrep
-  :bind
-  ("C-c f" . my-ripgrep-in-same-extension)
-  :config
-  (defun my-ripgrep-in-same-extension (expression)
-    "Search for EXPRESSION in files with the same extension as the
-current buffer within the project or the current directory if not in a project."
-    (interactive
-     (list
-      (read-from-minibuffer "Ripgrep search for: " (thing-at-point 'symbol))))
-    (let* ((extension (file-name-extension (buffer-file-name)))
-           (glob (if extension (concat "*." extension) "*"))
-           ;; Check if we are inside a project. If not, use `nil`.
-           (project (if (ignore-errors (project-current)) (project-current) nil))
-           ;; Use project root if in a project, otherwise use `default-directory`.
-           (root (if project (project-root project) default-directory)))
-      (ripgrep-regexp expression
-                    root
-                    (list (format "-g %s" glob)))))
-    :ensure-system-package rg)
 
 (use-package outline
   :ensure nil
@@ -393,10 +333,52 @@ current buffer within the project or the current directory if not in a project."
   :hook
   (outline-minor-mode . outline-minor-faces-mode))
 
-(use-package windmove
+(setopt show-paren-mode t ; coupler les parenthèses
+        auth-sources '("~/.authinfo") ; Define file that stores secrets
+        backup-directory-alist '(("." . "~/.emacs.d/backup"))
+        default-major-mode 'text-mode ; mode par défaut
+        delete-by-moving-to-trash t ; Sent deleted files to trash
+        comment-column 0 ; Prevent indentation of lines starting with one comment
+        jit-lock-chunk-size 50000
+        ;; set large file threshold at 100 megabytes
+        large-file-warning-threshold 100000000
+        ring-bell-function 'ignore ; disable the bell (useful for macOS)
+        mouse-yank-at-point t     ; coller avec la souris
+        case-fold-search t       ; recherche sans égard à la casse
+	enable-recursive-minibuffers t
+	help-window-select t) ; Jump to help window when it opens
+(delete-selection-mode t)               ; entrée efface texte sélectionné
+(fset 'yes-or-no-p 'y-or-n-p)           ; Replace yes or no with y or n
+(auto-compression-mode t)
+(when (equal system-type 'windows-nt)
+    (setopt tramp-default-method "plink"))
+
+(setopt user-full-name "Christophe Gouel"
+        user-mail-address "christophe.gouel@inrae.fr")
+
+(use-package doc-view
   :ensure nil
+  :if (display-graphic-p)
+  :defer t
+  :custom
+  (doc-view-ghostscript-program (executable-find "rungs")))
+
+(use-package pdf-tools
+  :if (display-graphic-p)
+  :mode  ("\\.pdf\\'" . pdf-view-mode)
+  :bind (:map pdf-view-mode-map
+	      ("C-s" . isearch-forward))
+  :custom
+  (pdf-view-display-size 'fit-page)
+  (pdf-view-selection-style 'glyph)
   :config
-  (windmove-default-keybindings))
+  (pdf-tools-install))
+
+(use-package proced
+  :ensure nil
+  :defer t
+  :custom
+  (proced-enable-color-flag t))
 
 (use-package prog-mode
   :ensure nil
@@ -404,7 +386,10 @@ current buffer within the project or the current directory if not in a project."
   :hook
   (prog-mode . (lambda() (setq-local show-trailing-whitespace t)))
   (prog-mode . (lambda () (display-fill-column-indicator-mode)))
-  (prog-mode . (lambda() (add-to-list 'write-file-functions 'delete-trailing-whitespace))))
+  (prog-mode .
+    (lambda() (add-to-list 'write-file-functions 'delete-trailing-whitespace)))
+  ;; Make URLs in comments clickable
+  (prog-mode . goto-address-prog-mode))
 
 (use-package text-mode
   :ensure nil
@@ -414,6 +399,34 @@ current buffer within the project or the current directory if not in a project."
   (text-mode . prettify-symbols-mode)
   :custom
   (sentence-end-double-space nil))
+
+(use-package recentf
+  :custom
+  (recentf-max-saved-items 50))
+
+(setopt initial-scratch-message nil)
+
+(setopt
+  pixel-scroll-precision-mode t
+  scroll-step 1
+  ;; Marker distance from center (don't jump to center).
+  scroll-conservatively 100000
+  ;; Start scrolling when marker at top/bottom.
+  scroll-margin 2
+  ;; Try to keep screen position when PgDn/PgUp.
+  scroll-preserve-screen-position 1)
+
+(use-package server
+  :ensure nil
+  :defer 1
+  :config
+  (when (and (display-graphic-p) (not (server-running-p)))
+    (server-start)))
+
+(use-package windmove
+  :ensure nil
+  :config
+  (windmove-default-keybindings))
 
 (use-package xwidget
   :ensure nil
@@ -435,7 +448,7 @@ current buffer within the project or the current directory if not in a project."
 (keymap-global-set "M-u" 'upcase-dwim)
 (keymap-global-set "M-l" 'downcase-dwim)
 (keymap-global-set "M-c" 'capitalize-dwim)
-;; Unbinc "C-z" that minimizes emacs
+;; Unbind "C-z" that minimizes emacs
 (global-unset-key (kbd "C-z"))
 
 (when (equal system-type 'darwin)
