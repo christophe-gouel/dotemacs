@@ -441,6 +441,15 @@ Show imenu in a separate buffer with =imenu-list=:
          ("C-o" . casual-calc-tmenu)))
 #+end_src
 
+** Minibuffers
+
+#+begin_src emacs-lisp
+(use-package minibuffer
+  :ensure nil
+  :custom
+  (read-file-name-completion-ignore-case nil))
+#+end_src
+
 ** PDF viewers
 
 #+begin_src emacs-lisp
@@ -588,7 +597,8 @@ Use =outline-minor-faces= to use a special face for outline sections.
   :defer t
   :hook
   (prog-mode . (lambda() (setq-local show-trailing-whitespace t)))
-  (prog-mode . (lambda () (display-fill-column-indicator-mode))))
+  (prog-mode . (lambda () (display-fill-column-indicator-mode)))
+  (prog-mode . (lambda() (add-to-list 'write-file-functions 'delete-trailing-whitespace))))
 
 (use-package text-mode
   :ensure nil
@@ -653,7 +663,7 @@ MacOS specific keybindings
   (keymap-global-set "M-!" (lambda () (interactive) (insert "\\")))
   (keymap-global-set "M-à" (lambda () (interactive) (insert "@")))
   (keymap-global-set "M-)" (lambda () (interactive) (insert "]")))
-  (keymap-global-set "M--" (lambda () (interactive) (insert "}")))
+  ;; (keymap-global-set "M--" (lambda () (interactive) (insert "}")))
   ;; (keymap-global-set "M-e" (lambda () (interactive) (insert "€")))
   )
 #+end_src
@@ -1830,18 +1840,15 @@ Use "M-C-TAB" for moving to next field to avoid conflict with autocompletion.
 	;; Shortcut for pipe %>%
 	("C-%"     . " %>%")
 	;; Shortcut for assign <-
-	("C--"     . ess-insert-assign)
+	("M--"     . ess-insert-assign)
 	("C-c v" . ess-view-data-print)
 	:map inferior-ess-r-mode-map
 	("C-S-m" . " |>")
 	("C-%"   . " %>%")
-	("C--"   . ess-insert-assign)
+	("M--"     . ess-insert-assign)
 	("C-c v" . ess-view-data-print)
 	:map inferior-ess-mode-map
-	("<home>" . comint-bol)
-	:map ess-r-mode-map
-	:filter (not (eq system-type 'darwin))
-	("M--"     . ess-insert-assign))
+	("<home>" . comint-bol))
   :custom
   ;; Deactivate linter in ess because it does not seem to work well
   ;; (ess-use-flymake nil)
@@ -1971,8 +1978,8 @@ buffer with C-c C-a C-a C-a ...."
          map))))
   :bind
   (:map ess-r-mode-map ("C-c C-a" . essgd-toggle-plot-buffer)
-	:map essgd-mode-map ("C-c C-a" . essgd-toggle-plot-buffer)
-	:map inferior-ess-r-mode-map ("C-c C-a" . essgd-toggle-plot-buffer)))
+   :map essgd-mode-map ("C-c C-a" . essgd-toggle-plot-buffer)
+   :map inferior-ess-r-mode-map ("C-c C-a" . essgd-toggle-plot-buffer)))
 #+end_src
 
 *** GAMS

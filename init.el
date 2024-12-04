@@ -300,6 +300,11 @@
          calc-alg-map
          ("C-o" . casual-calc-tmenu)))
 
+(use-package minibuffer
+  :ensure nil
+  :custom
+  (read-file-name-completion-ignore-case nil))
+
 (use-package doc-view
   :ensure nil
   :if (display-graphic-p)
@@ -398,7 +403,8 @@ current buffer within the project or the current directory if not in a project."
   :defer t
   :hook
   (prog-mode . (lambda() (setq-local show-trailing-whitespace t)))
-  (prog-mode . (lambda () (display-fill-column-indicator-mode))))
+  (prog-mode . (lambda () (display-fill-column-indicator-mode)))
+  (prog-mode . (lambda() (add-to-list 'write-file-functions 'delete-trailing-whitespace))))
 
 (use-package text-mode
   :ensure nil
@@ -450,7 +456,7 @@ current buffer within the project or the current directory if not in a project."
   (keymap-global-set "M-!" (lambda () (interactive) (insert "\\")))
   (keymap-global-set "M-à" (lambda () (interactive) (insert "@")))
   (keymap-global-set "M-)" (lambda () (interactive) (insert "]")))
-  (keymap-global-set "M--" (lambda () (interactive) (insert "}")))
+  ;; (keymap-global-set "M--" (lambda () (interactive) (insert "}")))
   ;; (keymap-global-set "M-e" (lambda () (interactive) (insert "€")))
   )
 
@@ -1367,18 +1373,15 @@ same directory as the working and insert a link to this file."
 	;; Shortcut for pipe %>%
 	("C-%"     . " %>%")
 	;; Shortcut for assign <-
-	("C--"     . ess-insert-assign)
+	("M--"     . ess-insert-assign)
 	("C-c v" . ess-view-data-print)
 	:map inferior-ess-r-mode-map
 	("C-S-m" . " |>")
 	("C-%"   . " %>%")
-	("C--"   . ess-insert-assign)
+	("M--"     . ess-insert-assign)
 	("C-c v" . ess-view-data-print)
 	:map inferior-ess-mode-map
-	("<home>" . comint-bol)
-	:map ess-r-mode-map
-	:filter (not (eq system-type 'darwin))
-	("M--"     . ess-insert-assign))
+	("<home>" . comint-bol))
   :custom
   ;; Deactivate linter in ess because it does not seem to work well
   ;; (ess-use-flymake nil)
@@ -1495,8 +1498,8 @@ buffer with C-c C-a C-a C-a ...."
          map))))
   :bind
   (:map ess-r-mode-map ("C-c C-a" . essgd-toggle-plot-buffer)
-	:map essgd-mode-map ("C-c C-a" . essgd-toggle-plot-buffer)
-	:map inferior-ess-r-mode-map ("C-c C-a" . essgd-toggle-plot-buffer)))
+   :map essgd-mode-map ("C-c C-a" . essgd-toggle-plot-buffer)
+   :map inferior-ess-r-mode-map ("C-c C-a" . essgd-toggle-plot-buffer)))
 
 (use-package gams-mode
   ;; :load-path "~/Documents/git_projects/code/gams-mode"
