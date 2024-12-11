@@ -768,20 +768,60 @@ MacOS specific keybindings
 
 #+begin_src emacs-lisp
 (use-package company
-  :hook (after-init . global-company-mode)
+  :hook
+  (after-init . global-company-mode)
+  (prog-mode . (lambda ()
+		 (setq-local company-backends
+			     '(company-capf
+			       company-files
+			       company-math-symbols-unicode
+			       (company-dabbrev-code company-keywords)
+			       company-dabbrev
+			       :with
+			       company-yasnippet))))
+  (text-mode . (lambda ()
+		 (setq-local company-backends
+			     '(company-capf
+			       company-files
+			       company-latex-commands
+			       company-math-symbols-latex
+			       company-ispell
+			       (company-dabbrev-code company-keywords)
+			       company-dabbrev
+			       :with
+			       company-yasnippet))))
+  (TeX-mode . (lambda ()
+		(setq-local company-backends
+			    '(company-capf
+			      company-files
+			      company-reftex-labels
+			      company-reftex-citations
+			      company-math-symbols-latex
+			      company-latex-commands
+			      company-ispell
+			      (company-dabbrev-code company-keywords)
+			      company-dabbrev
+			      :with
+			      company-yasnippet))))
   :custom
   (company-show-numbers t)
   (company-idle-delay 0.2)
+  (company-backends '(company-capf
+		      company-files
+		      (company-dabbrev-code company-keywords)
+		      company-dabbrev
+		      :with
+		      company-yasnippet))
   ;; company configuration from
   ;; <https://github.com/radian-software/radian/blob/develop/emacs/radian.el>
   :bind (;; Replace `completion-at-point' and `complete-symbol' with
          ;; `company-manual-begin'. You might think this could be put
          ;; in the `:bind*' declaration below, but it seems that
          ;; `bind-key*' does not work with remappings.
-         ([remap completion-at-point] . company-manual-begin)
-         ([remap complete-symbol] . company-manual-begin)
+         ;; ([remap completion-at-point] . company-manual-begin)
+         ;; ([remap complete-symbol] . company-manual-begin)
 
-	     ("C-c y" . company-yasnippet)
+	 ("C-c y" . company-yasnippet)
 
          ;; The following are keybindings that take effect whenever
          ;; the completions menu is visible, even if the user has not
@@ -822,29 +862,6 @@ MacOS specific keybindings
 (use-package company-reftex)
 
 (use-package company-jedi)
-
-(if (not (equal system-type 'windows-nt))
-    (setopt company-backends
-	  (append
-	   '((:separate
-	      company-reftex-labels
-	      company-reftex-citations
-	      company-math-symbols-latex
-	      company-math-symbols-unicode
-	      company-latex-commands
-	      company-yasnippet))
-	   company-backends))
-  ;; deactivate company-reftex-labels on Windows because it is too slow
-  (setopt company-backends
-	(append
-	 '((:separate
-	    company-reftex-citations
-	    company-math-symbols-latex
-	    company-math-symbols-unicode
-	    company-latex-commands
-	    company-yasnippet))
-	 company-backends)))
-
 #+end_src
 
 Use =company-box= for a better position of the autocompletion when using copilot.
