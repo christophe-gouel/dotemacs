@@ -54,11 +54,9 @@
 (tooltip-mode 0)
 
 (setopt blink-cursor-blinks 0 ; curseur clignote indéfiniment
-        custom-safe-themes t ; consider all themes as safe
         display-time-24hr-format t ; Affichage de l'heure format 24h
         column-number-mode t ; affichage du numéro de la colonne
         prettify-symbols-unprettify-at-point t)
-(global-hl-line-mode +1) ; Highlight the current line
 (when (display-graphic-p)
   ;; Cursor (in terminal mode, to be set in terminal options)
   (setopt cursor-type 'bar) ; curseur étroit
@@ -88,6 +86,13 @@
 (use-package mixed-pitch
   :hook
   (text-mode . mixed-pitch-mode))
+
+(use-package hl-line
+  :ensure nil
+  :config
+  (global-hl-line-mode +1)
+  :custom
+  (global-hl-line-sticky-flag t))
 
 (use-package rainbow-mode
   :hook (prog-mode . rainbow-mode))
@@ -145,13 +150,15 @@
   (rainbow-delimiters-depth-8-face ((t (:foreground "black"))))
   (rainbow-delimiters-unmatched-face ((t (:background "yellow")))))
 
+(setopt custom-safe-themes t) ; consider all themes as safe
+
 (use-package modus-themes
   :ensure t
   :config
   (setopt modus-themes-italic-constructs t
-	      modus-themes-bold-constructs t
-	      modus-themes-to-toggle
-	        '(modus-operandi-deuteranopia modus-vivendi-deuteranopia)
+          modus-themes-bold-constructs t
+          modus-themes-to-toggle
+	    '(modus-operandi-deuteranopia modus-vivendi-deuteranopia)
           ;; Remove the mode-line border
           modus-themes-common-palette-overrides
             '((border-mode-line-active unspecified)
@@ -403,6 +410,8 @@ current buffer within the project or the current directory if not in a project."
 (use-package recentf
   :custom
   (recentf-max-saved-items 50))
+
+(set-register ?r '(file . "~/Inrae EcoPub Dropbox/Christophe Gouel/dropbox_projects/Review"))
 
 (setopt initial-scratch-message nil)
 
@@ -896,9 +905,9 @@ current buffer within the project or the current directory if not in a project."
   ;; preview from
   ;; https://tex.stackexchange.com/questions/89399/auctex-how-to-jump-to-pdf-with-synctex-without-recompile-when-inline-preview
   (defun my-TeX-view-advice (orig-fun &rest args)
-	"Advice to ensure TeX-view always views the master file."
-	(let ((TeX-current-process-region-p nil))
-	  (apply orig-fun args)))
+    "Advice to ensure TeX-view always views the master file."
+    (let ((TeX-current-process-region-p nil))
+      (apply orig-fun args)))
   (advice-add 'TeX-view :around #'my-TeX-view-advice)
 
   (defun my-tex-compile ()

@@ -90,11 +90,9 @@ Remove menu, scrool-bar, tool-bar, and tooltip
 
 #+begin_src emacs-lisp
 (setopt blink-cursor-blinks 0 ; curseur clignote indéfiniment
-        custom-safe-themes t ; consider all themes as safe
         display-time-24hr-format t ; Affichage de l'heure format 24h
         column-number-mode t ; affichage du numéro de la colonne
         prettify-symbols-unprettify-at-point t)
-(global-hl-line-mode +1) ; Highlight the current line
 (when (display-graphic-p)
   ;; Cursor (in terminal mode, to be set in terminal options)
   (setopt cursor-type 'bar) ; curseur étroit
@@ -134,6 +132,19 @@ Use =mixed-pitch= to have a proportional font for text and a monospace font for 
 (use-package mixed-pitch
   :hook
   (text-mode . mixed-pitch-mode))
+#+end_src
+
+** Highlight lines
+
+Highlight the current line
+
+#+begin_src emacs-lisp
+(use-package hl-line
+  :ensure nil
+  :config
+  (global-hl-line-mode +1)
+  :custom
+  (global-hl-line-sticky-flag t))
 #+end_src
 
 ** Hex color codes displayed in color
@@ -215,13 +226,15 @@ Use =mixed-pitch= to have a proportional font for text and a monospace font for 
 ** Theme
 
 #+begin_src emacs-lisp
+(setopt custom-safe-themes t) ; consider all themes as safe
+
 (use-package modus-themes
   :ensure t
   :config
   (setopt modus-themes-italic-constructs t
-	      modus-themes-bold-constructs t
-	      modus-themes-to-toggle
-	        '(modus-operandi-deuteranopia modus-vivendi-deuteranopia)
+          modus-themes-bold-constructs t
+          modus-themes-to-toggle
+	    '(modus-operandi-deuteranopia modus-vivendi-deuteranopia)
           ;; Remove the mode-line border
           modus-themes-common-palette-overrides
             '((border-mode-line-active unspecified)
@@ -585,6 +598,12 @@ Use =outline-minor-faces= to use a special face for outline sections.
 (use-package recentf
   :custom
   (recentf-max-saved-items 50))
+#+end_src
+
+** Registers
+
+#+begin_src emacs-lisp
+(set-register ?r '(file . "~/Inrae EcoPub Dropbox/Christophe Gouel/dropbox_projects/Review"))
 #+end_src
 
 ** Scratch buffer
@@ -994,7 +1013,7 @@ Support for syntax highlighting of Git configuration files
   (eshell-git-prompt-use-theme 'powerline))
 #+end_src
 
-**  Other shells
+** Other shells
 
 #+begin_src emacs-lisp
 (use-package comint
@@ -1216,9 +1235,9 @@ Take a screenshot and copy it to a file
   ;; preview from
   ;; https://tex.stackexchange.com/questions/89399/auctex-how-to-jump-to-pdf-with-synctex-without-recompile-when-inline-preview
   (defun my-TeX-view-advice (orig-fun &rest args)
-	"Advice to ensure TeX-view always views the master file."
-	(let ((TeX-current-process-region-p nil))
-	  (apply orig-fun args)))
+    "Advice to ensure TeX-view always views the master file."
+    (let ((TeX-current-process-region-p nil))
+      (apply orig-fun args)))
   (advice-add 'TeX-view :around #'my-TeX-view-advice)
 
   (defun my-tex-compile ()
