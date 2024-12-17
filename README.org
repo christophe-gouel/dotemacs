@@ -38,6 +38,10 @@ To use the keyword =:ensure-system-package= that install system command automati
 
 #+begin_src emacs-lisp
 (use-package use-package-ensure-system-package)
+
+(use-package system-packages
+  :ensure t
+  :defer t)
 #+end_src
 
 Remove warnings from package installation:
@@ -461,7 +465,7 @@ Show imenu in a separate buffer with =imenu-list=:
 (use-package minibuffer
   :ensure nil
   :custom
-  (read-file-name-completion-ignore-case nil))
+  (read-file-name-completion-ignore-case t))
 #+end_src
 
 ** Outline (minor) mode
@@ -1006,7 +1010,8 @@ Support for syntax highlighting of Git configuration files
 	 :map chatgpt-shell-prompt-compose-view-mode-map ("C-c C-b" . my-chatgpt-save-block))
   :custom
   (chatgpt-shell-openai-key
-      (auth-source-pick-first-password :host "api.openai.com")))
+      (auth-source-pick-first-password :host "api.openai.com"))
+  :ensure-system-package curl)
 
 (use-package gptel
   :bind
@@ -1586,7 +1591,9 @@ The package =math-preview= has a problem under Windows, and some code should be 
   (add-to-list 'math-preview-tex-marks '("\\begin{align}" "\\end{align}" 0 nil nil))
   (add-to-list 'math-preview-tex-marks '("\\begin{align*}" "\\end{align*}" 0 nil nil))
   (add-to-list 'math-preview-tex-marks '("\\begin{gather}" "\\end{gather}" 0 nil nil))
-  (add-to-list 'math-preview-tex-marks '("\\begin{gather*}" "\\end{gather*}" 0 nil nil)))
+  (add-to-list 'math-preview-tex-marks '("\\begin{gather*}" "\\end{gather*}" 0 nil nil))
+  :ensure-system-package
+  (math-preview . "npm install -g git+https://gitlab.com/matsievskiysv/math-preview"))
   #+end_src
 
 ** Spell checking
@@ -2257,12 +2264,6 @@ Rscript -e "install.packages('styler')"
 #+end_src
 
 ** Other installations
-
-=math-preview= for LaTeX blocks in text buffers.
-
-#+begin_src shell
-npm install -g git+https://gitlab.com/matsievskiysv/math-preview
-#+end_src
 
 Install
 - =delta= to have syntax highlighting in git diffs.

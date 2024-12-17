@@ -22,6 +22,10 @@
 
 (use-package use-package-ensure-system-package)
 
+(use-package system-packages
+  :ensure t
+  :defer t)
+
 (add-to-list 'display-buffer-alist
              '("\\`\\*\\(Warnings\\|Compile-Log\\)\\*\\'"
                (display-buffer-no-window)
@@ -311,7 +315,7 @@ current buffer within the project or the current directory if not in a project."
 (use-package minibuffer
   :ensure nil
   :custom
-  (read-file-name-completion-ignore-case nil))
+  (read-file-name-completion-ignore-case t))
 
 (use-package outline
   :ensure nil
@@ -705,7 +709,8 @@ current buffer within the project or the current directory if not in a project."
 	 :map chatgpt-shell-prompt-compose-view-mode-map ("C-c C-b" . my-chatgpt-save-block))
   :custom
   (chatgpt-shell-openai-key
-      (auth-source-pick-first-password :host "api.openai.com")))
+      (auth-source-pick-first-password :host "api.openai.com"))
+  :ensure-system-package curl)
 
 (use-package gptel
   :bind
@@ -1182,7 +1187,9 @@ same directory as the working and insert a link to this file."
   (add-to-list 'math-preview-tex-marks '("\\begin{align}" "\\end{align}" 0 nil nil))
   (add-to-list 'math-preview-tex-marks '("\\begin{align*}" "\\end{align*}" 0 nil nil))
   (add-to-list 'math-preview-tex-marks '("\\begin{gather}" "\\end{gather}" 0 nil nil))
-  (add-to-list 'math-preview-tex-marks '("\\begin{gather*}" "\\end{gather*}" 0 nil nil)))
+  (add-to-list 'math-preview-tex-marks '("\\begin{gather*}" "\\end{gather*}" 0 nil nil))
+  :ensure-system-package
+  (math-preview . "npm install -g git+https://gitlab.com/matsievskiysv/math-preview"))
 
 (use-package flyspell
   :hook (text-mode . flyspell-mode)
