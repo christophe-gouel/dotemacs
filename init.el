@@ -415,6 +415,7 @@ current buffer within the project or the current directory if not in a project."
   :custom
   (recentf-max-saved-items 50))
 
+(set-register ?d '(file . "~/Downloads"))
 (set-register ?r '(file . "~/Inrae EcoPub Dropbox/Christophe Gouel/dropbox_projects/Review"))
 
 (setopt initial-scratch-message nil)
@@ -517,22 +518,22 @@ current buffer within the project or the current directory if not in a project."
 (use-package company
   :hook
   (after-init . global-company-mode)
-  (prog-mode . (lambda ()
-		 (setq-local company-backends
-			     '(company-capf
-			       company-files
-			       company-math-symbols-unicode
-			       (company-dabbrev-code company-keywords)
-			       company-dabbrev
-			       :with
-			       company-yasnippet))))
+  ;; (prog-mode . (lambda ()
+  ;; 		 (setq-local company-backends
+  ;; 			     '(company-capf
+  ;; 			       company-files
+  ;; 			       company-math-symbols-unicode
+  ;; 			       (company-dabbrev-code company-keywords)
+  ;; 			       company-dabbrev
+  ;; 			       :with
+  ;; 			       company-yasnippet))))
   (text-mode . (lambda ()
 		 (setq-local company-backends
 			     '(company-capf
 			       company-files
 			       company-latex-commands
 			       company-math-symbols-latex
-			       company-ispell
+			       ;; company-ispell
 			       (company-dabbrev-code company-keywords)
 			       company-dabbrev
 			       :with
@@ -594,13 +595,7 @@ current buffer within the project or the current directory if not in a project."
          ;; explicitly interacted with Company. Note that <return> is
          ;; for windowed Emacs and RET is for terminal Emacs.
          ("<return>" . company-complete-selection)
-         ("RET" . company-complete-selection))
-
-  ;; :bind* (;; The default keybinding for `completion-at-point' and
-  ;;         ;; `complete-symbol' is M-TAB or equivalently C-M-i. Here we
-  ;;         ;; make sure that no minor modes override this keybinding.
-  ;;         ("M-TAB" . company-manual-begin))
-  )
+         ("RET" . company-complete-selection)))
 
 (use-package company-math
   :custom
