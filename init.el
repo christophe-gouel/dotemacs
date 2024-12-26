@@ -60,7 +60,8 @@
 (setopt blink-cursor-blinks 0 ; curseur clignote indéfiniment
         display-time-24hr-format t ; Affichage de l'heure format 24h
         column-number-mode t ; affichage du numéro de la colonne
-        prettify-symbols-unprettify-at-point t)
+        prettify-symbols-unprettify-at-point t
+	frame-resize-pixelwise t)
 (when (display-graphic-p)
   ;; Cursor (in terminal mode, to be set in terminal options)
   (setopt cursor-type 'bar) ; curseur étroit
@@ -536,7 +537,7 @@ current buffer within the project or the current directory if not in a project."
 			       ;; company-ispell
 			       (company-dabbrev-code company-keywords)
 			       company-dabbrev
-			       :with
+			       ;; :with
 			       company-yasnippet))))
   (TeX-mode . (lambda ()
 		(setq-local company-backends
@@ -549,7 +550,7 @@ current buffer within the project or the current directory if not in a project."
 			      company-ispell
 			      (company-dabbrev-code company-keywords)
 			      company-dabbrev
-			      :with
+			      ;; :with
 			      company-yasnippet))))
   :custom
   (company-show-numbers t)
@@ -558,7 +559,7 @@ current buffer within the project or the current directory if not in a project."
 		      company-files
 		      (company-dabbrev-code company-keywords)
 		      company-dabbrev
-		      :with
+		      ;; :with
 		      company-yasnippet))
   ;; company configuration from
   ;; <https://github.com/radian-software/radian/blob/develop/emacs/radian.el>
@@ -649,9 +650,7 @@ current buffer within the project or the current directory if not in a project."
    ;; Other custom bindings
    ("M-g i" . consult-imenu)
    ("M-g I" . consult-imenu-multi)
-   ("M-g o" . consult-outline)
-   :map org-mode-map
-   ("M-g o" . consult-org-heading))
+   ("M-g o" . consult-outline))
   :config
   ;; Disable preview for commands that can be slow
   (consult-customize
@@ -1121,7 +1120,8 @@ same directory as the working and insert a link to this file."
      (shell . t)))
   :bind (:map org-mode-map
 	      ("C-c o" . org-open-at-point)
-	      ("C-c =" . imenu-list)))
+	      ("C-c =" . imenu-list)
+	      ("M-g o" . consult-org-heading)))
 
 (use-package org-appear
   :hook
@@ -1549,12 +1549,6 @@ buffer with C-c C-a C-a C-a ...."
 	    :rev :newest
 	    :branch "develop")
   :hook
-  ;; (gams-mode . rainbow-delimiters-mode)
-  ;; (gams-mode . smartparens-mode)
-  ;; (gams-mode . display-fill-column-indicator-mode)
-  ;; (gams-mode . (lambda ()
-  ;;                (make-local-variable 'company-minimum-prefix-length)
-  ;;                (setq company-minimum-prefix-length 1)))
   (gams-mode . (lambda ()
                  (outline-minor-mode)
                  (setq-local outline-regexp "^\*+ +.*----")
@@ -1567,6 +1561,7 @@ buffer with C-c C-a C-a C-a ...."
   (gams-process-command-option "ll=0 lo=3 pw=153 ps=9999")
   (gams-fill-column 90)
   (gams-default-pop-window-height 20)
+  (gams-browse-url-function 'xwidget-webkit-browse-url)
   ;; Remove the handling of parentheses by gams-mode to use smartparens instead
   (gams-close-paren-always nil)
   (gams-close-double-quotation-always nil)
@@ -1576,12 +1571,8 @@ buffer with C-c C-a C-a C-a ...."
   (gams-indent-number-loop 2)
   (gams-indent-number-mpsge 2)
   (gams-indent-number-equation 2)
-  ;; Use emacs to browse GAMS documentation
-  (browse-url-handlers
-   '(("https?://www.gams.com/.*" . xwidget-webkit-browse-url)
-     ("file://.*\\(gams\\|GAMS\\).*\\.html?$" . xwidget-webkit-browse-url)))
   :bind (:map gams-mode-map
-	      ("C-c C-o" . nil)
+	      ("C-c C-o" . nil) ; Remove binding for user-defined comment template
 	      ("C-c C-o" . gams-open-included-file)
               ("C-c =" . gams-show-identifier-list)))
 
