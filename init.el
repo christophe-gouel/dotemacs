@@ -61,7 +61,8 @@
         display-time-24hr-format t ; Affichage de l'heure format 24h
         column-number-mode t ; affichage du numéro de la colonne
         prettify-symbols-unprettify-at-point t
-	frame-resize-pixelwise t)
+	frame-resize-pixelwise t
+	window-resize-pixelwise t)
 (when (display-graphic-p)
   ;; Cursor (in terminal mode, to be set in terminal options)
   (setopt cursor-type 'bar) ; curseur étroit
@@ -618,6 +619,13 @@ current buffer within the project or the current directory if not in a project."
 (use-package vertico
   :init
   (vertico-mode)
+  (vertico-multiform-mode)
+  :custom
+  (vertico-multiform-categories
+   '((consult-grep buffer)
+     (imenu buffer)
+     (consult-location buffer)
+     (org-heading buffer)))
   :bind
   (:map vertico-map
 	("<next>"  . vertico-scroll-up)
@@ -648,9 +656,13 @@ current buffer within the project or the current directory if not in a project."
    ("M-s l" . consult-line)
    ("M-s L" . consult-line-multi)
    ;; Other custom bindings
+   ("M-g f" . consult-flymake)
    ("M-g i" . consult-imenu)
    ("M-g I" . consult-imenu-multi)
-   ("M-g o" . consult-outline))
+   ("M-g o" . consult-outline)
+   :map isearch-mode-map
+   ("M-s l" . consult-line)
+   ("M-s L" . consult-line-multi))
   :config
   ;; Disable preview for commands that can be slow
   (consult-customize

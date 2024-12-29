@@ -97,7 +97,8 @@ Remove menu, scrool-bar, tool-bar, and tooltip
         display-time-24hr-format t ; Affichage de l'heure format 24h
         column-number-mode t ; affichage du numéro de la colonne
         prettify-symbols-unprettify-at-point t
-	frame-resize-pixelwise t)
+	frame-resize-pixelwise t
+	window-resize-pixelwise t)
 (when (display-graphic-p)
   ;; Cursor (in terminal mode, to be set in terminal options)
   (setopt cursor-type 'bar) ; curseur étroit
@@ -884,6 +885,13 @@ Use =company-box= for a better position of the autocompletion when using copilot
 (use-package vertico
   :init
   (vertico-mode)
+  (vertico-multiform-mode)
+  :custom
+  (vertico-multiform-categories
+   '((consult-grep buffer)
+     (imenu buffer)
+     (consult-location buffer)
+     (org-heading buffer)))
   :bind
   (:map vertico-map
 	("<next>"  . vertico-scroll-up)
@@ -926,9 +934,13 @@ Use =vertico-directory= to press =DEL= to jump back one directory instead of one
    ("M-s l" . consult-line)
    ("M-s L" . consult-line-multi)
    ;; Other custom bindings
+   ("M-g f" . consult-flymake)
    ("M-g i" . consult-imenu)
    ("M-g I" . consult-imenu-multi)
-   ("M-g o" . consult-outline))
+   ("M-g o" . consult-outline)
+   :map isearch-mode-map
+   ("M-s l" . consult-line)
+   ("M-s L" . consult-line-multi))
   :config
   ;; Disable preview for commands that can be slow
   (consult-customize
@@ -942,6 +954,14 @@ Use =vertico-directory= to press =DEL= to jump back one directory instead of one
   :after vertico
   :init
   (vertico-prescient-mode))
+#+end_src
+
+#+begin_src emacs-lisp :tangle no
+(setopt vertico-multiform-categories
+	'((consult-grep buffer)
+	  (imenu buffer)
+	  (consult-location buffer)
+	  (org-heading buffer)))
 #+end_src
 
 * Git
