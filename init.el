@@ -9,18 +9,14 @@
 ;;; Code:
 
 (use-package package
-  :ensure nil
-  :config
+   :config
   (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
   (package-initialize))
 
-(use-package use-package
-  :ensure nil
-  :custom
-  ;; Always download packages if not available
-  (use-package-always-ensure t))
+(use-package use-package)
 
-(use-package use-package-ensure-system-package)
+(use-package use-package-ensure-system-package
+  :ensure t)
 
 (use-package system-packages
   :ensure t
@@ -33,12 +29,14 @@
 
 (when (equal window-system 'ns)
   (use-package exec-path-from-shell
+    :ensure t
     :config
     (dolist (var '("DROPBOX" "BIBINPUTS" "BSTINPUTS" "GH_TOKEN"))
       (add-to-list 'exec-path-from-shell-variables var))
     (exec-path-from-shell-initialize)))
 
 (use-package dashboard
+  :ensure t
   :custom
   (dashboard-projects-switch-function 'project-switch-project)
   (dashboard-set-navigator t) ; raccourcis de rubrique
@@ -70,7 +68,8 @@
   ;; Fonts and unicode characters
   ;;   Main font
   (set-face-attribute 'default nil :family "JetBrainsMono NF" :height 120)
-  (set-face-attribute 'variable-pitch nil :family "Noto Serif" :height 1.2)
+  (set-face-attribute 'fixed-pitch nil :family "JetBrainsMono NF" :height 1.0)
+  (set-face-attribute 'variable-pitch nil :family "Noto Serif" :height 1.0)
   ;;   Additional font for some unicode characters missing in prettify symbols
   (set-fontset-font t 'unicode (font-spec :name "XITS Math") nil 'prepend))
 
@@ -89,29 +88,29 @@
             (plist-put org-format-latex-options :scale 1.7)
           preview-scale-function 1.5))
 
-(use-package mixed-pitch
-  :hook
-  (text-mode . mixed-pitch-mode))
-
 (use-package hl-line
-  :ensure nil
   :config
   (global-hl-line-mode +1)
   :custom
   (global-hl-line-sticky-flag t))
 
 (use-package rainbow-mode
+  :ensure t
   :hook (prog-mode . rainbow-mode))
 
 (use-package nerd-icons
+  :ensure t
   :custom
   (nerd-icons-font-family "Symbols Nerd Font Mono")) ; JetBrains font did not work well
 (use-package nerd-icons-dired
+  :ensure t
   :hook
   (dired-mode . nerd-icons-dired-mode))
 (use-package nerd-icons-ibuffer
+  :ensure t
   :hook (ibuffer-mode . nerd-icons-ibuffer-mode))
 (use-package nerd-icons-completion
+  :ensure t
   :after marginalia
   :config
   (nerd-icons-completion-mode)
@@ -119,6 +118,7 @@
   (marginalia-mode . nerd-icons-completion-marginalia-setup))
 
 (use-package ligature
+  :ensure t
   :config
   ;; Enable all JetBrains Mono ligatures in programming modes
   (defconst jb-ligatures
@@ -141,9 +141,11 @@
   (global-ligature-mode t))
 
 (use-package doom-modeline
+  :ensure t
   :hook (after-init . doom-modeline-mode))
 
 (use-package rainbow-delimiters
+  :ensure t
   :hook ((prog-mode yaml-mode) . rainbow-delimiters-mode)
   :custom-face
   (rainbow-delimiters-depth-1-face ((t (:foreground "red"))))
@@ -163,6 +165,7 @@
   :config
   (setopt modus-themes-italic-constructs t
           modus-themes-bold-constructs t
+	  modus-themes-mixed-fonts t
           modus-themes-to-toggle
 	    '(modus-operandi-deuteranopia modus-vivendi-deuteranopia)
           ;; Remove the mode-line border
@@ -173,7 +176,6 @@
   (define-key global-map (kbd "S-<f5>") #'modus-themes-toggle))
 
 (use-package autorevert
-  :ensure nil
   :custom
   (auto-revert-verbose nil)) ; Prevent autorevert from generating messages
 
@@ -188,7 +190,6 @@
          ("C-o" . casual-calc-tmenu)))
 
 (use-package compile
-  :ensure nil
   :bind (:map compilation-mode-map ("r" . recompile))
   :hook
   ;; Get proper coloring of compile buffers (does not seem to work under Windows, probably because cmd does not support ANSI colors)
@@ -198,13 +199,11 @@
   (compilation-scroll-output 'first-error))
 
 (use-package dictionary
-  :ensure nil
   :defer t
   :custom
   (dictionary-server "dict.org"))
 
 (use-package dired
-  :ensure nil
   :commands (dired dired-jump)
   :config ; macOS ls is not the standard ls so we substitute it by GNU ls
   (when (and (eq system-type 'darwin) (executable-find "gls"))
@@ -217,10 +216,12 @@
   (dired-mode . auto-revert-mode))
 
 (use-package diredfl
+  :ensure t
   :hook
   (dired-mode . diredfl-mode))
 
 (use-package dired-subtree
+  :ensure t
   :after dired
   :bind
   (:map dired-mode-map
@@ -239,10 +240,10 @@
     (set-clipboard-coding-system 'utf-16le-dos))
 
 (use-package expand-region
+  :ensure t
   :bind ("C-!" . er/expand-region))
 
 (use-package grep
-  :ensure nil
   :defer t
   :custom
   (grep-use-headings t)
@@ -251,9 +252,11 @@
       (setopt find-program "\"C:\\Program Files\\Git\\usr\\bin\\find.exe\"")))
 
 (use-package wgrep
+  :ensure t
   :bind (:map grep-mode-map ("e" . wgrep-change-to-wgrep-mode)))
 
 (use-package ripgrep
+  :ensure t
   :bind
   ("C-c f" . my-ripgrep-in-same-extension)
   :config
@@ -275,6 +278,7 @@ current buffer within the project or the current directory if not in a project."
     :ensure-system-package rg)
 
 (use-package ibuffer-project
+  :ensure t
   :hook
   (ibuffer .
 	   (lambda ()
@@ -283,12 +287,12 @@ current buffer within the project or the current directory if not in a project."
 	       (ibuffer-do-sort-by-project-file-relative)))))
 
 (use-package imenu
-  :ensure nil
   :defer t
   :custom
   (imenu-auto-rescan t))
 
 (use-package imenu-list
+  :ensure t
   :bind
   (("C-c =" . imenu-list-smart-toggle)
    :map imenu-list-major-mode-map
@@ -304,7 +308,6 @@ current buffer within the project or the current directory if not in a project."
     (imenu-list-smart-toggle)))
 
 (use-package isearch
-  :ensure nil
   :defer t
   :custom
   ;; Display a counter of the matches
@@ -315,12 +318,10 @@ current buffer within the project or the current directory if not in a project."
   (search-whitespace-regexp ".*?"))
 
 (use-package minibuffer
-  :ensure nil
   :custom
   (read-file-name-completion-ignore-case t))
 
 (use-package outline
-  :ensure nil
   :hook ((prog-mode text-mode) . outline-minor-mode)
   :custom
   (outline-minor-mode-use-buttons 'in-margins) ; add in-margin buttons to fold/unfold
@@ -328,6 +329,7 @@ current buffer within the project or the current directory if not in a project."
   (unbind-key "RET" outline-overlay-button-map))
 
 (use-package bicycle
+  :ensure t
   :after outline
   :bind (:map outline-minor-mode-map
 	      ([C-tab] . bicycle-cycle)
@@ -342,6 +344,7 @@ current buffer within the project or the current directory if not in a project."
       (bicycle-cycle-global))))
 
 (use-package outline-minor-faces
+  :ensure t
   :after outline
   :hook
   (outline-minor-mode . outline-minor-faces-mode))
@@ -370,13 +373,13 @@ current buffer within the project or the current directory if not in a project."
         user-mail-address "christophe.gouel@inrae.fr")
 
 (use-package doc-view
-  :ensure nil
   :if (display-graphic-p)
   :defer t
   :custom
   (doc-view-ghostscript-program (executable-find "rungs")))
 
 (use-package pdf-tools
+  :ensure t
   :if (display-graphic-p)
   :mode  ("\\.pdf\\'" . pdf-view-mode)
   :bind (:map pdf-view-mode-map
@@ -388,13 +391,11 @@ current buffer within the project or the current directory if not in a project."
   (pdf-tools-install))
 
 (use-package proced
-  :ensure nil
   :defer t
   :custom
   (proced-enable-color-flag t))
 
 (use-package prog-mode
-  :ensure nil
   :defer t
   :hook
   (prog-mode . (lambda() (setq-local show-trailing-whitespace t)))
@@ -405,15 +406,16 @@ current buffer within the project or the current directory if not in a project."
   (prog-mode . goto-address-prog-mode))
 
 (use-package text-mode
-  :ensure nil
   :defer t
   :hook
   (text-mode . (lambda() (setq-local show-trailing-whitespace t)))
   (text-mode . prettify-symbols-mode)
+  (text-mode . variable-pitch-mode)
   :custom
   (sentence-end-double-space nil))
 
 (use-package recentf
+  :ensure t
   :custom
   (recentf-max-saved-items 50))
 
@@ -433,19 +435,16 @@ current buffer within the project or the current directory if not in a project."
   scroll-preserve-screen-position 1)
 
 (use-package server
-  :ensure nil
   :defer 1
   :config
   (when (and (display-graphic-p) (not (server-running-p)))
     (server-start)))
 
 (use-package windmove
-  :ensure nil
   :config
   (windmove-default-keybindings))
 
 (use-package xwidget
-  :ensure nil
   :defer t
   :config
   (defun my-open-chatgpt ()
@@ -490,20 +489,22 @@ current buffer within the project or the current directory if not in a project."
   )
 
 (use-package keycast
+  :ensure t
   :defer t)
 
 (unless (equal system-type 'darwin)
   (use-package greek-unicode-insert
+    :ensure t
     :vc (:url "https://github.com/Malabarba/greek-unicode-insert")
     :bind (:map prog-mode-map ("²" . greek-unicode-insert-map))))
 ; :init (setq greek-unicode-insert-key "`"))
 
 (use-package elec-pair
-  :ensure nil
   :config
   (electric-pair-mode))
 
 (use-package which-key
+  :ensure t
   :diminish which-key-mode
   :init
   (setopt which-key-sort-uppercase-first nil
@@ -514,10 +515,12 @@ current buffer within the project or the current directory if not in a project."
   (which-key-mode t))
 
 (use-package prescient
+  :ensure t
   :config
   (prescient-persist-mode))
 
 (use-package company
+  :ensure t
   :hook
   (after-init . global-company-mode)
   ;; (prog-mode . (lambda ()
@@ -600,23 +603,29 @@ current buffer within the project or the current directory if not in a project."
          ("RET" . company-complete-selection)))
 
 (use-package company-math
+  :ensure t
   :custom
   (company-math-allow-latex-symbols-in-faces t)) ; use LaTeX symbols everywhere (avoid unicode symbols to dominate outside LaTeX mode)
 
-(use-package company-reftex)
+(use-package company-reftex
+  :ensure t)
 
-(use-package company-jedi)
+(use-package company-jedi
+  :ensure t)
 
 (use-package company-box
+  :ensure t
   :hook (company-mode . company-box-mode)
   :custom
   (company-box-doc-enable nil))
 
 (use-package company-prescient
+  :ensure t
   :config
   (company-prescient-mode))
 
 (use-package vertico
+  :ensure t
   :init
   (vertico-mode)
   (vertico-multiform-mode)
@@ -625,11 +634,15 @@ current buffer within the project or the current directory if not in a project."
    '((consult-grep buffer)
      (imenu buffer)
      (consult-location buffer)
-     (org-heading buffer)))
+     (org-heading buffer)
+     (t posframe)))
   :bind
   (:map vertico-map
 	("<next>"  . vertico-scroll-up)
 	("<prior>" . vertico-scroll-down)))
+
+(use-package vertico-posframe
+  :ensure t)
 
 (use-package vertico-directory
   :after vertico
@@ -638,14 +651,17 @@ current buffer within the project or the current directory if not in a project."
   (:map vertico-map	("DEL" . vertico-directory-delete-char)))
 
 (use-package orderless
+  :ensure t
   :custom
   (completion-styles '(orderless basic)))
 
 (use-package marginalia
+  :ensure t
   :init
   (marginalia-mode))
 
 (use-package consult
+  :ensure t
   :bind
   (("C-x b" . consult-buffer)
    ("M-y"   . consult-yank-pop)
@@ -671,11 +687,13 @@ current buffer within the project or the current directory if not in a project."
    :preview-key "M-."))
 
 (use-package vertico-prescient
+  :ensure t
   :after vertico
   :init
   (vertico-prescient-mode))
 
 (use-package magit
+  :ensure t
   :init
   ;; this binds `magit-project-status' to `project-prefix-map' when project.el is loaded.
   (require 'magit-extras)
@@ -688,6 +706,7 @@ current buffer within the project or the current directory if not in a project."
   (remove-hook 'with-editor-filter-visit-hook 'magit-commit-diff))
 
 (use-package magit-delta
+  :ensure t
   :hook (magit-mode . magit-delta-mode)
   :ensure-system-package (delta . git-delta))
 
@@ -701,10 +720,11 @@ current buffer within the project or the current directory if not in a project."
   (magit-post-refresh . diff-hl-magit-post-refresh))
 
 (use-package git-modes
+  :ensure t
   :mode ("/.dockerignore\\'" . gitignore-mode)) ; works also with other ignore files
 
 (use-package chatgpt-shell
-  :commands chatgpt-shell-prompt-compose
+  :ensure t
   :config
   (defun my-chatgpt-save-block ()
     (interactive)
@@ -719,6 +739,7 @@ current buffer within the project or the current directory if not in a project."
   :ensure-system-package curl)
 
 (use-package gptel
+  :ensure t
   :bind
   (("C-c RET" . gptel-send)
    ("C-c C-<return>" . gptel-send))
@@ -731,12 +752,12 @@ current buffer within the project or the current directory if not in a project."
 	       '(mathematics . "Solve this mathematical formula. Just output the solution in LaTeX without giving any explanation.")))
 
 (use-package eshell-git-prompt
+  :ensure t
   :defer 2
   :config
   (eshell-git-prompt-use-theme 'powerline))
 
 (use-package comint
-  :ensure nil
   :defer t
   :custom
   (comint-scroll-to-bottom-on-input 'this)
@@ -744,13 +765,13 @@ current buffer within the project or the current directory if not in a project."
   (comint-move-point-for-output t))
 
 (use-package shell
-  :ensure nil
   :defer t
   :hook
   (shell-mode . (lambda ()
 		  (face-remap-set-base 'comint-highlight-prompt :inherit nil))))
 
 (use-package citar
+  :ensure t
   :after (org nerd-icons)
   :hook
   (org-mode . citar-capf-setup)
@@ -858,6 +879,7 @@ current buffer within the project or the current directory if not in a project."
       (message "Screenshot failed."))))
 
 (use-package csv-mode
+  :ensure t
   :hook
   (csv-mode . csv-guess-set-separator))
 
@@ -965,6 +987,7 @@ current buffer within the project or the current directory if not in a project."
 	("<f9>"       . my-tex-compile)))
 
 (use-package reftex
+  :ensure t
   :hook
   (TeX-mode . turn-on-reftex)
   :bind (:map reftex-mode-map
@@ -996,6 +1019,7 @@ current buffer within the project or the current directory if not in a project."
     (setopt preview-scale-function 1.5)))
 
 (use-package cdlatex
+  :ensure t
   :hook
   (LaTeX-mode . turn-on-cdlatex)
   (LaTeX-mode . my-slow-company)
@@ -1028,6 +1052,7 @@ current buffer within the project or the current directory if not in a project."
      ("su" "Insert \\sum" "\\sum?" cdlatex-position-cursor nil nil t))))
 
 (use-package markdown-mode
+  :ensure t
   :mode ("README\\.md\\'" . gfm-mode)
   :custom
   (markdown-command
@@ -1087,12 +1112,12 @@ same directory as the working and insert a link to this file."
 	      ("C-c [" . my-markdown-reftex-citation)))
 
 (use-package pandoc-mode
+  :ensure t
   :hook
   (markdown-mode . pandoc-mode)
   (pandoc-mode . pandoc-load-default-settings))
 
 (use-package org
-  :ensure nil
   :mode ("\\.org\\'" . org-mode)
   :custom
   (org-edit-src-content-indentation 0)
@@ -1136,15 +1161,16 @@ same directory as the working and insert a link to this file."
 	      ("M-g o" . consult-org-heading)))
 
 (use-package org-appear
+  :ensure t
   :hook
   (org-mode . org-appear-mode))
 
 (use-package org-fragtog
+  :ensure t
   :hook
   (org-mode . org-fragtog-mode))
 
 (use-package oc
-  :ensure nil
   :after org
   :custom
   (org-cite-global-bibliography
@@ -1153,36 +1179,38 @@ same directory as the working and insert a link to this file."
   :bind (:map org-mode-map ("C-c [" . org-cite-insert)))
 
 (use-package oxr
+  :ensure t
   :after org
   :vc (:url "https://github.com/bdarcus/oxr")
   :bind (:map org-mode-map ("C-c ]" . oxr-insert-ref)))
 
 (use-package ox
-  :ensure nil
   :defer t
   :custom
   (org-odt-preferred-output-format "docx")) ; require soffice to be on the PATH
 
 (use-package ox-beamer
-  :ensure nil
   :after ox)
 
 (use-package ox-md
-  :ensure nil
   :after ox)
 
 (use-package ox-gfm
+  :ensure t
   :after ox)
 
 (use-package ox-reveal
+  :ensure t
   :after ox
   :ensure htmlize) ; required for the fontification of code blocks
 
 (use-package texfrag
+  :ensure t
   :hook
   (eww-mode . texfrag-mode))
 
 (use-package math-preview
+  :ensure t
   :bind
   ("C-c m d" . math-preview-all)
   ("C-c m p" . math-preview-at-point)
@@ -1199,6 +1227,7 @@ same directory as the working and insert a link to this file."
   (math-preview . "npm install -g git+https://gitlab.com/matsievskiysv/math-preview"))
 
 (use-package flyspell
+  :ensure t
   :hook (text-mode . flyspell-mode)
   :config
   (setq ispell-program-name (executable-find "hunspell")
@@ -1217,6 +1246,7 @@ same directory as the working and insert a link to this file."
   :ensure-system-package hunspell)
 
 (use-package flyspell-correct
+  :ensure t
   :after flyspell
   :bind (:map flyspell-mode-map
 		  ("M-$" . flyspell-correct-at-point)))
@@ -1235,9 +1265,11 @@ same directory as the working and insert a link to this file."
 
 (setq-default fill-column 80)
 
-(use-package adaptive-wrap)
+(use-package adaptive-wrap
+  :ensure t)
 
 (use-package visual-fill-column
+  :ensure t
   :custom
   (visual-fill-column-width 100)
   :config
@@ -1268,12 +1300,12 @@ same directory as the working and insert a link to this file."
 			   (my-visual-fill)))))
 
 (use-package yaml-mode
+  :ensure t
   :mode ("\\.yml$" "\\.dvc" "dvc.lock")
   :bind (:map yaml-mode-map
 	      ("C-m" . newline-and-indent)))
 
 (use-package flymake
-  :ensure nil
   :custom
   (flymake-no-changes-timeout nil)
   :hook
@@ -1285,6 +1317,7 @@ same directory as the working and insert a link to this file."
    ("M-p" . flymake-goto-prev-error)))
 
 (use-package format-all
+  :ensure t
   :defer t
   :config
   (setq-default
@@ -1293,15 +1326,18 @@ same directory as the working and insert a link to this file."
       (latexindent "-m" "--yaml=modifyLineBreaks:textWrapOptions:columns:-1,defaultIndent:'  ',indentAfterItems:itemize:0;enumerate:0;description:0")))))
 
 (use-package dockerfile-mode
+  :ensure t
   :defer t)
 
 (use-package docker
+  :ensure t
   :bind ("C-c d" . docker)
   :ensure-system-package docker)
 
 (setq eldoc-echo-area-use-multiline-p nil)
 
 (use-package copilot
+  :ensure t
   :vc (:url "https://github.com/copilot-emacs/copilot.el"
        :rev :newest
        :branch "main")
@@ -1362,11 +1398,11 @@ same directory as the working and insert a link to this file."
     ("M-C-g"        . copilot-clear-overlay))))
 
 (use-package copilot-chat
+  :ensure t
   :defer t
   :hook (git-commit-setup . copilot-chat-insert-commit-message))
 
 (use-package eglot
-  :ensure nil
   :custom
   ;; Prevent eglot from reformatting code automatically
   (eglot-ignored-server-capabilities
@@ -1379,9 +1415,11 @@ same directory as the working and insert a link to this file."
   ("C-c l" . eglot))
 
 (use-package poly-markdown
+  :ensure t
   :bind (:map polymode-eval-map ("p" . quarto-preview)))
 
 (use-package poly-R
+  :ensure t
   :mode ("\\.Rmd" . poly-markdown+r-mode))
 
 (unless (package-installed-p 'quarto-mode)
@@ -1391,14 +1429,17 @@ same directory as the working and insert a link to this file."
      :branch "transient"
      :rev :last-release)))
 (use-package quarto-mode
+  :ensure t
   :defer t
   ;; :load-path "~/Documents/git_projects/code/quarto-emacs"
   )
 
 (use-package edit-indirect
+  :ensure t
   :defer t)
 
 (use-package yasnippet
+  :ensure t
   :defer 1
   :custom
   (yas-use-menu nil)
@@ -1411,6 +1452,7 @@ same directory as the working and insert a link to this file."
 	      ("M-C-<tab>" . yas-next-field-or-maybe-expand)))
 
 (use-package symbol-overlay
+  :ensure t
   :hook (prog-mode . symbol-overlay-mode))
 
 (use-package ess-site
@@ -1498,6 +1540,7 @@ same directory as the working and insert a link to this file."
   :defer t)
 
 (use-package ess-view-data
+  :ensure t
   :bind
   (:map ess-view-data-mode-map
 	("f" . ess-view-data-filter)
@@ -1517,6 +1560,7 @@ same directory as the working and insert a link to this file."
   (ess-view-data-rows-per-page 1000))
 
 (use-package essgd
+  :ensure t
   :if (member window-system '(pgtk ns))
   :commands (essgd-start essgd-toggle-plot-buffer)
   :config
@@ -1556,6 +1600,7 @@ buffer with C-c C-a C-a C-a ...."
    :map inferior-ess-r-mode-map ("C-c C-a" . essgd-toggle-plot-buffer)))
 
 (use-package gams-mode
+  :ensure t
   ;; :load-path "~/Documents/git_projects/code/gams-mode"
   :vc (:url "https://github.com/ShiroTakeda/gams-mode"
 	    :rev :newest
@@ -1592,6 +1637,7 @@ buffer with C-c C-a C-a C-a ...."
 (add-to-list 'auto-mode-alist '("\\.inc\\'" . poly-gams-mode))
 
 (use-package julia-mode
+  :ensure t
   :defer t)
 
 (use-package matlab
@@ -1632,7 +1678,6 @@ buffer with C-c C-a C-a C-a ...."
   (matlab-shell-mode . my-matlab-shell-mode-hook))
 
 (use-package python
-  :ensure nil
   :custom
   (python-shell-interpreter "ipython3")
   (python-shell-interpreter-args
@@ -1649,6 +1694,7 @@ buffer with C-c C-a C-a C-a ...."
   (python-mode . flymake-mode))
 
 (use-package conda
+  :ensure t
   :if (equal system-type 'windows-nt)
   :defer t
   :config
@@ -1656,9 +1702,11 @@ buffer with C-c C-a C-a C-a ...."
 		(cons '(:exec conda-env-current-name) mode-line-format)))
 
 (use-package poetry
+  :ensure t
   :defer t)
 
 (use-package pyvenv
+  :ensure t
   :custom
   (pyvenv-virtualenvwrapper-supported "ipython3")
   :config
@@ -1670,13 +1718,16 @@ buffer with C-c C-a C-a C-a ...."
     ;; Default virtualenv cache directory for poetry on *nix
     (setenv "WORKON_HOME" "~/.cache/pypoetry/virtualenvs")))
 
-(use-package pydoc)
+(use-package pydoc
+  :ensure t)
 
 (use-package numpydoc
+  :ensure t
   :bind (:map python-mode-map
               ("C-c C-n" . numpydoc-generate)))
 
 (use-package ado-mode
+  :ensure t
   :defer t)
 
 (setq custom-file (locate-user-emacs-file "custom.el"))
