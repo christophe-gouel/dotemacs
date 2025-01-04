@@ -228,6 +228,12 @@
     ("<tab>" . dired-subtree-toggle)
     ("TAB" . dired-subtree-toggle)))
 
+(use-package ediff-wind
+  :defer t
+  :custom
+  (ediff-split-window-function 'split-window-horizontally)
+  (ediff-window-setup-function 'ediff-setup-windows-plain))
+
 (set-language-environment "UTF-8")
 (prefer-coding-system       'utf-8)
 (set-selection-coding-system 'utf-8)
@@ -355,7 +361,7 @@ current buffer within the project or the current directory if not in a project."
         default-major-mode 'text-mode ; mode par défaut
         delete-by-moving-to-trash t ; Sent deleted files to trash
         comment-column 0 ; Prevent indentation of lines starting with one comment
-        jit-lock-chunk-size 50000
+        jit-lock-chunk-size 50000 ; Number of characters used for fontification
         ;; set large file threshold at 100 megabytes
         large-file-warning-threshold 100000000
         ring-bell-function 'ignore ; disable the bell (useful for macOS)
@@ -417,8 +423,9 @@ current buffer within the project or the current directory if not in a project."
 (use-package recentf
   :ensure t
   :custom
-  (recentf-max-saved-items 50))
+  (recentf-max-saved-items 100))
 
+(set-register ?b '(file . "~/Inrae EcoPub Dropbox/Christophe Gouel/Bibliography/Bibtex/References.bib"))
 (set-register ?d '(file . "~/Downloads"))
 (set-register ?r '(file . "~/Inrae EcoPub Dropbox/Christophe Gouel/dropbox_projects/Review"))
 
@@ -635,6 +642,7 @@ current buffer within the project or the current directory if not in a project."
      (imenu buffer)
      (consult-location buffer)
      (org-heading buffer)
+     (kill-ring) ; standard vertico in minibuffer
      (t posframe)))
   :bind
   (:map vertico-map
@@ -676,6 +684,7 @@ current buffer within the project or the current directory if not in a project."
    ("M-g i" . consult-imenu)
    ("M-g I" . consult-imenu-multi)
    ("M-g o" . consult-outline)
+   ("M-#"   . consult-register)
    :map isearch-mode-map
    ("M-s l" . consult-line)
    ("M-s L" . consult-line-multi))
@@ -1047,9 +1056,11 @@ current buffer within the project or the current directory if not in a project."
    '(("equ*" "Insert equation* env"   "" cdlatex-environment ("equation*") t nil)
      ("fra" "Insert frame env"   "" cdlatex-environment ("frame") t nil)
      ("frd" "Insert \\frac{\\partial }{\\partial }" "\\frac{\\partial ?}{\\partial }" cdlatex-position-cursor nil nil t)
+     ("frdl" "Insert \\frac{\\partial\\ln }{\\partial\\ln }" "\\frac{\\partial\\ln ?}{\\partial\\ln }" cdlatex-position-cursor nil nil t)
      ("frat" "Insert \\frametitle{}" "\\frametitle{?}" cdlatex-position-cursor nil t nil)
      ("frast" "Insert \\framesubtitle{}" "\\framesubtitle{?}" cdlatex-position-cursor nil t nil)
-     ("su" "Insert \\sum" "\\sum?" cdlatex-position-cursor nil nil t))))
+     ("su" "Insert \\sum" "\\sum?" cdlatex-position-cursor nil nil t)
+     ("ln" "Insert \\ln" "\\ln?" cdlatex-position-cursor nil nil t))))
 
 (use-package markdown-mode
   :ensure t
@@ -1631,7 +1642,7 @@ buffer with C-c C-a C-a C-a ...."
   :bind (:map gams-mode-map
 	      ("C-c C-o" . nil) ; Remove binding for user-defined comment template
 	      ("C-c C-o" . gams-open-included-file)
-              ("C-c =" . gams-show-identifier-list)))
+              ("C-c ="   . gams-show-identifier-list)))
 
 (require 'poly-gams)
 (add-to-list 'auto-mode-alist '("\\.inc\\'" . poly-gams-mode))

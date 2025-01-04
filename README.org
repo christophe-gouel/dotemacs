@@ -339,6 +339,18 @@ Highlight the current line
     ("TAB" . dired-subtree-toggle)))
 #+end_src
 
+** Ediff
+
+Better default options for =ediff=:
+
+#+begin_src emacs-lisp
+(use-package ediff-wind
+  :defer t
+  :custom
+  (ediff-split-window-function 'split-window-horizontally)
+  (ediff-window-setup-function 'ediff-setup-windows-plain))
+#+end_src
+
 ** Encoding
 
 Set up encoding to Unicode
@@ -528,7 +540,7 @@ Use =outline-minor-faces= to use a special face for outline sections.
         default-major-mode 'text-mode ; mode par défaut
         delete-by-moving-to-trash t ; Sent deleted files to trash
         comment-column 0 ; Prevent indentation of lines starting with one comment
-        jit-lock-chunk-size 50000
+        jit-lock-chunk-size 50000 ; Number of characters used for fontification
         ;; set large file threshold at 100 megabytes
         large-file-warning-threshold 100000000
         ring-bell-function 'ignore ; disable the bell (useful for macOS)
@@ -612,12 +624,13 @@ Use =outline-minor-faces= to use a special face for outline sections.
 (use-package recentf
   :ensure t
   :custom
-  (recentf-max-saved-items 50))
+  (recentf-max-saved-items 100))
 #+end_src
 
 ** Registers
 
 #+begin_src emacs-lisp
+(set-register ?b '(file . "~/Inrae EcoPub Dropbox/Christophe Gouel/Bibliography/Bibtex/References.bib"))
 (set-register ?d '(file . "~/Downloads"))
 (set-register ?r '(file . "~/Inrae EcoPub Dropbox/Christophe Gouel/dropbox_projects/Review"))
 #+end_src
@@ -908,6 +921,7 @@ Use =company-box= for a better position of the autocompletion when using copilot
      (imenu buffer)
      (consult-location buffer)
      (org-heading buffer)
+     (kill-ring) ; standard vertico in minibuffer
      (t posframe)))
   :bind
   (:map vertico-map
@@ -965,6 +979,7 @@ Use =vertico-directory= to press =DEL= to jump back one directory instead of one
    ("M-g i" . consult-imenu)
    ("M-g I" . consult-imenu-multi)
    ("M-g o" . consult-outline)
+   ("M-#"   . consult-register)
    :map isearch-mode-map
    ("M-s l" . consult-line)
    ("M-s L" . consult-line-multi))
@@ -1405,9 +1420,11 @@ Use svg for previews. Much slower than png, but it is not blurry on MacOS.
    '(("equ*" "Insert equation* env"   "" cdlatex-environment ("equation*") t nil)
      ("fra" "Insert frame env"   "" cdlatex-environment ("frame") t nil)
      ("frd" "Insert \\frac{\\partial }{\\partial }" "\\frac{\\partial ?}{\\partial }" cdlatex-position-cursor nil nil t)
+     ("frdl" "Insert \\frac{\\partial\\ln }{\\partial\\ln }" "\\frac{\\partial\\ln ?}{\\partial\\ln }" cdlatex-position-cursor nil nil t)
      ("frat" "Insert \\frametitle{}" "\\frametitle{?}" cdlatex-position-cursor nil t nil)
      ("frast" "Insert \\framesubtitle{}" "\\framesubtitle{?}" cdlatex-position-cursor nil t nil)
-     ("su" "Insert \\sum" "\\sum?" cdlatex-position-cursor nil nil t))))
+     ("su" "Insert \\sum" "\\sum?" cdlatex-position-cursor nil nil t)
+     ("ln" "Insert \\ln" "\\ln?" cdlatex-position-cursor nil nil t))))
 #+end_src
 
 ** Markdown
@@ -2141,7 +2158,7 @@ buffer with C-c C-a C-a C-a ...."
   :bind (:map gams-mode-map
 	      ("C-c C-o" . nil) ; Remove binding for user-defined comment template
 	      ("C-c C-o" . gams-open-included-file)
-              ("C-c =" . gams-show-identifier-list)))
+              ("C-c ="   . gams-show-identifier-list)))
 #+end_src
 
 I don't know why but =poly-gams= does not work with =use-package=, so I have to turn to the traditional =require=:
