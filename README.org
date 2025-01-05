@@ -133,7 +133,7 @@ To list all available fonts, use
 
 Use =mixed-pitch= to have a proportional font for text and a monospace font for code:
 
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
 (use-package mixed-pitch
   :ensure t
   :hook
@@ -248,7 +248,6 @@ Highlight the current line
   :config
   (setopt modus-themes-italic-constructs t
           modus-themes-bold-constructs t
-	  modus-themes-mixed-fonts t
           modus-themes-to-toggle
 	    '(modus-operandi-deuteranopia modus-vivendi-deuteranopia)
           ;; Remove the mode-line border
@@ -613,7 +612,6 @@ Use =outline-minor-faces= to use a special face for outline sections.
   :hook
   (text-mode . (lambda() (setq-local show-trailing-whitespace t)))
   (text-mode . prettify-symbols-mode)
-  (text-mode . variable-pitch-mode)
   :custom
   (sentence-end-double-space nil))
 #+end_src
@@ -2141,6 +2139,11 @@ buffer with C-c C-a C-a C-a ...."
                    (looking-at outline-regexp)
                    (let ((match (match-string 0)))
                      (- (length match) (length (replace-regexp-in-string "\*" "" match))))))))
+  (gams-mode .
+	  (lambda ()
+	    (keymap-set gams-mode-map "C-c C-o" 'gams-open-included-file) ; Normally bind to user-defined comment template
+	    (keymap-set gams-mode-map "C-l" nil)
+	    (keymap-set gams-mode-map "C-c =" 'gams-show-identifier-list)))
   :custom
   (gams-process-command-option "ll=0 lo=3 pw=153 ps=9999")
   (gams-fill-column 90)
@@ -2154,11 +2157,7 @@ buffer with C-c C-a C-a C-a ...."
   (gams-indent-number 2)
   (gams-indent-number-loop 2)
   (gams-indent-number-mpsge 2)
-  (gams-indent-number-equation 2)
-  :bind (:map gams-mode-map
-	      ("C-c C-o" . nil) ; Remove binding for user-defined comment template
-	      ("C-c C-o" . gams-open-included-file)
-              ("C-c ="   . gams-show-identifier-list)))
+  (gams-indent-number-equation 2))
 #+end_src
 
 I don't know why but =poly-gams= does not work with =use-package=, so I have to turn to the traditional =require=:

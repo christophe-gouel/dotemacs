@@ -88,6 +88,13 @@
             (plist-put org-format-latex-options :scale 1.7)
           preview-scale-function 1.5))
 
+(use-package mixed-pitch
+  :ensure t
+  :hook
+  (text-mode . mixed-pitch-mode)
+  :config
+  (add-to-list 'mixed-pitch-fixed-pitch-faces 'markdown-table-face))
+
 (use-package hl-line
   :config
   (global-hl-line-mode +1)
@@ -165,7 +172,6 @@
   :config
   (setopt modus-themes-italic-constructs t
           modus-themes-bold-constructs t
-	  modus-themes-mixed-fonts t
           modus-themes-to-toggle
 	    '(modus-operandi-deuteranopia modus-vivendi-deuteranopia)
           ;; Remove the mode-line border
@@ -416,7 +422,6 @@ current buffer within the project or the current directory if not in a project."
   :hook
   (text-mode . (lambda() (setq-local show-trailing-whitespace t)))
   (text-mode . prettify-symbols-mode)
-  (text-mode . variable-pitch-mode)
   :custom
   (sentence-end-double-space nil))
 
@@ -1625,6 +1630,11 @@ buffer with C-c C-a C-a C-a ...."
                    (looking-at outline-regexp)
                    (let ((match (match-string 0)))
                      (- (length match) (length (replace-regexp-in-string "\*" "" match))))))))
+  (gams-mode .
+	  (lambda ()
+	    (keymap-set gams-mode-map "C-c C-o" 'gams-open-included-file) ; Normally bind to user-defined comment template
+	    (keymap-set gams-mode-map "C-l" nil)
+	    (keymap-set gams-mode-map "C-c =" 'gams-show-identifier-list)))
   :custom
   (gams-process-command-option "ll=0 lo=3 pw=153 ps=9999")
   (gams-fill-column 90)
@@ -1638,11 +1648,7 @@ buffer with C-c C-a C-a C-a ...."
   (gams-indent-number 2)
   (gams-indent-number-loop 2)
   (gams-indent-number-mpsge 2)
-  (gams-indent-number-equation 2)
-  :bind (:map gams-mode-map
-	      ("C-c C-o" . nil) ; Remove binding for user-defined comment template
-	      ("C-c C-o" . gams-open-included-file)
-              ("C-c ="   . gams-show-identifier-list)))
+  (gams-indent-number-equation 2))
 
 (require 'poly-gams)
 (add-to-list 'auto-mode-alist '("\\.inc\\'" . poly-gams-mode))
