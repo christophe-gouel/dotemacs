@@ -846,7 +846,16 @@ current buffer within the project or the current directory if not in a project."
    '((main . "${author editor:30%sn}     ${date year issued:4}     ${title:48}")
      (suffix . "          ${=key= id:7}    ${=type=:12}    ${journal journaltitle}")
      (preview . "${author editor:%etal} (${year issued date}) ${title}, ${journal journaltitle publisher container-title collection-title}.\n")
-        (note . "Notes on ${author editor:%etal}, ${title}"))))
+        (note . "Notes on ${author editor:%etal}, ${title}")))
+  :bind
+  (("C-x c d" . citar-dwim)
+   ("C-x c f" . citar-open-files)
+   ("C-x c o" . citar-open)
+   ("C-x c n" . citar-open-notes)
+   :map bibtex-mode-map
+   ("C-x c i" . citar-insert-bibtex)
+   :map text-mode-map
+   ("C-x c c" . citar-insert-citation)))
 
 (defun my-screenshot-to-file (arg)
   "Take a screenshot or copy from the clipboard (depending on OS),
