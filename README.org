@@ -308,16 +308,30 @@ Highlight the current line
 #+begin_src emacs-lisp
 (use-package dired
   :commands (dired dired-jump)
-  :config ; macOS ls is not the standard ls so we substitute it by GNU ls
+  :config
+  ; macOS ls is not the standard ls so we substitute it by GNU ls
   (when (and (eq system-type 'darwin) (executable-find "gls"))
     (setopt insert-directory-program "gls"))
+  (setq dired-compress-files-alist
+   '(("\\.tar\\.gz\\'" . "tar -cf - %i | gzip -c9 > %o")
+     ("\\.tar\\.bz2\\'" . "tar -cf - %i | bzip2 -c9 > %o")
+     ("\\.tar\\.xz\\'" . "tar -cf - %i | xz -c9 > %o")
+     ("\\.tar\\.zst\\'" . "tar -cf - %i | zstd -19 -o %o")
+     ("\\.tar\\.lz\\'" . "tar -cf - %i | lzip -c9 > %o")
+     ("\\.tar\\.lzo\\'" . "tar -cf - %i | lzop -c9 > %o")
+     ("\\.zip\\'" . "zip %o -r -9 --filesync %i --exclude \\*/.DS_Store __MACOSX")
+     ("\\.pax\\'" . "pax -wf %o %i")))
   :custom
   (dired-listing-switches "-agho --group-directories-first")
+  (dired-compress-directory-default-suffix ".zip")
+  (dired-compress-file-default-suffix ".zip")
   :hook
   (dired-mode . (lambda ()
                   (dired-hide-details-mode)))
   (dired-mode . auto-revert-mode))
 #+end_src
+
+
 
 =diredfl= is for more font-locking in dired (e.g., file extensions):
 
