@@ -800,9 +800,8 @@ current buffer within the project or the current directory if not in a project."
   :ensure t
   :after (org nerd-icons)
   :hook
+  (markdown-mode . citar-capf-setup)
   (org-mode . citar-capf-setup)
-  :bind
-  (:map org-mode-map :package org ("C-c b" . #'org-cite-insert))
   :config
   ;; Configuration to use nerd-icons in citar
   (defvar citar-indicator-files-icons
@@ -845,6 +844,32 @@ current buffer within the project or the current directory if not in a project."
           citar-indicator-links-icons
           citar-indicator-notes-icons
           citar-indicator-cited-icons))
+  ;; Functions to side-step a bug in citar which affects the state of RefTeX
+  (defun my-citar-open (&optional key)
+    "Run `citar-open` with a KEY in a temporary buffer to avoid interfering with RefTeX in LaTeX mode.
+This ensures that `citar-open` does not modify the current LaTeX buffer's settings."
+    (interactive
+     (list (citar-select-refs))) ; Prompt user to select a citation.
+    (with-temp-buffer
+      ;; Temporarily switch to a clean buffer
+      (delay-mode-hooks (org-mode)) ; Set a neutral mode (like org-mode) to avoid LaTeX hooks
+      (citar-open key))) ; Run citar-open in the temporary buffer
+  (defun my-citar-open-notes (&optional key)
+    "Run `citar-open-notes` with a KEY in a temporary buffer to avoid interfering with RefTeX in LaTeX mode."
+    (interactive
+     (list (citar-select-refs))) ; Prompt user to select a citation.
+    (with-temp-buffer
+      ;; Temporarily switch to a clean buffer
+      (delay-mode-hooks (org-mode)) ; Set a neutral mode (like org-mode) to avoid LaTeX hooks
+      (citar-open-notes key))) ; Run citar-open in the temporary buffer
+  (defun my-citar-open-files (&optional key)
+    "Run `citar-open-files` with a KEY in a temporary buffer to avoid interfering with RefTeX in LaTeX mode."
+    (interactive
+     (list (citar-select-refs))) ; Prompt user to select a citation.
+    (with-temp-buffer
+      ;; Temporarily switch to a clean buffer
+      (delay-mode-hooks (org-mode)) ; Set a neutral mode (like org-mode) to avoid LaTeX hooks
+      (citar-open-files key))) ; Run citar-open in the temporary buffer
   :custom
   (org-cite-insert-processor 'citar)
   (org-cite-follow-processor 'citar)
@@ -861,9 +886,9 @@ current buffer within the project or the current directory if not in a project."
         (note . "Notes on ${author editor:%etal}, ${title}")))
   :bind
   (("C-x c d" . citar-dwim)
-   ("C-x c f" . citar-open-files)
-   ("C-x c o" . citar-open)
-   ("C-x c n" . citar-open-notes)
+   ("C-x c f" . my-citar-open-files)
+   ("C-x c o" . my-citar-open)
+   ("C-x c n" . my-citar-open-notes)
    :map bibtex-mode-map
    ("C-x c i" . citar-insert-bibtex)
    :map text-mode-map
@@ -1022,7 +1047,6 @@ current buffer within the project or the current directory if not in a project."
 	("<f9>"       . my-tex-compile)))
 
 (use-package reftex
-  :ensure t
   :hook
   (TeX-mode . turn-on-reftex)
   :bind (:map reftex-mode-map
