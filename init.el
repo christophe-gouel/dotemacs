@@ -91,7 +91,7 @@
 (use-package mixed-pitch
   :ensure t
   :hook
-  (text-mode . mixed-pitch-mode)
+  ((org-mode LaTeX-mode) . mixed-pitch-mode)
   :config
   (add-to-list 'mixed-pitch-fixed-pitch-faces 'markdown-table-face))
 
@@ -655,11 +655,15 @@ current buffer within the project or the current directory if not in a project."
   (vertico-multiform-mode)
   :custom
   (vertico-multiform-categories
-   '((consult-grep buffer)
-     (imenu buffer)
+   '(;; Commands that are displayed in separate buffers
+     (consult-flymake-error buffer)
+     (consult-grep buffer)
      (consult-location buffer)
+     (imenu buffer)
      (org-heading buffer)
-     (kill-ring) ; standard vertico in minibuffer
+     ;; Standard vertico in minibuffer
+     (kill-ring)
+     ;; The rest in postframe in the center of the screen
      (t posframe)))
   :bind
   (:map vertico-map
@@ -756,9 +760,15 @@ current buffer within the project or the current directory if not in a project."
     (interactive)
     (chatgpt-shell-mark-block)
     (kill-ring-save (region-beginning) (region-end)))
-  :bind (
-	 :map chatgpt-shell-mode-map ("C-c C-b" . my-chatgpt-save-block)
-	 :map chatgpt-shell-prompt-compose-view-mode-map ("C-c C-b" . my-chatgpt-save-block))
+  :bind
+  (("C-x j p"   . chatgpt-shell-proofread-region)
+   ("C-x j c"   . chatgpt-shell-prompt-compose)
+   ("C-x j RET" . chatgpt-shell)
+   ("C-x j s"   . chatgpt-shell-swap-model)
+   :map chatgpt-shell-mode-map
+   ("C-c C-b"   . my-chatgpt-save-block)
+   :map chatgpt-shell-prompt-compose-view-mode-map
+   ("C-c C-b"   . my-chatgpt-save-block))
   :custom
   (chatgpt-shell-openai-key
       (auth-source-pick-first-password :host "api.openai.com"))
@@ -767,7 +777,7 @@ current buffer within the project or the current directory if not in a project."
 (use-package gptel
   :ensure t
   :bind
-  (("C-c RET" . gptel-send)
+  (("C-c RET"        . gptel-send)
    ("C-c C-<return>" . gptel-send))
   ;; :custom
   ;; (gptel-use-curl nil)
@@ -844,7 +854,7 @@ current buffer within the project or the current directory if not in a project."
           citar-indicator-links-icons
           citar-indicator-notes-icons
           citar-indicator-cited-icons))
-  ;; Functions to side-step a bug in citar which affects the state of RefTeX
+  ;; Functions to side-step a bug in citar which affects the state of RefTeX. To remove as soon as the fix has been pushed to MELPA.
   (defun my-citar-open (&optional key)
     "Run `citar-open` with a KEY in a temporary buffer to avoid interfering with RefTeX in LaTeX mode.
 This ensures that `citar-open` does not modify the current LaTeX buffer's settings."
@@ -1402,6 +1412,7 @@ same directory as the working and insert a link to this file."
   :vc (:url "https://github.com/copilot-emacs/copilot.el"
        :rev :newest
        :branch "main")
+  :defer 2
   :custom
   (copilot-indent-warning-suppress t)
   (copilot-indent-offset-warning-disable t)
@@ -1677,6 +1688,7 @@ buffer with C-c C-a C-a C-a ...."
                      (- (length match) (length (replace-regexp-in-string "\*" "" match))))))))
   (gams-mode .
 	  (lambda ()
+	    (keymap-set gams-mode-map "^" (lambda() (interactive) (insert "**")))
 	    (keymap-set gams-mode-map "C-c C-o" 'gams-open-included-file) ; Normally bind to user-defined comment template
 	    (keymap-set gams-mode-map "C-l" nil)
 	    (keymap-set gams-mode-map "C-c =" 'gams-show-identifier-list)))
