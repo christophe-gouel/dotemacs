@@ -32,7 +32,11 @@ SCRIPT is the path to the R script file.
 EXPRESSION is an R expression to evaluate.
 DIRECTORY is the working directory in which to run the script.
 ARGS is a list of additional arguments to Rscript."
-  (let* ((default-directory (or directory default-directory))
+  (let* ((default-directory
+          (or directory
+              (when-let ((project (ess-r-project)))
+                (cdr project)) ;; Use cdr to extract the project folder from the cons cell
+              default-directory)) ; Fall back to `default-directory` if no directory or project is set
          (buffer-name (format "*Rscript-%s*"
                               (if script
                                   (file-name-base script)
@@ -75,7 +79,7 @@ Lisp code, it will not prompt for input."
    (let (script directory args expression)
      (if (or current-prefix-arg
              (not (derived-mode-p 'ess-r-mode))
-             (not (buffer-file-name)))
+          (not (buffer-file-name)))
          (progn
            ;; Prompt for script or expression
            (let ((choice (completing-read "Run (s)cript or (e)xpression? "
@@ -83,13 +87,21 @@ Lisp code, it will not prompt for input."
              (if (string-equal choice "expression")
                  (setq expression (read-string "R expression: "))
                (setq script (read-file-name "R script: "))))
-           (setq directory (read-directory-name "Working directory: " nil nil t))
+           ;; Use ess-r-project if available, fall back to default-directory
+           (setq directory (read-directory-name
+                            "Working directory: "
+                            (or (when-let ((project (ess-r-project)))
+                                  (cdr project)) ;; Extract the project folder
+                                default-directory) ;; Fall back if no project detected
+                            nil t))
            (let ((args-string (read-string "Additional arguments: ")))
-             (unless (string-empty-p args-string)
+         (unless (string-empty-p args-string)
                (setq args (split-string-and-unquote args-string)))))
        ;; Default behavior: use current buffer's script
        (setq script (buffer-file-name))
-       (setq directory default-directory)
+       (setq directory (or (when-let ((project (ess-r-project)))
+                             (cdr project))
+                           default-directory)) ;; Falls backto default-directory
        (when (buffer-modified-p)
          (save-buffer)))
      (list nil script directory args expression)))
