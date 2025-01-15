@@ -939,6 +939,9 @@ Use =company-box= for a better position of the autocompletion when using copilot
      (kill-ring)
      ;; The rest in postframe in the center of the screen
      (t posframe)))
+  (vertico-multiform-commands
+   '(;; Standard vertico in minibuffer
+     (flyspell-correct-at-point)))
   :bind
   (:map vertico-map
 	("<next>"  . vertico-scroll-up)
