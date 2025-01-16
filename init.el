@@ -1290,6 +1290,12 @@ same directory as the working and insert a link to this file."
   ("C-c m c p" . math-preview-clear-at-point)
   ("C-c m c r" . math-preview-clear-region)
   :config
+  ;; Avoid errors when renumbering
+  (add-to-list 'math-preview-tex-preprocess-functions
+	       '(lambda (x)
+		   (puthash 'string (s-replace-regexp "\\label{.+?}" "" (gethash 'string x))
+			    x)) t)
+  ;; Extend the recognized environments
   (add-to-list 'math-preview-tex-marks '("\\begin{align}" "\\end{align}" 0 nil nil))
   (add-to-list 'math-preview-tex-marks '("\\begin{align*}" "\\end{align*}" 0 nil nil))
   (add-to-list 'math-preview-tex-marks '("\\begin{gather}" "\\end{gather}" 0 nil nil))
