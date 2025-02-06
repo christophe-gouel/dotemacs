@@ -15,8 +15,7 @@
 
 (use-package use-package)
 
-(use-package use-package-ensure-system-package
-  :ensure t)
+(use-package use-package-ensure-system-package)
 
 (use-package system-packages
   :ensure t
@@ -61,6 +60,7 @@
         prettify-symbols-unprettify-at-point t
 	frame-resize-pixelwise t
 	window-resize-pixelwise t)
+(toggle-frame-maximized)
 (when (display-graphic-p)
   ;; Cursor (in terminal mode, to be set in terminal options)
   (setopt cursor-type 'bar) ; curseur étroit
@@ -80,6 +80,14 @@
   (setopt org-format-latex-options
             (plist-put org-format-latex-options :scale 1.8)
           preview-scale-function 1.4))
+(defun my-screen-linux ()
+  "Adjust font for Linux screen."
+  (interactive)
+  (set-face-attribute 'default nil :family "JetBrainsMono" :height 100)
+  (set-face-attribute 'variable-pitch nil :family "Noto Serif" :height 1.5)
+  (setopt org-format-latex-options
+          (plist-put org-format-latex-options :scale 1.5)
+          preview-scale-function 1.5))
 (defun my-screen-default ()
   "Adjust font for default screen."
   (interactive)
@@ -516,13 +524,6 @@ current buffer within the project or the current directory if not in a project."
   :ensure t
   :defer t)
 
-(unless (equal system-type 'darwin)
-  (use-package greek-unicode-insert
-    :ensure t
-    :vc (:url "https://github.com/Malabarba/greek-unicode-insert")
-    :bind (:map prog-mode-map ("²" . greek-unicode-insert-map))))
-; :init (setq greek-unicode-insert-key "`"))
-
 (use-package elec-pair
   :config
   (electric-pair-mode))
@@ -665,6 +666,9 @@ current buffer within the project or the current directory if not in a project."
      (kill-ring)
      ;; The rest in postframe in the center of the screen
      (t posframe)))
+  (vertico-multiform-commands
+   '(;; Standard vertico in minibuffer
+     (flyspell-correct-at-point)))
   :bind
   (:map vertico-map
 	("<next>"  . vertico-scroll-up)
@@ -1110,7 +1114,8 @@ This ensures that `citar-open` does not modify the current LaTeX buffer's settin
     (make-local-variable 'company-idle-delay)
 		  (setq company-idle-delay 0.3))
   (unless (equal system-type 'darwin)
-    (setq cdlatex-math-symbol-prefix ?\262)) ; correspond to key "²"
+    (setq cdlatex-math-symbol-prefix (kbd "²"))) ; correspond to key "²"
+    ;; (setq cdlatex-math-symbol-prefix ?\262)) ; correspond to key "²"
   :custom
   (cdlatex-command-alist
    '(("equ*" "Insert equation* env"   "" cdlatex-environment ("equation*") t nil)
@@ -1400,7 +1405,7 @@ same directory as the working and insert a link to this file."
   (setq-default
    format-all-formatters
    '(("LaTeX"
-      (latexindent "-m" "--yaml=modifyLineBreaks:textWrapOptions:columns:-1,defaultIndent:'  ',indentAfterItems:itemize:0;enumerate:0;description:0")))))
+      (latexindent "--modifylinebreaks" "--yaml=modifyLineBreaks:textWrapOptions:columns:-1,defaultIndent:'  ',indentAfterItems:itemize:0;enumerate:0;description:0")))))
 
 (use-package dockerfile-mode
   :ensure t
@@ -1589,7 +1594,8 @@ same directory as the working and insert a link to this file."
     "Workaround for https://github.com/emacs-ess/ESS/issues/1193"
     (add-hook 'comint-preoutput-filter-functions #'xterm-color-filter -90 t)
     (setq-local ansi-color-for-comint-mode nil)
-    (smartparens-mode 1))
+    ;; (smartparens-mode 1)
+    )
 
   (defun my-ess-remove-project-hook ()
     "Remove a useless hook added by ess to use its own project functions"
