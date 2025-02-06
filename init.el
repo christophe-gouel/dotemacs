@@ -9,7 +9,7 @@
 ;;; Code:
 
 (use-package package
-   :config
+  :config
   (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
   (package-initialize))
 
@@ -52,7 +52,8 @@
   (menu-bar-mode 0))
 (scroll-bar-mode 0)
 (tool-bar-mode 0)
-(tooltip-mode 0)
+;; TO CHECK
+(tooltip-mode 1)
 
 (setopt blink-cursor-blinks 0 ; curseur clignote indéfiniment
         display-time-24hr-format t ; Affichage de l'heure format 24h
@@ -205,6 +206,7 @@
 
 (use-package compile
   :bind (:map compilation-mode-map ("r" . recompile))
+  :defer t
   :hook
   ;; Get proper coloring of compile buffers (does not seem to work under Windows, probably because cmd does not support ANSI colors)
   (compilation-filter . ansi-color-compilation-filter)
@@ -236,6 +238,7 @@
   (dired-listing-switches "-agho --group-directories-first")
   (dired-compress-directory-default-suffix ".zip")
   (dired-compress-file-default-suffix ".zip")
+  (dired-vc-rename-file t)
   :hook
   (dired-mode . (lambda ()
                   (dired-hide-details-mode)))
@@ -452,6 +455,7 @@ current buffer within the project or the current directory if not in a project."
 
 (set-register ?b '(file . "~/Inrae EcoPub Dropbox/Christophe Gouel/Bibliography/Bibtex/References.bib"))
 (set-register ?d '(file . "~/Downloads"))
+(set-register ?l '(file . "/ssh:lannister:~"))
 (set-register ?r '(file . "~/Inrae EcoPub Dropbox/Christophe Gouel/dropbox_projects/Review"))
 
 (setopt initial-scratch-message nil)
@@ -509,16 +513,16 @@ current buffer within the project or the current directory if not in a project."
    mac-right-option-modifier 'none)
   (keymap-global-set "<home>" 'move-beginning-of-line)
   (keymap-global-set "<end>" 'move-end-of-line)
-  (keymap-global-set "§" (lambda () (interactive) (insert "-")))
-  (keymap-global-set "M-é" (lambda () (interactive) (insert "~")))
-  (keymap-global-set "M-\"" (lambda () (interactive) (insert "#")))
-  (keymap-global-set "M-'" (lambda () (interactive) (insert "{")))
-  (keymap-global-set "M-(" (lambda () (interactive) (insert "[")))
-  (keymap-global-set "M-§" (lambda () (interactive) (insert "|")))
-  (keymap-global-set "M-è" (lambda () (interactive) (insert "`")))
-  (keymap-global-set "M-!" (lambda () (interactive) (insert "\\")))
-  (keymap-global-set "M-à" (lambda () (interactive) (insert "@")))
-  (keymap-global-set "M-)" (lambda () (interactive) (insert "]")))
+  ;; (keymap-global-set "§" (lambda () (interactive) (insert "-")))
+  ;; (keymap-global-set "M-é" (lambda () (interactive) (insert "~")))
+  ;; (keymap-global-set "M-\"" (lambda () (interactive) (insert "#")))
+  ;; (keymap-global-set "M-'" (lambda () (interactive) (insert "{")))
+  ;; (keymap-global-set "M-(" (lambda () (interactive) (insert "[")))
+  ;; (keymap-global-set "M-§" (lambda () (interactive) (insert "|")))
+  ;; (keymap-global-set "M-è" (lambda () (interactive) (insert "`")))
+  ;; (keymap-global-set "M-!" (lambda () (interactive) (insert "\\")))
+  ;; (keymap-global-set "M-à" (lambda () (interactive) (insert "@")))
+  ;; (keymap-global-set "M-)" (lambda () (interactive) (insert "]")))
   ;; (keymap-global-set "M--" (lambda () (interactive) (insert "}")))
   ;; (keymap-global-set "M-e" (lambda () (interactive) (insert "€")))
   )
@@ -666,6 +670,7 @@ current buffer within the project or the current directory if not in a project."
      (imenu buffer)
      (org-heading buffer)
      ;; Standard vertico in minibuffer
+     (consult-isearch-history)
      (kill-ring)
      ;; The rest in postframe in the center of the screen
      (t posframe)))
@@ -714,8 +719,11 @@ current buffer within the project or the current directory if not in a project."
    ("M-g o" . consult-outline)
    ("M-#"   . consult-register)
    :map isearch-mode-map
+   ("M-p"   . consult-isearch-history)
    ("M-s l" . consult-line)
-   ("M-s L" . consult-line-multi))
+   ("M-s L" . consult-line-multi)
+   :map comint-mode-map
+   ("M-p"   . consult-history))
   :config
   ;; Disable preview for commands that can be slow
   (consult-customize
@@ -906,7 +914,6 @@ This ensures that `citar-open` does not modify the current LaTeX buffer's settin
    ("C-x c f" . my-citar-open-files)
    ("C-x c o" . my-citar-open)
    ("C-x c n" . my-citar-open-notes)
-   :map bibtex-mode-map
    ("C-x c i" . citar-insert-bibtex)
    :map text-mode-map
    ("C-x c c" . citar-insert-citation)))
@@ -1141,6 +1148,7 @@ This ensures that `citar-open` does not modify the current LaTeX buffer's settin
 	   ;; " --citeproc --bibliography="
 	   ;; (shell-quote-argument (substitute-in-file-name "${BIBINPUTS}\\References.bib"))
 	   ))
+  (markdown-asymmetric-header t)
   (markdown-enable-math t)
   (markdown-enable-prefix-prompts nil)
   (markdown-header-scaling nil)
@@ -1708,7 +1716,6 @@ buffer with C-c C-a C-a C-a ...."
 	    (keymap-set gams-mode-map "C-l" nil)
 	    (keymap-set gams-mode-map "C-c =" 'gams-show-identifier-list)))
   :custom
-  (gams-process-command-option "ll=0 lo=3 pw=153 ps=9999")
   (gams-fill-column 90)
   (gams-default-pop-window-height 20)
   (gams-browse-url-function 'xwidget-webkit-browse-url)
