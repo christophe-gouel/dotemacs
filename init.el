@@ -1639,11 +1639,16 @@ same directory as the working and insert a link to this file."
   :after ess-site
   :bind (:map ess-r-mode-map ("<f9>" . ess-rscript)))
 
-(use-package rutils
-  :defer t)
-
 (use-package ess-view-data
   :ensure t
+  :config
+  (defun ess-view-data-kill-trace ()
+    "Extract the content from the line starting with `# Trace: ` and copy it to the kill ring."
+    (interactive)
+    (save-excursion
+      (goto-char (point-min))
+      (when (re-search-forward "^# Trace: \\(.*\\)" nil t)
+	(kill-new (match-string 1)))))
   :bind
   (:map ess-view-data-mode-map
 	("f" . ess-view-data-filter)
@@ -1654,10 +1659,11 @@ same directory as the working and insert a link to this file."
 	("S" . ess-view-data-summarise)
 	("s" . ess-view-data-select)
 	("u" . ess-view-data-unique)
-	("l 2 w" . ess-view-data-long2wide)
-	("w 2 l" . ess-view-data-wide2long)
+	("<TAB>" . ess-view-data-long2wide)
+	("S-<TAB>" . ess-view-data-wide2long)
 	("C-c C-p" . ess-view-data-goto-previous-page)
-	("C-c C-n" . ess-view-data-goto-next-page))
+	("C-c C-n" . ess-view-data-goto-next-page)
+	("w" . ess-view-data-kill-trace))
   :custom
   (ess-view-data-current-update-print-backend 'kable)
   (ess-view-data-rows-per-page 1000))
