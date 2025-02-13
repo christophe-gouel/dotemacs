@@ -455,7 +455,6 @@ current buffer within the project or the current directory if not in a project."
 
 (set-register ?b '(file . "~/Inrae EcoPub Dropbox/Christophe Gouel/Bibliography/Bibtex/References.bib"))
 (set-register ?d '(file . "~/Downloads"))
-(set-register ?l '(file . "/ssh:lannister:~"))
 (set-register ?r '(file . "~/Inrae EcoPub Dropbox/Christophe Gouel/dropbox_projects/Review"))
 
 (setopt initial-scratch-message nil)
@@ -742,9 +741,18 @@ current buffer within the project or the current directory if not in a project."
   :init
   ;; this binds `magit-project-status' to `project-prefix-map' when project.el is loaded.
   (require 'magit-extras)
-  :bind ("C-x g" . magit-status)
+  :bind
+  ("C-x g b" . magit-branch)
+  ("C-x g c" . magit-clone)
+  ("C-x g d" . magit-dispatch)
+  ("C-x g f" . magit-file-dispatch)
+  ("C-x g g" . magit-status)
+  ("C-x g i" . magit-init)
+  ("C-x g l" . magit-log)
   :custom
   (magit-diff-refine-hunk (quote all))
+  ;; (magit-format-file-function #'magit-format-file-nerd-icons) ; To activate with next release of magit
+  (magit-view-git-manual-method 'man)	; Allow to view Git man pages inside Emacs
   :config
   ; Do not diff when committing
   (remove-hook 'server-switch-hook 'magit-commit-diff)
