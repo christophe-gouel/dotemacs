@@ -751,7 +751,7 @@ current buffer within the project or the current directory if not in a project."
   ("C-x g l" . magit-log)
   :custom
   (magit-diff-refine-hunk (quote all))
-  ;; (magit-format-file-function #'magit-format-file-nerd-icons) ; To activate with next release of magit
+  (magit-format-file-function #'magit-format-file-nerd-icons)
   (magit-view-git-manual-method 'man)	; Allow to view Git man pages inside Emacs
   :config
   ; Do not diff when committing
@@ -1566,20 +1566,19 @@ same directory as the working and insert a link to this file."
   ("\\.Rproj\\'" . conf-mode)
   :bind
   (:map ess-r-mode-map
-	;; Shortcut for pipe |>
-        ("C-S-m"   . " |>")
-	;; Shortcut for pipe %>%
-	("C-%"     . " %>%")
-	;; Shortcut for assign <-
-	("M--"     . ess-insert-assign)
-	("C-c v" . ess-view-data-print)
-	:map inferior-ess-r-mode-map
-	("C-S-m" . " |>")
-	("C-%"   . " %>%")
-	("M--"     . ess-insert-assign)
-	("C-c v" . ess-view-data-print)
-	:map inferior-ess-mode-map
-	("<home>" . comint-bol))
+    ("C-S-m"      . " |>") ; Pipe |>
+    ("C-%"        . " %>%") ; Pipe %>%
+    ("M--"        . ess-insert-assign) ; Assign <-
+    ("C-c v"      . ess-view-data-print)
+    ("C-<return>" . ess-eval-region-or-line-and-step)
+    ("C-c C-x"    . ess-eval-symbol)
+   :map inferior-ess-r-mode-map
+    ("C-S-m"      . " |>")
+    ("C-%"        . " %>%")
+    ("M--"        . ess-insert-assign)
+    ("C-c v"      . ess-view-data-print)
+   :map inferior-ess-mode-map
+    ("<home>"     . comint-bol))
   :custom
   ;; Deactivate linter in ess because it does not seem to work well
   ;; (ess-use-flymake nil)
@@ -1594,6 +1593,7 @@ same directory as the working and insert a link to this file."
   (ess-style 'RStudio)  ; Set code indentation
   (ess-ask-for-ess-directory nil) ; Do not ask what is the project directory
   (inferior-R-args "--no-restore-history --no-save ")
+  (ess-describe-at-point-method "tooltip") ; Describe using a toolip rather than a separate buffer
   ;; Font-locking
   (ess-R-font-lock-keywords
    '((ess-R-fl-keyword:keywords . t)
@@ -1609,6 +1609,14 @@ same directory as the working and insert a link to this file."
      (ess-fl-keyword:= . t)
      (ess-R-fl-keyword:F&T . t)))
   :config
+  (defun ess-eval-symbol (&optional vis)
+  "Send the symbol at point to the inferior ESS process.
+VIS has the same meaning as for `ess-eval-region'."
+  (interactive "P")
+  (let ((symbol (ess-symbol-at-point)))
+    (if symbol
+        (ess-eval-linewise (symbol-name symbol) vis)
+      (message "No symbol at point to evaluate."))))
   (defun my-inferior-ess-init ()
     "Workaround for https://github.com/emacs-ess/ESS/issues/1193"
     (add-hook 'comint-preoutput-filter-functions #'xterm-color-filter -90 t)
