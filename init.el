@@ -970,6 +970,14 @@ This ensures that `citar-open` does not modify the current LaTeX buffer's settin
           (message "Screenshot saved to %s and relative path copied to kill ring" relative-filename))
       (message "Screenshot failed."))))
 
+(use-package rainbow-csv
+  :vc (:url "https://github.com/emacs-vs/rainbow-csv"
+       :rev :newest
+       :branch "main")
+  :ensure t
+  :hook
+  ((csv-mode tsv-mode) . rainbow-csv-mode))
+
 (use-package csv-mode
   :ensure t
   :hook

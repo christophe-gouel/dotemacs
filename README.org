@@ -1309,6 +1309,20 @@ Take a screenshot and copy it to a file
 
 ** csv files
 
+=rainbow-csv= colorizes each color separately in csv files.
+
+#+begin_src emacs-lisp
+(use-package rainbow-csv
+  :vc (:url "https://github.com/emacs-vs/rainbow-csv"
+       :rev :newest
+       :branch "main")
+  :ensure t
+  :hook
+  ((csv-mode tsv-mode) . rainbow-csv-mode))
+#+end_src
+
+=csv-mode= allows to align columns based on column delimiters.
+
 #+begin_src emacs-lisp
 (use-package csv-mode
   :ensure t
