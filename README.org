@@ -512,6 +512,10 @@ Show imenu in a separate buffer with =imenu-list=:
 #+begin_src emacs-lisp
 (use-package minibuffer
   :custom
+  (completion-auto-help 'always)
+  (completion-auto-select 'second-tab)
+  (completions-format 'one-column)
+  (completions-max-height 20)
   (read-file-name-completion-ignore-case t))
 #+end_src
 

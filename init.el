@@ -354,6 +354,10 @@ current buffer within the project or the current directory if not in a project."
 
 (use-package minibuffer
   :custom
+  (completion-auto-help 'always)
+  (completion-auto-select 'second-tab)
+  (completions-format 'one-column)
+  (completions-max-height 20)
   (read-file-name-completion-ignore-case t))
 
 (use-package outline
