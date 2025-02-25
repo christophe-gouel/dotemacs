@@ -48,10 +48,8 @@
   :config
   (dashboard-setup-startup-hook))
 
-(unless (eq window-system 'ns)
-  (menu-bar-mode 0))
-(scroll-bar-mode 0)
-(tool-bar-mode 0)
+;; (unless (eq window-system 'ns)
+;;   (menu-bar-mode 0))
 ;; TO CHECK
 (tooltip-mode 1)
 
@@ -59,20 +57,18 @@
         display-time-24hr-format t ; Affichage de l'heure format 24h
         column-number-mode t ; affichage du numéro de la colonne
         prettify-symbols-unprettify-at-point t
-	frame-resize-pixelwise t
+	;; frame-resize-pixelwise t
 	window-resize-pixelwise t)
 (when (display-graphic-p)
   ;; Cursor (in terminal mode, to be set in terminal options)
   (setopt cursor-type 'bar) ; curseur étroit
-  (set-face-background 'cursor "#CC0000") ; curseur rouge foncé
   ;; Fonts and unicode characters
   ;;   Main font
   (set-face-attribute 'default nil :family "JetBrainsMono NF" :height 120)
   (set-face-attribute 'fixed-pitch nil :family "JetBrainsMono NF" :height 1.0)
   (set-face-attribute 'variable-pitch nil :family "Noto Serif" :height 1.0)
   ;;   Additional font for some unicode characters missing in prettify symbols
-  (set-fontset-font t 'unicode (font-spec :name "XITS Math") nil 'prepend)
-  (toggle-frame-maximized))
+  (set-fontset-font t 'unicode (font-spec :name "XITS Math") nil 'prepend))
 
 (defun my-screen-27 ()
   "Adjust font for 27 inch screen."
@@ -1605,7 +1601,7 @@ same directory as the working and insert a link to this file."
   (ess-style 'RStudio)  ; Set code indentation
   (ess-ask-for-ess-directory nil) ; Do not ask what is the project directory
   (inferior-R-args "--no-restore-history --no-save ")
-  (ess-describe-at-point-method "tooltip") ; Describe using a toolip rather than a separate buffer
+  (ess-describe-at-point-method 'tooltip) ; Describe using a toolip rather than a separate buffer
   ;; Font-locking
   (ess-R-font-lock-keywords
    '((ess-R-fl-keyword:keywords . t)
@@ -1863,5 +1859,8 @@ buffer with C-c C-a C-a C-a ...."
 (setq custom-file (locate-user-emacs-file "custom.el"))
 (when (file-exists-p custom-file)
   (load custom-file))
+
+(setopt gc-cons-threshold (default-value gc-cons-threshold)
+	gc-cons-percentage (default-value gc-cons-percentage))
 
 ;;; init.el ends here
