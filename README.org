@@ -1120,6 +1120,7 @@ Output just the proofread text without any intro, comments, or explanations.
 Preserve in your response the original code formatting, including indentation, comments, and any special characters.
 Do not use unicode for en dashes and em dashes, but use '--' and '---'.
 Never replace a backslash followed by a percentage sign by a percentage sign only.")
+  (chatgpt-shell-render-latex t)
   :ensure-system-package curl)
 
 (use-package gptel
