@@ -249,18 +249,19 @@ Highlight the current line
 (setopt custom-safe-themes t) ; consider all themes as safe
 
 (use-package modus-themes
-  :ensure t
-  :config
-  (setopt modus-themes-italic-constructs t
-          modus-themes-bold-constructs t
-          modus-themes-to-toggle
-	    '(modus-operandi-deuteranopia modus-vivendi-deuteranopia)
-          ;; Remove the mode-line border
-          modus-themes-common-palette-overrides
-            '((border-mode-line-active unspecified)
-	          (border-mode-line-inactive unspecified)))
+  :init
   (load-theme 'modus-vivendi-deuteranopia)
-  (define-key global-map (kbd "S-<f5>") #'modus-themes-toggle))
+  :custom
+  (modus-themes-italic-constructs t)
+  (modus-themes-bold-constructs t)
+  (modus-themes-to-toggle
+   '(modus-operandi-deuteranopia modus-vivendi-deuteranopia))
+  ;; Remove the mode-line border
+  (modus-themes-common-palette-overrides
+   '((border-mode-line-active unspecified)
+     (border-mode-line-inactive unspecified)))
+  :bind
+  ("S-<f5>" . modus-themes-toggle))
 #+end_src
 
 * Other Emacs settings and tools
