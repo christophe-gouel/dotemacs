@@ -513,6 +513,7 @@ Show imenu in a separate buffer with =imenu-list=:
   (completion-auto-select 'second-tab)
   (completions-format 'one-column)
   (completions-max-height 20)
+  (minibuffer-visible-completions t) ; allows to navigate in the minibuffer using arrow keys
   (read-file-name-completion-ignore-case t))
 #+end_src
 
@@ -1089,7 +1090,7 @@ Support for syntax highlighting of Git configuration files
 #+end_src
 
 * Shells
-** ChatGPT
+** LLM
 
 #+begin_src emacs-lisp
 (use-package chatgpt-shell
@@ -1111,6 +1112,14 @@ Support for syntax highlighting of Git configuration files
   :custom
   (chatgpt-shell-openai-key
       (auth-source-pick-first-password :host "api.openai.com"))
+  (chatgpt-shell-prompt-header-proofread-region
+   "Please help me proofread the following text and only reply with fixed text.
+Detect first the language of the text and respect it in the output.
+If the text is in English, assume that it is in American English except if there are indications that it is otherwise.
+Output just the proofread text without any intro, comments, or explanations.
+Preserve in your response the original code formatting, including indentation, comments, and any special characters.
+Do not use unicode for en dashes and em dashes, but use '--' and '---'.
+Never replace a backslash followed by a percentage sign by a percentage sign only.")
   :ensure-system-package curl)
 
 (use-package gptel
@@ -1650,15 +1659,6 @@ Use =org-appear= for markup markers to appear automatically.
   (org-mode . org-appear-mode))
 #+end_src
 
-For a modern-looking =org-mode=, use =org-modern=.
-
-#+begin_src emacs-lisp :tangle no
-(use-package org-modern
-  :ensure t
-  :hook
-  (org-mode . global-org-modern-mode))
-#+end_src
-
 =org-fragtog= for an automatic toggling of LaTeX fragments.
 
 #+begin_src emacs-lisp
@@ -1811,18 +1811,13 @@ The package =math-preview= has a problem under Windows, and some code should be 
 (setq-default fill-column 80)
 #+end_src
 
-Package to visually (not really) indent the filled lines following the first lines.
-#+begin_src emacs-lisp
-(use-package adaptive-wrap
-  :ensure t)
-#+end_src
-
 Use =visual-fill-column= for text modes
 #+begin_src emacs-lisp
 (use-package visual-fill-column
   :ensure t
   :custom
   (visual-fill-column-width 100)
+  (visual-fill-column-enable-sensible-window-split t) ; Avoid Emacs from splitting buffers vertically because it thinks the buffer is too narrow
   :config
   (defun my-visual-fill ()
     "Toggle visual fill column, visual line mode, and adaptive wrap mode."
@@ -1832,7 +1827,7 @@ Use =visual-fill-column= for text modes
     ;; org-indent does not play nicely with adaptive-wrap-prefix-mode so we exclude
     ;; the later in org
     (unless (member major-mode '(org-mode))
-      (adaptive-wrap-prefix-mode 'toggle)))
+      (visual-wrap-prefix-mode 'toggle)))
 
   (defun my-center-text ()
     "Center text in visual fill column."

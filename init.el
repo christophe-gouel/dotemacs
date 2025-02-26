@@ -355,6 +355,7 @@ current buffer within the project or the current directory if not in a project."
   (completion-auto-select 'second-tab)
   (completions-format 'one-column)
   (completions-max-height 20)
+  (minibuffer-visible-completions t) ; allows to navigate in the minibuffer using arrow keys
   (read-file-name-completion-ignore-case t))
 
 (use-package outline
@@ -796,6 +797,14 @@ current buffer within the project or the current directory if not in a project."
   :custom
   (chatgpt-shell-openai-key
       (auth-source-pick-first-password :host "api.openai.com"))
+  (chatgpt-shell-prompt-header-proofread-region
+   "Please help me proofread the following text and only reply with fixed text.
+Detect first the language of the text and respect it in the output.
+If the text is in English, assume that it is in American English except if there are indications that it is otherwise.
+Output just the proofread text without any intro, comments, or explanations.
+Preserve in your response the original code formatting, including indentation, comments, and any special characters.
+Do not use unicode for en dashes and em dashes, but use '--' and '---'.
+Never replace a backslash followed by a percentage sign by a percentage sign only.")
   :ensure-system-package curl)
 
 (use-package gptel
@@ -1375,13 +1384,11 @@ same directory as the working and insert a link to this file."
 
 (setq-default fill-column 80)
 
-(use-package adaptive-wrap
-  :ensure t)
-
 (use-package visual-fill-column
   :ensure t
   :custom
   (visual-fill-column-width 100)
+  (visual-fill-column-enable-sensible-window-split t) ; Avoid Emacs from splitting buffers vertically because it thinks the buffer is too narrow
   :config
   (defun my-visual-fill ()
     "Toggle visual fill column, visual line mode, and adaptive wrap mode."
@@ -1391,7 +1398,7 @@ same directory as the working and insert a link to this file."
     ;; org-indent does not play nicely with adaptive-wrap-prefix-mode so we exclude
     ;; the later in org
     (unless (member major-mode '(org-mode))
-      (adaptive-wrap-prefix-mode 'toggle)))
+      (visual-wrap-prefix-mode 'toggle)))
 
   (defun my-center-text ()
     "Center text in visual fill column."
