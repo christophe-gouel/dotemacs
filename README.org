@@ -103,8 +103,11 @@ Remove menu, scrool-bar, tool-bar, and tooltip
   (set-face-attribute 'default nil :family "JetBrainsMono NF" :height 120)
   (set-face-attribute 'fixed-pitch nil :family "JetBrainsMono NF" :height 1.0)
   (set-face-attribute 'variable-pitch nil :family "Noto Serif" :height 1.0)
-  ;;   Additional font for some unicode characters missing in prettify symbols
-  (set-fontset-font t 'unicode (font-spec :name "XITS Math") nil 'prepend))
+  ;;   Additional font for some unicode characters missing in prettify symbols and for emojis
+  (when (member "XITS Math" (font-family-list))
+    (set-fontset-font t 'unicode (font-spec :name "XITS Math") nil 'prepend))
+  (when (member "Apple Color Emoji" (font-family-list))
+    (set-fontset-font t 'unicode (font-spec :name "Apple Color Emoji") nil 'append)))
 
 (defun my-screen-27 ()
   "Adjust font for 27 inch screen."
@@ -577,8 +580,6 @@ Use =outline-minor-faces= to use a special face for outline sections.
 (delete-selection-mode t)               ; entrée efface texte sélectionné
 (fset 'yes-or-no-p 'y-or-n-p)           ; Replace yes or no with y or n
 (auto-compression-mode t)
-(when (equal system-type 'windows-nt)
-    (setopt tramp-default-method "plink"))
 #+end_src
 
 ** Personal information
@@ -647,8 +648,8 @@ Use =outline-minor-faces= to use a special face for outline sections.
 
 #+begin_src emacs-lisp
 (use-package recentf
-  :ensure t
   :custom
+  (recentf-auto-cleanup 'never) ;; disable to avoid recentf from scanning remote files through tramp
   (recentf-max-saved-items 100))
 #+end_src
 
@@ -691,6 +692,18 @@ Use =outline-minor-faces= to use a special face for outline sections.
   :config
   (when (and (display-graphic-p) (not (server-running-p)))
     (server-start)))
+#+end_src
+
+** Tramp
+
+#+begin_src emacs-lisp
+(setopt tramp-ssh-controlmaster-options
+	(concat
+	 "-o ControlPath=/tmp/ssh-ControlPath-%%r@%%h:%%p "
+	 "-o ControlMaster=auto -o ControlPersist=yes")
+	tramp-verbose 3)
+(when (equal system-type 'windows-nt)
+    (setopt tramp-default-method "plink"))
 #+end_src
 
 ** Windows management
@@ -991,20 +1004,29 @@ Use =vertico-directory= to press =DEL= to jump back one directory instead of one
 (use-package consult
   :ensure t
   :bind
-  (("C-x b" . consult-buffer)
-   ("M-y"   . consult-yank-pop)
+  (;; C-x bindings in `ctl-x-map'
+   ("C-x b" . consult-buffer)
+   ("C-x 4 b" . consult-buffer-other-window)
+   ("C-x 5 b" . consult-buffer-other-frame)
+   ("C-x r b" . consult-bookmark)
    ;; M-s bindings in `search-map'
    ("M-s g" . consult-grep)
    ("M-s G" . consult-git-grep)
    ("M-s r" . consult-ripgrep)
    ("M-s l" . consult-line)
    ("M-s L" . consult-line-multi)
-   ;; Other custom bindings
+   ;; M-g bindings in `goto-map'
+   ("M-s d" . consult-find)
    ("M-g f" . consult-flymake)
+   ("M-g g" . consult-goto-line)
    ("M-g i" . consult-imenu)
    ("M-g I" . consult-imenu-multi)
    ("M-g o" . consult-outline)
+   ("M-s k" . consult-keep-lines)
+   ("M-s u" . consult-focus-lines)
+   ;; Other custom bindings
    ("M-#"   . consult-register)
+   ("M-y"   . consult-yank-pop)
    :map isearch-mode-map
    ("M-p"   . consult-isearch-history)
    ("M-s l" . consult-line)
@@ -1030,6 +1052,10 @@ Use =vertico-directory= to press =DEL= to jump back one directory instead of one
 * Git
 
 #+begin_src emacs-lisp
+(setopt vc-handled-backends '(Git SVN))
+#+end_src
+
+#+begin_src emacs-lisp
 (use-package magit
   :ensure t
   :init
@@ -1037,12 +1063,15 @@ Use =vertico-directory= to press =DEL= to jump back one directory instead of one
   (require 'magit-extras)
   :bind
   ("C-x g b" . magit-branch)
-  ("C-x g c" . magit-clone)
+  ("C-x g c" . magit-commit)
+  ("C-x g C" . magit-clone)
   ("C-x g d" . magit-dispatch)
   ("C-x g f" . magit-file-dispatch)
+  ("C-x g F" . magit-pull)
   ("C-x g g" . magit-status)
   ("C-x g i" . magit-init)
   ("C-x g l" . magit-log)
+  ("C-x g P" . magit-push)
   :custom
   (magit-diff-refine-hunk (quote all))
   (magit-format-file-function #'magit-format-file-nerd-icons)
@@ -1112,6 +1141,8 @@ Support for syntax highlighting of Git configuration files
   :custom
   (chatgpt-shell-openai-key
       (auth-source-pick-first-password :host "api.openai.com"))
+  (chatgpt-shell-anthropic-key
+      (auth-source-pick-first-password :host "api.anthropic.com"))
   (chatgpt-shell-prompt-header-proofread-region
    "Please help me proofread the following text and only reply with fixed text.
 Detect first the language of the text and respect it in the output.

@@ -67,8 +67,11 @@
   (set-face-attribute 'default nil :family "JetBrainsMono NF" :height 120)
   (set-face-attribute 'fixed-pitch nil :family "JetBrainsMono NF" :height 1.0)
   (set-face-attribute 'variable-pitch nil :family "Noto Serif" :height 1.0)
-  ;;   Additional font for some unicode characters missing in prettify symbols
-  (set-fontset-font t 'unicode (font-spec :name "XITS Math") nil 'prepend))
+  ;;   Additional font for some unicode characters missing in prettify symbols and for emojis
+  (when (member "XITS Math" (font-family-list))
+    (set-fontset-font t 'unicode (font-spec :name "XITS Math") nil 'prepend))
+  (when (member "Apple Color Emoji" (font-family-list))
+    (set-fontset-font t 'unicode (font-spec :name "Apple Color Emoji") nil 'append)))
 
 (defun my-screen-27 ()
   "Adjust font for 27 inch screen."
@@ -403,8 +406,6 @@ current buffer within the project or the current directory if not in a project."
 (delete-selection-mode t)               ; entrée efface texte sélectionné
 (fset 'yes-or-no-p 'y-or-n-p)           ; Replace yes or no with y or n
 (auto-compression-mode t)
-(when (equal system-type 'windows-nt)
-    (setopt tramp-default-method "plink"))
 
 (setopt user-full-name "Christophe Gouel"
         user-mail-address "christophe.gouel@inrae.fr")
@@ -451,8 +452,8 @@ current buffer within the project or the current directory if not in a project."
   (sentence-end-double-space nil))
 
 (use-package recentf
-  :ensure t
   :custom
+  (recentf-auto-cleanup 'never) ;; disable to avoid recentf from scanning remote files through tramp
   (recentf-max-saved-items 100))
 
 (set-register ?b '(file . "~/Inrae EcoPub Dropbox/Christophe Gouel/Bibliography/Bibtex/References.bib"))
@@ -479,6 +480,14 @@ current buffer within the project or the current directory if not in a project."
   :config
   (when (and (display-graphic-p) (not (server-running-p)))
     (server-start)))
+
+(setopt tramp-ssh-controlmaster-options
+	(concat
+	 "-o ControlPath=/tmp/ssh-ControlPath-%%r@%%h:%%p "
+	 "-o ControlMaster=auto -o ControlPersist=yes")
+	tramp-verbose 3)
+(when (equal system-type 'windows-nt)
+    (setopt tramp-default-method "plink"))
 
 (use-package windmove
   :config
@@ -705,20 +714,29 @@ current buffer within the project or the current directory if not in a project."
 (use-package consult
   :ensure t
   :bind
-  (("C-x b" . consult-buffer)
-   ("M-y"   . consult-yank-pop)
+  (;; C-x bindings in `ctl-x-map'
+   ("C-x b" . consult-buffer)
+   ("C-x 4 b" . consult-buffer-other-window)
+   ("C-x 5 b" . consult-buffer-other-frame)
+   ("C-x r b" . consult-bookmark)
    ;; M-s bindings in `search-map'
    ("M-s g" . consult-grep)
    ("M-s G" . consult-git-grep)
    ("M-s r" . consult-ripgrep)
    ("M-s l" . consult-line)
    ("M-s L" . consult-line-multi)
-   ;; Other custom bindings
+   ;; M-g bindings in `goto-map'
+   ("M-s d" . consult-find)
    ("M-g f" . consult-flymake)
+   ("M-g g" . consult-goto-line)
    ("M-g i" . consult-imenu)
    ("M-g I" . consult-imenu-multi)
    ("M-g o" . consult-outline)
+   ("M-s k" . consult-keep-lines)
+   ("M-s u" . consult-focus-lines)
+   ;; Other custom bindings
    ("M-#"   . consult-register)
+   ("M-y"   . consult-yank-pop)
    :map isearch-mode-map
    ("M-p"   . consult-isearch-history)
    ("M-s l" . consult-line)
@@ -738,6 +756,8 @@ current buffer within the project or the current directory if not in a project."
   :init
   (vertico-prescient-mode))
 
+(setopt vc-handled-backends '(Git SVN))
+
 (use-package magit
   :ensure t
   :init
@@ -745,12 +765,15 @@ current buffer within the project or the current directory if not in a project."
   (require 'magit-extras)
   :bind
   ("C-x g b" . magit-branch)
-  ("C-x g c" . magit-clone)
+  ("C-x g c" . magit-commit)
+  ("C-x g C" . magit-clone)
   ("C-x g d" . magit-dispatch)
   ("C-x g f" . magit-file-dispatch)
+  ("C-x g F" . magit-pull)
   ("C-x g g" . magit-status)
   ("C-x g i" . magit-init)
   ("C-x g l" . magit-log)
+  ("C-x g P" . magit-push)
   :custom
   (magit-diff-refine-hunk (quote all))
   (magit-format-file-function #'magit-format-file-nerd-icons)
@@ -797,6 +820,8 @@ current buffer within the project or the current directory if not in a project."
   :custom
   (chatgpt-shell-openai-key
       (auth-source-pick-first-password :host "api.openai.com"))
+  (chatgpt-shell-anthropic-key
+      (auth-source-pick-first-password :host "api.anthropic.com"))
   (chatgpt-shell-prompt-header-proofread-region
    "Please help me proofread the following text and only reply with fixed text.
 Detect first the language of the text and respect it in the output.
