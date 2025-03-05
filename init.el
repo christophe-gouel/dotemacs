@@ -811,7 +811,7 @@ current buffer within the project or the current directory if not in a project."
   :bind
   (("C-x j p"   . chatgpt-shell-proofread-region)
    ("C-x j c"   . chatgpt-shell-prompt-compose)
-   ("C-x j RET" . chatgpt-shell)
+   ("C-x j j"   . chatgpt-shell)
    ("C-x j s"   . chatgpt-shell-swap-model)
    :map chatgpt-shell-mode-map
    ("C-c C-b"   . my-chatgpt-save-block)
@@ -1247,6 +1247,8 @@ same directory as the working and insert a link to this file."
     (let ((reftex-cite-format markdown-cite-format)
           (reftex-cite-key-separator "; @"))
       (reftex-citation)))
+  :hook
+  (markdown-mode . turn-on-orgtbl)
   :bind (:map markdown-mode-map
 	      ("C-c [" . my-markdown-reftex-citation)))
 
