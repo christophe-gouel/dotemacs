@@ -64,8 +64,12 @@
   (setopt cursor-type 'bar) ; curseur étroit
   ;; Fonts and unicode characters
   ;;   Main font
-  (set-face-attribute 'default nil :family "JetBrainsMono NF" :height 120)
-  (set-face-attribute 'fixed-pitch nil :family "JetBrainsMono NF" :height 1.0)
+  (when (member "JetBrainsMono NF" (font-family-list))
+    (set-face-attribute 'default nil :family "JetBrainsMono NF" :height 120)
+    (set-face-attribute 'fixed-pitch nil :family "JetBrainsMono NF" :height 1.0))
+  (when (member "JetBrainsMono" (font-family-list))
+    (set-face-attribute 'default nil :family "JetBrainsMono" :height 120)
+    (set-face-attribute 'fixed-pitch nil :family "JetBrainsMono" :height 1.0))
   (set-face-attribute 'variable-pitch nil :family "Noto Serif" :height 1.0)
   ;;   Additional font for some unicode characters missing in prettify symbols and for emojis
   (when (member "XITS Math" (font-family-list))
@@ -1483,9 +1487,6 @@ same directory as the working and insert a link to this file."
 
 (use-package copilot
   :ensure t
-  :vc (:url "https://github.com/copilot-emacs/copilot.el"
-       :rev :newest
-       :branch "main")
   :defer 2
   :custom
   (copilot-indent-warning-suppress t)
