@@ -16,8 +16,7 @@
 	'((fullscreen . maximized) ; maximized screen, not full screen
 	  (tool-bar-lines . 0) ; no tool bar
 	  (vertical-scroll-bars) ; no vertical scroll bar
-	  (undecorated . t) ; no title bar
-	  (cursor-color . "#CC0000"))) ; red cursor
+	  (undecorated . t))) ; no title bar
 
 (unless (eq window-system 'ns)
   (push '(menu-bar-mode . 0) default-frame-alist)) ; no menu bar

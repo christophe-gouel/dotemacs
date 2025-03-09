@@ -358,11 +358,12 @@ current buffer within the project or the current directory if not in a project."
 
 (use-package minibuffer
   :custom
-  (completion-auto-help 'always)
-  (completion-auto-select 'second-tab)
-  (completions-format 'one-column)
-  (completions-max-height 20)
-  (minibuffer-visible-completions t) ; allows to navigate in the minibuffer using arrow keys
+  ;; Better completion defaults (to activate if not using a minibuffer completion framework)
+  ;; (completion-auto-help 'always)
+  ;; (completion-auto-select 'second-tab)
+  ;; (completions-format 'one-column)
+  ;; (completions-max-height 20)
+  ;; (minibuffer-visible-completions t) ; allows to navigate in the minibuffer using arrow keys
   (read-file-name-completion-ignore-case t))
 
 (use-package outline
@@ -705,6 +706,12 @@ current buffer within the project or the current directory if not in a project."
   :bind
   (:map vertico-map	("DEL" . vertico-directory-delete-char)))
 
+(use-package vertico-prescient
+  :ensure t
+  :after vertico
+  :init
+  (vertico-prescient-mode))
+
 (use-package orderless
   :ensure t
   :custom
@@ -754,11 +761,41 @@ current buffer within the project or the current directory if not in a project."
    consult--source-recent-file consult--source-project-recent-file
    :preview-key "M-."))
 
-(use-package vertico-prescient
+(use-package embark
   :ensure t
-  :after vertico
+
+  :bind
+  (("C-." . embark-act)         ;; pick some comfortable binding
+   ("C-;" . embark-dwim)        ;; good alternative: M-.
+   ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
+
   :init
-  (vertico-prescient-mode))
+
+  ;; Optionally replace the key help with a completing-read interface
+  (setq prefix-help-command #'embark-prefix-help-command)
+
+  ;; Show the Embark target at point via Eldoc. You may adjust the
+  ;; Eldoc strategy, if you want to see the documentation from
+  ;; multiple providers. Beware that using this can be a little
+  ;; jarring since the message shown in the minibuffer can be more
+  ;; than one line, causing the modeline to move up and down:
+
+  ;; (add-hook 'eldoc-documentation-functions #'embark-eldoc-first-target)
+  ;; (setq eldoc-documentation-strategy #'eldoc-documentation-compose-eagerly)
+
+  :config
+
+  ;; Hide the mode line of the Embark live/completions buffers
+  (add-to-list 'display-buffer-alist
+               '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+                 nil
+                 (window-parameters (mode-line-format . none)))))
+
+;; Consult users will also want the embark-consult package.
+(use-package embark-consult
+  :ensure t ; only need to install it, embark loads it after consult if found
+  :hook
+  (embark-collect-mode . consult-preview-at-point-mode))
 
 (setopt vc-handled-backends '(Git SVN))
 
@@ -813,9 +850,11 @@ current buffer within the project or the current directory if not in a project."
     (chatgpt-shell-mark-block)
     (kill-ring-save (region-beginning) (region-end)))
   :bind
-  (("C-x j p"   . chatgpt-shell-proofread-region)
-   ("C-x j c"   . chatgpt-shell-prompt-compose)
+  (("C-x j c"   . chatgpt-shell-prompt-compose)
+   ("C-x j i"   . chatgpt-shell-quick-insert)
    ("C-x j j"   . chatgpt-shell)
+   ("C-x j p"   . chatgpt-shell-proofread-region)
+   ("C-x j r"   . chatgpt-shell-refactor-code)
    ("C-x j s"   . chatgpt-shell-swap-model)
    :map chatgpt-shell-mode-map
    ("C-c C-b"   . my-chatgpt-save-block)
@@ -854,7 +893,7 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
   :ensure t
   :defer 2
   :config
-  (eshell-git-prompt-use-theme 'powerline))
+  (eshell-git-prompt-use-theme 'robbyrussell))
 
 (use-package comint
   :defer t
