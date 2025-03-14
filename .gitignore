@@ -1,4 +1,4 @@
-*.ttf
+.ttf
 *.eld
 ac-comphist.dat
 auto-save-list/
@@ -28,3 +28,4 @@ elgrep-data.el
 org-persist/
 eln-cache/
 var/
+request/
