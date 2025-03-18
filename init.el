@@ -30,7 +30,7 @@
   (use-package exec-path-from-shell
     :ensure t
     :config
-    (dolist (var '("DROPBOX" "BIBINPUTS" "BSTINPUTS" "GH_TOKEN"))
+    (dolist (var '("DROPBOX" "BIBINPUTS" "BSTINPUTS" "GH_TOKEN" "OPENAI_API_KEY" "ANTHROPIC_API_KEY" "OLLAMA_API_BASE"))
       (add-to-list 'exec-path-from-shell-variables var))
     (exec-path-from-shell-initialize)))
 
@@ -899,6 +899,16 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
   (add-to-list 'gptel-directives
 	       '(mathematics . "Solve this mathematical formula. Just output the solution in LaTeX without giving any explanation.")))
 
+(use-package aidermacs
+  :ensure t
+  :defer t
+  :config
+  (unless (equal system-type 'windows-nt)
+    (setopt aidermacs-backend 'vterm))
+  :custom
+  (aidermacs-use-architect-mode t)
+  (aidermacs-default-model "sonnet"))
+
 (use-package eshell-git-prompt
   :ensure t
   :defer 2
@@ -917,6 +927,11 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
   :hook
   (shell-mode . (lambda ()
 		  (face-remap-set-base 'comint-highlight-prompt :inherit nil))))
+
+(unless (eq system-type 'windows-nt)
+  (use-package vterm
+    :ensure t
+    :defer t))
 
 (use-package citar
   :ensure t
