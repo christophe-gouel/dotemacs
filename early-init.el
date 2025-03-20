@@ -19,7 +19,7 @@
 	  (undecorated . t))) ; no title bar
 
 (unless (eq window-system 'ns)
-  (push '(menu-bar-mode . 0) default-frame-alist)) ; no menu bar
+  (menu-bar-mode 0)) ; no menu bar
 
 (setopt frame-resize-pixelwise t) ; resize frame pixelwise
 

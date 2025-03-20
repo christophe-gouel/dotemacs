@@ -87,7 +87,7 @@
 (defun my-screen-linux ()
   "Adjust font for Linux screen."
   (interactive)
-  (set-face-attribute 'default nil :family "JetBrainsMono" :height 100)
+  (set-face-attribute 'default nil :family "JetBrainsMono" :height 109)
   (set-face-attribute 'variable-pitch nil :family "Noto Serif" :height 1.5)
   (setopt org-format-latex-options
           (plist-put org-format-latex-options :scale 1.5)
