@@ -1860,6 +1860,8 @@ buffer with C-c C-a C-a C-a ...."
   (gams-indent-number-mpsge 2)
   (gams-indent-number-equation 2))
 
+(unless (package-installed-p 'poly-gams)
+  (package-install 'poly-gams))
 (require 'poly-gams)
 (add-to-list 'auto-mode-alist '("\\.inc\\'" . poly-gams-mode))
 

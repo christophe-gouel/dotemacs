@@ -2389,6 +2389,8 @@ buffer with C-c C-a C-a C-a ...."
 I don't know why but =poly-gams= does not work with =use-package=, so I have to turn to the traditional =require=:
 
 #+begin_src emacs-lisp
+(unless (package-installed-p 'poly-gams)
+  (package-install 'poly-gams))
 (require 'poly-gams)
 (add-to-list 'auto-mode-alist '("\\.inc\\'" . poly-gams-mode))
 #+end_src
