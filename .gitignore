@@ -29,3 +29,5 @@ org-persist/
 eln-cache/
 var/
 request/
+.aider*
+multisession/

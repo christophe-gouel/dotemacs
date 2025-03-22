@@ -1679,6 +1679,7 @@ same directory as the working and insert a link to this file."
     ("C-%"        . " %>%") ; Pipe %>%
     ("M--"        . ess-insert-assign) ; Assign <-
     ("C-c v"      . ess-view-data-print)
+    ("C-j"        . ess-eval-line-and-step)
     ("C-<return>" . ess-eval-region-or-line-and-step)
     ("C-c C-x"    . ess-eval-symbol)
    :map inferior-ess-r-mode-map
