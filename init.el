@@ -141,7 +141,8 @@
   :config
   ;; Enable all JetBrains Mono ligatures in programming modes
   (defconst jb-ligatures
-    '("-|" "-~" "---" "-<<" "-<" "--" "->" "->>" "-->" "///" "/=" "/==" "/>"
+    '(;; "--" "---"
+      "-|" "-~" "-<<" "-<" "->" "->>" "-->" "///" "/=" "/==" "/>"
       "//" "/*" "*>" "***" ",*/" "<-" "<<-" "<=>" "<=" "<|" "<||" "<|||" "<|>"
       "<:" "<>" "<-<" "<<<" "<==" "<<=" "<=<" "<==>" "<-|" "<<" "<~>" "<=|"
       "<~~" "<~" "<$>" "<$" "<+>" "<+" "</>" "</" "<*" "<*>" "<->" "<!--" ":>"
@@ -1665,6 +1666,12 @@ same directory as the working and insert a link to this file."
 (use-package symbol-overlay
   :ensure t
   :hook (prog-mode . symbol-overlay-mode))
+
+(use-package hl-todo
+  :ensure t
+  :defer 2
+  :init
+  (global-hl-todo-mode))
 
 (use-package ess-site
   :ensure ess

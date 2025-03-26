@@ -205,7 +205,8 @@ Highlight the current line
   :config
   ;; Enable all JetBrains Mono ligatures in programming modes
   (defconst jb-ligatures
-    '("-|" "-~" "---" "-<<" "-<" "--" "->" "->>" "-->" "///" "/=" "/==" "/>"
+    '(;; "--" "---"
+      "-|" "-~" "-<<" "-<" "->" "->>" "-->" "///" "/=" "/==" "/>"
       "//" "/*" "*>" "***" ",*/" "<-" "<<-" "<=>" "<=" "<|" "<||" "<|||" "<|>"
       "<:" "<>" "<-<" "<<<" "<==" "<<=" "<=<" "<==>" "<-|" "<<" "<~>" "<=|"
       "<~~" "<~" "<$>" "<$" "<+>" "<+" "</>" "</" "<*" "<*>" "<->" "<!--" ":>"
@@ -2171,6 +2172,16 @@ Use "M-C-TAB" for moving to next field to avoid conflict with autocompletion.
 (use-package symbol-overlay
   :ensure t
   :hook (prog-mode . symbol-overlay-mode))
+#+end_src
+
+*** TODOs
+
+#+begin_src emacs-lisp
+(use-package hl-todo
+  :ensure t
+  :defer 2
+  :init
+  (global-hl-todo-mode))
 #+end_src
 
 ** Programming languages
