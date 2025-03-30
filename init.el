@@ -175,7 +175,9 @@
   (rainbow-delimiters-depth-5-face ((t (:foreground "blue"))))
   (rainbow-delimiters-depth-6-face ((t (:foreground "violet"))))
   (rainbow-delimiters-depth-7-face ((t (:foreground "purple"))))
-  (rainbow-delimiters-depth-8-face ((t (:foreground "black"))))
+  (rainbow-delimiters-depth-8-face
+   ((((background dark))  (:foreground "white"))
+    (((background light)) (:foreground "black"))))
   (rainbow-delimiters-unmatched-face ((t (:background "yellow")))))
 
 (setopt custom-safe-themes t) ; consider all themes as safe
