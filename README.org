@@ -1882,6 +1882,26 @@ Activate export to beamer and markdown
   :ensure htmlize) ; required for the fontification of code blocks
 #+end_src
 
+*** Presenting in org
+
+#+begin_src emacs-lisp
+(use-package org-present
+  :ensure t
+  :defer t
+  :config
+  (defun my-org-present ()
+    (interactive)
+    (org-present-big))
+  :hook (org-present-mode . my-org-present)
+  :bind
+  (:map org-present-mode-keymap
+	("<left>" . nil)
+	("<right>" . nil)
+	("<prior>" . org-present-prev)
+	("<next>" . org-present-next)
+	))
+#+end_src
+
 ** Preview of mathematical formulas
 
 =texfrag= to have preview of LaTeX fragment outside LaTeX buffers

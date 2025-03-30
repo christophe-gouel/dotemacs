@@ -1451,6 +1451,22 @@ same directory as the working and insert a link to this file."
   :after ox
   :ensure htmlize) ; required for the fontification of code blocks
 
+(use-package org-present
+  :ensure t
+  :defer t
+  :config
+  (defun my-org-present ()
+    (interactive)
+    (org-present-big))
+  :hook (org-present-mode . my-org-present)
+  :bind
+  (:map org-present-mode-keymap
+	("<left>" . nil)
+	("<right>" . nil)
+	("<prior>" . org-present-prev)
+	("<next>" . org-present-next)
+	))
+
 (use-package texfrag
   :ensure t
   :hook
