@@ -980,11 +980,11 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
      :padding "  "
      :tag "is:cited"))
   (setopt citar-indicators
-	(list citar-indicator-files-icons
-          citar-indicator-links-icons
-          citar-indicator-notes-icons
-          citar-indicator-cited-icons))
-  ;; Functions to side-step a bug in citar which affects the state of RefTeX. To remove as soon as the fix has been pushed to MELPA.
+	  (list citar-indicator-files-icons
+		citar-indicator-links-icons
+		citar-indicator-notes-icons
+		citar-indicator-cited-icons))
+  ;; TEMP Functions to side-step a bug in citar which affects the state of RefTeX. To remove as soon as the fix has been pushed to MELPA.
   (defun my-citar-open (&optional key)
     "Run `citar-open` with a KEY in a temporary buffer to avoid interfering with RefTeX in LaTeX mode.
 This ensures that `citar-open` does not modify the current LaTeX buffer's settings."
@@ -1010,6 +1010,34 @@ This ensures that `citar-open` does not modify the current LaTeX buffer's settin
       ;; Temporarily switch to a clean buffer
       (delay-mode-hooks (org-mode)) ; Set a neutral mode (like org-mode) to avoid LaTeX hooks
       (citar-open-files key))) ; Run citar-open in the temporary buffer
+  (defmacro citar-with-other-window (&rest body)
+    "Execute BODY with find-file temporarily redirected to find-file-other-window."
+    `(progn
+       (advice-add 'find-file :override
+                   (lambda (filename &optional wildcards)
+                     (find-file-other-window filename wildcards))
+                   '((name . citar-other-window-advice)))
+       (unwind-protect
+           (progn ,@body)
+	 (advice-remove 'find-file 'citar-other-window-advice))))
+  (defun citar-open-files-other-window ()
+    "Open files associated with the selected citation keys in other window.
+This is similar to `citar-open-files' but displays the files in another window."
+    (interactive)
+    (citar-with-other-window
+     (call-interactively #'citar-open-files)))
+  (defun citar-open-other-window ()
+    "Open selection with citar in other window.
+This is similar to `citar-open' but displays files in another window."
+    (interactive)
+    (citar-with-other-window
+     (call-interactively #'citar-open)))
+  (defun citar-open-notes-other-window ()
+    "Open notes associated with the selected citation keys in other window.
+This is similar to `citar-open-notes' but displays the notes in another window."
+    (interactive)
+    (citar-with-other-window
+     (call-interactively #'citar-open-notes)))
   :custom
   (org-cite-insert-processor 'citar)
   (org-cite-follow-processor 'citar)
@@ -1023,13 +1051,20 @@ This ensures that `citar-open` does not modify the current LaTeX buffer's settin
    '((main . "${author editor:30%sn}     ${date year issued:4}     ${title:48}")
      (suffix . "          ${=key= id:7}    ${=type=:12}    ${journal journaltitle}")
      (preview . "${author editor:%etal} (${year issued date}) ${title}, ${journal journaltitle publisher container-title collection-title}.\n")
-        (note . "Notes on ${author editor:%etal}, ${title}")))
+     (note . "Notes on ${author editor:%etal}, ${title}")))
   :bind
   (("C-x c d" . citar-dwim)
-   ("C-x c f" . my-citar-open-files)
-   ("C-x c o" . my-citar-open)
-   ("C-x c n" . my-citar-open-notes)
+   ;; ("C-x c f" . my-citar-open-files)
+   ;; ("C-x c o" . my-citar-open)
+   ;; ("C-x c n" . my-citar-open-notes)
+   ("C-x c f" . citar-open-files)
+   ("C-x c o" . citar-open)
+   ("C-x c n" . citar-open-notes)
    ("C-x c i" . citar-insert-bibtex)
+   ("C-x 4 c" . nil) ; Remove existing binding
+   ("C-x c 4 f" . citar-open-files-other-window)
+   ("C-x c 4 o" . citar-open-other-window)
+   ("C-x c 4 n" . citar-open-notes-other-window)
    :map text-mode-map
    ("C-x c c" . citar-insert-citation)))
 
