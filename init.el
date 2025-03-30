@@ -1993,7 +1993,7 @@ buffer with C-c C-a C-a C-a ...."
 (when (file-exists-p custom-file)
   (load custom-file))
 
-(setopt gc-cons-threshold (default-value gc-cons-threshold)
-	gc-cons-percentage (default-value gc-cons-percentage))
+(setopt gc-cons-threshold 800000
+	gc-cons-percentage 0.1)
 
 ;;; init.el ends here

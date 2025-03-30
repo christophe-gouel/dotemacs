@@ -2556,8 +2556,8 @@ Define a file in which any customization is saved
 
 Restore default garbage collector settings
 #+begin_src emacs-lisp
-(setopt gc-cons-threshold (default-value gc-cons-threshold)
-	gc-cons-percentage (default-value gc-cons-percentage))
+(setopt gc-cons-threshold 800000
+	gc-cons-percentage 0.1)
 #+end_src
 ** End message
 
