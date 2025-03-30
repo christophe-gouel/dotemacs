@@ -239,6 +239,8 @@
      ("\\.tar\\.lzo\\'" . "tar -cf - %i | lzop -c9 > %o")
      ("\\.zip\\'" . "zip %o -r -9 --filesync %i --exclude \\*/.DS_Store __MACOSX")
      ("\\.pax\\'" . "pax -wf %o %i")))
+  (setq dired-guess-shell-alist-user
+	'(("\\.gms\\'" "gams")))
   :custom
   (dired-listing-switches "-agho --group-directories-first")
   (dired-compress-directory-default-suffix ".zip")
