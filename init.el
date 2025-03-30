@@ -1467,6 +1467,28 @@ same directory as the working and insert a link to this file."
   :bind (:map flyspell-mode-map
 		  ("M-$" . flyspell-correct-at-point)))
 
+(use-package guess-language
+  :ensure t
+  :custom
+  (guess-language-languages '(en fr))
+  (guess-language-langcodes
+   '((en . ("en_US" "English" "🇺🇸" "American English"))
+     (fr . ("fr_FR" "French" "🇫🇷" "French"))))
+  :config
+  (defun my-guess-language-flag ()
+    "Return a flag for guess-language-mode if active."
+    (when (bound-and-true-p guess-language-mode)
+      ;; guess-language-current-language holds the current language symbol, e.g. `en`.
+      ;; guess-language-langcodes is an alist of the form:
+      ;;   ( (en "English" "en" "🇬🇧") (de "German"  "de" "🇩🇪") ... )
+      ;; (nth 3 ...) extracts the 4th element, which is typically the flag.
+      (let ((flag (nth 3 (assq guess-language-current-language guess-language-langcodes))))
+	(when flag
+          ;; Return the flag or wrap it in brackets, e.g. "[🇬🇧]"
+          (format "%s" flag)))))
+  (add-to-list 'mode-line-misc-info '(:eval (my-guess-language-flag)) t)
+  :hook (text-mode . guess-language-mode))
+
 (defun my-unfill-paragraph ()
   "Unfill paragraph."
   (interactive)
