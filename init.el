@@ -1873,8 +1873,8 @@ VIS has the same meaning as for `ess-eval-region'."
   :ensure t
   ;; :load-path "~/Documents/git_projects/code/essgd"
   :if (member window-system '(pgtk ns))
-  :commands (essgd-start essgd-toggle-plot-buffer)
   :config
+  ;; Use default httgd white background
   (setq essgd-start-text "httpgd::hgd(token=TRUE)")
   (defvar essgd-prev-buffer nil
     "The buffer used before switching to `*essgd*` buffer.")
@@ -1911,7 +1911,7 @@ buffer with C-c C-a C-a C-a ...."
    :map essgd-mode-map ("C-c C-a" . essgd-toggle-plot-buffer)
    :map inferior-ess-r-mode-map ("C-c C-a" . essgd-toggle-plot-buffer))
   :hook
-  ;; Change the default to black so that the labels are visible with a dark theme
+  ;; Change the default font to black so that the labels are visible with a dark theme and a white background
   (essgd-mode . (lambda () (face-remap-add-relative 'default :foreground "black"))))
 
 (use-package gams-mode
