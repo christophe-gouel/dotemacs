@@ -1762,7 +1762,7 @@ same directory as the working and insert a link to this file."
     ("C-%"        . " %>%") ; Pipe %>%
     ("M--"        . ess-insert-assign) ; Assign <-
     ("C-c v"      . ess-view-data-print)
-    ("C-j"        . ess-eval-line-and-step)
+    ("C-c C-j"    . ess-eval-line-and-step)
     ("C-<return>" . ess-eval-region-or-line-and-step)
     ("C-c C-x"    . ess-eval-symbol)
    :map inferior-ess-r-mode-map
@@ -1871,9 +1871,11 @@ VIS has the same meaning as for `ess-eval-region'."
 
 (use-package essgd
   :ensure t
+  ;; :load-path "~/Documents/git_projects/code/essgd"
   :if (member window-system '(pgtk ns))
   :commands (essgd-start essgd-toggle-plot-buffer)
   :config
+  (setq essgd-start-text "httpgd::hgd(token=TRUE)")
   (defvar essgd-prev-buffer nil
     "The buffer used before switching to `*essgd*` buffer.")
   (defun essgd-toggle-plot-buffer ()
@@ -1907,7 +1909,10 @@ buffer with C-c C-a C-a C-a ...."
   :bind
   (:map ess-r-mode-map ("C-c C-a" . essgd-toggle-plot-buffer)
    :map essgd-mode-map ("C-c C-a" . essgd-toggle-plot-buffer)
-   :map inferior-ess-r-mode-map ("C-c C-a" . essgd-toggle-plot-buffer)))
+   :map inferior-ess-r-mode-map ("C-c C-a" . essgd-toggle-plot-buffer))
+  :hook
+  ;; Change the default to black so that the labels are visible with a dark theme
+  (essgd-mode . (lambda () (face-remap-add-relative 'default :foreground "black"))))
 
 (use-package gams-mode
   :ensure t
