@@ -474,14 +474,13 @@ current buffer within the project or the current directory if not in a project."
 
 (setopt
   pixel-scroll-precision-mode t
-  ;; To check
-  scroll-step 0
+  ;; TEMP
+  ;; Scroll step if the pointer moves outside view
   ;; scroll-step 1
   ;; Marker distance from center (don't jump to center).
-  scroll-conservatively 0
-  ;; scroll-conservatively 100000
-  ;; Start scrolling when marker at top/bottom.
-  scroll-margin 2
+  scroll-conservatively 100
+  ;; Start scrolling when marker scroll-margin from top/bottom
+  scroll-margin 6
   ;; Try to keep screen position when PgDn/PgUp.
   scroll-preserve-screen-position 1)
 
