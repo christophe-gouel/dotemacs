@@ -819,16 +819,19 @@ current buffer within the project or the current directory if not in a project."
   ;; this binds `magit-project-status' to `project-prefix-map' when project.el is loaded.
   (require 'magit-extras)
   :bind
-  ("C-x g b" . magit-branch)
-  ("C-x g c" . magit-commit)
-  ("C-x g C" . magit-clone)
-  ("C-x g d" . magit-dispatch)
-  ("C-x g f" . magit-file-dispatch)
-  ("C-x g F" . magit-pull)
-  ("C-x g g" . magit-status)
-  ("C-x g i" . magit-init)
-  ("C-x g l" . magit-log)
-  ("C-x g P" . magit-push)
+  (:prefix-map my-magit-prefix-map
+   :prefix-docstring "Magit prefix map"
+   :prefix "C-c g"
+   ("b" . magit-branch)
+   ("c" . magit-commit)
+   ("C" . magit-clone)
+   ("d" . magit-dispatch)
+   ("f" . magit-file-dispatch)
+   ("F" . magit-pull)
+   ("g" . magit-status)
+   ("i" . magit-init)
+   ("l" . magit-log)
+   ("P" . magit-push))
   :custom
   (magit-diff-refine-hunk (quote all))
   (magit-format-file-function #'magit-format-file-nerd-icons)
@@ -864,44 +867,52 @@ current buffer within the project or the current directory if not in a project."
     (chatgpt-shell-mark-block)
     (kill-ring-save (region-beginning) (region-end)))
   :bind
-  (("C-x j c"   . chatgpt-shell-prompt-compose)
-   ("C-x j i"   . chatgpt-shell-quick-insert)
-   ("C-x j j"   . chatgpt-shell)
-   ("C-x j p"   . chatgpt-shell-proofread-region)
-   ("C-x j r"   . chatgpt-shell-refactor-code)
-   ("C-x j s"   . chatgpt-shell-swap-model)
-   :map chatgpt-shell-mode-map
-   ("C-c C-b"   . my-chatgpt-save-block)
-   :map chatgpt-shell-prompt-compose-view-mode-map
-   ("C-c C-b"   . my-chatgpt-save-block))
-  :custom
-  (chatgpt-shell-openai-key
-      (auth-source-pick-first-password :host "api.openai.com"))
-  (chatgpt-shell-anthropic-key
-      (auth-source-pick-first-password :host "api.anthropic.com"))
-  (chatgpt-shell-prompt-header-proofread-region
-   "Please help me proofread the following text and only reply with fixed text.
+  (:prefix-map my-chatgpt-shell-prefix-map
+   :prefix-docstring "ChatGPT Shell commands"
+   :prefix "C-c j"
+   ("c" . chatgpt-shell-prompt-compose)
+   ("i" . chatgpt-shell-quick-insert)
+   ("j" . chatgpt-shell)
+   ("p" . chatgpt-shell-proofread-region)
+   ("r" . chatgpt-shell-refactor-code)
+   ("s" . chatgpt-shell-swap-model)
+   (:map chatgpt-shell-mode-map
+    ("C-c C-b" . my-chatgpt-save-block)
+    :map chatgpt-shell-prompt-compose-view-mode-map
+    ("C-c C-b" . my-chatgpt-save-block)))
+   :custom
+   ;; OpenAI
+   (chatgpt-shell-openai-key
+    (auth-source-pick-first-password :host "api.openai.com"))
+   ;; Anthropic
+   (chatgpt-shell-anthropic-key
+    (auth-source-pick-first-password :host "api.anthropic.com"))
+   (chatgpt-shell-anthropic-thinking t)
+   ;; Other options
+   (chatgpt-shell-model-version "claude-3-5-haiku-latest")
+   (chatgpt-shell-prompt-header-proofread-region
+    "Please help me proofread the following text and only reply with fixed text.
 Detect first the language of the text and respect it in the output.
 If the text is in English, assume that it is in American English except if there are indications that it is otherwise.
 Output just the proofread text without any intro, comments, or explanations.
 Preserve in your response the original code formatting, including indentation, comments, and any special characters.
 Do not use unicode for en dashes and em dashes, but use '--' and '---'.
 Never replace a backslash followed by a percentage sign by a percentage sign only.")
-  (chatgpt-shell-render-latex t)
-  :ensure-system-package curl)
+   (chatgpt-shell-render-latex t)
+   :ensure-system-package curl)
 
-(use-package gptel
-  :ensure t
-  :bind
-  (("C-c RET"        . gptel-send)
-   ("C-c C-<return>" . gptel-send))
-  ;; :custom
-  ;; (gptel-use-curl nil)
-  :config
-  (add-to-list 'gptel-directives
-	       '(academic . "You are an editor specialized in academic paper in economics. You are here to help me generate the best text for my academic articles. I will provide you texts and I would like you to review them for any spelling, grammar, or punctuation errors. Do not stop at simple proofreading, if it is useful, propose to refine the content's structure, style, and clarity. Once you have finished editing the text, provide me with any necessary corrections or suggestions for improving the text. Please respect any LaTeX, org, or markdown command. Avoid passive form."))
-  (add-to-list 'gptel-directives
-	       '(mathematics . "Solve this mathematical formula. Just output the solution in LaTeX without giving any explanation.")))
+  (use-package gptel
+    :ensure t
+    :bind
+    (("C-c RET"        . gptel-send)
+     ("C-c C-<return>" . gptel-send))
+    ;; :custom
+    ;; (gptel-use-curl nil)
+    :config
+    (add-to-list 'gptel-directives
+		 '(academic . "You are an editor specialized in academic paper in economics. You are here to help me generate the best text for my academic articles. I will provide you texts and I would like you to review them for any spelling, grammar, or punctuation errors. Do not stop at simple proofreading, if it is useful, propose to refine the content's structure, style, and clarity. Once you have finished editing the text, provide me with any necessary corrections or suggestions for improving the text. Please respect any LaTeX, org, or markdown command. Avoid passive form."))
+    (add-to-list 'gptel-directives
+		 '(mathematics . "Solve this mathematical formula. Just output the solution in LaTeX without giving any explanation.")))
 
 (use-package aidermacs
   :ensure t
@@ -985,32 +996,6 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
 		citar-indicator-links-icons
 		citar-indicator-notes-icons
 		citar-indicator-cited-icons))
-  ;; TEMP Functions to side-step a bug in citar which affects the state of RefTeX. To remove as soon as the fix has been pushed to MELPA.
-  (defun my-citar-open (&optional key)
-    "Run `citar-open` with a KEY in a temporary buffer to avoid interfering with RefTeX in LaTeX mode.
-This ensures that `citar-open` does not modify the current LaTeX buffer's settings."
-    (interactive
-     (list (citar-select-refs))) ; Prompt user to select a citation.
-    (with-temp-buffer
-      ;; Temporarily switch to a clean buffer
-      (delay-mode-hooks (org-mode)) ; Set a neutral mode (like org-mode) to avoid LaTeX hooks
-      (citar-open key))) ; Run citar-open in the temporary buffer
-  (defun my-citar-open-notes (&optional key)
-    "Run `citar-open-notes` with a KEY in a temporary buffer to avoid interfering with RefTeX in LaTeX mode."
-    (interactive
-     (list (citar-select-refs))) ; Prompt user to select a citation.
-    (with-temp-buffer
-      ;; Temporarily switch to a clean buffer
-      (delay-mode-hooks (org-mode)) ; Set a neutral mode (like org-mode) to avoid LaTeX hooks
-      (citar-open-notes key))) ; Run citar-open in the temporary buffer
-  (defun my-citar-open-files (&optional key)
-    "Run `citar-open-files` with a KEY in a temporary buffer to avoid interfering with RefTeX in LaTeX mode."
-    (interactive
-     (list (citar-select-refs))) ; Prompt user to select a citation.
-    (with-temp-buffer
-      ;; Temporarily switch to a clean buffer
-      (delay-mode-hooks (org-mode)) ; Set a neutral mode (like org-mode) to avoid LaTeX hooks
-      (citar-open-files key))) ; Run citar-open in the temporary buffer
   (defmacro citar-with-other-window (&rest body)
     "Execute BODY with find-file temporarily redirected to find-file-other-window."
     `(progn
@@ -1054,20 +1039,19 @@ This is similar to `citar-open-notes' but displays the notes in another window."
      (preview . "${author editor:%etal} (${year issued date}) ${title}, ${journal journaltitle publisher container-title collection-title}.\n")
      (note . "Notes on ${author editor:%etal}, ${title}")))
   :bind
-  (("C-x c d" . citar-dwim)
-   ;; ("C-x c f" . my-citar-open-files)
-   ;; ("C-x c o" . my-citar-open)
-   ;; ("C-x c n" . my-citar-open-notes)
-   ("C-x c f" . citar-open-files)
-   ("C-x c o" . citar-open)
-   ("C-x c n" . citar-open-notes)
-   ("C-x c i" . citar-insert-bibtex)
-   ("C-x 4 c" . nil) ; Remove existing binding
-   ("C-x c 4 f" . citar-open-files-other-window)
-   ("C-x c 4 o" . citar-open-other-window)
-   ("C-x c 4 n" . citar-open-notes-other-window)
+  (:prefix-map my-citar-prefix-map
+   :prefix-docstring "Keymap for Citar"
+   :prefix "C-c c"
+   ("d" . citar-dwim)
+   ("f" . citar-open-files)
+   ("o" . citar-open)
+   ("n" . citar-open-notes)
+   ("i" . citar-insert-bibtex)
+   ("4 f" . citar-open-files-other-window)
+   ("4 o" . citar-open-other-window)
+   ("4 n" . citar-open-notes-other-window)
    :map text-mode-map
-   ("C-x c c" . citar-insert-citation)))
+   ("C-c c c" . citar-insert-citation)))
 
 (defun my-screenshot-to-file (arg)
   "Take a screenshot or copy from the clipboard (depending on OS),
