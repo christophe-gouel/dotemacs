@@ -7,6 +7,8 @@
 #+AUTHOR:
 #+DATE: `(format-time-string "%Y-%m-%d")`
 #+OPTIONS: toc:nil num:nil
+#+LATEX_HEADER: \usepackage{fullpage}
+#+cite_export: csl the-quarterly-journal-of-economics.csl
 
 $0
 
