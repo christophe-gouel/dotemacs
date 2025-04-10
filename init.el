@@ -1898,6 +1898,21 @@ buffer with C-c C-a C-a C-a ...."
   ;; Change the default font to black so that the labels are visible with a dark theme and a white background
   (essgd-mode . (lambda () (face-remap-add-relative 'default :foreground "black"))))
 
+(defun run-air-on-r-save ()
+  "Run the Air formatter on the current `.R` file and refresh the buffer.
+This function is intended to be added to `after-save-hook`."
+  (when (and (stringp buffer-file-name)
+             (string-match "\\.R$" buffer-file-name))
+    (if (executable-find "air")
+        (let ((current-buffer (current-buffer)))
+          (start-process "air-format" nil "air" "format" buffer-file-name)
+          ;; Refresh the correct buffer from disk
+          (with-current-buffer current-buffer
+            (revert-buffer nil t t)))
+      (message "Error: 'air' executable not found."))))
+
+(add-hook 'after-save-hook 'run-air-on-r-save)
+
 (use-package gams-mode
   :ensure t
   ;; :load-path "~/Documents/git_projects/code/gams-mode"

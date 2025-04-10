@@ -351,8 +351,6 @@ Highlight the current line
   (dired-mode . auto-revert-mode))
 #+end_src
 
-
-
 =diredfl= is for more font-locking in dired (e.g., file extensions):
 
 #+begin_src emacs-lisp
@@ -2428,6 +2426,24 @@ buffer with C-c C-a C-a C-a ...."
   :hook
   ;; Change the default font to black so that the labels are visible with a dark theme and a white background
   (essgd-mode . (lambda () (face-remap-add-relative 'default :foreground "black"))))
+#+end_src
+
+To style code with =air= on save (from [[https://francoismichonneau.net/2025/02/air-with-emacs-ess/]]):
+#+begin_src emacs-lisp
+(defun run-air-on-r-save ()
+  "Run the Air formatter on the current `.R` file and refresh the buffer.
+This function is intended to be added to `after-save-hook`."
+  (when (and (stringp buffer-file-name)
+             (string-match "\\.R$" buffer-file-name))
+    (if (executable-find "air")
+        (let ((current-buffer (current-buffer)))
+          (start-process "air-format" nil "air" "format" buffer-file-name)
+          ;; Refresh the correct buffer from disk
+          (with-current-buffer current-buffer
+            (revert-buffer nil t t)))
+      (message "Error: 'air' executable not found."))))
+
+(add-hook 'after-save-hook 'run-air-on-r-save)
 #+end_src
 
 *** GAMS
