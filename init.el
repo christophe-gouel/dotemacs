@@ -885,53 +885,99 @@ current buffer within the project or the current directory if not in a project."
     (interactive)
     (chatgpt-shell-mark-block)
     (kill-ring-save (region-beginning) (region-end)))
+  (defun chatgpt-shell-document-region ()
+    "Document code from region using ChatGPT."
+    (interactive)
+    ;; Capture the current region's details
+    (let* ((region (chatgpt-shell--region))
+           ;; Extract the code content from the region
+           (query (map-elt region :text))
+           ;; Initialize context (can be used for conversation history)
+           (context nil))
+      ;; Request documentation and insert response
+      (chatgpt-shell-request-and-insert-merged-response
+       ;; System prompt for code documentation
+       :system-prompt "You are an expert programmer who writes clear, concise documentation.
+Analyze the following code and provide a comprehensive documentation comment
+that explains:
+- Purpose of the code
+- Input parameters
+- Return values
+- Key logic and functionality
+- Any important notes or considerations
+
+Provide documentation in the style of the specific programming language.
+Output just the documented code any introduction, code changes, or conclusion.
+If the original code was indented, preserve the same amount of spacing in your response:"
+       ;; Code to be documented
+       :query query
+       ;; Conversation context (if any)
+       :context context
+       ;; Remove markdown block markers
+       :remove-block-markers t
+       ;; Original region details
+       :region region
+       ;; Callback for iterative response processing
+       :on-iterate (lambda (output)
+                     ;; Set mark at the end of the original region
+                     (set-mark (map-elt region :end))
+                     ;; Move cursor to the start of the original region
+                     (goto-char (map-elt region :start))
+                     ;; Insert the documentation above the original code
+                     (insert output "\n")
+                     ;; Insert the proofread output, considering previous context
+                     (chatgpt-shell-quick-insert
+                      (append context
+                              (list (cons query output))))))))
   :bind
   (:prefix-map my-chatgpt-shell-prefix-map
-   :prefix-docstring "ChatGPT Shell commands"
-   :prefix "C-c j"
-   ("c" . chatgpt-shell-prompt-compose)
-   ("i" . chatgpt-shell-quick-insert)
-   ("j" . chatgpt-shell)
-   ("p" . chatgpt-shell-proofread-region)
-   ("r" . chatgpt-shell-refactor-code)
-   ("s" . chatgpt-shell-swap-model)
-   (:map chatgpt-shell-mode-map
-    ("C-c C-b" . my-chatgpt-save-block)
-    :map chatgpt-shell-prompt-compose-view-mode-map
-    ("C-c C-b" . my-chatgpt-save-block)))
-   :custom
-   ;; OpenAI
-   (chatgpt-shell-openai-key
-    (auth-source-pick-first-password :host "api.openai.com"))
-   ;; Anthropic
-   (chatgpt-shell-anthropic-key
-    (auth-source-pick-first-password :host "api.anthropic.com"))
-   (chatgpt-shell-anthropic-thinking t)
-   ;; Other options
-   (chatgpt-shell-model-version "claude-3-5-haiku-latest")
-   (chatgpt-shell-prompt-header-proofread-region
-    "Please help me proofread the following text and only reply with fixed text.
+	       :prefix-docstring "ChatGPT Shell commands"
+	       :prefix "C-c j"
+	       ("a" . chatgpt-shell-prompt)	; a for ask
+	       ("c" . chatgpt-shell-prompt-compose)
+	       ("d" . chatgpt-shell-document-region)
+	       ("e" . chatgpt-shell-describe-code)	; e for explain
+	       ("i" . chatgpt-shell-quick-insert)
+	       ("j" . chatgpt-shell)		; j so that it is quick to call after the prefix key
+	       ("p" . chatgpt-shell-proofread-region)
+	       ("r" . chatgpt-shell-refactor-code)
+	       ("s" . chatgpt-shell-swap-model)
+	       (:map chatgpt-shell-mode-map
+		     ("C-c C-b" . my-chatgpt-save-block)
+		     :map chatgpt-shell-prompt-compose-view-mode-map
+		     ("C-c C-b" . my-chatgpt-save-block)))
+  :custom
+  ;; OpenAI
+  (chatgpt-shell-openai-key
+   (auth-source-pick-first-password :host "api.openai.com"))
+  ;; Anthropic
+  (chatgpt-shell-anthropic-key
+   (auth-source-pick-first-password :host "api.anthropic.com"))
+  ;; Other options
+  (chatgpt-shell-model-version "claude-3-5-haiku-latest")
+  (chatgpt-shell-prompt-header-proofread-region
+   "Please help me proofread the following text and only reply with fixed text.
 Detect first the language of the text and respect it in the output.
 If the text is in English, assume that it is in American English except if there are indications that it is otherwise.
 Output just the proofread text without any intro, comments, or explanations.
 Preserve in your response the original code formatting, including indentation, comments, and any special characters.
 Do not use unicode for en dashes and em dashes, but use '--' and '---'.
 Never replace a backslash followed by a percentage sign by a percentage sign only.")
-   (chatgpt-shell-render-latex t)
-   :ensure-system-package curl)
+  (chatgpt-shell-render-latex t)
+  :ensure-system-package curl)
 
-  (use-package gptel
-    :ensure t
-    :bind
-    (("C-c RET"        . gptel-send)
-     ("C-c C-<return>" . gptel-send))
-    ;; :custom
-    ;; (gptel-use-curl nil)
-    :config
-    (add-to-list 'gptel-directives
-		 '(academic . "You are an editor specialized in academic paper in economics. You are here to help me generate the best text for my academic articles. I will provide you texts and I would like you to review them for any spelling, grammar, or punctuation errors. Do not stop at simple proofreading, if it is useful, propose to refine the content's structure, style, and clarity. Once you have finished editing the text, provide me with any necessary corrections or suggestions for improving the text. Please respect any LaTeX, org, or markdown command. Avoid passive form."))
-    (add-to-list 'gptel-directives
-		 '(mathematics . "Solve this mathematical formula. Just output the solution in LaTeX without giving any explanation.")))
+(use-package gptel
+  :ensure t
+  :bind
+  (("C-c RET"        . gptel-send)
+   ("C-c C-<return>" . gptel-send))
+  ;; :custom
+  ;; (gptel-use-curl nil)
+  :config
+  (add-to-list 'gptel-directives
+	       '(academic . "You are an editor specialized in academic paper in economics. You are here to help me generate the best text for my academic articles. I will provide you texts and I would like you to review them for any spelling, grammar, or punctuation errors. Do not stop at simple proofreading, if it is useful, propose to refine the content's structure, style, and clarity. Once you have finished editing the text, provide me with any necessary corrections or suggestions for improving the text. Please respect any LaTeX, org, or markdown command. Avoid passive form."))
+  (add-to-list 'gptel-directives
+	       '(mathematics . "Solve this mathematical formula. Just output the solution in LaTeX without giving any explanation.")))
 
 (use-package aidermacs
   :ensure t
