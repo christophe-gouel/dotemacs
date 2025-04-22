@@ -1586,7 +1586,9 @@ the function will prompt the user to select a default audio device before runnin
 
 (use-package flyspell
   :ensure t
-  :hook (text-mode . flyspell-mode)
+  :hook (text-mode . (lambda ()
+                       (unless (derived-mode-p 'csv-mode)
+			 (flyspell-mode 1))))
   :config
   (setq ispell-program-name (executable-find "hunspell")
 	flyspell-issue-welcome-flag nil
@@ -1629,7 +1631,7 @@ the function will prompt the user to select a default audio device before runnin
           ;; Return the flag or wrap it in brackets, e.g. "[🇬🇧]"
           (format "%s" flag)))))
   (add-to-list 'mode-line-misc-info '(:eval (my-guess-language-flag)) t)
-  :hook (text-mode . guess-language-mode))
+  :hook (flyspell-mode . guess-language-mode))
 
 (defun my-unfill-paragraph ()
   "Unfill paragraph."
