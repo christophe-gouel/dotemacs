@@ -686,6 +686,7 @@ current buffer within the project or the current directory if not in a project."
      (consult-flymake-error buffer)
      (consult-grep buffer)
      (consult-location buffer)
+     (consult-xref buffer)
      (imenu buffer)
      (org-heading buffer)
      ;; Standard vertico in minibuffer
@@ -728,7 +729,27 @@ current buffer within the project or the current directory if not in a project."
 
 (use-package consult
   :ensure t
-  :bind
+  :config
+  ;; Consult thing at point
+  (consult-customize
+   consult-line
+   :add-history (seq-some #'thing-at-point '(region symbol)))
+  (defalias 'consult-line-thing-at-point 'consult-line)
+  (consult-customize
+   consult-line-thing-at-point
+   :initial (thing-at-point 'symbol))
+  (consult-customize
+   consult-line-multi
+   :add-history (seq-some #'thing-at-point '(region symbol)))
+  (defalias 'consult-line-multi-thing-at-point 'consult-line-multi)
+  (consult-customize
+   consult-line-multi-thing-at-point
+   :initial (thing-at-point 'symbol))
+  ;; Disable preview for commands that can be slow
+  (consult-customize
+   consult--source-bookmark consult--source-file-register
+   consult--source-recent-file consult--source-project-recent-file
+   :preview-key "M-.")  :bind
   (;; C-x bindings in `ctl-x-map'
    ("C-x b" . consult-buffer)
    ("C-x 4 b" . consult-buffer-other-window)
@@ -740,6 +761,8 @@ current buffer within the project or the current directory if not in a project."
    ("M-s r" . consult-ripgrep)
    ("M-s l" . consult-line)
    ("M-s L" . consult-line-multi)
+   ("M-s s" . consult-line-thing-at-point)
+   ("M-s S" . consult-line-multi-thing-at-point)
    ;; M-g bindings in `goto-map'
    ("M-s d" . consult-find)
    ("M-g f" . consult-flymake)
@@ -768,12 +791,8 @@ current buffer within the project or the current directory if not in a project."
 				   consult--source-project-buffer-hidden
 				   consult--source-project-recent-file-hidden
 				   consult--source-project-root-hidden))
-  :config
-  ;; Disable preview for commands that can be slow
-  (consult-customize
-   consult--source-bookmark consult--source-file-register
-   consult--source-recent-file consult--source-project-recent-file
-   :preview-key "M-."))
+  (xref-show-xrefs-function #'consult-xref)
+  (xref-show-definitions-function #'consult-xref))
 
 (use-package embark
   :ensure t
