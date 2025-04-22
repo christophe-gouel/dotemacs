@@ -2542,9 +2542,10 @@ buffer with C-c C-a C-a C-a ...."
 
 To style code with =air= on save (from [[https://francoismichonneau.net/2025/02/air-with-emacs-ess/]]):
 #+begin_src emacs-lisp
-(defun run-air-on-r-save ()
+(defun run-air-formatter ()
   "Run the Air formatter on the current `.R` file and refresh the buffer.
 This function is intended to be added to `after-save-hook`."
+  (interactive)
   (when (and (stringp buffer-file-name)
              (string-match "\\.R$" buffer-file-name))
     (if (executable-find "air")
@@ -2555,7 +2556,7 @@ This function is intended to be added to `after-save-hook`."
             (revert-buffer nil t t)))
       (message "Error: 'air' executable not found."))))
 
-(add-hook 'after-save-hook 'run-air-on-r-save)
+(add-hook 'after-save-hook #'run-air-formatter)
 #+end_src
 
 *** GAMS

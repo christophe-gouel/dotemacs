@@ -2002,9 +2002,10 @@ buffer with C-c C-a C-a C-a ...."
   ;; Change the default font to black so that the labels are visible with a dark theme and a white background
   (essgd-mode . (lambda () (face-remap-add-relative 'default :foreground "black"))))
 
-(defun run-air-on-r-save ()
+(defun run-air-formatter ()
   "Run the Air formatter on the current `.R` file and refresh the buffer.
 This function is intended to be added to `after-save-hook`."
+  (interactive)
   (when (and (stringp buffer-file-name)
              (string-match "\\.R$" buffer-file-name))
     (if (executable-find "air")
@@ -2015,7 +2016,7 @@ This function is intended to be added to `after-save-hook`."
             (revert-buffer nil t t)))
       (message "Error: 'air' executable not found."))))
 
-(add-hook 'after-save-hook 'run-air-on-r-save)
+(add-hook 'after-save-hook #'run-air-formatter)
 
 (use-package gams-mode
   :ensure t
