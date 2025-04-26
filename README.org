@@ -2357,7 +2357,8 @@ Support for Copilot Chat
 (use-package copilot-chat
   :ensure t
   :defer t
-  :hook (git-commit-setup . copilot-chat-insert-commit-message))
+  ;; :hook (git-commit-setup . copilot-chat-insert-commit-message)
+  )
 #+end_src
 
 *** Language Server Protocol

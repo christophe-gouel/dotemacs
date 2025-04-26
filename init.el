@@ -1854,7 +1854,8 @@ the function will prompt the user to select a default audio device before runnin
 (use-package copilot-chat
   :ensure t
   :defer t
-  :hook (git-commit-setup . copilot-chat-insert-commit-message))
+  ;; :hook (git-commit-setup . copilot-chat-insert-commit-message)
+  )
 
 (use-package eglot
   :custom
