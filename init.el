@@ -2073,6 +2073,7 @@ buffer with C-c C-a C-a C-a ...."
    :map essgd-mode-map ("C-c C-a" . essgd-toggle-plot-buffer)
    :map inferior-ess-r-mode-map ("C-c C-a" . essgd-toggle-plot-buffer))
   :hook
+  (ess-r-post-run . essgd-start)
   ;; Change the default font to black so that the labels are visible with a dark theme and a white background
   (essgd-mode . (lambda () (face-remap-add-relative 'default :foreground "black"))))
 

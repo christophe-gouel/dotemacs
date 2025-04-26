@@ -1,7 +1,7 @@
 ;;; ess-rscript.el --- Run R scripts using Rscript -*- lexical-binding: t -*-
 
 ;; Author: Christophe Gouel <christophe.gouel@inrae.fr>
-;; Version: 0.2
+;; Version: 0.3
 ;; Package-Requires: ((emacs "24.3") (ess "18.10.2"))
 ;; Keywords: languages
 
@@ -20,9 +20,9 @@
   "Run R scripts using Rscript."
   :group 'ess)
 
-(defcustom ess-rscript-command (or (executable-find "Rscript") "Rscript")
-  "Command to call Rscript."
-  :type 'string
+(defcustom ess-rscript-command "Rscript"
+  "Progam name for calling Rscript."
+  :type '(choice (string) file)
   :group 'ess-rscript)
 
 ;; Internal function that does the heavy lifting
