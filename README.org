@@ -1385,6 +1385,14 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
     :defer t))
 #+end_src
 
+=envrc= to have Emacs load =direnv= per project.
+
+#+begin_src emacs-lisp
+(use-package envrc
+  :ensure t
+  :hook (after-init . envrc-global-mode))
+#+end_src
+
 * Text
 ** BibTeX
 

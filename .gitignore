@@ -32,3 +32,4 @@ request/
 .aider*
 multisession/
 dirvish/
+*.sqlite

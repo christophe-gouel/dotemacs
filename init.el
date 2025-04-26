@@ -1039,6 +1039,10 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
     :ensure t
     :defer t))
 
+(use-package envrc
+  :ensure t
+  :hook (after-init . envrc-global-mode))
+
 (use-package citar
   :ensure t
   :after (org nerd-icons)
