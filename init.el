@@ -473,12 +473,13 @@ current buffer within the project or the current directory if not in a project."
 (setopt initial-scratch-message nil)
 
 (setopt
-  pixel-scroll-precision-mode t
+  ;; pixel-scroll-precision-mode seems to be causing my scrolling pbs
+  ;; pixel-scroll-precision-mode t
   ;; TEMP
   ;; Scroll step if the pointer moves outside view
   ;; scroll-step 1
   ;; Marker distance from center (don't jump to center).
-  scroll-conservatively 100
+  scroll-conservatively 101
   ;; Start scrolling when marker scroll-margin from top/bottom
   scroll-margin 6
   ;; Try to keep screen position when PgDn/PgUp.
