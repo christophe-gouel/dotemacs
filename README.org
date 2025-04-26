@@ -181,10 +181,6 @@ Highlight the current line
   :ensure t
   :custom
   (nerd-icons-font-family "Symbols Nerd Font Mono")) ; JetBrains font did not work well
-(use-package nerd-icons-dired
-  :ensure t
-  :hook
-  (dired-mode . nerd-icons-dired-mode))
 (use-package nerd-icons-ibuffer
   :ensure t
   :hook (ibuffer-mode . nerd-icons-ibuffer-mode))
@@ -341,14 +337,55 @@ Highlight the current line
   (setq dired-guess-shell-alist-user
 	'(("\\.gms\\'" "gams")))
   :custom
-  (dired-listing-switches "-agho --group-directories-first")
+  (dired-listing-switches
+     "-l --almost-all --human-readable --group-directories-first --no-group")
   (dired-compress-directory-default-suffix ".zip")
   (dired-compress-file-default-suffix ".zip")
+  (dired-mouse-drag-files t)
   (dired-vc-rename-file t)
   :hook
   (dired-mode . (lambda ()
                   (dired-hide-details-mode)))
   (dired-mode . auto-revert-mode))
+#+end_src
+
+=dirvish= for a better =dired= experience
+
+#+begin_src emacs-lisp
+(use-package dirvish
+  :ensure t
+  :defer 2
+  :init
+  (dirvish-override-dired-mode)
+  :custom
+  (dirvish-quick-access-entries
+   '(("h" "~/"                          "Home")
+     ("d" "~/Downloads/"                "Downloads")))
+  (dirvish-mode-line-format '(:left (vc-info) :right (index)))
+  (dirvish-attributes           ; The order *MATTERS* for some attributes
+   '(vc-state subtree-state nerd-icons collapse git-msg file-size file-time)
+   dirvish-side-attributes
+   '(vc-state nerd-icons collapse file-size))
+  :bind
+  (("C-x D" . dirvish)
+   :map dirvish-mode-map               ; Dirvish inherits `dired-mode-map'
+   (";"   . dired-up-directory)        ; So you can adjust `dired' bindings here
+   ("?"   . dirvish-dispatch)          ; [?] a helpful cheatsheet
+   ("a"   . dirvish-setup-menu)        ; [a]ttributes settings:`t' toggles mtime, `f' toggles fullframe, etc.
+   ("f"   . dirvish-file-info-menu)    ; [f]ile info
+   ("o"   . dirvish-quick-access)      ; [o]pen `dirvish-quick-access-entries'
+   ("s"   . dirvish-quicksort)         ; [s]ort flie list
+   ("r"   . dirvish-history-jump)      ; [r]ecent visited
+   ("l"   . dirvish-ls-switches-menu)  ; [l]s command flags
+   ("v"   . dirvish-vc-menu)           ; [v]ersion control commands
+   ("*"   . dirvish-mark-menu)
+   ("y"   . dirvish-yank-menu)
+   ("N"   . dirvish-narrow)
+   ("^"   . dirvish-history-last)
+   ("TAB" . dirvish-subtree-toggle)
+   ("M-f" . dirvish-history-go-forward)
+   ("M-b" . dirvish-history-go-backward)
+   ("M-e" . dirvish-emerge-menu)))
 #+end_src
 
 =diredfl= is for more font-locking in dired (e.g., file extensions):
@@ -358,16 +395,6 @@ Highlight the current line
   :ensure t
   :hook
   (dired-mode . diredfl-mode))
-#+end_src
-
-#+begin_src emacs-lisp
-(use-package dired-subtree
-  :ensure t
-  :after dired
-  :bind
-  (:map dired-mode-map
-    ("<tab>" . dired-subtree-toggle)
-    ("TAB" . dired-subtree-toggle)))
 #+end_src
 
 ** Ediff
