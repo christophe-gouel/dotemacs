@@ -1242,18 +1242,15 @@ Support for syntax highlighting of Git configuration files
     (interactive)
     (chatgpt-shell-mark-block)
     (kill-ring-save (region-beginning) (region-end)))
-  (defun chatgpt-shell-document-region ()
-    "Document code from region using ChatGPT."
+  (defun chatgpt-shell-document-dwim ()
+    "Document code using ChatGPT, with or without an active region."
     (interactive)
-    ;; Capture the current region's details
+    (unless (region-active-p)
+      (mark-defun))
     (let* ((region (chatgpt-shell--region))
-           ;; Extract the code content from the region
            (query (map-elt region :text))
-           ;; Initialize context (can be used for conversation history)
            (context nil))
-      ;; Request documentation and insert response
       (chatgpt-shell-request-and-insert-merged-response
-       ;; System prompt for code documentation
        :system-prompt "You are an expert programmer who writes clear, concise documentation.
 Analyze the following code and provide a comprehensive documentation comment
 that explains:
@@ -1266,37 +1263,43 @@ that explains:
 Provide documentation in the style of the specific programming language.
 Output just the documented code any introduction, code changes, or conclusion.
 If the original code was indented, preserve the same amount of spacing in your response:"
-       ;; Code to be documented
        :query query
-       ;; Conversation context (if any)
        :context context
-       ;; Remove markdown block markers
        :remove-block-markers t
-       ;; Original region details
        :region region
-       ;; Callback for iterative response processing
        :on-iterate (lambda (output)
-                     ;; Set mark at the end of the original region
                      (set-mark (map-elt region :end))
-                     ;; Move cursor to the start of the original region
                      (goto-char (map-elt region :start))
-                     ;; Insert the documentation above the original code
                      (insert output "\n")
-                     ;; Insert the proofread output, considering previous context
                      (chatgpt-shell-quick-insert
                       (append context
                               (list (cons query output))))))))
+  (defun chatgpt-shell-proofread-dwim ()
+    "Proofread the current paragraph or selected region using ChatGPT Shell.
+
+This function provides a do-what-I-mean (DWIM) approach to proofreading text:
+- If a region is currently active, proofread the selected text
+- If no region is selected, automatically mark and proofread the current paragraph"
+    (interactive)
+    (if
+	(region-active-p)
+	(chatgpt-shell-proofread-region)
+      (progn
+	(mark-paragraph)
+	(next-line)
+	(chatgpt-shell-proofread-region)
+	(end-of-line))))
   :bind
   (:prefix-map my-chatgpt-shell-prefix-map
 	       :prefix-docstring "ChatGPT Shell commands"
 	       :prefix "C-c j"
 	       ("a" . chatgpt-shell-prompt)	; a for ask
 	       ("c" . chatgpt-shell-prompt-compose)
-	       ("d" . chatgpt-shell-document-region)
+	       ("d" . chatgpt-shell-document-dwim)
 	       ("e" . chatgpt-shell-describe-code)	; e for explain
 	       ("i" . chatgpt-shell-quick-insert)
 	       ("j" . chatgpt-shell)		; j so that it is quick to call after the prefix key
-	       ("p" . chatgpt-shell-proofread-region)
+	       ("p" . chatgpt-shell-proofread-dwim)
 	       ("r" . chatgpt-shell-refactor-code)
 	       ("s" . chatgpt-shell-swap-model)
 	       (:map chatgpt-shell-mode-map
@@ -1791,6 +1794,26 @@ Use svg for previews. Much slower than png, but it is not blurry on MacOS.
   (markdown-fontify-code-blocks-natively t)
   (markdown-enable-highlighting-syntax t)
   :config
+  (defun my-markdown-insert-gfm-code-block-braces (&optional lang edit)
+  "Insert a GFM code block with LANG, always using braces for the code block.
+This function temporarily sets `markdown-code-block-braces' to t
+before calling the original `markdown-insert-gfm-code-block'.
+
+LANG is the programming language for the code block.
+EDIT, when non-nil, will edit the code block in an indirect buffer after insertion."
+  (interactive
+   (list (let ((completion-ignore-case nil))
+           (condition-case nil
+               (markdown-clean-language-string
+                (completing-read
+                 "Programming language: "
+                 (markdown-gfm-get-corpus)
+                 nil 'confirm (car markdown-gfm-used-languages)
+                 'markdown-gfm-language-history))
+             (quit "")))
+         current-prefix-arg))
+  (let ((markdown-code-block-braces t))
+    (markdown-insert-gfm-code-block lang edit)))
   ;; Code to import screenshots in markdown files
   ;; from <https://www.nistara.net/post/2022-11-14-emacs-markdown-screenshots> and
   ;; <https://stackoverflow.com/questions/17435995/paste-an-image-on-clipboard-to-emacs-org-mode-file-without-saving-it/31868530#31868530>
@@ -1832,7 +1855,8 @@ same directory as the working and insert a link to this file."
   :hook
   (markdown-mode . turn-on-orgtbl)
   :bind (:map markdown-mode-map
-	      ("C-c [" . my-markdown-reftex-citation)))
+	      ("C-c [" . my-markdown-reftex-citation)
+	      ("C-c C-s e" . my-markdown-insert-gfm-code-block-braces)))
 
 (use-package pandoc-mode
   :ensure t
@@ -2621,7 +2645,7 @@ buffer with C-c C-a C-a C-a ...."
    :map essgd-mode-map ("C-c C-a" . essgd-toggle-plot-buffer)
    :map inferior-ess-r-mode-map ("C-c C-a" . essgd-toggle-plot-buffer))
   :hook
-  (ess-r-post-run . essgd-start)
+  ;; (ess-r-post-run . essgd-start)
   ;; Change the default font to black so that the labels are visible with a dark theme and a white background
   (essgd-mode . (lambda () (face-remap-add-relative 'default :foreground "black"))))
 #+end_src
