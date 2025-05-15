@@ -262,7 +262,7 @@
      ("d" "~/Downloads/"                "Downloads")))
   (dirvish-mode-line-format '(:left (vc-info) :right (index)))
   (dirvish-attributes           ; The order *MATTERS* for some attributes
-   '(vc-state subtree-state nerd-icons collapse git-msg file-size file-time)
+   '(vc-state subtree-state nerd-icons collapse file-size file-time)
    dirvish-side-attributes
    '(vc-state nerd-icons collapse file-size))
   :bind
@@ -907,10 +907,6 @@ current buffer within the project or the current directory if not in a project."
 (use-package chatgpt-shell
   :ensure t
   :config
-  (defun my-chatgpt-save-block ()
-    (interactive)
-    (chatgpt-shell-mark-block)
-    (kill-ring-save (region-beginning) (region-end)))
   (defun chatgpt-shell-document-dwim ()
     "Document code using ChatGPT, with or without an active region."
     (interactive)
@@ -972,9 +968,9 @@ This function provides a do-what-I-mean (DWIM) approach to proofreading text:
 	       ("r" . chatgpt-shell-refactor-code)
 	       ("s" . chatgpt-shell-swap-model)
 	       (:map chatgpt-shell-mode-map
-		     ("C-c C-b" . my-chatgpt-save-block)
+		     ("C-c C-b" . chatgpt-shell-copy-block-at-point)
 		     :map chatgpt-shell-prompt-compose-view-mode-map
-		     ("C-c C-b" . my-chatgpt-save-block)))
+		     ("w" . chatgpt-shell-copy-block-at-point)))
   :custom
   ;; OpenAI
   (chatgpt-shell-openai-key
@@ -1016,7 +1012,8 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
     (setopt aidermacs-backend 'vterm))
   :custom
   (aidermacs-use-architect-mode t)
-  (aidermacs-default-model "sonnet"))
+  (aidermacs-default-model "sonnet")
+  :bind (("C-c a" . aidermacs-transient-menu)))
 
 (use-package eshell-git-prompt
   :ensure t
@@ -1247,7 +1244,7 @@ This is similar to `citar-open-notes' but displays the notes in another window."
      ("[l]"
       ("label"))
      ("[r]"
-      ("ref" "pageref" "eqref" "footref" "fref" "Fref"))
+      ("ref" "pageref" "eqref" "footref" "fref" "Fref" "cref" "Cref"))
      ("[i]"
       ("index" "glossary"))
      ("[1]:||*"
@@ -1264,7 +1261,9 @@ This is similar to `citar-open-notes' but displays the notes in another window."
       ("part" "chapter" "section" "subsection" "subsubsection" "paragraph" "subparagraph"
        "part*" "chapter*" "section*" "subsection*" "subsubsection*" "paragraph*"
        "subparagraph*" "emph" "textit" "textsl" "textmd" "textrm" "textsf" "texttt" "textbf"
-       "textsc" "textup" "caption" "frametitle" "framesubtitle"))))
+       "textsc" "textup" "caption" "frametitle" "framesubtitle"))
+     ("(∞)[{2}]"
+      ("href"))))
   ;; Prevent folding of math to let prettify-symbols do the job
   (TeX-fold-math-spec-list-internal nil)
   (TeX-fold-math-spec-list nil)
@@ -1964,8 +1963,6 @@ the function will prompt the user to select a default audio device before runnin
    :map inferior-ess-mode-map
     ("<home>"     . comint-bol))
   :custom
-  ;; Deactivate linter in ess because it does not seem to work well
-  ;; (ess-use-flymake nil)
   (ess-roxy-str "#'")
   (ess-roxy-template-alist
    '(("description" . ".. content for \\description{} (no empty lines) ..")

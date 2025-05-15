@@ -363,7 +363,7 @@ Highlight the current line
      ("d" "~/Downloads/"                "Downloads")))
   (dirvish-mode-line-format '(:left (vc-info) :right (index)))
   (dirvish-attributes           ; The order *MATTERS* for some attributes
-   '(vc-state subtree-state nerd-icons collapse git-msg file-size file-time)
+   '(vc-state subtree-state nerd-icons collapse file-size file-time)
    dirvish-side-attributes
    '(vc-state nerd-icons collapse file-size))
   :bind
@@ -1238,10 +1238,6 @@ Support for syntax highlighting of Git configuration files
 (use-package chatgpt-shell
   :ensure t
   :config
-  (defun my-chatgpt-save-block ()
-    (interactive)
-    (chatgpt-shell-mark-block)
-    (kill-ring-save (region-beginning) (region-end)))
   (defun chatgpt-shell-document-dwim ()
     "Document code using ChatGPT, with or without an active region."
     (interactive)
@@ -1303,9 +1299,9 @@ This function provides a do-what-I-mean (DWIM) approach to proofreading text:
 	       ("r" . chatgpt-shell-refactor-code)
 	       ("s" . chatgpt-shell-swap-model)
 	       (:map chatgpt-shell-mode-map
-		     ("C-c C-b" . my-chatgpt-save-block)
+		     ("C-c C-b" . chatgpt-shell-copy-block-at-point)
 		     :map chatgpt-shell-prompt-compose-view-mode-map
-		     ("C-c C-b" . my-chatgpt-save-block)))
+		     ("w" . chatgpt-shell-copy-block-at-point)))
   :custom
   ;; OpenAI
   (chatgpt-shell-openai-key
@@ -1349,7 +1345,8 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
     (setopt aidermacs-backend 'vterm))
   :custom
   (aidermacs-use-architect-mode t)
-  (aidermacs-default-model "sonnet"))
+  (aidermacs-default-model "sonnet")
+  :bind (("C-c a" . aidermacs-transient-menu)))
 #+end_src
 
 ** eshell
@@ -1621,7 +1618,7 @@ Take a screenshot and copy it to a file
      ("[l]"
       ("label"))
      ("[r]"
-      ("ref" "pageref" "eqref" "footref" "fref" "Fref"))
+      ("ref" "pageref" "eqref" "footref" "fref" "Fref" "cref" "Cref"))
      ("[i]"
       ("index" "glossary"))
      ("[1]:||*"
@@ -1638,7 +1635,9 @@ Take a screenshot and copy it to a file
       ("part" "chapter" "section" "subsection" "subsubsection" "paragraph" "subparagraph"
        "part*" "chapter*" "section*" "subsection*" "subsubsection*" "paragraph*"
        "subparagraph*" "emph" "textit" "textsl" "textmd" "textrm" "textsf" "texttt" "textbf"
-       "textsc" "textup" "caption" "frametitle" "framesubtitle"))))
+       "textsc" "textup" "caption" "frametitle" "framesubtitle"))
+     ("(∞)[{2}]"
+      ("href"))))
   ;; Prevent folding of math to let prettify-symbols do the job
   (TeX-fold-math-spec-list-internal nil)
   (TeX-fold-math-spec-list nil)
@@ -2497,8 +2496,6 @@ Use "M-C-TAB" for moving to next field to avoid conflict with autocompletion.
    :map inferior-ess-mode-map
     ("<home>"     . comint-bol))
   :custom
-  ;; Deactivate linter in ess because it does not seem to work well
-  ;; (ess-use-flymake nil)
   (ess-roxy-str "#'")
   (ess-roxy-template-alist
    '(("description" . ".. content for \\description{} (no empty lines) ..")
