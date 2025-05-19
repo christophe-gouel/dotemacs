@@ -1336,6 +1336,9 @@ This is similar to `citar-open-notes' but displays the notes in another window."
   (preview-auto-cache-preamble t)
   (preview-auto-reveal t)
   (preview-default-option-list '("displaymath" "textmath"))
+  (preview-default-preamble
+   '("\\RequirePackage[" ("," . preview-default-option-list)
+     "]{preview}[2004/11/05]" "\\usepackage{nccmath}" "\\everydisplay{\\fleqn}"))
   :config
   (if (equal system-type 'gnu/linux)
       (setopt preview-scale-function 0.7)
@@ -1343,14 +1346,6 @@ This is similar to `citar-open-notes' but displays the notes in another window."
 
 (use-package cdlatex
   :ensure t
-  :hook
-  (LaTeX-mode . turn-on-cdlatex)
-  (LaTeX-mode . my-slow-company)
-  (org-mode . turn-on-org-cdlatex)
-  (org-mode . my-slow-company)
-  (markdown-mode . turn-on-cdlatex)
-  (cdlatex-tab . my-cdlatex-indent-maybe)
-  :bind (:map org-mode-map ("$" . cdlatex-dollar))
   :config
   ;; Prevent cdlatex from defining LaTeX math subscript everywhere
   (define-key cdlatex-mode-map "_" nil)
@@ -1367,6 +1362,9 @@ This is similar to `citar-open-notes' but displays the notes in another window."
     (setq cdlatex-math-symbol-prefix (kbd "²"))) ; correspond to key "²"
     ;; (setq cdlatex-math-symbol-prefix ?\262)) ; correspond to key "²"
   :custom
+  (cdlatex-math-modify-prefix ?§)
+  (cdlatex-use-dollar-to-ensure-math nil) ; Use \( rather than $
+  (cdlatex-auto-help-delay 0.5)
   (cdlatex-command-alist
    '(("equ*" "Insert equation* env"   "" cdlatex-environment ("equation*") t nil)
      ("fra" "Insert frame env"   "" cdlatex-environment ("frame") t nil)
@@ -1375,7 +1373,13 @@ This is similar to `citar-open-notes' but displays the notes in another window."
      ("frat" "Insert \\frametitle{}" "\\frametitle{?}" cdlatex-position-cursor nil t nil)
      ("frast" "Insert \\framesubtitle{}" "\\framesubtitle{?}" cdlatex-position-cursor nil t nil)
      ("su" "Insert \\sum" "\\sum?" cdlatex-position-cursor nil nil t)
-     ("ln" "Insert \\ln" "\\ln?" cdlatex-position-cursor nil nil t))))
+     ("ln" "Insert \\ln" "\\ln?" cdlatex-position-cursor nil nil t)))
+  :bind (:map org-mode-map ("$" . cdlatex-dollar))
+  :hook
+  ((LaTeX-mode markdown-mode) . turn-on-cdlatex)
+  ((LaTeX-mode org-mode) . my-slow-company)
+  (org-mode . turn-on-org-cdlatex)
+  (cdlatex-tab . my-cdlatex-indent-maybe))
 
 (use-package markdown-mode
   :ensure t
@@ -1468,6 +1472,7 @@ same directory as the working and insert a link to this file."
   (pandoc-mode . pandoc-load-default-settings))
 
 (use-package org
+  :load-path "~/.emacs.d/elpa/org-mode/lisp/"
   :mode ("\\.org\\'" . org-mode)
   :custom
   (org-edit-src-content-indentation 0)
@@ -1494,6 +1499,7 @@ same directory as the working and insert a link to this file."
   :config
   (unless (equal system-type 'darwin)
     (org-defkey org-cdlatex-mode-map "²" 'cdlatex-math-symbol))
+  (org-defkey org-cdlatex-mode-map "§" 'org-cdlatex-math-modify)
   (if (equal system-type 'gnu/linux)
       (setopt org-format-latex-options
 	      (plist-put org-format-latex-options :scale 0.7))
@@ -1505,20 +1511,31 @@ same directory as the working and insert a link to this file."
      (python . t)
      (R . t)
      (shell . t)))
+  :hook (org-mode . org-latex-preview-auto-mode)
   :bind (:map org-mode-map
 	      ("C-c o" . org-open-at-point)
 	      ("C-c =" . imenu-list)
 	      ("M-g o" . consult-org-heading)))
 
+(use-package org-latex-preview
+  :custom
+  ;; Enable consistent equation numbering
+  (org-latex-preview-numbered t)
+  ;; Turn on live previews.  This shows you a live preview of a LaTeX
+  ;; fragment and updates the preview in real-time as you edit it.
+  ;; To preview only environments, set it to '(block edit-special) instead
+  (org-latex-preview-live t)
+  ;; More immediate live-previews -- the default delay is 1 second
+  (org-latex-preview-live-debounce 0.25)
+  (org-latex-preview-process-default 'dvipng)
+  :config
+  (plist-put org-latex-preview-appearance-options :zoom 1.2)
+  :hook (org-mode . org-latex-preview-auto-mode))
+
 (use-package org-appear
   :ensure t
   :hook
   (org-mode . org-appear-mode))
-
-(use-package org-fragtog
-  :ensure t
-  :hook
-  (org-mode . org-fragtog-mode))
 
 (use-package oc
   :after org
@@ -1929,6 +1946,26 @@ the function will prompt the user to select a default audio device before runnin
 	      ("M-C-TAB"   . yas-next-field-or-maybe-expand)
 	      ("M-C-<tab>" . yas-next-field-or-maybe-expand)))
 
+(use-package aas
+  :ensure t
+  :hook ((LaTeX-mode markdown-mode org-mode) . aas-activate-for-major-mode)
+  :config
+  (aas-set-snippets 'text-mode
+    ;; expand unconditionally
+    "mm" '(yas "\\\\( $0 \\\\)")
+    "dm" '(yas "\\[\n  $0\n\\]")))
+
+(use-package laas
+  :ensure t
+  :hook ((LaTeX-mode org-mode) . laas-mode)
+  :config ; do whatever here
+  (aas-set-snippets 'laas-mode
+    ;; set condition!
+    :cond #'texmathp ; expand only while in math
+    "sum" "\\sum"
+    "Sum" (lambda () (interactive)
+	    (yas-expand-snippet "\\sum_{$1}^{$2} $0"))))
+
 (use-package symbol-overlay
   :ensure t
   :hook (prog-mode . symbol-overlay-mode))
@@ -2040,20 +2077,34 @@ VIS has the same meaning as for `ess-eval-region'."
 	(kill-new (match-string 1)))))
   :bind
   (:map ess-view-data-mode-map
-	("f" . ess-view-data-filter)
-	("g" . ess-view-data-group)
-	("m" . ess-view-data-mutate)
-	("o" . ess-view-data-sort)
-	("q" . ess-view-data-quit)
-	("S" . ess-view-data-summarise)
-	("s" . ess-view-data-select)
-	("u" . ess-view-data-unique)
-	("<TAB>" . ess-view-data-long2wide)
-	("S-<TAB>" . ess-view-data-wide2long)
+	;; Navigation
 	("C-c C-p" . ess-view-data-goto-previous-page)
 	("C-c C-n" . ess-view-data-goto-next-page)
-	("w" . ess-view-data-kill-trace))
+	("F" . ess-view-data-goto-first-page)
+	("l" . ess-view-data-goto-last-page)
+	("g" . ess-view-data-goto-page)
+	;; Data manipulation
+	("s" . ess-view-data-select)
+	("u" . ess-view-data-unselect)
+	("f" . ess-view-data-filter)
+	("o" . ess-view-data-sort)
+	("i" . ess-view-data-slice)
+	("m" . ess-view-data-mutate)
+	("<tab>" . ess-view-data-long2wide-pivot-wider)
+	("C-<tab>" . ess-view-data-wide2long-pivot-longer)
+	;; Summarize
+	("c" . ess-view-data-count)
+	("u" . ess-view-data-unique)
+	("v" . ess-view-data-summarise)
+	("S" . ess-view-data-skimr)
+	;; Other
+	("V" . ess-view-data-verbs)
+	("r" . ess-view-data-reset)
+	("w" . ess-view-data-save)
+	("q" . ess-view-data-quit)
+	("k" . ess-view-data-kill-trace))
   :custom
+  (ess-view-data-auto-show-transient t)
   (ess-view-data-current-update-print-backend 'kable)
   (ess-view-data-rows-per-page 1000))
 
