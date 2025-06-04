@@ -8,11 +8,13 @@ title: "Referee report on '$1'"
 date: `(format-time-string "%Y-%m-%d")`
 ---
 
+# Summary
+
 $0
 
-# Major comments
+# Essential points
 
-# Minor comments
+# Suggestions
 
 # Edits
 

@@ -33,3 +33,4 @@ request/
 multisession/
 dirvish/
 *.sqlite
+gams-statement.txt

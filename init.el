@@ -8,6 +8,8 @@
 
 ;;; Code:
 
+(toggle-debug-on-error)
+
 (use-package package
   :config
   (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
@@ -29,6 +31,8 @@
 (when (equal window-system 'ns)
   (use-package exec-path-from-shell
     :ensure t
+    :custom
+    (exec-path-from-shell-arguments nil) ; Do not run an interactive shell (faster)
     :config
     (dolist (var '("DROPBOX" "BIBINPUTS" "BSTINPUTS" "GH_TOKEN" "OPENAI_API_KEY" "ANTHROPIC_API_KEY" "OLLAMA_API_BASE"))
       (add-to-list 'exec-path-from-shell-variables var))
@@ -81,6 +85,7 @@
   "Adjust font for 27 inch screen."
   (interactive)
   (set-face-attribute 'default nil :family "JetBrainsMono NF" :height 140)
+  (plist-put org-latex-preview-appearance-options :zoom 1.5)
   (setopt org-format-latex-options
             (plist-put org-format-latex-options :scale 1.8)
           preview-scale-function 1.4))
@@ -194,6 +199,8 @@
   ("S-<f5>" . modus-themes-toggle))
 
 (use-package autorevert
+  :config
+  (global-auto-revert-mode)
   :custom
   (auto-revert-verbose nil)) ; Prevent autorevert from generating messages
 
@@ -401,22 +408,11 @@ current buffer within the project or the current directory if not in a project."
   :custom
   (outline-minor-mode-use-buttons 'in-margins) ; add in-margin buttons to fold/unfold
   :config
-  (unbind-key "RET" outline-overlay-button-map))
-
-(use-package bicycle
-  :ensure t
-  :after outline
+  (unbind-key "RET" outline-overlay-button-map)
   :bind (:map outline-minor-mode-map
-	      ([C-tab] . bicycle-cycle)
-	      ([S-tab] . my-bibycle-cycle-global)
-	      ([backtab] . my-bibycle-cycle-global))
-  :config
-  ;; bicycle-cycle-global should not be used in org-mode, hence this function
-  (defun my-bibycle-cycle-global ()
-    (interactive)
-    (if (derived-mode-p 'org-mode)
-        (org-cycle-global)
-      (bicycle-cycle-global))))
+	      ([C-tab] . outline-cycle)
+	      ([S-tab] . outline-cycle-buffer)
+	      ([backtab] . outline-cycle-buffer)))
 
 (use-package outline-minor-faces
   :ensure t
@@ -461,7 +457,8 @@ current buffer within the project or the current directory if not in a project."
   (pdf-view-display-size 'fit-page)
   (pdf-view-selection-style 'glyph)
   :config
-  (pdf-tools-install))
+  (pdf-tools-install)
+  (require 'org-latex-preview))
 
 (use-package proced
   :defer t
@@ -493,6 +490,7 @@ current buffer within the project or the current directory if not in a project."
 
 (set-register ?b '(file . "~/Inrae EcoPub Dropbox/Christophe Gouel/Bibliography/Bibtex/References.bib"))
 (set-register ?d '(file . "~/Downloads"))
+(set-register ?e '(file . "~/.emacs.d"))
 (set-register ?r '(file . "~/Inrae EcoPub Dropbox/Christophe Gouel/dropbox_projects/Review"))
 
 (setopt initial-scratch-message nil)
@@ -634,7 +632,7 @@ current buffer within the project or the current directory if not in a project."
 			      ;; :with
 			      company-yasnippet))))
   :custom
-  (company-show-numbers t)
+  (company-show-quick-access t)
   (company-idle-delay 0.2)
   (company-backends '(company-capf
 		      company-files
@@ -939,21 +937,22 @@ If the original code was indented, preserve the same amount of spacing in your r
                      (chatgpt-shell-quick-insert
                       (append context
                               (list (cons query output))))))))
-  (defun chatgpt-shell-proofread-dwim ()
-    "Proofread the current paragraph or selected region using ChatGPT Shell.
+  (defun chatgpt-shell-copy-edit-paragraph-or-region ()
+    "Copy edit text from region or current paragraph using ChatGPT.
 
-This function provides a do-what-I-mean (DWIM) approach to proofreading text:
-- If a region is currently active, proofread the selected text
-- If no region is selected, automatically mark and proofread the current paragraph"
+This function uses the existing proofreading capability but adjusts the prompt for copy-editing tasks targeted at academic publications in economics."
     (interactive)
-    (if
-	(region-active-p)
-	(chatgpt-shell-proofread-region)
-      (progn
-	(mark-paragraph)
-	(next-line)
-	(chatgpt-shell-proofread-region)
-	(end-of-line))))
+    (let ((chatgpt-shell-prompt-header-proofread-region
+           "Please help me copy edit the following text. Reorganize sentences for better flow and clarity without altering the original meaning.
+The aim of this text is for academic publication in the field of economics.
+Detect the language of the text and respect it in your output.
+If the text is in English, assume that it is in American English, unless indicated otherwise.
+Only output the copy-edited text without any introductory, concluding comments, or explanations.
+Preserve the original formatting, coding, any special characters, comments, and indentation in your response.
+Avoid using unicode for en dashes and em dashes, using '--' and '---' respectively.
+Never replace a backslash followed by a percentage sign with just a percentage sign."))
+      ;; Call the original proofreading function with the adjusted prompt
+      (chatgpt-shell-proofread-paragraph-or-region)))
   :bind
   (:prefix-map my-chatgpt-shell-prefix-map
 	       :prefix-docstring "ChatGPT Shell commands"
@@ -961,12 +960,13 @@ This function provides a do-what-I-mean (DWIM) approach to proofreading text:
 	       ("a" . chatgpt-shell-prompt)	; a for ask
 	       ("c" . chatgpt-shell-prompt-compose)
 	       ("d" . chatgpt-shell-document-dwim)
-	       ("e" . chatgpt-shell-describe-code)	; e for explain
+	       ("e" . chatgpt-shell-copy-edit-paragraph-or-region)
 	       ("i" . chatgpt-shell-quick-insert)
 	       ("j" . chatgpt-shell)		; j so that it is quick to call after the prefix key
-	       ("p" . chatgpt-shell-proofread-dwim)
+	       ("p" . chatgpt-shell-proofread-paragraph-or-region)
 	       ("r" . chatgpt-shell-refactor-code)
 	       ("s" . chatgpt-shell-swap-model)
+	       ("x" . chatgpt-shell-describe-code)	; x for eXplain
 	       (:map chatgpt-shell-mode-map
 		     ("C-c C-b" . chatgpt-shell-copy-block-at-point)
 		     :map chatgpt-shell-prompt-compose-view-mode-map
@@ -1262,6 +1262,8 @@ This is similar to `citar-open-notes' but displays the notes in another window."
        "part*" "chapter*" "section*" "subsection*" "subsubsection*" "paragraph*"
        "subparagraph*" "emph" "textit" "textsl" "textmd" "textrm" "textsf" "texttt" "textbf"
        "textsc" "textup" "caption" "frametitle" "framesubtitle"))
+     (2
+      ("textcolor"))
      ("(∞)[{2}]"
       ("href"))))
   ;; Prevent folding of math to let prettify-symbols do the job
@@ -1419,7 +1421,7 @@ EDIT, when non-nil, will edit the code block in an indirect buffer after inserti
                  'markdown-gfm-language-history))
              (quit "")))
          current-prefix-arg))
-  (let ((markdown-code-block-braces t))
+  (let ((Markdown-Code-Block-Braces t))
     (markdown-insert-gfm-code-block lang edit)))
   ;; Code to import screenshots in markdown files
   ;; from <https://www.nistara.net/post/2022-11-14-emacs-markdown-screenshots> and
@@ -1496,6 +1498,8 @@ same directory as the working and insert a link to this file."
   (org-imenu-depth 4)
   (org-blank-before-new-entry '((heading . auto) (plain-list-item . nil))) ; Control the insertion of blank line after M-Ret
   (org-fold-core-style 'overlays) ; Slower folding style to prevent some bugs when unfolding
+  (org-file-apps
+   '((auto-mode . emacs) (directory . emacs)  ("\\.x?html?\\'" . default)))
   :config
   (unless (equal system-type 'darwin)
     (org-defkey org-cdlatex-mode-map "²" 'cdlatex-math-symbol))
@@ -1586,6 +1590,10 @@ same directory as the working and insert a link to this file."
 	("<prior>" . org-present-prev)
 	("<next>" . org-present-next)
 	))
+
+(use-package lte
+  :ensure t
+  :hook ((org-mode markdown-mode) . lte-truncate-table-mode))
 
 (use-package texfrag
   :ensure t
@@ -1898,16 +1906,33 @@ the function will prompt the user to select a default audio device before runnin
   )
 
 (use-package eglot
+  :config
+  ;; Performance boost from https://www.reddit.com/r/emacs/comments/1447fy2/looking_for_help_in_improving_typescript_eglot/
+  (fset #'jsonrpc--log-event #'ignore)
   :custom
   ;; Prevent eglot from reformatting code automatically
   (eglot-ignored-server-capabilities
-   '(:documentFormattingProvider
-     :documentRangeFormattingProvider
-     :documentOnTypeFormattingProvider))
+   '(
+     ;; :documentFormattingProvider
+     ;; :documentRangeFormattingProvider
+     :documentOnTypeFormattingProvider ; On-type formatting (very bad for R)
+     :documentSymbolProvider ; List symbols in buffer (Make the R LSP fail)
+     ))
   ;; Set the buffer size to 0 to improve performances (https://www.gnu.org/software/emacs/manual/html_mono/eglot.html#Performance)
-  ;; (eglot-events-buffer-config (:size 0 :format full))
+  (eglot-events-buffer-config '(:size 0 :format full))
   :bind
-  ("C-c l" . eglot))
+  (("C-c l" . eglot)
+   (:map eglot-mode-map
+	 ("C-c l a" . eglot-code-actions)
+	 ("C-c l h" . eldoc)
+	 ("C-c l f" . eglot-format)
+	 ("C-c l F" . eglot-format-buffer)
+	 ("C-c l r" . eglot-rename)
+	 ("C-c l R" . eglot-reconnect)
+	 ("C-c l s" . eglot-shutdown)))
+  :hook
+  (LaTeX-mode . eglot-ensure)
+  (ess-r-mode . eglot-ensure))
 
 (use-package poly-markdown
   :ensure t
@@ -1948,19 +1973,28 @@ the function will prompt the user to select a default audio device before runnin
 
 (use-package aas
   :ensure t
-  :hook ((LaTeX-mode markdown-mode org-mode) . aas-activate-for-major-mode)
+  :hook
+  ((LaTeX-mode markdown-mode org-mode ess-r-mode inferior-ess-r-mode) . aas-activate-for-major-mode)
   :config
   (aas-set-snippets 'text-mode
     ;; expand unconditionally
-    "mm" '(yas "\\\\( $0 \\\\)")
-    "dm" '(yas "\\[\n  $0\n\\]")))
+    "ùù" '(yas "\\\\( $0 \\\\)")
+    "ùm" '(yas "\\[\n  $0\n\\]"))
+  (aas-set-snippets 'ess-r-mode
+    ";f" '(yas "function($1) {\n  $2\n}")
+    ";if" '(yas "if ($1) {\n  $2\n}")
+    ";ie" '(yas "if ($1) {\n  $2\n} else {\n  $3\n}")
+    ";p" " |> print(n = 250)")
+  (aas-set-snippets 'inferior-ess-r-mode
+    ";p" " |> print(n = 250)"))
 
 (use-package laas
   :ensure t
   :hook ((LaTeX-mode org-mode) . laas-mode)
-  :config ; do whatever here
+  :custom
+  (laas-enable-auto-space nil)
+  :config
   (aas-set-snippets 'laas-mode
-    ;; set condition!
     :cond #'texmathp ; expand only while in math
     "sum" "\\sum"
     "Sum" (lambda () (interactive)
@@ -2048,8 +2082,7 @@ VIS has the same meaning as for `ess-eval-region'."
     (setq project-find-functions '(project-try-vc)))
   :hook
   (inferior-ess-mode . my-inferior-ess-init)
-  (inferior-ess-mode . my-ess-remove-project-hook)
-  (ess-r-mode . my-ess-remove-project-hook)
+  ((ess-r-mode inferior-ess-mode) . my-ess-remove-project-hook)
   ;; Outlining like in RStudio
   (ess-r-mode . (lambda ()
 		  (setq outline-regexp "^[ \t]*#+ +.*\\(----\\|====\\|####\\)")
@@ -2171,11 +2204,11 @@ This function is intended to be added to `after-save-hook`."
 (add-hook 'after-save-hook #'run-air-formatter)
 
 (use-package gams-mode
-  :ensure t
+  ;; :ensure t
   ;; :load-path "~/Documents/git_projects/code/gams-mode"
   :vc (:url "https://github.com/ShiroTakeda/gams-mode"
 	    :rev :newest
-	    :branch "develop")
+	    :branch "test")
   :hook
   (gams-mode . (lambda ()
                  (outline-minor-mode)
@@ -2310,5 +2343,7 @@ This function is intended to be added to `after-save-hook`."
 
 (setopt gc-cons-threshold 800000
 	gc-cons-percentage 0.1)
+
+(toggle-debug-on-error)
 
 ;;; init.el ends here
