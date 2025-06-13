@@ -8,8 +8,6 @@
 
 ;;; Code:
 
-(toggle-debug-on-error)
-
 (use-package package
   :config
   (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
@@ -1710,9 +1708,7 @@ the function will prompt the user to select a default audio device before runnin
 
 (use-package flyspell
   :ensure t
-  :hook (text-mode . (lambda ()
-                       (unless (derived-mode-p 'csv-mode)
-			 (flyspell-mode 1))))
+  :hook ((LaTeX-mode markdown-mode org-mode) . flyspell-mode)
   :config
   (setq ispell-program-name (executable-find "hunspell")
 	flyspell-issue-welcome-flag nil
@@ -1798,10 +1794,7 @@ the function will prompt the user to select a default audio device before runnin
     (setq-local visual-fill-column-center-text nil))
   :bind ("C-c v" . my-visual-fill)
   :hook
-  (bibtex-mode   . my-visual-fill)
-  (text-mode     . (lambda()
-		         (unless (member major-mode '(csv-mode))
-			   (my-visual-fill)))))
+  ((bibtex-mode LaTeX-mode markdown-mode org-mode) . my-visual-fill))
 
 (use-package yaml-mode
   :ensure t
@@ -1909,13 +1902,14 @@ the function will prompt the user to select a default audio device before runnin
   :config
   ;; Performance boost from https://www.reddit.com/r/emacs/comments/1447fy2/looking_for_help_in_improving_typescript_eglot/
   (fset #'jsonrpc--log-event #'ignore)
+  (add-to-list 'eglot-server-programs '(markdown-mode . ("marksman")))
   :custom
   ;; Prevent eglot from reformatting code automatically
   (eglot-ignored-server-capabilities
    '(
      ;; :documentFormattingProvider
      ;; :documentRangeFormattingProvider
-     :documentOnTypeFormattingProvider ; On-type formatting (very bad for R)
+     ;; :documentOnTypeFormattingProvider ; On-type formatting (very bad for R)
      :documentSymbolProvider ; List symbols in buffer (Make the R LSP fail)
      ))
   ;; Set the buffer size to 0 to improve performances (https://www.gnu.org/software/emacs/manual/html_mono/eglot.html#Performance)
@@ -1931,8 +1925,8 @@ the function will prompt the user to select a default audio device before runnin
 	 ("C-c l R" . eglot-reconnect)
 	 ("C-c l s" . eglot-shutdown)))
   :hook
-  (LaTeX-mode . eglot-ensure)
-  (ess-r-mode . eglot-ensure))
+  ((ess-r-mode LaTeX-mode markdown-mode) . eglot-ensure)
+  :ensure-system-package marksman)
 
 (use-package poly-markdown
   :ensure t
@@ -1980,6 +1974,10 @@ the function will prompt the user to select a default audio device before runnin
     ;; expand unconditionally
     "ùù" '(yas "\\\\( $0 \\\\)")
     "ùm" '(yas "\\[\n  $0\n\\]"))
+  (aas-set-snippets 'markdown-mode
+    ;; expand unconditionally
+    "ùù" '(yas "\\$$0\\$")
+    "ùm" '(yas "\\$\\$\n$0\n\\$\\$"))
   (aas-set-snippets 'ess-r-mode
     ";f" '(yas "function($1) {\n  $2\n}")
     ";if" '(yas "if ($1) {\n  $2\n}")
@@ -2002,7 +2000,15 @@ the function will prompt the user to select a default audio device before runnin
 
 (use-package symbol-overlay
   :ensure t
-  :hook (prog-mode . symbol-overlay-mode))
+  :hook (prog-mode . symbol-overlay-mode)
+    :bind
+  (:prefix-map my-symbol-overlay-prefix-map
+   :prefix-docstring "Symbol overlay prefix map"
+   :prefix "C-c o"
+   ("r" . symbol-overlay-rename)
+   ("o" . symbol-overlay-put)
+   ("k" . symbol-overlay-remove-all)
+   ("w" . symbol-overlay-save-symbol)))
 
 (use-package hl-todo
   :ensure t
@@ -2344,6 +2350,6 @@ This function is intended to be added to `after-save-hook`."
 (setopt gc-cons-threshold 800000
 	gc-cons-percentage 0.1)
 
-(toggle-debug-on-error)
+(setopt debug-on-error nil)
 
 ;;; init.el ends here
