@@ -8,6 +8,8 @@
 
 ;;; Code:
 
+(setopt debug-on-error t)
+
 (use-package package
   :config
   (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
@@ -29,8 +31,8 @@
 (when (equal window-system 'ns)
   (use-package exec-path-from-shell
     :ensure t
-    :custom
-    (exec-path-from-shell-arguments nil) ; Do not run an interactive shell (faster)
+    ;; :custom
+    ;; (exec-path-from-shell-arguments nil) ; Do not run an interactive shell (faster)
     :config
     (dolist (var '("DROPBOX" "BIBINPUTS" "BSTINPUTS" "GH_TOKEN" "OPENAI_API_KEY" "ANTHROPIC_API_KEY" "OLLAMA_API_BASE"))
       (add-to-list 'exec-path-from-shell-variables var))
@@ -200,6 +202,7 @@
   :config
   (global-auto-revert-mode)
   :custom
+  (global-auto-revert-ignore-modes '(pdf-view-mode doc-view-mode)) ; Avoid reverting pdf files while LaTeX compiles
   (auto-revert-verbose nil)) ; Prevent autorevert from generating messages
 
 (use-package casual-calc
@@ -977,7 +980,7 @@ Never replace a backslash followed by a percentage sign with just a percentage s
   (chatgpt-shell-anthropic-key
    (auth-source-pick-first-password :host "api.anthropic.com"))
   ;; Other options
-  (chatgpt-shell-model-version "claude-3-5-haiku-latest")
+  (chatgpt-shell-model-version "gpt-4.1")
   (chatgpt-shell-prompt-header-proofread-region
    "Please help me proofread the following text and only reply with fixed text.
 Detect first the language of the text and respect it in the output.
@@ -1210,7 +1213,6 @@ This is similar to `citar-open-notes' but displays the notes in another window."
   (TeX-mode . latex-math-mode)
   (TeX-mode . TeX-fold-buffer)
   (TeX-mode . flymake-mode)
-  (TeX-mode . my-center-text)
   :hook
   (TeX-mode . TeX-fold-mode)
   :custom
@@ -1383,7 +1385,9 @@ This is similar to `citar-open-notes' but displays the notes in another window."
 
 (use-package markdown-mode
   :ensure t
-  :mode ("README\\.md\\'" . gfm-mode)
+  :mode
+  ("\\.md\\'" . markdown-mode) ; Required because poly-markdown appropriates md files
+  ("README\\.md\\'" . gfm-mode)
   :custom
   (markdown-command
    (concat "pandoc"
@@ -1396,10 +1400,11 @@ This is similar to `citar-open-notes' but displays the notes in another window."
   (markdown-enable-math t)
   (markdown-enable-prefix-prompts nil)
   (markdown-header-scaling nil)
-  (markdown-hide-markup nil)
+  (markdown-hide-markup t)
   (markdown-hide-urls t)
   (markdown-fontify-code-blocks-natively t)
   (markdown-enable-highlighting-syntax t)
+  (markdown-special-ctrl-a/e 'on)
   :config
   (defun my-markdown-insert-gfm-code-block-braces (&optional lang edit)
   "Insert a GFM code block with LANG, always using braces for the code block.
@@ -1461,6 +1466,14 @@ same directory as the working and insert a link to this file."
       (reftex-citation)))
   :hook
   (markdown-mode . turn-on-orgtbl)
+  ;; Code borrowed from auctex to prettify symbols in markdown
+  (markdown-mode . (lambda()
+		     (require 'tex-mode)
+		     (require 'tex)
+		     (setq-local prettify-symbols-alist tex--prettify-symbols-alist)
+		     (add-function :override (local 'prettify-symbols-compose-predicate)
+				   #'TeX--prettify-symbols-compose-p)
+		     (prettify-symbols-mode t)))
   :bind (:map markdown-mode-map
 	      ("C-c [" . my-markdown-reftex-citation)
 	      ("C-c C-s e" . my-markdown-insert-gfm-code-block-braces)))
@@ -1784,9 +1797,14 @@ the function will prompt the user to select a default audio device before runnin
       (visual-wrap-prefix-mode 'toggle)))
 
   (defun my-center-text ()
-    "Center text in visual fill column."
-    (interactive)
-    (setq-local visual-fill-column-center-text t))
+  "Center text in visual fill column, unless in a polymode buffer."
+  (interactive)
+  (unless (bound-and-true-p polymode-mode)
+    (setq-local visual-fill-column-center-text t)))
+  ;; (defun my-center-text ()
+  ;;   "Center text in visual fill column."
+  ;;   (interactive)
+  ;;   (setq-local visual-fill-column-center-text t))
 
   (defun my-uncenter-text ()
     "Uncenter text in visual fill column."
@@ -1794,7 +1812,8 @@ the function will prompt the user to select a default audio device before runnin
     (setq-local visual-fill-column-center-text nil))
   :bind ("C-c v" . my-visual-fill)
   :hook
-  ((bibtex-mode LaTeX-mode markdown-mode org-mode) . my-visual-fill))
+  ((bibtex-mode LaTeX-mode markdown-mode org-mode) . my-visual-fill)
+  (TeX-mode . my-center-text))
 
 (use-package yaml-mode
   :ensure t
@@ -1988,11 +2007,21 @@ the function will prompt the user to select a default audio device before runnin
 
 (use-package laas
   :ensure t
-  :hook ((LaTeX-mode org-mode) . laas-mode)
+  :hook ((LaTeX-mode markdown-mode org-mode) . laas-mode)
   :custom
   (laas-enable-auto-space nil)
   :config
-  (aas-set-snippets 'laas-mode
+    ;; Redefine a built-in function to handle markdown
+  (defun laas-mathp ()
+    "Determine whether point is within a LaTeX maths block."
+    (cond
+     ((derived-mode-p 'latex-mode) (texmathp))
+     ((derived-mode-p 'markdown-mode) (texmathp))
+     ((derived-mode-p 'org-mode) (laas-org-mathp))
+     (t (message "LaTeX-auto-activated snippets does not currently support math in any of %s"
+		 (aas--modes-to-activate major-mode))
+	nil)))
+    (aas-set-snippets 'laas-mode
     :cond #'texmathp ; expand only while in math
     "sum" "\\sum"
     "Sum" (lambda () (interactive)
