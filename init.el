@@ -41,7 +41,7 @@
 (use-package dashboard
   :ensure t
   :custom
-  (dashboard-projects-switch-function 'project-switch-project)
+  (dashboard-projects-switch-function #'project-switch-project)
   (dashboard-set-navigator t) ; raccourcis de rubrique
   (dashboard-center-content t)
   (dashboard-items '((recents   . 6)
@@ -484,6 +484,12 @@ current buffer within the project or the current directory if not in a project."
   :custom
   (sentence-end-double-space nil))
 
+(use-package project
+  :defer t
+  :custom
+  ;; Prefix the compilation buffer by the project name
+  (project-compilation-buffer-name-function #'project-prefixed-buffer-name))
+
 (use-package recentf
   :custom
   (recentf-auto-cleanup 'never) ;; disable to avoid recentf from scanning remote files through tramp
@@ -875,7 +881,10 @@ current buffer within the project or the current directory if not in a project."
    ("g" . magit-status)
    ("i" . magit-init)
    ("l" . magit-log)
-   ("P" . magit-push))
+   ("P" . magit-push)
+   ("r" . magit-run)
+   ("s" . magit-git-command) ; s for shell
+   ("S" . magit-git-command-topdir))
   :custom
   (magit-diff-refine-hunk (quote all))
   (magit-format-file-function #'magit-format-file-nerd-icons)
@@ -973,12 +982,15 @@ Never replace a backslash followed by a percentage sign with just a percentage s
 		     :map chatgpt-shell-prompt-compose-view-mode-map
 		     ("w" . chatgpt-shell-copy-block-at-point)))
   :custom
-  ;; OpenAI
-  (chatgpt-shell-openai-key
-   (auth-source-pick-first-password :host "api.openai.com"))
   ;; Anthropic
   (chatgpt-shell-anthropic-key
    (auth-source-pick-first-password :host "api.anthropic.com"))
+  ;; Deepseek
+  (chatgpt-shell-deepseek-key
+   (auth-source-pick-first-password :host "api.deepseek.com"))
+  ;; OpenAI
+  (chatgpt-shell-openai-key
+   (auth-source-pick-first-password :host "api.openai.com"))
   ;; Other options
   (chatgpt-shell-model-version "gpt-4.1")
   (chatgpt-shell-prompt-header-proofread-region
@@ -1921,7 +1933,9 @@ the function will prompt the user to select a default audio device before runnin
   :config
   ;; Performance boost from https://www.reddit.com/r/emacs/comments/1447fy2/looking_for_help_in_improving_typescript_eglot/
   (fset #'jsonrpc--log-event #'ignore)
-  (add-to-list 'eglot-server-programs '(markdown-mode . ("marksman")))
+  (dolist (pair '((markdown-mode  . ("marksman"))
+		  (conf-toml-mode . ("tombi" "lsp"))))
+    (add-to-list 'eglot-server-programs pair))
   :custom
   ;; Prevent eglot from reformatting code automatically
   (eglot-ignored-server-capabilities
@@ -1944,7 +1958,7 @@ the function will prompt the user to select a default audio device before runnin
 	 ("C-c l R" . eglot-reconnect)
 	 ("C-c l s" . eglot-shutdown)))
   :hook
-  ((ess-r-mode LaTeX-mode markdown-mode) . eglot-ensure)
+  ((conf-toml-mode ess-r-mode LaTeX-mode markdown-mode) . eglot-ensure)
   :ensure-system-package marksman)
 
 (use-package poly-markdown
@@ -1990,11 +2004,9 @@ the function will prompt the user to select a default audio device before runnin
   ((LaTeX-mode markdown-mode org-mode ess-r-mode inferior-ess-r-mode) . aas-activate-for-major-mode)
   :config
   (aas-set-snippets 'text-mode
-    ;; expand unconditionally
     "ùù" '(yas "\\\\( $0 \\\\)")
-    "ùm" '(yas "\\[\n  $0\n\\]"))
+    "ùm" '(yas "\\[ $0 \\]"))
   (aas-set-snippets 'markdown-mode
-    ;; expand unconditionally
     "ùù" '(yas "\\$$0\\$")
     "ùm" '(yas "\\$\\$\n$0\n\\$\\$"))
   (aas-set-snippets 'ess-r-mode
@@ -2003,7 +2015,8 @@ the function will prompt the user to select a default audio device before runnin
     ";ie" '(yas "if ($1) {\n  $2\n} else {\n  $3\n}")
     ";p" " |> print(n = 250)")
   (aas-set-snippets 'inferior-ess-r-mode
-    ";p" " |> print(n = 250)"))
+    ";p" " |> print(n = 250)"
+    ";str" " |> str()"))
 
 (use-package laas
   :ensure t
