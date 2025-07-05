@@ -319,6 +319,13 @@ Highlight the current line
   (compilation-scroll-output 'first-error))
 #+end_src
 
+** Customize interface
+
+Prevent variable names from being unlispify:
+#+begin_src emacs-lisp
+(setopt custom-unlispify-tag-names nil)
+#+end_src
+
 ** Dictionary
 
 #+begin_src emacs-lisp
@@ -1532,7 +1539,8 @@ This is similar to `citar-open-notes' but displays the notes in another window."
    ("4 o" . citar-open-other-window)
    ("4 n" . citar-open-notes-other-window)
    :map text-mode-map
-   ("C-c c c" . citar-insert-citation)))
+   ("C-c c c" . citar-insert-citation)
+   ("C-c c C" . (lambda () (interactive) (let ((current-prefix-arg '(4))) (call-interactively #'citar-insert-citation))))))
 #+end_src
 
 ** Screenshots
@@ -1665,7 +1673,7 @@ Take a screenshot and copy it to a file
      (1
       ("part" "chapter" "section" "subsection" "subsubsection" "paragraph" "subparagraph"
        "part*" "chapter*" "section*" "subsection*" "subsubsection*" "paragraph*"
-       "subparagraph*" "emph" "textit" "textsl" "textmd" "textrm" "textsf" "texttt" "textbf"
+       "subparagraph*" "alert" "emph" "textit" "textsl" "textmd" "textrm" "textsf" "texttt" "textbf"
        "textsc" "textup" "caption" "frametitle" "framesubtitle"))
      (2
       ("textcolor"))

@@ -225,6 +225,8 @@
   ;; compilation buffer automatically scrolls and stops at first error
   (compilation-scroll-output 'first-error))
 
+(setopt custom-unlispify-tag-names nil)
+
 (use-package dictionary
   :defer t
   :custom
@@ -1155,7 +1157,8 @@ This is similar to `citar-open-notes' but displays the notes in another window."
    ("4 o" . citar-open-other-window)
    ("4 n" . citar-open-notes-other-window)
    :map text-mode-map
-   ("C-c c c" . citar-insert-citation)))
+   ("C-c c c" . citar-insert-citation)
+   ("C-c c C" . (lambda () (interactive) (let ((current-prefix-arg '(4))) (call-interactively #'citar-insert-citation))))))
 
 (defun my-screenshot-to-file (arg)
   "Take a screenshot or copy from the clipboard (depending on OS),
@@ -1268,7 +1271,7 @@ This is similar to `citar-open-notes' but displays the notes in another window."
      (1
       ("part" "chapter" "section" "subsection" "subsubsection" "paragraph" "subparagraph"
        "part*" "chapter*" "section*" "subsection*" "subsubsection*" "paragraph*"
-       "subparagraph*" "emph" "textit" "textsl" "textmd" "textrm" "textsf" "texttt" "textbf"
+       "subparagraph*" "alert" "emph" "textit" "textsl" "textmd" "textrm" "textsf" "texttt" "textbf"
        "textsc" "textup" "caption" "frametitle" "framesubtitle"))
      (2
       ("textcolor"))
