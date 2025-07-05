@@ -586,15 +586,11 @@ current buffer within the project or the current directory if not in a project."
   (electric-pair-mode))
 
 (use-package which-key
-  :ensure t
-  :diminish which-key-mode
-  :init
-  (setopt which-key-sort-uppercase-first nil
-          max-mini-window-height 15)
-  ;; On va utiliser une fenêtre dédiée plutôt que le minibuffer
-  (which-key-setup-side-window-bottom)
-  ;; On l'active partout, tout le temps
-  (which-key-mode t))
+  :custom
+  (which-key-sort-uppercase-first nil)
+  (max-mini-window-height 15)
+  :hook
+  (after-init . which-key-mode))
 
 (use-package prescient
   :ensure t
