@@ -13,7 +13,17 @@
 (use-package package
   :config
   (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
-  (package-initialize))
+  (package-initialize)
+  (defvar-keymap pkg-ops-map
+    :name "Package"
+    "d" '("delete"     . package-delete)
+    "h" '("describe"   . describe-package)
+    "i" '("install"    . package-install)
+    "l" '("list"       . list-packages)
+    "r" '("reinstall"  . package-reinstall)
+    "u" '("updage all" . package-upgrade-all)
+    "v" '("updage all vc" . package-vc-upgrade-all))
+  (keymap-global-set "C-c p" pkg-ops-map))
 
 (use-package use-package)
 
@@ -136,6 +146,18 @@
   (nerd-icons-completion-mode)
   :hook
   (marginalia-mode . nerd-icons-completion-marginalia-setup))
+(use-package nerd-icons-grep
+  :ensure t
+  :hook
+  (grep-mode . nerd-icons-grep-mode)
+  :custom
+  ;; This setting is a pre-requirement, so an icon can be displayed near each
+  ;; heading
+  (grep-use-headings t))
+(use-package nerd-icons-xref
+  :ensure t
+  :hook
+  (xref--xref-buffer-mode . nerd-icons-xref-mode))
 
 (use-package ligature
   :ensure t
@@ -564,20 +586,7 @@ current buffer within the project or the current directory if not in a project."
    mac-option-modifier 'meta
    mac-right-option-modifier 'none)
   (keymap-global-set "<home>" 'move-beginning-of-line)
-  (keymap-global-set "<end>" 'move-end-of-line)
-  ;; (keymap-global-set "§" (lambda () (interactive) (insert "-")))
-  ;; (keymap-global-set "M-é" (lambda () (interactive) (insert "~")))
-  ;; (keymap-global-set "M-\"" (lambda () (interactive) (insert "#")))
-  ;; (keymap-global-set "M-'" (lambda () (interactive) (insert "{")))
-  ;; (keymap-global-set "M-(" (lambda () (interactive) (insert "[")))
-  ;; (keymap-global-set "M-§" (lambda () (interactive) (insert "|")))
-  ;; (keymap-global-set "M-è" (lambda () (interactive) (insert "`")))
-  ;; (keymap-global-set "M-!" (lambda () (interactive) (insert "\\")))
-  ;; (keymap-global-set "M-à" (lambda () (interactive) (insert "@")))
-  ;; (keymap-global-set "M-)" (lambda () (interactive) (insert "]")))
-  ;; (keymap-global-set "M--" (lambda () (interactive) (insert "}")))
-  ;; (keymap-global-set "M-e" (lambda () (interactive) (insert "€")))
-  )
+  (keymap-global-set "<end>" 'move-end-of-line))
 
 (use-package keycast
   :ensure t
@@ -706,9 +715,6 @@ current buffer within the project or the current directory if not in a project."
 
 (use-package vertico
   :ensure t
-  :init
-  (vertico-mode)
-  (vertico-multiform-mode)
   :custom
   (vertico-multiform-categories
    '(;; Commands that are displayed in separate buffers
@@ -729,7 +735,10 @@ current buffer within the project or the current directory if not in a project."
   :bind
   (:map vertico-map
 	("<next>"  . vertico-scroll-up)
-	("<prior>" . vertico-scroll-down)))
+	("<prior>" . vertico-scroll-down))
+  :hook
+  (after-init . vertico-mode)
+  (after-init . vertico-multiform-mode))
 
 (use-package vertico-posframe
   :ensure t)
@@ -753,8 +762,8 @@ current buffer within the project or the current directory if not in a project."
 
 (use-package marginalia
   :ensure t
-  :init
-  (marginalia-mode))
+  :hook
+  (after-init . marginalia-mode))
 
 (use-package consult
   :ensure t
@@ -825,14 +834,11 @@ current buffer within the project or the current directory if not in a project."
 
 (use-package embark
   :ensure t
-
   :bind
   (("C-." . embark-act)         ;; pick some comfortable binding
    ("C-;" . embark-dwim)        ;; good alternative: M-.
    ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
-
   :init
-
   ;; Optionally replace the key help with a completing-read interface
   (setq prefix-help-command #'embark-prefix-help-command)
 
@@ -1321,7 +1327,8 @@ This is similar to `citar-open-notes' but displays the notes in another window."
 	("C-c e"      . TeX-next-error)
 	("M-RET"      . latex-insert-item)
 	("S-<return>" . my-tex-frame)
-	("<f9>"       . my-tex-compile)))
+	("<f9>"       . my-tex-compile)
+	("M-o"        . TeX-font)))
 
 (use-package reftex
   :hook
@@ -1475,6 +1482,7 @@ same directory as the working and insert a link to this file."
     (let ((reftex-cite-format markdown-cite-format)
           (reftex-cite-key-separator "; @"))
       (reftex-citation)))
+  (keymap-set markdown-mode-map "M-o" markdown-mode-style-map)
   :hook
   (markdown-mode . turn-on-orgtbl)
   ;; Code borrowed from auctex to prettify symbols in markdown
@@ -1537,7 +1545,16 @@ same directory as the working and insert a link to this file."
      (python . t)
      (R . t)
      (shell . t)))
-  :hook (org-mode . org-latex-preview-auto-mode)
+  (defvar-keymap org-style-map
+    :name "Org emphasis"
+    "b" '("bold" . (lambda () (interactive) (org-emphasize ?*)))
+    "i" '("italic" . (lambda () (interactive) (org-emphasize ?/)))
+    "u" '("underline" . (lambda () (interactive) (org-emphasize ?_)))
+    "c" '("code" . (lambda () (interactive) (org-emphasize ?~)))
+    "v" '("verbatim" . (lambda () (interactive) (org-emphasize ?=)))
+    "s" '("strike-through" . (lambda () (interactive) (org-emphasize ?+))))
+  (keymap-set org-mode-map "M-o" org-style-map)
+;  :hook (org-mode . org-latex-preview-auto-mode)
   :bind (:map org-mode-map
 	      ("C-c o" . org-open-at-point)
 	      ("C-c =" . imenu-list)
