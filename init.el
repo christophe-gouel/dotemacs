@@ -2074,6 +2074,7 @@ the function will prompt the user to select a default audio device before runnin
     ("C-c C-j"    . ess-eval-line-and-step)
     ("C-<return>" . ess-eval-region-or-line-and-step)
     ("C-c C-x"    . ess-eval-symbol)
+    ("M-?"        . nil)
    :map inferior-ess-r-mode-map
     ("C-S-m"      . " |>")
     ("C-%"        . " %>%")

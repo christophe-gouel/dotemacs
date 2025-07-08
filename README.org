@@ -2680,6 +2680,7 @@ Use "M-C-TAB" for moving to next field to avoid conflict with autocompletion.
     ("C-c C-j"    . ess-eval-line-and-step)
     ("C-<return>" . ess-eval-region-or-line-and-step)
     ("C-c C-x"    . ess-eval-symbol)
+    ("M-?"        . nil)
    :map inferior-ess-r-mode-map
     ("C-S-m"      . " |>")
     ("C-%"        . " %>%")
