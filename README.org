@@ -732,7 +732,10 @@ Use =outline-minor-faces= to use a special face for outline sections.
   :defer t
   :custom
   ;; Prefix the compilation buffer by the project name
-  (project-compilation-buffer-name-function #'project-prefixed-buffer-name))
+  (project-compilation-buffer-name-function #'project-prefixed-buffer-name)
+  :config
+  ;; this binds `magit-project-status' to `project-prefix-map' when project.el is loaded.
+  (require 'magit-extras))
 #+end_src
 
 ** Recent files
@@ -1203,12 +1206,11 @@ Basic configuration, to check after some time
 (setopt vc-handled-backends '(Git SVN))
 #+end_src
 
+On macOS, for faster Git, install it with homebrew instead of using the default installed version.
+
 #+begin_src emacs-lisp
 (use-package magit
   :ensure t
-  :init
-  ;; this binds `magit-project-status' to `project-prefix-map' when project.el is loaded.
-  (require 'magit-extras)
   :bind
   (:prefix-map my-magit-prefix-map
    :prefix-docstring "Magit prefix map"

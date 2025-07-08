@@ -512,7 +512,10 @@ current buffer within the project or the current directory if not in a project."
   :defer t
   :custom
   ;; Prefix the compilation buffer by the project name
-  (project-compilation-buffer-name-function #'project-prefixed-buffer-name))
+  (project-compilation-buffer-name-function #'project-prefixed-buffer-name)
+  :config
+  ;; this binds `magit-project-status' to `project-prefix-map' when project.el is loaded.
+  (require 'magit-extras))
 
 (use-package recentf
   :custom
@@ -863,9 +866,6 @@ current buffer within the project or the current directory if not in a project."
 
 (use-package magit
   :ensure t
-  :init
-  ;; this binds `magit-project-status' to `project-prefix-map' when project.el is loaded.
-  (require 'magit-extras)
   :bind
   (:prefix-map my-magit-prefix-map
    :prefix-docstring "Magit prefix map"
