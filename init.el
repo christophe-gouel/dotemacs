@@ -596,13 +596,6 @@ current buffer within the project or the current directory if not in a project."
   :config
   (electric-pair-mode))
 
-(use-package which-key
-  :custom
-  (which-key-sort-uppercase-first nil)
-  (max-mini-window-height 15)
-  :hook
-  (after-init . which-key-mode))
-
 (use-package prescient
   :ensure t
   :config
@@ -727,6 +720,8 @@ current buffer within the project or the current directory if not in a project."
      ;; Standard vertico in minibuffer
      (consult-isearch-history)
      (kill-ring)
+     ;; Grid
+     (embark-keybinding grid)
      ;; The rest in postframe in the center of the screen
      (t posframe)))
   (vertico-multiform-commands
@@ -852,7 +847,6 @@ current buffer within the project or the current directory if not in a project."
   ;; (setq eldoc-documentation-strategy #'eldoc-documentation-compose-eagerly)
 
   :config
-
   ;; Hide the mode line of the Embark live/completions buffers
   (add-to-list 'display-buffer-alist
                '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"

@@ -879,7 +879,7 @@ Use =outline-minor-faces= to use a special face for outline sections.
 
 ** Which-keys
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package which-key
   :custom
   (which-key-sort-uppercase-first nil)
@@ -1030,6 +1030,8 @@ Use =company-box= for a better position of the autocompletion when using copilot
      ;; Standard vertico in minibuffer
      (consult-isearch-history)
      (kill-ring)
+     ;; Grid
+     (embark-keybinding grid)
      ;; The rest in postframe in the center of the screen
      (t posframe)))
   (vertico-multiform-commands
@@ -1182,7 +1184,6 @@ Basic configuration, to check after some time
   ;; (setq eldoc-documentation-strategy #'eldoc-documentation-compose-eagerly)
 
   :config
-
   ;; Hide the mode line of the Embark live/completions buffers
   (add-to-list 'display-buffer-alist
                '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
