@@ -476,14 +476,15 @@ current buffer within the project or the current directory if not in a project."
   :ensure t
   :if (display-graphic-p)
   :mode  ("\\.pdf\\'" . pdf-view-mode)
-  :bind (:map pdf-view-mode-map
-	      ("C-s" . isearch-forward))
+  :bind (:map pdf-view-mode-map ("C-s" . isearch-forward))
   :custom
   (pdf-view-display-size 'fit-page)
   (pdf-view-selection-style 'glyph)
   :config
   (pdf-tools-install)
-  (require 'org-latex-preview))
+  ;; Required to avoid error messages if a pdf is open before launching an org file
+  ;; (require 'org-latex-preview)
+  )
 
 (use-package proced
   :defer t
@@ -1388,7 +1389,7 @@ This is similar to `citar-open-notes' but displays the notes in another window."
      ("frast" "Insert \\framesubtitle{}" "\\framesubtitle{?}" cdlatex-position-cursor nil t nil)
      ("su" "Insert \\sum" "\\sum?" cdlatex-position-cursor nil nil t)
      ("ln" "Insert \\ln" "\\ln?" cdlatex-position-cursor nil nil t)))
-  :bind (:map org-mode-map ("$" . cdlatex-dollar))
+  ;; :bind (:map org-mode-map ("$" . cdlatex-dollar))
   :hook
   ((LaTeX-mode markdown-mode) . turn-on-cdlatex)
   ((LaTeX-mode org-mode) . my-slow-company)
@@ -1498,8 +1499,8 @@ same directory as the working and insert a link to this file."
   (pandoc-mode . pandoc-load-default-settings))
 
 (use-package org
-  :load-path "~/.emacs.d/elpa/org-mode/lisp/"
-  :mode ("\\.org\\'" . org-mode)
+  ;; :load-path "~/.emacs.d/elpa/org-mode/lisp/"
+  ;; :mode ("\\.org\\'" . org-mode)
   :custom
   (org-edit-src-content-indentation 0)
   (org-todo-keywords '((type "TODO(t)" "STARTED(s)" "WAITING(w)" "|" "DONE(d)")))
@@ -1548,31 +1549,20 @@ same directory as the working and insert a link to this file."
     "v" '("verbatim" . (lambda () (interactive) (org-emphasize ?=)))
     "s" '("strike-through" . (lambda () (interactive) (org-emphasize ?+))))
   (keymap-set org-mode-map "M-o" org-style-map)
-;  :hook (org-mode . org-latex-preview-auto-mode)
   :bind (:map org-mode-map
 	      ("C-c o" . org-open-at-point)
 	      ("C-c =" . imenu-list)
 	      ("M-g o" . consult-org-heading)))
 
-(use-package org-latex-preview
-  :custom
-  ;; Enable consistent equation numbering
-  (org-latex-preview-numbered t)
-  ;; Turn on live previews.  This shows you a live preview of a LaTeX
-  ;; fragment and updates the preview in real-time as you edit it.
-  ;; To preview only environments, set it to '(block edit-special) instead
-  (org-latex-preview-live t)
-  ;; More immediate live-previews -- the default delay is 1 second
-  (org-latex-preview-live-debounce 0.25)
-  (org-latex-preview-process-default 'dvipng)
-  :config
-  (plist-put org-latex-preview-appearance-options :zoom 1.2)
-  :hook (org-mode . org-latex-preview-auto-mode))
-
 (use-package org-appear
   :ensure t
   :hook
   (org-mode . org-appear-mode))
+
+(use-package org-fragtog
+  :ensure t
+  :hook
+  (org-mode . org-fragtog-mode))
 
 (use-package oc
   :after org

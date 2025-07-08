@@ -684,14 +684,15 @@ Use =outline-minor-faces= to use a special face for outline sections.
   :ensure t
   :if (display-graphic-p)
   :mode  ("\\.pdf\\'" . pdf-view-mode)
-  :bind (:map pdf-view-mode-map
-	      ("C-s" . isearch-forward))
+  :bind (:map pdf-view-mode-map ("C-s" . isearch-forward))
   :custom
   (pdf-view-display-size 'fit-page)
   (pdf-view-selection-style 'glyph)
   :config
   (pdf-tools-install)
-  (require 'org-latex-preview))
+  ;; Required to avoid error messages if a pdf is open before launching an org file
+  ;; (require 'org-latex-preview)
+  )
 #+end_src
 
 ** Proced
@@ -1817,7 +1818,7 @@ Use svg for previews. Much slower than png, but it is not blurry on MacOS.
      ("frast" "Insert \\framesubtitle{}" "\\framesubtitle{?}" cdlatex-position-cursor nil t nil)
      ("su" "Insert \\sum" "\\sum?" cdlatex-position-cursor nil nil t)
      ("ln" "Insert \\ln" "\\ln?" cdlatex-position-cursor nil nil t)))
-  :bind (:map org-mode-map ("$" . cdlatex-dollar))
+  ;; :bind (:map org-mode-map ("$" . cdlatex-dollar))
   :hook
   ((LaTeX-mode markdown-mode) . turn-on-cdlatex)
   ((LaTeX-mode org-mode) . my-slow-company)
@@ -1940,8 +1941,8 @@ same directory as the working and insert a link to this file."
 
 #+begin_src emacs-lisp
 (use-package org
-  :load-path "~/.emacs.d/elpa/org-mode/lisp/"
-  :mode ("\\.org\\'" . org-mode)
+  ;; :load-path "~/.emacs.d/elpa/org-mode/lisp/"
+  ;; :mode ("\\.org\\'" . org-mode)
   :custom
   (org-edit-src-content-indentation 0)
   (org-todo-keywords '((type "TODO(t)" "STARTED(s)" "WAITING(w)" "|" "DONE(d)")))
@@ -1990,14 +1991,26 @@ same directory as the working and insert a link to this file."
     "v" '("verbatim" . (lambda () (interactive) (org-emphasize ?=)))
     "s" '("strike-through" . (lambda () (interactive) (org-emphasize ?+))))
   (keymap-set org-mode-map "M-o" org-style-map)
-;  :hook (org-mode . org-latex-preview-auto-mode)
   :bind (:map org-mode-map
 	      ("C-c o" . org-open-at-point)
 	      ("C-c =" . imenu-list)
 	      ("M-g o" . consult-org-heading)))
 #+end_src
 
+Use =org-appear= for markup markers to appear automatically.
+
 #+begin_src emacs-lisp
+(use-package org-appear
+  :ensure t
+  :hook
+  (org-mode . org-appear-mode))
+#+end_src
+
+*** LaTeX preview
+
+**** New LaTeX preview
+
+#+begin_src emacs-lisp :tangle no
 (use-package org-latex-preview
   :custom
   ;; Enable consistent equation numbering
@@ -2014,18 +2027,11 @@ same directory as the working and insert a link to this file."
   :hook (org-mode . org-latex-preview-auto-mode))
 #+end_src
 
-Use =org-appear= for markup markers to appear automatically.
-
-#+begin_src emacs-lisp
-(use-package org-appear
-  :ensure t
-  :hook
-  (org-mode . org-appear-mode))
-#+end_src
+**** Old preview
 
 =org-fragtog= for an automatic toggling of LaTeX fragments.
 
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
 (use-package org-fragtog
   :ensure t
   :hook
