@@ -98,11 +98,8 @@ Remove warnings from package installation:
 * Appearance
 ** Standard Emacs options
 
-Remove menu, scrool-bar, tool-bar, and tooltip
+Enable tooltip
 #+begin_src emacs-lisp
-;; (unless (eq window-system 'ns)
-;;   (menu-bar-mode 0))
-;; TO CHECK
 (tooltip-mode 1)
 #+end_src
 
@@ -111,7 +108,6 @@ Remove menu, scrool-bar, tool-bar, and tooltip
         display-time-24hr-format t ; Affichage de l'heure format 24h
         column-number-mode t ; affichage du numéro de la colonne
         prettify-symbols-unprettify-at-point t
-	;; frame-resize-pixelwise t
 	window-resize-pixelwise t)
 (when (display-graphic-p)
   ;; Cursor (in terminal mode, to be set in terminal options)
@@ -213,11 +209,7 @@ Highlight the current line
 (use-package nerd-icons-grep
   :ensure t
   :hook
-  (grep-mode . nerd-icons-grep-mode)
-  :custom
-  ;; This setting is a pre-requirement, so an icon can be displayed near each
-  ;; heading
-  (grep-use-headings t))
+  (grep-mode . nerd-icons-grep-mode))
 (use-package nerd-icons-xref
   :ensure t
   :hook
@@ -498,8 +490,6 @@ The =find= program included with Windows is not POSIX-compatible, so we need to 
 
 =ripgrep= package needed to have a proper interface for =ripgrep=.
 
-It should also be possible to directly substitute =grep= by =ripgrep= as explained in [[https://stegosaurusdormant.com/emacs-ripgrep/]].
-
 #+begin_src emacs-lisp
 (use-package ripgrep
   :ensure t
@@ -524,21 +514,6 @@ current buffer within the project or the current directory if not in a project."
     :ensure-system-package rg)
 #+end_src
 
-** ibuffer
-
-Gather buffers per project in =ibuffer= using =ibuffer-project=.
-
-#+begin_src emacs-lisp
-(use-package ibuffer-project
-  :ensure t
-  :hook
-  (ibuffer .
-	   (lambda ()
-	     (setopt ibuffer-filter-groups (ibuffer-project-generate-filter-groups))
-	     (unless (eq ibuffer-sorting-mode 'project-file-relative)
-	       (ibuffer-do-sort-by-project-file-relative)))))
-#+end_src
-
 ** imenu
 
 #+begin_src emacs-lisp
@@ -548,9 +523,9 @@ Gather buffers per project in =ibuffer= using =ibuffer-project=.
   (imenu-auto-rescan t))
 #+end_src
 
-Show imenu in a separate buffer with =imenu-list=:
+Show imenu in a separate buffer with =imenu-list= (likely useless now that I use =consult=)
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package imenu-list
   :ensure t
   :bind
@@ -697,7 +672,9 @@ Use =outline-minor-faces= to use a special face for outline sections.
 
 ** Proced
 
-#+begin_src emacs-lisp
+I never use it
+
+#+begin_src emacs-lisp :tangle no
 (use-package proced
   :defer t
   :custom
@@ -711,7 +688,7 @@ Use =outline-minor-faces= to use a special face for outline sections.
   :defer t
   :hook
   (prog-mode . (lambda() (setq-local show-trailing-whitespace t)))
-  (prog-mode . (lambda () (display-fill-column-indicator-mode)))
+  (prog-mode . (lambda() (display-fill-column-indicator-mode)))
   (prog-mode .
     (lambda() (add-to-list 'write-file-functions 'delete-trailing-whitespace)))
   ;; Make URLs in comments clickable
@@ -743,6 +720,7 @@ Use =outline-minor-faces= to use a special face for outline sections.
 
 #+begin_src emacs-lisp
 (use-package recentf
+  :defer t
   :custom
   (recentf-auto-cleanup 'never) ;; disable to avoid recentf from scanning remote files through tramp
   (recentf-max-saved-items 100))
@@ -814,15 +792,11 @@ Use =outline-minor-faces= to use a special face for outline sections.
 
 #+begin_src emacs-lisp
 (use-package xwidget
-  :defer t
-  :config
-  (defun my-open-chatgpt ()
-    "Open ChatGPT in xwidget."
-    (interactive)
-    (xwidget-webkit-browse-url "https://chatgpt.com")))
+  :defer t)
 #+end_src
 
 * Keys
+
 ** Custom keybindings
 
 #+begin_src emacs-lisp
@@ -1017,6 +991,7 @@ Use =company-box= for a better position of the autocompletion when using copilot
 #+end_src
 
 ** Vertico and friends (orderless, marginalia, consult)
+
 *** Vertico
 
 #+begin_src emacs-lisp
@@ -1064,7 +1039,7 @@ Use =vertico-directory= to press =DEL= to jump back one directory instead of one
   :after vertico
   :ensure nil
   :bind
-  (:map vertico-map	("DEL" . vertico-directory-delete-char)))
+  (:map vertico-map ("DEL" . vertico-directory-delete-char)))
 #+end_src
 
 #+begin_src emacs-lisp
@@ -1118,7 +1093,8 @@ Use =vertico-directory= to press =DEL= to jump back one directory instead of one
   (consult-customize
    consult--source-bookmark consult--source-file-register
    consult--source-recent-file consult--source-project-recent-file
-   :preview-key "M-.")  :bind
+   :preview-key "M-.")
+  :bind
   (;; C-x bindings in `ctl-x-map'
    ("C-x b" . consult-buffer)
    ("C-x 4 b" . consult-buffer-other-window)
@@ -1160,6 +1136,7 @@ Use =vertico-directory= to press =DEL= to jump back one directory instead of one
 				   consult--source-project-buffer-hidden
 				   consult--source-project-recent-file-hidden
 				   consult--source-project-root-hidden))
+  ;; xref interface is managed by consult-xref
   (xref-show-xrefs-function #'consult-xref)
   (xref-show-definitions-function #'consult-xref))
 #+end_src
@@ -1175,7 +1152,7 @@ Basic configuration, to check after some time
    ("C-;" . embark-dwim)        ;; good alternative: M-.
    ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
   :init
-  ;; Optionally replace the key help with a completing-read interface
+  ;; Replace the key help with a completing-read interface
   (setq prefix-help-command #'embark-prefix-help-command)
 
   ;; Show the Embark target at point via Eldoc. You may adjust the
@@ -1276,6 +1253,7 @@ Support for syntax highlighting of Git configuration files
 #+end_src
 
 * Shells
+
 ** LLM
 
 #+begin_src emacs-lisp

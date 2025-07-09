@@ -62,16 +62,12 @@
   :config
   (dashboard-setup-startup-hook))
 
-;; (unless (eq window-system 'ns)
-;;   (menu-bar-mode 0))
-;; TO CHECK
 (tooltip-mode 1)
 
 (setopt blink-cursor-blinks 0 ; curseur clignote indéfiniment
         display-time-24hr-format t ; Affichage de l'heure format 24h
         column-number-mode t ; affichage du numéro de la colonne
         prettify-symbols-unprettify-at-point t
-	;; frame-resize-pixelwise t
 	window-resize-pixelwise t)
 (when (display-graphic-p)
   ;; Cursor (in terminal mode, to be set in terminal options)
@@ -149,11 +145,7 @@
 (use-package nerd-icons-grep
   :ensure t
   :hook
-  (grep-mode . nerd-icons-grep-mode)
-  :custom
-  ;; This setting is a pre-requirement, so an icon can be displayed near each
-  ;; heading
-  (grep-use-headings t))
+  (grep-mode . nerd-icons-grep-mode))
 (use-package nerd-icons-xref
   :ensure t
   :hook
@@ -378,35 +370,10 @@ current buffer within the project or the current directory if not in a project."
                     (list (format "-g %s" glob)))))
     :ensure-system-package rg)
 
-(use-package ibuffer-project
-  :ensure t
-  :hook
-  (ibuffer .
-	   (lambda ()
-	     (setopt ibuffer-filter-groups (ibuffer-project-generate-filter-groups))
-	     (unless (eq ibuffer-sorting-mode 'project-file-relative)
-	       (ibuffer-do-sort-by-project-file-relative)))))
-
 (use-package imenu
   :defer t
   :custom
   (imenu-auto-rescan t))
-
-(use-package imenu-list
-  :ensure t
-  :bind
-  (("C-c =" . imenu-list-smart-toggle)
-   :map imenu-list-major-mode-map
-   ("M-<return>" . my-imenu-list-goto-entry))
-  :custom
-  (imenu-list-focus-after-activation t)
-  (imenu-list-position 'right)
-  :config
-  (defun my-imenu-list-goto-entry ()
-    "Goto entry and exit imenu"
-    (interactive)
-    (imenu-list-goto-entry)
-    (imenu-list-smart-toggle)))
 
 (use-package isearch
   :defer t
@@ -486,16 +453,11 @@ current buffer within the project or the current directory if not in a project."
   ;; (require 'org-latex-preview)
   )
 
-(use-package proced
-  :defer t
-  :custom
-  (proced-enable-color-flag t))
-
 (use-package prog-mode
   :defer t
   :hook
   (prog-mode . (lambda() (setq-local show-trailing-whitespace t)))
-  (prog-mode . (lambda () (display-fill-column-indicator-mode)))
+  (prog-mode . (lambda() (display-fill-column-indicator-mode)))
   (prog-mode .
     (lambda() (add-to-list 'write-file-functions 'delete-trailing-whitespace)))
   ;; Make URLs in comments clickable
@@ -519,6 +481,7 @@ current buffer within the project or the current directory if not in a project."
   (require 'magit-extras))
 
 (use-package recentf
+  :defer t
   :custom
   (recentf-auto-cleanup 'never) ;; disable to avoid recentf from scanning remote files through tramp
   (recentf-max-saved-items 100))
@@ -562,12 +525,7 @@ current buffer within the project or the current directory if not in a project."
   (windmove-default-keybindings))
 
 (use-package xwidget
-  :defer t
-  :config
-  (defun my-open-chatgpt ()
-    "Open ChatGPT in xwidget."
-    (interactive)
-    (xwidget-webkit-browse-url "https://chatgpt.com")))
+  :defer t)
 
 ;; Remove a bug appearing on Linux GTK and preventing the use of S-space (https://lists.gnu.org/archive/html/bug-gnu-emacs/2021-07/msg00071.html)
 (when (equal window-system 'pgtk)
@@ -746,7 +704,7 @@ current buffer within the project or the current directory if not in a project."
   :after vertico
   :ensure nil
   :bind
-  (:map vertico-map	("DEL" . vertico-directory-delete-char)))
+  (:map vertico-map ("DEL" . vertico-directory-delete-char)))
 
 (use-package vertico-prescient
   :ensure t
@@ -786,7 +744,8 @@ current buffer within the project or the current directory if not in a project."
   (consult-customize
    consult--source-bookmark consult--source-file-register
    consult--source-recent-file consult--source-project-recent-file
-   :preview-key "M-.")  :bind
+   :preview-key "M-.")
+  :bind
   (;; C-x bindings in `ctl-x-map'
    ("C-x b" . consult-buffer)
    ("C-x 4 b" . consult-buffer-other-window)
@@ -828,6 +787,7 @@ current buffer within the project or the current directory if not in a project."
 				   consult--source-project-buffer-hidden
 				   consult--source-project-recent-file-hidden
 				   consult--source-project-root-hidden))
+  ;; xref interface is managed by consult-xref
   (xref-show-xrefs-function #'consult-xref)
   (xref-show-definitions-function #'consult-xref))
 
@@ -838,7 +798,7 @@ current buffer within the project or the current directory if not in a project."
    ("C-;" . embark-dwim)        ;; good alternative: M-.
    ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
   :init
-  ;; Optionally replace the key help with a completing-read interface
+  ;; Replace the key help with a completing-read interface
   (setq prefix-help-command #'embark-prefix-help-command)
 
   ;; Show the Embark target at point via Eldoc. You may adjust the
