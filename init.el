@@ -2107,6 +2107,11 @@ VIS has the same meaning as for `ess-eval-region'."
   :after ess-site
   :bind (:map ess-r-mode-map ("<f9>" . ess-rscript)))
 
+(use-package ess-r-breakerofchains.el
+  :load-path "~/.emacs.d/lisp/"
+  :after ess-site
+  :bind (:map ess-r-mode-map ("C-c C-w" . ess-r-breakerofchains-run-to-point)))
+
 (use-package ess-view-data
   :ensure t
   :config
