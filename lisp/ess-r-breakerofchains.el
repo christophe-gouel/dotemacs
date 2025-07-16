@@ -64,14 +64,19 @@
 (defun ess-r-breakerofchains--line-continues-p ()
   "Return non‑nil if the current line *continues* a chain.
 This is the case when the logical end of code on the line is a pipe/infix
-operator, *or* the line ends within an open bracket context."
-  (let* ((eol (line-end-position))
-         (syntax (syntax-ppss eol)))
+operator, *or* the line ends within an open bracket context, *or* the line
+is a comment-only line (which should be considered as continuing the chain)."
+  (let* ((bol (line-beginning-position))
+         (eol (line-end-position))
+         (syntax (syntax-ppss eol))
+         (line-text (buffer-substring-no-properties bol eol)))
     (or (save-excursion
           (goto-char eol)
           (re-search-backward (ess-r-breakerofchains--pipe-regexp)
-                              (line-beginning-position) t))
-        (> (nth 0 syntax) 0))))
+                              bol t))
+        (> (nth 0 syntax) 0)
+        ;; Check if line is comment-only (whitespace + comment)
+        (string-match-p "^\\s-*#" line-text))))
 
 (defun ess-r-breakerofchains--find-chain-start ()
   "Return buffer position (point) of the first line of the chain."
