@@ -1539,6 +1539,8 @@ same directory as the working and insert a link to this file."
 (use-package ox
   :defer t
   :custom
+  ;; Option needed to export equations in proper format to odt/docx. Require the installation of latexml
+  (org-latex-to-mathml-convert-command "latexmlmath %i --presentationmathml=%o")
   (org-odt-preferred-output-format "docx")) ; require soffice to be on the PATH
 
 (use-package ox-beamer
@@ -1783,7 +1785,7 @@ the function will prompt the user to select a default audio device before runnin
   :bind ("C-c v" . my-visual-fill)
   :hook
   ((bibtex-mode LaTeX-mode markdown-mode org-mode) . my-visual-fill)
-  (TeX-mode . my-center-text))
+  ((org-mode LaTeX-mode) . my-center-text))
 
 (use-package yaml-mode
   :ensure t
@@ -2210,7 +2212,8 @@ This function is intended to be added to `after-save-hook`."
           (start-process "air-format" nil "air" "format" buffer-file-name)
           ;; Refresh the correct buffer from disk
           (with-current-buffer current-buffer
-            (revert-buffer nil t t)))
+            (revert-buffer nil t t)
+	    (flymake-start)))
       (message "Error: 'air' executable not found."))))
 
 (add-hook 'after-save-hook #'run-air-formatter)
