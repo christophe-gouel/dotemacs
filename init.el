@@ -685,7 +685,8 @@ current buffer within the project or the current directory if not in a project."
      ;; Grid
      (embark-keybinding grid)
      ;; The rest in postframe in the center of the screen
-     (t posframe)))
+;;     (t posframe)
+     ))
   (vertico-multiform-commands
    '(;; Standard vertico in minibuffer
      (flyspell-correct-at-point)))
@@ -696,9 +697,6 @@ current buffer within the project or the current directory if not in a project."
   :hook
   (after-init . vertico-mode)
   (after-init . vertico-multiform-mode))
-
-(use-package vertico-posframe
-  :ensure t)
 
 (use-package vertico-directory
   :after vertico

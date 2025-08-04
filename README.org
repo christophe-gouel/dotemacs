@@ -1012,7 +1012,8 @@ Use =company-box= for a better position of the autocompletion when using copilot
      ;; Grid
      (embark-keybinding grid)
      ;; The rest in postframe in the center of the screen
-     (t posframe)))
+;;     (t posframe)
+     ))
   (vertico-multiform-commands
    '(;; Standard vertico in minibuffer
      (flyspell-correct-at-point)))
@@ -1027,7 +1028,7 @@ Use =company-box= for a better position of the autocompletion when using copilot
 
 Use =vertico-postframe= to use a postframe for mini-buffer interactions. The postframe is located in the center of the screen, where the eyes tend to focus.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package vertico-posframe
   :ensure t)
 #+end_src
