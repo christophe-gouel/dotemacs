@@ -1780,13 +1780,20 @@ Use svg for previews. Much slower than png, but it is not blurry on MacOS.
 (use-package cdlatex
   :ensure t
   :config
-  ;; Prevent cdlatex from defining LaTeX math subscript everywhere
-  (define-key cdlatex-mode-map "_" nil)
   ;; Allow tab to be used to indent when the cursor is at the beginning of the line
-  (defun my-cdlatex-indent-maybe ()
-    "Indent in TeX when CDLaTeX is active"
-    (when (or (bolp) (looking-back "^[ \t]+"))
-      (LaTeX-indent-line)))
+  (defun my-cdlatex-latex-tab ()
+    "Indent in TeX when CDLaTeX is active, only in LaTeX mode.
+Returns t if it handled indentation."
+    (when (and (derived-mode-p 'latex-mode)
+               (or (bolp) (looking-back "^[ \t]+" nil)))
+      (LaTeX-indent-line)
+      t)) ; Return t to stop further tab processing
+  (defun my-cdlatex-markdown-tab ()
+    "For use in `cdlatex-tab-hook`: run `markdown-cycle` on TAB outside math mode in markdown."
+    (when (and (derived-mode-p 'markdown-mode)
+               (not (texmathp)))
+      (call-interactively #'markdown-cycle)
+      t)) ;; Return t to prevent further TAB handling
   (defun my-slow-company ()
     "Slow down company for a better use of CDLaTeX"
     (make-local-variable 'company-idle-delay)
@@ -1797,6 +1804,8 @@ Use svg for previews. Much slower than png, but it is not blurry on MacOS.
   :custom
   (cdlatex-math-modify-prefix ?§)
   (cdlatex-use-dollar-to-ensure-math nil) ; Use \( rather than $
+  ;; Prevent cdlatex from defining LaTeX math sub and superscript everywhere
+  (cdlatex-sub-super-scripts-outside-math-mode nil)
   (cdlatex-auto-help-delay 0.5)
   (cdlatex-command-alist
    '(("equ*" "Insert equation* env"   "" cdlatex-environment ("equation*") t nil)
@@ -1812,7 +1821,8 @@ Use svg for previews. Much slower than png, but it is not blurry on MacOS.
   ((LaTeX-mode markdown-mode) . turn-on-cdlatex)
   ((LaTeX-mode org-mode) . my-slow-company)
   (org-mode . turn-on-org-cdlatex)
-  (cdlatex-tab . my-cdlatex-indent-maybe))
+  (cdlatex-tab . my-cdlatex-latex-tab)
+  (cdlatex-tab . my-cdlatex-markdown-tab))
 #+end_src
 
 ** Markdown
@@ -1901,15 +1911,20 @@ same directory as the working and insert a link to this file."
       (reftex-citation)))
   (keymap-set markdown-mode-map "M-o" markdown-mode-style-map)
   :hook
-  (markdown-mode . turn-on-orgtbl)
   ;; Code borrowed from auctex to prettify symbols in markdown
-  (markdown-mode . (lambda()
-		     (require 'tex-mode)
-		     (require 'tex)
-		     (setq-local prettify-symbols-alist tex--prettify-symbols-alist)
-		     (add-function :override (local 'prettify-symbols-compose-predicate)
-				   #'TeX--prettify-symbols-compose-p)
-		     (prettify-symbols-mode t)))
+  (markdown-mode
+   .
+   (lambda()
+     (require 'tex-mode)
+     (require 'tex)
+     ;; Necessary to remove endash and emdash to avoid problems in tables
+     (setq-local prettify-symbols-alist
+		 (cl-remove-if (lambda (entry)
+				 (member (car entry) '("--" "---")))
+			       tex--prettify-symbols-alist))
+     (add-function :override (local 'prettify-symbols-compose-predicate)
+		   #'TeX--prettify-symbols-compose-p)
+     (prettify-symbols-mode t)))
   :bind (:map markdown-mode-map
 	      ("C-c [" . my-markdown-reftex-citation)
 	      ("C-c C-s e" . my-markdown-insert-gfm-code-block-braces)))
