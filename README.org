@@ -1212,12 +1212,14 @@ On macOS, for faster Git, install it with homebrew instead of using the default 
    ("i" . magit-init)
    ("l" . magit-log)
    ("P" . magit-push)
+   ("N" . forge-dispatch)
    ("r" . magit-run)
    ("s" . magit-git-command) ; s for shell
    ("S" . magit-git-command-topdir))
   :custom
   (magit-diff-refine-hunk (quote all))
   (magit-format-file-function #'magit-format-file-nerd-icons)
+  (magit-pull-or-fetch t)
   (magit-view-git-manual-method 'man)	; Allow to view Git man pages inside Emacs
   :config
   ; Do not diff when committing
@@ -1255,7 +1257,7 @@ Support for syntax highlighting of Git configuration files
   :mode ("/.dockerignore\\'" . gitignore-mode)) ; works also with other ignore files
 #+end_src
 
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
 (use-package forge
   :after magit
   :ensure t)

@@ -846,12 +846,14 @@ current buffer within the project or the current directory if not in a project."
    ("i" . magit-init)
    ("l" . magit-log)
    ("P" . magit-push)
+   ("N" . forge-dispatch)
    ("r" . magit-run)
    ("s" . magit-git-command) ; s for shell
    ("S" . magit-git-command-topdir))
   :custom
   (magit-diff-refine-hunk (quote all))
   (magit-format-file-function #'magit-format-file-nerd-icons)
+  (magit-pull-or-fetch t)
   (magit-view-git-manual-method 'man)	; Allow to view Git man pages inside Emacs
   :config
   ; Do not diff when committing
@@ -875,6 +877,10 @@ current buffer within the project or the current directory if not in a project."
 (use-package git-modes
   :ensure t
   :mode ("/.dockerignore\\'" . gitignore-mode)) ; works also with other ignore files
+
+(use-package forge
+  :after magit
+  :ensure t)
 
 (use-package chatgpt-shell
   :ensure t
