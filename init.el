@@ -512,6 +512,10 @@ current buffer within the project or the current directory if not in a project."
   (when (and (display-graphic-p) (not (server-running-p)))
     (server-start)))
 
+(use-package emacs-everywhere
+  :ensure t
+  :defer t)
+
 (setopt tramp-ssh-controlmaster-options
 	(concat
 	 "-o ControlPath=/tmp/ssh-ControlPath-%%r@%%h:%%p "

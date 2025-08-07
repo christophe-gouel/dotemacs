@@ -768,6 +768,14 @@ I never use it
     (server-start)))
 #+end_src
 
+Install =emacs-everywhere= so that Emacs can be used to input text in every apps.
+
+#+begin_src emacs-lisp
+(use-package emacs-everywhere
+  :ensure t
+  :defer t)
+#+end_src
+
 ** Tramp
 
 #+begin_src emacs-lisp
