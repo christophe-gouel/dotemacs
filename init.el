@@ -752,6 +752,7 @@ current buffer within the project or the current directory if not in a project."
    ("C-x 5 b" . consult-buffer-other-frame)
    ("C-x r b" . consult-bookmark)
    ;; M-s bindings in `search-map'
+   ("M-s d" . consult-find)
    ("M-s g" . consult-grep)
    ("M-s G" . consult-git-grep)
    ("M-s r" . consult-ripgrep)
@@ -760,12 +761,14 @@ current buffer within the project or the current directory if not in a project."
    ("M-s s" . consult-line-thing-at-point)
    ("M-s S" . consult-line-multi-thing-at-point)
    ;; M-g bindings in `goto-map'
-   ("M-s d" . consult-find)
    ("M-g f" . consult-flymake)
    ("M-g g" . consult-goto-line)
+   ("M-g M-g" . consult-goto-line)
    ("M-g i" . consult-imenu)
    ("M-g I" . consult-imenu-multi)
    ("M-g o" . consult-outline)
+   ("M-g m" . consult-mark)
+   ("M-g M" . consult-global-mark)
    ("M-s k" . consult-keep-lines)
    ("M-s u" . consult-focus-lines)
    ;; Other custom bindings
