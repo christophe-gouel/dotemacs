@@ -494,11 +494,6 @@ current buffer within the project or the current directory if not in a project."
 (setopt initial-scratch-message nil)
 
 (setopt
-  ;; pixel-scroll-precision-mode seems to be causing my scrolling pbs
-  ;; pixel-scroll-precision-mode t
-  ;; TEMP
-  ;; Scroll step if the pointer moves outside view
-  ;; scroll-step 1
   ;; Marker distance from center (don't jump to center).
   scroll-conservatively 101
   ;; Start scrolling when marker scroll-margin from top/bottom
@@ -1244,7 +1239,7 @@ This is similar to `citar-open-notes' but displays the notes in another window."
       ("part" "chapter" "section" "subsection" "subsubsection" "paragraph" "subparagraph"
        "part*" "chapter*" "section*" "subsection*" "subsubsection*" "paragraph*"
        "subparagraph*" "alert" "emph" "textit" "textsl" "textmd" "textrm" "textsf" "texttt" "textbf"
-       "textsc" "textup" "caption" "frametitle" "framesubtitle"))
+       "textsc" "textup" "textsubscript" "caption" "frametitle" "framesubtitle"))
      (2
       ("textcolor"))
      ("(∞)[{2}]"
@@ -1418,7 +1413,7 @@ EDIT, when non-nil, will edit the code block in an indirect buffer after inserti
                  'markdown-gfm-language-history))
              (quit "")))
          current-prefix-arg))
-  (let ((Markdown-Code-Block-Braces t))
+  (let ((markdown-code-block-braces t))
     (markdown-insert-gfm-code-block lang edit)))
   ;; Code to import screenshots in markdown files
   ;; from <https://www.nistara.net/post/2022-11-14-emacs-markdown-screenshots> and
@@ -1484,6 +1479,8 @@ same directory as the working and insert a link to this file."
   (markdown-mode . pandoc-mode)
   (pandoc-mode . pandoc-load-default-settings))
 
+; Before loading org-mode, disable org-persist which creates problems
+(setq org-element-cache-persistent nil)
 (use-package org
   ;; :load-path "~/.emacs.d/elpa/org-mode/lisp/"
   ;; :mode ("\\.org\\'" . org-mode)
@@ -1537,7 +1534,6 @@ same directory as the working and insert a link to this file."
   (keymap-set org-mode-map "M-o" org-style-map)
   :bind (:map org-mode-map
 	      ("C-c o" . org-open-at-point)
-	      ("C-c =" . imenu-list)
 	      ("M-g o" . consult-org-heading)))
 
 (use-package org-appear
@@ -1991,19 +1987,25 @@ the function will prompt the user to select a default audio device before runnin
   :hook
   ((LaTeX-mode markdown-mode org-mode ess-r-mode inferior-ess-r-mode) . aas-activate-for-major-mode)
   :config
+  (defmacro aas-set-shared-r-snippets (&rest args)
+    `(progn
+       (aas-set-snippets 'ess-r-mode ,@args)
+       (aas-set-snippets 'inferior-ess-r-mode ,@args)))
   (aas-set-snippets 'text-mode
     "ùù" '(yas "\\\\( $0 \\\\)")
     "ùm" '(yas "\\[ $0 \\]"))
   (aas-set-snippets 'markdown-mode
     "ùù" '(yas "\\$$0\\$")
     "ùm" '(yas "\\$\\$\n$0\n\\$\\$"))
-  (aas-set-snippets 'ess-r-mode
-    ";f" '(yas "function($1) {\n  $2\n}")
-    ";if" '(yas "if ($1) {\n  $2\n}")
-    ";ie" '(yas "if ($1) {\n  $2\n} else {\n  $3\n}")
-    ";p" " |> print(n = 250)")
+  (aas-set-shared-r-snippets
+   ";fo" '(yas "for ($1 in $2) {\n  $3\n}")
+   ";fu" '(yas "function($1) {\n  $2\n}")
+   ";if" '(yas "if ($1) {\n  $2\n}")
+   ";ie" '(yas "if ($1) {\n  $2\n} else {\n  $3\n}")
+   ";p" " |>\n print(n = 1000)"
+   ";su" '(yas " |>\n  summarize($0)")
+   ";fi" '(yas " |>\n filter($0)"))
   (aas-set-snippets 'inferior-ess-r-mode
-    ";p" " |> print(n = 250)"
     ";str" " |> str()"))
 
 (use-package laas
@@ -2044,7 +2046,10 @@ the function will prompt the user to select a default audio device before runnin
   :ensure t
   :defer 2
   :init
-  (global-hl-todo-mode))
+  (global-hl-todo-mode)
+  :hook
+  ;; Fix for auctex
+  (TeX-update-style . hl-todo-mode))
 
 (use-package ess-site
   :ensure ess

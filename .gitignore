@@ -34,3 +34,4 @@ multisession/
 dirvish/
 *.sqlite
 gams-statement.txt
+speed-type/
