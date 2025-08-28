@@ -443,7 +443,9 @@ current buffer within the project or the current directory if not in a project."
   :ensure t
   :if (display-graphic-p)
   :mode  ("\\.pdf\\'" . pdf-view-mode)
-  :bind (:map pdf-view-mode-map ("C-s" . isearch-forward))
+  :bind
+  (:map pdf-view-mode-map ("C-s" . isearch-forward)
+   :map pdf-outline-buffer-mode-map ("RET" . pdf-outline-follow-link-and-quit))
   :custom
   (pdf-view-display-size 'fit-page)
   (pdf-view-selection-style 'glyph)
@@ -1219,7 +1221,7 @@ This is similar to `citar-open-notes' but displays the notes in another window."
   ;; Personalize the list of commands to be folded
   (TeX-fold-macro-spec-list
    '(("[f]"
-      ("footnote" "marginpar"))
+      ("footnote" "marginpar" "footcite"))
      ("[c]"
       ("citeyear" "citeauthor" "citep" "citet" "cite" "textcite" "parencite"))
      ("[l]"
@@ -1239,14 +1241,16 @@ This is similar to `citar-open-notes' but displays the notes in another window."
      ("TM"
       ("texttrademark"))
      (1
-      ("part" "chapter" "section" "subsection" "subsubsection" "paragraph" "subparagraph"
-       "part*" "chapter*" "section*" "subsection*" "subsubsection*" "paragraph*"
-       "subparagraph*" "alert" "emph" "textit" "textsl" "textmd" "textrm" "textsf" "texttt" "textbf"
-       "textsc" "textup" "textsubscript" "caption" "frametitle" "framesubtitle"))
+      ("part" "chapter" "section" "subsection" "subsubsection" "paragraph"
+       "subparagraph" "part*" "chapter*" "section*" "subsection*"
+       "subsubsection*" "paragraph*" "subparagraph*" "alert" "emph" "textit"
+       "textsl" "textmd" "textrm" "textsf" "texttt" "textbf" "textsc" "textup"
+       "textsubscript" "caption" "frametitle" "framesubtitle"
+       "beamergotobutton"))
      (2
       ("textcolor"))
-     ("(∞)[{2}]"
-      ("href"))))
+     ("[[∞][{2}]]"
+      ("hyperlink")))) ; It does not seem to work well with href (probably because there is already some syntax highlighting
   ;; Prevent folding of math to let prettify-symbols do the job
   (TeX-fold-math-spec-list-internal nil)
   (TeX-fold-math-spec-list nil)
@@ -1598,8 +1602,7 @@ same directory as the working and insert a link to this file."
 	("<left>" . nil)
 	("<right>" . nil)
 	("<prior>" . org-present-prev)
-	("<next>" . org-present-next)
-	))
+	("<next>" . org-present-next)))
 
 (use-package lte
   :ensure t
@@ -1999,7 +2002,7 @@ the function will prompt the user to select a default audio device before runnin
     "ùm" '(yas "\\[ $0 \\]"))
   (aas-set-snippets 'markdown-mode
     "ùù" '(yas "\\$$0\\$")
-    "ùm" '(yas "\\$\\$\n$0\n\\$\\$"))
+    "ùm" '(yas "\\$\\$$0\\$\\$")) ; For GFM it is important to remove spaces and linebreaks after and before the $
   (aas-set-shared-r-snippets
    ";fo" '(yas "for ($1 in $2) {\n  $3\n}")
    ";fu" '(yas "function($1) {\n  $2\n}")
