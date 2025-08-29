@@ -1553,6 +1553,20 @@ same directory as the working and insert a link to this file."
   :hook
   (org-mode . org-fragtog-mode))
 
+(use-package overleaf
+  :ensure t
+  :defer t
+  :custom
+  (overleaf-use-nerdfont t "Use nerfont icons for the modeline.")
+  :config
+  (let ((cookie-file "~/.overleaf-cookies"))
+    (setq overleaf-save-cookies (overleaf-save-cookies-to-file cookie-file)
+	  overleaf-cookies (overleaf-read-cookies-from-file cookie-file)))
+  (with-eval-after-load 'latex
+    (keymap-set LaTeX-mode-map "C-c o" overleaf-command-map))
+  (with-eval-after-load 'bibtex
+    (keymap-set bibtex-mode-map "C-c o" overleaf-command-map)))
+
 (use-package oc
   :after org
   :custom
