@@ -1299,7 +1299,9 @@ This is similar to `citar-open-notes' but displays the notes in another window."
   :hook
   (TeX-mode . TeX-fold-mode)
   :custom
+  (TeX-fold-auto t)
   (TeX-fold-auto-reveal t)
+  (TeX-fold-quotes-on-insert t)
   ;; Personalize the list of commands to be folded
   (TeX-fold-macro-spec-list
    '(("[f]"
@@ -1340,9 +1342,10 @@ This is similar to `citar-open-notes' but displays the notes in another window."
      ("[[∞][{2}]]"
       ("hyperlink")))) ; It does not seem to work well with href (probably because there is already some syntax highlighting
   ;; Prevent folding of math to let prettify-symbols do the job
-  (TeX-fold-math-spec-list-internal nil)
-  (TeX-fold-math-spec-list nil)
-  (LaTeX-fold-math-spec-list nil)
+  (TeX-fold-type-list '(env macro))
+  ;; (TeX-fold-math-spec-list-internal nil)
+  ;; (TeX-fold-math-spec-list nil)
+  ;; (LaTeX-fold-math-spec-list nil)
   :config
   (add-to-list 'TeX-fold-begin-end-spec-list '((TeX-fold-format-theorem-environment . "◼") ("figure"))))
 
