@@ -1140,6 +1140,12 @@ This is similar to `citar-open-notes' but displays the notes in another window."
    ("C-c c c" . citar-insert-citation)
    ("C-c c C" . (lambda () (interactive) (let ((current-prefix-arg '(4))) (call-interactively #'citar-insert-citation))))))
 
+(use-package citar-embark
+  :after (citar embark)
+  :ensure t
+  :no-require
+  :config (citar-embark-mode))
+
 (defun my-screenshot-to-file (arg)
   "Take a screenshot or copy from the clipboard (depending on OS),
   save it to a file in the 'images' folder, and copy the relative file path to the kill ring.
@@ -1202,10 +1208,7 @@ This is similar to `citar-open-notes' but displays the notes in another window."
   :ensure auctex
   :hook
   (TeX-mode . latex-math-mode)
-  (TeX-mode . TeX-fold-buffer)
   (TeX-mode . flymake-mode)
-  :hook
-  (TeX-mode . TeX-fold-mode)
   :custom
   (TeX-auto-save t)
   (TeX-save-query nil) ; don't ask to save the file before compiling
@@ -1223,47 +1226,6 @@ This is similar to `citar-open-notes' but displays the notes in another window."
   (TeX-source-correlate-mode t)
   (TeX-source-correlate-start-server t)
   ;; (TeX-source-correlate-method (quote synctex))
-
-  ;; Fold-mode
-  (TeX-fold-auto-reveal t)
-  ;; Personalize the list of commands to be folded
-  (TeX-fold-macro-spec-list
-   '(("[f]"
-      ("footnote" "marginpar" "footcite"))
-     ("[c]"
-      ("citeyear" "citeauthor" "citep" "citet" "cite" "textcite" "parencite"))
-     ("[l]"
-      ("label"))
-     ("[r]"
-      ("ref" "pageref" "eqref" "footref" "fref" "Fref" "cref" "Cref"))
-     ("[i]"
-      ("index" "glossary"))
-     ("[1]:||*"
-      ("item"))
-     ("..."
-      ("dots"))
-     ("(C)"
-      ("copyright"))
-     ("(R)"
-      ("textregistered"))
-     ("TM"
-      ("texttrademark"))
-     (1
-      ("part" "chapter" "section" "subsection" "subsubsection" "paragraph"
-       "subparagraph" "part*" "chapter*" "section*" "subsection*"
-       "subsubsection*" "paragraph*" "subparagraph*" "alert" "emph" "textit"
-       "textsl" "textmd" "textrm" "textsf" "texttt" "textbf" "textsc" "textup"
-       "textsubscript" "caption" "frametitle" "framesubtitle"
-       "beamergotobutton"))
-     (2
-      ("textcolor"))
-     ("[[∞][{2}]]"
-      ("hyperlink")))) ; It does not seem to work well with href (probably because there is already some syntax highlighting
-  ;; Prevent folding of math to let prettify-symbols do the job
-  (TeX-fold-math-spec-list-internal nil)
-  (TeX-fold-math-spec-list nil)
-  (LaTeX-fold-math-spec-list nil)
-
   (TeX-master 'dwim)
   :config
   ;; (setq-default TeX-auto-parse-length 200
@@ -1325,6 +1287,60 @@ This is similar to `citar-open-notes' but displays the notes in another window."
   (reftex-save-parse-info t)
   (reftex-use-multiple-selection-buffers t))
 
+(use-package tex-fold
+  :ensure nil
+  :hook
+  (TeX-mode . TeX-fold-buffer)
+  :hook
+  (TeX-mode . TeX-fold-mode)
+  :custom
+  (TeX-fold-auto-reveal t)
+  ;; Personalize the list of commands to be folded
+  (TeX-fold-macro-spec-list
+   '(("[f]"
+      ("footnote" "marginpar" "footcite"))
+     ("[c]"
+      ("citeyear" "cite" "textcite"))
+     ("({1})"
+      ("citetext" "citep" "parencite" "citeyearpar"))
+     ("[l]"
+      ("label"))
+     ("[r]"
+      ("ref" "pageref" "eqref" "footref" "fref" "Fref" "cref" "Cref"))
+     ("[i]"
+      ("index" "glossary"))
+     ("[1]:||*"
+      ("item"))
+     ("..."
+      ("dots"))
+     (TeX-fold-alert-display ("alert"))
+     (TeX-fold-begin-display ("begin"))
+     (TeX-fold-end-display ("end"))
+     (TeX-fold-textcolor-display ("textcolor"))
+     ("(C)"
+      ("copyright"))
+     ("(R)"
+      ("textregistered"))
+     ("TM"
+      ("texttrademark"))
+     ("📶: {1}"
+      ("includegraphics"))
+     (1
+      ("part" "chapter" "section" "subsection" "subsubsection" "paragraph"
+       "subparagraph" "part*" "chapter*" "section*" "subsection*"
+       "subsubsection*" "paragraph*" "subparagraph*" "emph" "textit"
+       "textsl" "textmd" "textrm" "textsf" "texttt" "textbf" "textsc" "textup"
+       "textsubscript" "caption" "frametitle" "framesubtitle"
+       "beamergotobutton" "Citeauthor" "citeauthor" "citet" "Citet" "citealp"))
+     ("[[∞][{2}]]"
+      ("hyperlink")))) ; It does not seem to work well with href (probably because there is already some syntax highlighting
+  ;; Prevent folding of math to let prettify-symbols do the job
+  (TeX-fold-math-spec-list-internal nil)
+  (TeX-fold-math-spec-list nil)
+  (LaTeX-fold-math-spec-list nil)
+  :config
+  (add-to-list 'TeX-fold-begin-end-spec-list '((TeX-fold-format-theorem-environment . "◼") ("figure"))))
+
 (use-package preview
   :ensure nil
   :after latex
@@ -1365,7 +1381,7 @@ Returns t if it handled indentation."
     (setq cdlatex-math-symbol-prefix (kbd "²"))) ; correspond to key "²"
     ;; (setq cdlatex-math-symbol-prefix ?\262)) ; correspond to key "²"
   :custom
-  (cdlatex-math-modify-prefix ?§)
+  (cdlatex-math-modify-prefix [f12])
   (cdlatex-use-dollar-to-ensure-math nil) ; Use \( rather than $
   ;; Prevent cdlatex from defining LaTeX math sub and superscript everywhere
   (cdlatex-sub-super-scripts-outside-math-mode nil)
@@ -1386,6 +1402,20 @@ Returns t if it handled indentation."
   (org-mode . turn-on-org-cdlatex)
   (cdlatex-tab . my-cdlatex-latex-tab)
   (cdlatex-tab . my-cdlatex-markdown-tab))
+
+(use-package overleaf
+  :ensure t
+  :defer t
+  :custom
+  (overleaf-use-nerdfont t "Use nerfont icons for the modeline.")
+  :config
+  (let ((cookie-file "~/.overleaf-cookies"))
+    (setq overleaf-save-cookies (overleaf-save-cookies-to-file cookie-file)
+	  overleaf-cookies (overleaf-read-cookies-from-file cookie-file)))
+  (with-eval-after-load 'latex
+    (keymap-set LaTeX-mode-map "C-c o" overleaf-command-map))
+  (with-eval-after-load 'bibtex
+    (keymap-set bibtex-mode-map "C-c o" overleaf-command-map)))
 
 (use-package markdown-mode
   :ensure t
@@ -1526,7 +1556,7 @@ same directory as the working and insert a link to this file."
   :config
   (unless (equal system-type 'darwin)
     (org-defkey org-cdlatex-mode-map "²" 'cdlatex-math-symbol))
-  (org-defkey org-cdlatex-mode-map "§" 'org-cdlatex-math-modify)
+  (org-defkey org-cdlatex-mode-map "'" nil)
   (if (equal system-type 'gnu/linux)
       (setopt org-format-latex-options
 	      (plist-put org-format-latex-options :scale 0.7))
@@ -1560,20 +1590,6 @@ same directory as the working and insert a link to this file."
   :ensure t
   :hook
   (org-mode . org-fragtog-mode))
-
-(use-package overleaf
-  :ensure t
-  :defer t
-  :custom
-  (overleaf-use-nerdfont t "Use nerfont icons for the modeline.")
-  :config
-  (let ((cookie-file "~/.overleaf-cookies"))
-    (setq overleaf-save-cookies (overleaf-save-cookies-to-file cookie-file)
-	  overleaf-cookies (overleaf-read-cookies-from-file cookie-file)))
-  (with-eval-after-load 'latex
-    (keymap-set LaTeX-mode-map "C-c o" overleaf-command-map))
-  (with-eval-after-load 'bibtex
-    (keymap-set bibtex-mode-map "C-c o" overleaf-command-map)))
 
 (use-package oc
   :after org
@@ -1758,8 +1774,9 @@ the function will prompt the user to select a default audio device before runnin
 	ispell-hunspell-dictionary-alist ispell-local-dictionary-alist
 	ispell-personal-dictionary "~/.emacs.d/.hunspell_en_US"
 	ispell-silently-savep t)
-  :bind
-  ("C-M-$" . ispell-word)
+  :bind (:map flyspell-mode-map
+	      ("C-."   . nil) ; Remove flyspell-auto-correct-word to leave the key to embark
+	      ("C-M-$" . ispell-word))
   :ensure-system-package hunspell)
 
 (use-package flyspell-correct
