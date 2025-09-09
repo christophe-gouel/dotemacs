@@ -91,7 +91,7 @@
   "Adjust font for 27 inch screen."
   (interactive)
   (set-face-attribute 'default nil :family "JetBrainsMono NF" :height 140)
-  (plist-put org-latex-preview-appearance-options :zoom 1.5)
+  ;; (plist-put org-latex-preview-appearance-options :zoom 1.5)
   (setopt org-format-latex-options
             (plist-put org-format-latex-options :scale 1.8)
           preview-scale-function 1.4))
@@ -334,7 +334,7 @@
 
 (use-package expand-region
   :ensure t
-  :bind ("C-!" . er/expand-region))
+  :bind ([remap mark-word] . er/expand-region))
 
 (use-package grep
   :defer t
@@ -425,6 +425,7 @@ current buffer within the project or the current directory if not in a project."
         mouse-yank-at-point t     ; coller avec la souris
         case-fold-search t       ; recherche sans égard à la casse
 	enable-recursive-minibuffers t
+	minibuffer-depth-indicate-mode t
 	help-window-select t) ; Jump to help window when it opens
 (delete-selection-mode t)               ; entrée efface texte sélectionné
 (fset 'yes-or-no-p 'y-or-n-p)           ; Replace yes or no with y or n
@@ -444,7 +445,11 @@ current buffer within the project or the current directory if not in a project."
   :if (display-graphic-p)
   :mode  ("\\.pdf\\'" . pdf-view-mode)
   :bind
-  (:map pdf-view-mode-map ("C-s" . isearch-forward)
+  (:map pdf-view-mode-map
+	("C-s"     . isearch-forward)
+	;; It is necessary to redeclare the 2 bindings below because they are overriden by consult
+	("M-g g"   . pdf-view-goto-page)
+	("M-g M-g" . pdf-view-goto-page)
    :map pdf-outline-buffer-mode-map ("RET" . pdf-outline-follow-link-and-quit))
   :custom
   (pdf-view-display-size 'fit-page)
@@ -749,7 +754,7 @@ current buffer within the project or the current directory if not in a project."
    :preview-key "M-.")
   :bind
   (;; C-x bindings in `ctl-x-map'
-   ("C-x b" . consult-buffer)
+   ("C-x b"   . consult-buffer)
    ("C-x 4 b" . consult-buffer-other-window)
    ("C-x 5 b" . consult-buffer-other-frame)
    ("C-x r b" . consult-bookmark)
@@ -763,16 +768,16 @@ current buffer within the project or the current directory if not in a project."
    ("M-s s" . consult-line-thing-at-point)
    ("M-s S" . consult-line-multi-thing-at-point)
    ;; M-g bindings in `goto-map'
-   ("M-g f" . consult-flymake)
-   ("M-g g" . consult-goto-line)
+   ("M-g f"   . consult-flymake)
+   ("M-g g"   . consult-goto-line)
    ("M-g M-g" . consult-goto-line)
-   ("M-g i" . consult-imenu)
-   ("M-g I" . consult-imenu-multi)
-   ("M-g o" . consult-outline)
-   ("M-g m" . consult-mark)
-   ("M-g M" . consult-global-mark)
-   ("M-s k" . consult-keep-lines)
-   ("M-s u" . consult-focus-lines)
+   ("M-g i"   . consult-imenu)
+   ("M-g I"   . consult-imenu-multi)
+   ("M-g o"   . consult-outline)
+   ("M-g m"   . consult-mark)
+   ("M-g M"   . consult-global-mark)
+   ("M-s k"   . consult-keep-lines)
+   ("M-s u"   . consult-focus-lines)
    ;; Other custom bindings
    ("M-#"   . consult-register)
    ("M-y"   . consult-yank-pop)
@@ -1603,7 +1608,7 @@ same directory as the working and insert a link to this file."
   :ensure t
   :after org
   :vc (:url "https://github.com/bdarcus/oxr")
-  :bind (:map org-mode-map ("C-c ]" . oxr-insert-ref)))
+  :bind (:map org-mode-map ("C-c )" . oxr-insert-ref)))
 
 (use-package ox
   :defer t
