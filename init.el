@@ -962,7 +962,7 @@ Never replace a backslash followed by a percentage sign with just a percentage s
   (chatgpt-shell-openai-key
    (auth-source-pick-first-password :host "api.openai.com"))
   ;; Other options
-  (chatgpt-shell-model-version "gpt-4.1")
+  (chatgpt-shell-model-version "gpt-5")
   (chatgpt-shell-prompt-header-proofread-region
    "Please help me proofread the following text and only reply with fixed text.
 Detect first the language of the text and respect it in the output.
@@ -982,6 +982,8 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
   ;; :custom
   ;; (gptel-use-curl nil)
   :config
+  (setopt gptel-backend (gptel-make-gh-copilot "Copilot")
+  	gptel-model 'gpt-5)
   (add-to-list 'gptel-directives
 	       '(academic . "You are an editor specialized in academic paper in economics. You are here to help me generate the best text for my academic articles. I will provide you texts and I would like you to review them for any spelling, grammar, or punctuation errors. Do not stop at simple proofreading, if it is useful, propose to refine the content's structure, style, and clarity. Once you have finished editing the text, provide me with any necessary corrections or suggestions for improving the text. Please respect any LaTeX, org, or markdown command. Avoid passive form."))
   (add-to-list 'gptel-directives
@@ -997,6 +999,12 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
   (aidermacs-use-architect-mode t)
   (aidermacs-default-model "sonnet")
   :bind (("C-c a" . aidermacs-transient-menu)))
+
+(use-package eca
+  :ensure t
+  :defer t
+  :custom
+  (eca-chat-custom-model "github-copilot/gpt-5"))
 
 (use-package eshell-git-prompt
   :ensure t
