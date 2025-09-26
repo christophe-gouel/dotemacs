@@ -13,17 +13,17 @@
 (use-package package
   :config
   (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
-  (package-initialize)
-  (defvar-keymap pkg-ops-map
+  (defvar-keymap package-operation-map
+    :doc "Keymap for package operation"
     :name "Package"
-    "d" '("delete"     . package-delete)
-    "h" '("describe"   . describe-package)
-    "i" '("install"    . package-install)
-    "l" '("list"       . list-packages)
-    "r" '("reinstall"  . package-reinstall)
-    "u" '("updage all" . package-upgrade-all)
+    "d" '("delete"        . package-delete)
+    "h" '("describe"      . describe-package)
+    "i" '("install"       . package-install)
+    "l" '("list"          . list-packages)
+    "r" '("reinstall"     . package-reinstall)
+    "u" '("updage all"    . package-upgrade-all)
     "v" '("updage all vc" . package-vc-upgrade-all))
-  (keymap-global-set "C-c p" pkg-ops-map))
+  :bind-keymap ("C-c p" . package-operation-map))
 
 (use-package use-package)
 
@@ -1580,6 +1580,7 @@ same directory as the working and insert a link to this file."
      (R . t)
      (shell . t)))
   (defvar-keymap org-style-map
+    :doc "Keymap for styling text in org-mode"
     :name "Org emphasis"
     "b" '("bold" . (lambda () (interactive) (org-emphasize ?*)))
     "i" '("italic" . (lambda () (interactive) (org-emphasize ?/)))
