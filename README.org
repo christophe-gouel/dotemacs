@@ -305,20 +305,6 @@ Highlight the current line
   (auto-revert-verbose nil)) ; Prevent autorevert from generating messages
 #+end_src
 
-** Calc
-
-#+begin_src emacs-lisp
-(use-package casual-calc
-  :ensure casual
-  :after calc
-  :bind (:map
-         calc-mode-map
-         ("C-o" . casual-calc-tmenu)
-         :map
-         calc-alg-map
-         ("C-o" . casual-calc-tmenu)))
-#+end_src
-
 ** Compilation
 
 #+begin_src emacs-lisp
@@ -775,6 +761,23 @@ Install =emacs-everywhere= so that Emacs can be used to input text in every apps
 #+end_src
 
 * Keys
+
+** Casual
+
+#+begin_src emacs-lisp
+(use-package casual
+  :ensure t)
+(with-eval-after-load 'bibtex
+  (keymap-set bibtex-mode-map "<f6>" #'casual-bibtex-tmenu))
+(with-eval-after-load 'calc
+  (keymap-set calc-mode-map "<f6>" #'casual-calc-tmenu))
+(with-eval-after-load 'calc-ext
+  (keymap-set calc-alg-map "<f6>" #'casual-calc-tmenu))
+(with-eval-after-load 'compile
+  (keymap-set compilation-mode-map "<f6>" #'casual-compile-tmenu))
+(with-eval-after-load 'grep
+  (keymap-set grep-mode-map "<f6>" #'casual-compile-tmenu))
+#+end_src
 
 ** Custom keybindings
 
