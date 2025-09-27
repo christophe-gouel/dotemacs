@@ -553,25 +553,6 @@ current buffer within the project or the current directory if not in a project."
 	      ([backtab] . outline-cycle-buffer)))
 #+end_src
 
-Use =bicycle= to easily cycle visibility in outline minor mode (à la =orgmode=).
-
-#+begin_src emacs-lisp :tangle no
-(use-package bicycle
-  :ensure t
-  :after outline
-  :bind (:map outline-minor-mode-map
-	      ([C-tab] . bicycle-cycle)
-	      ([S-tab] . my-bibycle-cycle-global)
-	      ([backtab] . my-bibycle-cycle-global))
-  :config
-  ;; bicycle-cycle-global should not be used in org-mode, hence this function
-  (defun my-bibycle-cycle-global ()
-    (interactive)
-    (if (derived-mode-p 'org-mode)
-        (org-cycle-global)
-      (bicycle-cycle-global))))
-#+end_src
-
 Use =outline-minor-faces= to use a special face for outline sections.
 
 #+begin_src emacs-lisp
