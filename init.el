@@ -1282,7 +1282,6 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
   :hook
   (TeX-mode . TeX-fold-mode)
   :custom
-  (TeX-fold-auto t)
   (TeX-fold-auto-reveal t)
   (TeX-fold-quotes-on-insert t)
   ;; Personalize the list of commands to be folded
@@ -1326,9 +1325,6 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
       ("hyperlink")))) ; It does not seem to work well with href (probably because there is already some syntax highlighting
   ;; Prevent folding of math to let prettify-symbols do the job
   (TeX-fold-type-list '(env macro))
-  ;; (TeX-fold-math-spec-list-internal nil)
-  ;; (TeX-fold-math-spec-list nil)
-  ;; (LaTeX-fold-math-spec-list nil)
   :config
   (add-to-list 'TeX-fold-begin-end-spec-list '((TeX-fold-format-theorem-environment . "◼") ("figure"))))
 
@@ -2063,6 +2059,12 @@ the function will prompt the user to select a default audio device before runnin
 	nil)))
     (aas-set-snippets 'laas-mode
     :cond #'texmathp ; expand only while in math
+    ";("  (lambda () (interactive)
+	    (yas-expand-snippet "\\left( $0 \\right)"))
+    ";;("  (lambda () (interactive)
+	    (yas-expand-snippet "\\left[ $0 \\right]"))
+    ";;;("  (lambda () (interactive)
+	    (yas-expand-snippet "\\left\\\\{ $0 \\right\\\\}"))
     "sum" "\\sum"
     "Sum" (lambda () (interactive)
 	    (yas-expand-snippet "\\sum_{$1}^{$2} $0"))))
