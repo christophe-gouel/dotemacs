@@ -840,33 +840,33 @@ current buffer within the project or the current directory if not in a project."
 
 (use-package magit
   :ensure t
-  :bind
-  (:prefix-map my-magit-prefix-map
-   :prefix-docstring "Magit prefix map"
-   :prefix "C-c g"
-   ("b" . magit-branch)
-   ("c" . magit-commit)
-   ("C" . magit-clone)
-   ("d" . magit-dispatch)
-   ("f" . magit-file-dispatch)
-   ("F" . magit-pull)
-   ("g" . magit-status)
-   ("i" . magit-init)
-   ("l" . magit-log)
-   ("P" . magit-push)
-   ("N" . forge-dispatch)
-   ("r" . magit-run)
-   ("s" . magit-git-command) ; s for shell
-   ("S" . magit-git-command-topdir))
   :custom
   (magit-diff-refine-hunk (quote all))
   (magit-format-file-function #'magit-format-file-nerd-icons)
   (magit-pull-or-fetch t)
   (magit-view-git-manual-method 'man)	; Allow to view Git man pages inside Emacs
   :config
+  (defvar-keymap magit-prefix-map
+    :doc "keymap for Magit"
+    :name "Magit"
+    "b" '("Branch"               . magit-branch)
+    "c" '("Commit"               . magit-commit)
+    "C" '("Clone"                . magit-clone)
+    "d" '("Dispatch"             . magit-dispatch)
+    "f" '("File dispatch"        . magit-file-dispatch)
+    "F" '("Pull"                 . magit-pull)
+    "g" '("Status"               . magit-status)
+    "i" '("Init"                 . magit-init)
+    "l" '("Log"                  . magit-log)
+    "P" '("Push"                 . magit-push)
+    "N" '("Forge dispatch"       . forge-dispatch)
+    "r" '("Run"                  . magit-run)
+    "s" '("Git command"          . magit-git-command)
+    "S" '("Git command (topdir)" . magit-git-command-topdir))
   ; Do not diff when committing
   (remove-hook 'server-switch-hook 'magit-commit-diff)
-  (remove-hook 'with-editor-filter-visit-hook 'magit-commit-diff))
+  (remove-hook 'with-editor-filter-visit-hook 'magit-commit-diff)
+  :bind-keymap ("C-c g" . magit-prefix-map))
 
 (use-package magit-delta
   :ensure t
@@ -941,24 +941,32 @@ Avoid using unicode for en dashes and em dashes, using '--' and '---' respective
 Never replace a backslash followed by a percentage sign with just a percentage sign."))
       ;; Call the original proofreading function with the adjusted prompt
       (chatgpt-shell-proofread-paragraph-or-region)))
+  (advice-add 'chatgpt-shell-proofread-paragraph-or-region
+              :around
+              (lambda (orig-fun &rest args)
+                (let ((chatgpt-shell-model-version "gpt-5-mini"))
+                  (apply orig-fun args))))
+  (defvar-keymap chatgpt-shell-prefix-map
+    :doc "Keymap for chatgpt-shell package"
+    :name "chatgpt-shell"
+    "a" '("ask"                    . chatgpt-shell-prompt)
+    "c" '("compose"                . chatgpt-shell-prompt-compose)
+    "d" '("document DWIM"          . chatgpt-shell-document-dwim)
+    "e" '("copy-edit"              . chatgpt-shell-copy-edit-paragraph-or-region)
+    "i" '("quick insert"           . chatgpt-shell-quick-insert)
+    "j" '("open shell"             . chatgpt-shell)
+    "p" '("proofread"              . chatgpt-shell-proofread-paragraph-or-region)
+    "r" '("refactor code"          . chatgpt-shell-refactor-code)
+    "s" '("swap model"             . chatgpt-shell-swap-model)
+    "t" '("select thinking effort" . chatgpt-shell-select-reasoning-effort)
+    "x" '("describe code"          . chatgpt-shell-describe-code))
+  :bind-keymap ("C-c j" . chatgpt-shell-prefix-map)
   :bind
-  (:prefix-map my-chatgpt-shell-prefix-map
-	       :prefix-docstring "ChatGPT Shell commands"
-	       :prefix "C-c j"
-	       ("a" . chatgpt-shell-prompt)	; a for ask
-	       ("c" . chatgpt-shell-prompt-compose)
-	       ("d" . chatgpt-shell-document-dwim)
-	       ("e" . chatgpt-shell-copy-edit-paragraph-or-region)
-	       ("i" . chatgpt-shell-quick-insert)
-	       ("j" . chatgpt-shell)		; j so that it is quick to call after the prefix key
-	       ("p" . chatgpt-shell-proofread-paragraph-or-region)
-	       ("r" . chatgpt-shell-refactor-code)
-	       ("s" . chatgpt-shell-swap-model)
-	       ("x" . chatgpt-shell-describe-code)	; x for eXplain
-	       (:map chatgpt-shell-mode-map
-		     ("C-c C-b" . chatgpt-shell-copy-block-at-point)
-		     :map chatgpt-shell-prompt-compose-view-mode-map
-		     ("w" . chatgpt-shell-copy-block-at-point)))
+  (
+   :map chatgpt-shell-mode-map
+	("C-c C-b" . chatgpt-shell-copy-block-at-point)
+   :map chatgpt-shell-prompt-compose-view-mode-map
+	("w" . chatgpt-shell-copy-block-at-point))
   :custom
   ;; Anthropic
   (chatgpt-shell-anthropic-key
@@ -1049,6 +1057,10 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
   (markdown-mode . citar-capf-setup)
   (org-mode . citar-capf-setup)
   :config
+  (defun citar-insert-citation-with-prefix-arg ()
+    (interactive)
+    (let ((current-prefix-arg '(4)))
+      (call-interactively #'citar-insert-citation)))
   ;; Configuration to use nerd-icons in citar
   (defvar citar-indicator-files-icons
     (citar-indicator-create
@@ -1090,34 +1102,17 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
 		citar-indicator-links-icons
 		citar-indicator-notes-icons
 		citar-indicator-cited-icons))
-  (defmacro citar-with-other-window (&rest body)
-    "Execute BODY with find-file temporarily redirected to find-file-other-window."
-    `(progn
-       (advice-add 'find-file :override
-                   (lambda (filename &optional wildcards)
-                     (find-file-other-window filename wildcards))
-                   '((name . citar-other-window-advice)))
-       (unwind-protect
-           (progn ,@body)
-	 (advice-remove 'find-file 'citar-other-window-advice))))
-  (defun citar-open-files-other-window ()
-    "Open files associated with the selected citation keys in other window.
-This is similar to `citar-open-files' but displays the files in another window."
-    (interactive)
-    (citar-with-other-window
-     (call-interactively #'citar-open-files)))
-  (defun citar-open-other-window ()
-    "Open selection with citar in other window.
-This is similar to `citar-open' but displays files in another window."
-    (interactive)
-    (citar-with-other-window
-     (call-interactively #'citar-open)))
-  (defun citar-open-notes-other-window ()
-    "Open notes associated with the selected citation keys in other window.
-This is similar to `citar-open-notes' but displays the notes in another window."
-    (interactive)
-    (citar-with-other-window
-     (call-interactively #'citar-open-notes)))
+  (defvar-keymap citar-prefix-map
+    :doc "Keymap for citar"
+    :name "Citar"
+    "c" '("Insert citation"            . citar-insert-citation)
+    "C" '("Insert citation (with arg)" . citar-insert-citation-with-prefix-arg)
+    "d" '("DWIM"                       . citar-dwim)
+    "f" '("Open files"                 . citar-open-files)
+    "o" '("Open"                       . citar-open)
+    "n" '("Open notes"                 . citar-open-notes)
+    "i" '("Insert BibTeX"              . citar-insert-bibtex))
+  :bind-keymap ("C-c c" . citar-prefix-map)
   :custom
   (org-cite-insert-processor 'citar)
   (org-cite-follow-processor 'citar)
@@ -1131,22 +1126,7 @@ This is similar to `citar-open-notes' but displays the notes in another window."
    '((main . "${author editor:30%sn}     ${date year issued:4}     ${title:48}")
      (suffix . "          ${=key= id:7}    ${=type=:12}    ${journal journaltitle}")
      (preview . "${author editor:%etal} (${year issued date}) ${title}, ${journal journaltitle publisher container-title collection-title}.\n")
-     (note . "Notes on ${author editor:%etal}, ${title}")))
-  :bind
-  (:prefix-map my-citar-prefix-map
-   :prefix-docstring "Keymap for Citar"
-   :prefix "C-c c"
-   ("d" . citar-dwim)
-   ("f" . citar-open-files)
-   ("o" . citar-open)
-   ("n" . citar-open-notes)
-   ("i" . citar-insert-bibtex)
-   ("4 f" . citar-open-files-other-window)
-   ("4 o" . citar-open-other-window)
-   ("4 n" . citar-open-notes-other-window)
-   :map text-mode-map
-   ("C-c c c" . citar-insert-citation)
-   ("C-c c C" . (lambda () (interactive) (let ((current-prefix-arg '(4))) (call-interactively #'citar-insert-citation))))))
+     (note . "Notes on ${author editor:%etal}, ${title}"))))
 
 (use-package citar-embark
   :after (citar embark)
@@ -2090,14 +2070,15 @@ the function will prompt the user to select a default audio device before runnin
 (use-package symbol-overlay
   :ensure t
   :hook (prog-mode . symbol-overlay-mode)
-    :bind
-  (:prefix-map my-symbol-overlay-prefix-map
-   :prefix-docstring "Symbol overlay prefix map"
-   :prefix "C-c o"
-   ("r" . symbol-overlay-rename)
-   ("o" . symbol-overlay-put)
-   ("k" . symbol-overlay-remove-all)
-   ("w" . symbol-overlay-save-symbol)))
+  :config
+  (defvar-keymap symbol-overlay-prefix-map
+    :doc "Keymap for symbol-overlay operation"
+    :name "symbol-overlay"
+    "r" '("Rename"      . symbol-overlay-rename)
+    "o" '("Put overlay" . symbol-overlay-put)
+    "k" '("Remove all"  . symbol-overlay-remove-all)
+    "w" '("Save symbol" . symbol-overlay-save-symbol))
+  :bind-keymap ("C-c o" . symbol-overlay-prefix-map))
 
 (use-package hl-todo
   :ensure t
