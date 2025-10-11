@@ -91,30 +91,32 @@
   "Adjust font for 27 inch screen."
   (interactive)
   (set-face-attribute 'default nil :family "JetBrainsMono NF" :height 140)
-  ;; (plist-put org-latex-preview-appearance-options :zoom 1.5)
-  (setopt org-format-latex-options
-            (plist-put org-format-latex-options :scale 1.8)
-          preview-scale-function 1.4))
+  (plist-put org-latex-preview-appearance-options :zoom 1.5)
+  ;; (setopt org-format-latex-options
+  ;;           (plist-put org-format-latex-options :scale 1.8)
+  ;;         preview-scale-function 1.4)
+  )
 (defun my-screen-linux ()
   "Adjust font for Linux screen."
   (interactive)
   (set-face-attribute 'default nil :family "JetBrainsMono" :height 109)
   (set-face-attribute 'variable-pitch nil :family "Noto Serif" :height 1.5)
-  (setopt org-format-latex-options
-          (plist-put org-format-latex-options :scale 1.5)
-          preview-scale-function 1.5))
+  ;; (setopt org-format-latex-options
+  ;;         (plist-put org-format-latex-options :scale 1.5)
+  ;;         preview-scale-function 1.5)
+  )
 (defun my-screen-default ()
   "Adjust font for default screen."
   (interactive)
   (set-face-attribute 'default nil :family "JetBrainsMono NF" :height 120)
-  (setopt org-format-latex-options
-            (plist-put org-format-latex-options :scale 1.7)
-          preview-scale-function 1.5))
+  ;; (setopt org-format-latex-options
+  ;;           (plist-put org-format-latex-options :scale 1.7)
+  ;;         preview-scale-function 1.5)
+  )
 
 (use-package mixed-pitch
   :ensure t
-  :hook
-  ((org-mode LaTeX-mode) . mixed-pitch-mode)
+  :hook (org-mode LaTeX-mode)
   :config
   (add-to-list 'mixed-pitch-fixed-pitch-faces 'markdown-table-face))
 
@@ -429,6 +431,8 @@ current buffer within the project or the current directory if not in a project."
   :ensure t
   :if (display-graphic-p)
   :mode  ("\\.pdf\\'" . pdf-view-mode)
+  ;; Required to avoid error messages if a pdf is open before launching an org file
+  :after org-latex-preview
   :bind
   (:map pdf-view-mode-map
 	("C-s"     . isearch-forward)
@@ -440,10 +444,7 @@ current buffer within the project or the current directory if not in a project."
   (pdf-view-display-size 'fit-page)
   (pdf-view-selection-style 'glyph)
   :config
-  (pdf-tools-install)
-  ;; Required to avoid error messages if a pdf is open before launching an org file
-  ;; (require 'org-latex-preview)
-  )
+  (pdf-tools-install))
 
 (use-package prog-mode
   :defer t
@@ -1507,8 +1508,8 @@ same directory as the working and insert a link to this file."
 ; Before loading org-mode, disable org-persist which creates problems
 (setq org-element-cache-persistent nil)
 (use-package org
-  ;; :load-path "~/.emacs.d/elpa/org-mode/lisp/"
-  ;; :mode ("\\.org\\'" . org-mode)
+  :load-path "~/.emacs.d/elpa/org-mode/lisp/"
+  :mode ("\\.org\\'" . org-mode)
   :custom
   (org-edit-src-content-indentation 0)
   (org-todo-keywords '((type "TODO(t)" "STARTED(s)" "WAITING(w)" "|" "DONE(d)")))
@@ -1537,11 +1538,11 @@ same directory as the working and insert a link to this file."
   (unless (equal system-type 'darwin)
     (org-defkey org-cdlatex-mode-map "²" 'cdlatex-math-symbol))
   (org-defkey org-cdlatex-mode-map "'" nil)
-  (if (equal system-type 'gnu/linux)
-      (setopt org-format-latex-options
-	      (plist-put org-format-latex-options :scale 0.7))
-    (setopt org-format-latex-options
-	    (plist-put org-format-latex-options :scale 1.6)))
+  ;; (if (equal system-type 'gnu/linux)
+  ;;     (setopt org-format-latex-options
+  ;; 	      (plist-put org-format-latex-options :scale 0.7))
+  ;;   (setopt org-format-latex-options
+  ;; 	    (plist-put org-format-latex-options :scale 1.6)))
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((emacs-lisp . t)
@@ -1567,10 +1568,26 @@ same directory as the working and insert a link to this file."
   :hook
   (org-mode . org-appear-mode))
 
-(use-package org-fragtog
-  :ensure t
-  :hook
-  (org-mode . org-fragtog-mode))
+(use-package org-latex-preview
+  :custom
+  ;; Enable consistent equation numbering
+  (org-latex-preview-numbered t)
+  ;; Turn on live previews.  This shows you a live preview of a LaTeX
+  ;; fragment and updates the preview in real-time as you edit it.
+  ;; To preview only environments, set it to '(block edit-special) instead
+  (org-latex-preview-live t)
+  ;; More immediate live-previews -- the default delay is 1 second
+  (org-latex-preview-live-debounce 0.25)
+  ;; Flush equations left
+  (org-latex-preview-preamble
+   "\\documentclass[fleqn]{article}
+[DEFAULT-PACKAGES]
+[PACKAGES]
+\\usepackage{xcolor}")
+  ;; (org-latex-preview-process-default 'dvipng)
+  :config
+  (plist-put org-latex-preview-appearance-options :zoom 1.4)
+  :hook (org-mode . org-latex-preview-mode))
 
 (use-package oc
   :after org
