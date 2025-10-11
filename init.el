@@ -126,7 +126,7 @@
 
 (use-package rainbow-mode
   :ensure t
-  :hook (prog-mode . rainbow-mode))
+  :hook (prog-mode))
 
 (use-package nerd-icons
   :ensure t
@@ -134,22 +134,19 @@
   (nerd-icons-font-family "Symbols Nerd Font Mono")) ; JetBrains font did not work well
 (use-package nerd-icons-ibuffer
   :ensure t
-  :hook (ibuffer-mode . nerd-icons-ibuffer-mode))
+  :hook (ibuffer-mode))
 (use-package nerd-icons-completion
   :ensure t
   :after marginalia
   :config
   (nerd-icons-completion-mode)
-  :hook
-  (marginalia-mode . nerd-icons-completion-marginalia-setup))
+  :hook (marginalia-mode))
 (use-package nerd-icons-grep
   :ensure t
-  :hook
-  (grep-mode . nerd-icons-grep-mode))
+  :hook (grep-mode))
 (use-package nerd-icons-xref
   :ensure t
-  :hook
-  (xref--xref-buffer-mode . nerd-icons-xref-mode))
+  :hook (xref--xref-buffer-mode))
 
 (use-package ligature
   :ensure t
@@ -177,11 +174,11 @@
 
 (use-package doom-modeline
   :ensure t
-  :hook (after-init . doom-modeline-mode))
+  :hook (after-init))
 
 (use-package rainbow-delimiters
   :ensure t
-  :hook ((prog-mode yaml-mode) . rainbow-delimiters-mode)
+  :hook (prog-mode yaml-mode)
   :custom-face
   (rainbow-delimiters-depth-1-face ((t (:foreground "red"))))
   (rainbow-delimiters-depth-2-face ((t (:foreground "orange"))))
@@ -302,8 +299,7 @@
 
 (use-package diredfl
   :ensure t
-  :hook
-  (dired-mode . diredfl-mode))
+  :hook (dired-mode))
 
 (use-package ediff-wind
   :defer t
@@ -399,8 +395,7 @@ current buffer within the project or the current directory if not in a project."
 (use-package outline-minor-faces
   :ensure t
   :after outline
-  :hook
-  (outline-minor-mode . outline-minor-faces-mode))
+  :hook (outline-minor-mode))
 
 (setopt show-paren-mode t ; coupler les parenthèses
         auth-sources '("~/.authinfo") ; Define file that stores secrets
@@ -668,7 +663,7 @@ current buffer within the project or the current directory if not in a project."
 
 (use-package company-box
   :ensure t
-  :hook (company-mode . company-box-mode)
+  :hook (company-mode)
   :custom
   (company-box-doc-enable nil))
 
@@ -729,8 +724,7 @@ current buffer within the project or the current directory if not in a project."
 
 (use-package marginalia
   :ensure t
-  :hook
-  (after-init . marginalia-mode))
+  :hook (after-init))
 
 (use-package consult
   :ensure t
@@ -870,15 +864,14 @@ current buffer within the project or the current directory if not in a project."
 
 (use-package magit-delta
   :ensure t
-  :hook (magit-mode . magit-delta-mode)
+  :hook (magit-mode)
   :ensure-system-package (delta . git-delta))
 
 (use-package diff-hl
   :defer t
   :after magit
   :hook
-  (prog-mode . diff-hl-mode)
-  (latex-mode . diff-hl-mode)
+  ((latex-mode markdown-mode org-mode prog-mode) . diff-hl-mode)
   (dired-mode . diff-hl-dired-mode)
   (magit-post-refresh . diff-hl-magit-post-refresh))
 
@@ -1054,8 +1047,8 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
   :ensure t
   :after (org nerd-icons)
   :hook
-  (markdown-mode . citar-capf-setup)
-  (org-mode . citar-capf-setup)
+  ;; Attention in LaTeX and Markdown the LSP prevents citar
+  ((LaTeX-mode markdown-mode org-mode) . citar-capf-setup)
   :config
   (defun citar-insert-citation-with-prefix-arg ()
     (interactive)
@@ -2089,7 +2082,7 @@ the function will prompt the user to select a default audio device before runnin
   (global-hl-todo-mode)
   :hook
   ;; Fix for auctex
-  (TeX-update-style . hl-todo-mode))
+  (TeX-update-style))
 
 (use-package ess-site
   :ensure ess

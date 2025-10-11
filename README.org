@@ -164,8 +164,7 @@ Use =mixed-pitch= to have a proportional font for text and a monospace font for 
 #+begin_src emacs-lisp
 (use-package mixed-pitch
   :ensure t
-  :hook
-  ((org-mode LaTeX-mode) . mixed-pitch-mode)
+  :hook (org-mode LaTeX-mode)
   :config
   (add-to-list 'mixed-pitch-fixed-pitch-faces 'markdown-table-face))
 #+end_src
@@ -187,7 +186,7 @@ Highlight the current line
 #+begin_src emacs-lisp
 (use-package rainbow-mode
   :ensure t
-  :hook (prog-mode . rainbow-mode))
+  :hook (prog-mode))
 #+end_src
 
 ** Icons
@@ -199,22 +198,19 @@ Highlight the current line
   (nerd-icons-font-family "Symbols Nerd Font Mono")) ; JetBrains font did not work well
 (use-package nerd-icons-ibuffer
   :ensure t
-  :hook (ibuffer-mode . nerd-icons-ibuffer-mode))
+  :hook (ibuffer-mode))
 (use-package nerd-icons-completion
   :ensure t
   :after marginalia
   :config
   (nerd-icons-completion-mode)
-  :hook
-  (marginalia-mode . nerd-icons-completion-marginalia-setup))
+  :hook (marginalia-mode))
 (use-package nerd-icons-grep
   :ensure t
-  :hook
-  (grep-mode . nerd-icons-grep-mode))
+  :hook (grep-mode))
 (use-package nerd-icons-xref
   :ensure t
-  :hook
-  (xref--xref-buffer-mode . nerd-icons-xref-mode))
+  :hook (xref--xref-buffer-mode))
 #+end_src
 
 ** Ligatures
@@ -250,7 +246,7 @@ Highlight the current line
 #+begin_src emacs-lisp
 (use-package doom-modeline
   :ensure t
-  :hook (after-init . doom-modeline-mode))
+  :hook (after-init))
 #+end_src
 
 ** Parentheses
@@ -258,7 +254,7 @@ Highlight the current line
 #+begin_src emacs-lisp
 (use-package rainbow-delimiters
   :ensure t
-  :hook ((prog-mode yaml-mode) . rainbow-delimiters-mode)
+  :hook (prog-mode yaml-mode)
   :custom-face
   (rainbow-delimiters-depth-1-face ((t (:foreground "red"))))
   (rainbow-delimiters-depth-2-face ((t (:foreground "orange"))))
@@ -413,8 +409,7 @@ Prevent variable names from being unlispify:
 #+begin_src emacs-lisp
 (use-package diredfl
   :ensure t
-  :hook
-  (dired-mode . diredfl-mode))
+  :hook (dired-mode))
 #+end_src
 
 ** Ediff
@@ -559,8 +554,7 @@ Use =outline-minor-faces= to use a special face for outline sections.
 (use-package outline-minor-faces
   :ensure t
   :after outline
-  :hook
-  (outline-minor-mode . outline-minor-faces-mode))
+  :hook (outline-minor-mode))
 #+end_src
 
 ** Other Emacs settings
@@ -826,8 +820,7 @@ Install =emacs-everywhere= so that Emacs can be used to input text in every apps
   :custom
   (which-key-sort-uppercase-first nil)
   (max-mini-window-height 15)
-  :hook
-  (after-init . which-key-mode))
+  :hook (after-init))
 #+end_src
 
 * Auto-completion
@@ -942,7 +935,7 @@ Use =company-box= for a better position of the autocompletion when using copilot
 #+begin_src emacs-lisp
 (use-package company-box
   :ensure t
-  :hook (company-mode . company-box-mode)
+  :hook (company-mode)
   :custom
   (company-box-doc-enable nil))
 #+end_src
@@ -1029,8 +1022,7 @@ Use =vertico-directory= to press =DEL= to jump back one directory instead of one
 #+begin_src emacs-lisp
 (use-package marginalia
   :ensure t
-  :hook
-  (after-init . marginalia-mode))
+  :hook (after-init))
 #+end_src
 
 *** Consult
@@ -1191,7 +1183,7 @@ On macOS, for faster Git, install it with homebrew instead of using the default 
 #+begin_src emacs-lisp
 (use-package magit-delta
   :ensure t
-  :hook (magit-mode . magit-delta-mode)
+  :hook (magit-mode)
   :ensure-system-package (delta . git-delta))
 #+end_src
 
@@ -1202,8 +1194,7 @@ On macOS, for faster Git, install it with homebrew instead of using the default 
   :defer t
   :after magit
   :hook
-  (prog-mode . diff-hl-mode)
-  (latex-mode . diff-hl-mode)
+  ((latex-mode markdown-mode org-mode prog-mode) . diff-hl-mode)
   (dired-mode . diff-hl-dired-mode)
   (magit-post-refresh . diff-hl-magit-post-refresh))
 #+end_src
@@ -1426,8 +1417,8 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
   :ensure t
   :after (org nerd-icons)
   :hook
-  (markdown-mode . citar-capf-setup)
-  (org-mode . citar-capf-setup)
+  ;; Attention in LaTeX and Markdown the LSP prevents citar
+  ((LaTeX-mode markdown-mode org-mode) . citar-capf-setup)
   :config
   (defun citar-insert-citation-with-prefix-arg ()
     (interactive)
@@ -2679,7 +2670,7 @@ Use "M-C-TAB" for moving to next field to avoid conflict with autocompletion.
   (global-hl-todo-mode)
   :hook
   ;; Fix for auctex
-  (TeX-update-style . hl-todo-mode))
+  (TeX-update-style))
 #+end_src
 
 ** Programming languages
