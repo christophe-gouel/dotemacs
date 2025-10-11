@@ -16,13 +16,15 @@
   (defvar-keymap package-operation-map
     :doc "Keymap for package operation"
     :name "Package"
-    "d" '("delete"        . package-delete)
-    "h" '("describe"      . describe-package)
-    "i" '("install"       . package-install)
-    "l" '("list"          . list-packages)
-    "r" '("reinstall"     . package-reinstall)
-    "u" '("updage all"    . package-upgrade-all)
-    "v" '("updage all vc" . package-vc-upgrade-all))
+    "d" '("delete"         . package-delete)
+    "h" '("describe"       . describe-package)
+    "i" '("install"        . package-install)
+    "l" '("list"           . list-packages)
+    "r" '("reinstall"      . package-reinstall)
+    "u" '("upgrade"        . package-upgrade)
+    "U" '("upgrade all"    . package-upgrade-all)
+    "v" '("upgrade vc"     . package-vc-upgrade)
+    "V" '("upgrade all vc" . package-vc-upgrade-all))
   :bind-keymap ("C-c p" . package-operation-map))
 
 (use-package use-package)
@@ -399,21 +401,21 @@ current buffer within the project or the current directory if not in a project."
   :after outline
   :hook (outline-minor-mode))
 
-(setopt show-paren-mode t ; coupler les parenthèses
-        auth-sources '("~/.authinfo") ; Define file that stores secrets
+(setopt auth-sources '("~/.authinfo") ; Define file that stores secrets
         backup-directory-alist '(("." . "~/.emacs.d/backup"))
+        case-fold-search t ; recherche sans égard à la casse
+        comment-column 0 ; Prevent indentation of lines starting with one comment
         default-major-mode 'text-mode ; mode par défaut
         delete-by-moving-to-trash t ; Sent deleted files to trash
-        comment-column 0 ; Prevent indentation of lines starting with one comment
-        jit-lock-chunk-size 50000 ; Number of characters used for fontification
-        ;; set large file threshold at 100 megabytes
-        large-file-warning-threshold 100000000
-        ring-bell-function 'ignore ; disable the bell (useful for macOS)
-        mouse-yank-at-point t     ; coller avec la souris
-        case-fold-search t       ; recherche sans égard à la casse
 	enable-recursive-minibuffers t
+        help-window-select t ; Jump to help window when it opens
+        jit-lock-chunk-size 50000 ; Number of characters used for fontification
+        large-file-warning-threshold 100000000 ; set large file threshold at 100 mb
 	minibuffer-depth-indicate-mode t
-	help-window-select t) ; Jump to help window when it opens
+        mouse-yank-at-point t     ; coller avec la souris
+        ring-bell-function 'ignore ; disable the bell (useful for macOS)
+	set-mark-command-repeat-pop t ; repeat C-space (after C-u C-space)
+        show-paren-mode t) ; coupler les parenthèses
 (delete-selection-mode t)               ; entrée efface texte sélectionné
 (fset 'yes-or-no-p 'y-or-n-p)           ; Replace yes or no with y or n
 (auto-compression-mode t)
@@ -973,12 +975,13 @@ Never replace a backslash followed by a percentage sign with just a percentage s
    (auth-source-pick-first-password :host "api.openai.com"))
   ;; Other options
   (chatgpt-shell-model-version "gpt-5")
+  (chatgpt-shell-openai-reasoning-effort "low")
   (chatgpt-shell-prompt-header-proofread-region
    "Please help me proofread the following text and only reply with fixed text.
 Detect first the language of the text and respect it in the output.
 If the text is in English, assume that it is in American English except if there are indications that it is otherwise.
 Output just the proofread text without any intro, comments, or explanations.
-Preserve in your response the original code formatting, including indentation, comments, and any special characters.
+Preserve in your response the original code formatting, including indentation, comments, unicode characters, and any special characters.
 Do not use unicode for en dashes and em dashes, but use '--' and '---'.
 Never replace a backslash followed by a percentage sign by a percentage sign only.")
   (chatgpt-shell-render-latex t)
@@ -1024,6 +1027,8 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
 
 (use-package comint
   :defer t
+  ;; Postive scroll-margin does not make sense in shells
+  :hook (comint-mode . (lambda () (setq-local scroll-margin 0)))
   :custom
   (comint-scroll-to-bottom-on-input 'this)
   (comint-scroll-to-bottom-on-output t)
@@ -1188,6 +1193,8 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
 (use-package tex
   :defer t
   :ensure auctex
+  :mode
+  ("\\.tex\\'" . LaTeX-mode)
   :hook
   (TeX-mode . latex-math-mode)
   (TeX-mode . flymake-mode)
@@ -1404,13 +1411,13 @@ Returns t if it handled indentation."
   ("\\.md\\'" . markdown-mode) ; Required because poly-markdown appropriates md files
   ("README\\.md\\'" . gfm-mode)
   :custom
-  (markdown-command
-   (concat "pandoc"
-	   " --from=markdown --to=html"
-	   " --standalone --mathjax"
-	   ;; " --citeproc --bibliography="
-	   ;; (shell-quote-argument (substitute-in-file-name "${BIBINPUTS}\\References.bib"))
-	   ))
+  ;; (markdown-command
+  ;;  (concat "pandoc"
+  ;; 	   " --from=markdown --to=html"
+  ;; 	   " --standalone --mathjax"
+  ;; 	   ;; " --citeproc --bibliography="
+  ;; 	   ;; (shell-quote-argument (substitute-in-file-name "${BIBINPUTS}\\References.bib"))
+  ;; 	   ))
   (markdown-asymmetric-header t)
   (markdown-enable-math t)
   (markdown-enable-prefix-prompts nil)
@@ -1419,6 +1426,7 @@ Returns t if it handled indentation."
   (markdown-hide-urls t)
   (markdown-fontify-code-blocks-natively t)
   (markdown-enable-highlighting-syntax t)
+  (markdown-max-image-size '(500 . 300))
   (markdown-special-ctrl-a/e 'on)
   :config
   (defun my-markdown-insert-gfm-code-block-braces (&optional lang edit)
@@ -1495,6 +1503,7 @@ same directory as the working and insert a link to this file."
      (add-function :override (local 'prettify-symbols-compose-predicate)
 		   #'TeX--prettify-symbols-compose-p)
      (prettify-symbols-mode t)))
+  (markdown-mode . markdown-display-inline-images)
   :bind (:map markdown-mode-map
 	      ("C-c [" . my-markdown-reftex-citation)
 	      ("C-c C-s e" . my-markdown-insert-gfm-code-block-braces)))
