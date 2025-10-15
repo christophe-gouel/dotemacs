@@ -11,6 +11,8 @@
 (setopt debug-on-error t)
 
 (use-package package
+  :custom
+  (package-selected-packages nil)
   :config
   (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
   (defvar-keymap package-operation-map
@@ -259,7 +261,10 @@
      "-l --almost-all --human-readable --group-directories-first --no-group")
   (dired-compress-directory-default-suffix ".zip")
   (dired-compress-file-default-suffix ".zip")
+  (dired-dwim-target t)
   (dired-mouse-drag-files t)
+  (dired-recursive-copies 'always)
+  (dired-recursive-deletes 'always)
   (dired-vc-rename-file t)
   :hook
   (dired-mode . (lambda ()
@@ -360,6 +365,14 @@ current buffer within the project or the current directory if not in a project."
                     (list (format "-g %s" glob)))))
     :ensure-system-package rg)
 
+(use-package helpful
+  :ensure t
+  :bind
+  ("C-h f" . helpful-callable)
+  ("C-h v" . helpful-variable)
+  ("C-h k" . helpful-key)
+  ("C-h x" . helpful-command))
+
 (use-package imenu
   :defer t
   :custom
@@ -401,12 +414,14 @@ current buffer within the project or the current directory if not in a project."
   :after outline
   :hook (outline-minor-mode))
 
-(setopt auth-sources '("~/.authinfo") ; Define file that stores secrets
+(setopt auto-compression-mode t ; auto-compress and decompress compressed files
+	auth-sources '("~/.authinfo") ; Define file that stores secrets
         backup-directory-alist '(("." . "~/.emacs.d/backup"))
         case-fold-search t ; recherche sans égard à la casse
         comment-column 0 ; Prevent indentation of lines starting with one comment
         default-major-mode 'text-mode ; mode par défaut
         delete-by-moving-to-trash t ; Sent deleted files to trash
+	delete-selection-mode t               ; entrée efface texte sélectionné
 	enable-recursive-minibuffers t
         help-window-select t ; Jump to help window when it opens
         jit-lock-chunk-size 50000 ; Number of characters used for fontification
@@ -414,11 +429,11 @@ current buffer within the project or the current directory if not in a project."
 	minibuffer-depth-indicate-mode t
         mouse-yank-at-point t     ; coller avec la souris
         ring-bell-function 'ignore ; disable the bell (useful for macOS)
+	save-place-mode t ; save place in files
+	savehist-mode t ; save minibuffer history
 	set-mark-command-repeat-pop t ; repeat C-space (after C-u C-space)
-        show-paren-mode t) ; coupler les parenthèses
-(delete-selection-mode t)               ; entrée efface texte sélectionné
-(fset 'yes-or-no-p 'y-or-n-p)           ; Replace yes or no with y or n
-(auto-compression-mode t)
+        show-paren-mode t ; coupler les parenthèses
+	use-short-answers t)           ; Replace yes or no with y or n
 
 (setopt user-full-name "Christophe Gouel"
         user-mail-address "christophe.gouel@inrae.fr")
@@ -692,8 +707,7 @@ current buffer within the project or the current directory if not in a project."
      ;; Grid
      (embark-keybinding grid)
      ;; The rest in postframe in the center of the screen
-    (t posframe)
-     ))
+     (t posframe)))
   (vertico-multiform-commands
    '(;; Standard vertico in minibuffer
      (flyspell-correct-at-point)))
@@ -1543,7 +1557,7 @@ same directory as the working and insert a link to this file."
   (org-fold-core-style 'overlays) ; Slower folding style to prevent some bugs when unfolding
   (org-file-apps
    '((auto-mode . emacs) (directory . emacs)  ("\\.x?html?\\'" . default)))
-  :config
+:config
   (unless (equal system-type 'darwin)
     (org-defkey org-cdlatex-mode-map "²" 'cdlatex-math-symbol))
   (org-defkey org-cdlatex-mode-map "'" nil)
@@ -1584,9 +1598,9 @@ same directory as the working and insert a link to this file."
   ;; Turn on live previews.  This shows you a live preview of a LaTeX
   ;; fragment and updates the preview in real-time as you edit it.
   ;; To preview only environments, set it to '(block edit-special) instead
-  (org-latex-preview-live t)
+  (org-latex-preview-mode-display-live t)
   ;; More immediate live-previews -- the default delay is 1 second
-  (org-latex-preview-live-debounce 0.25)
+  (org-latex-preview-mode-update-delay 0.25)
   ;; Flush equations left
   (org-latex-preview-preamble
    "\\documentclass[fleqn]{article}
@@ -1616,7 +1630,7 @@ same directory as the working and insert a link to this file."
   :defer t
   :custom
   ;; Option needed to export equations in proper format to odt/docx. Require the installation of latexml
-  (org-latex-to-mathml-convert-command "latexmlmath %i --presentationmathml=%o")
+  (org-mathml-convert-command "latexmlmath %i --presentationmathml=%o")
   (org-odt-preferred-output-format "docx")) ; require soffice to be on the PATH
 
 (use-package ox-beamer
@@ -1660,13 +1674,8 @@ same directory as the working and insert a link to this file."
 
 (use-package math-preview
   :ensure t
-  :bind
-  ("C-c m d" . math-preview-all)
-  ("C-c m p" . math-preview-at-point)
-  ("C-c m r" . math-preview-region)
-  ("C-c m c d" . math-preview-clear-all)
-  ("C-c m c p" . math-preview-clear-at-point)
-  ("C-c m c r" . math-preview-clear-region)
+  :custom
+  (math-preview-scale 1.25)
   :config
   ;; Avoid errors when renumbering
   (add-to-list 'math-preview-tex-preprocess-functions
@@ -1678,6 +1687,17 @@ same directory as the working and insert a link to this file."
   (add-to-list 'math-preview-tex-marks '("\\begin{align*}" "\\end{align*}" 0 nil nil))
   (add-to-list 'math-preview-tex-marks '("\\begin{gather}" "\\end{gather}" 0 nil nil))
   (add-to-list 'math-preview-tex-marks '("\\begin{gather*}" "\\end{gather*}" 0 nil nil))
+  (defvar-keymap math-preview-operation-map
+    :doc "Keymap for math-preview operation"
+    :name "Math-preview"
+    "d"   '("document"       . math-preview-all)
+    "p"   '("point"          . math-preview-at-point)
+    "r"   '("region"         . math-preview-region)
+    "c d" '("clear document" . math-preview-clear-all)
+    "c p" '("clear point"    . math-preview-clear-at-point)
+    "c r" '("clear region"   . math-preview-clear-region)
+    )
+  :bind-keymap ("C-c m" . math-preview-operation-map)
   :ensure-system-package
   (math-preview . "npm install -g git+https://gitlab.com/matsievskiysv/math-preview"))
 
