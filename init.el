@@ -448,8 +448,6 @@ current buffer within the project or the current directory if not in a project."
   :ensure t
   :if (display-graphic-p)
   :mode  ("\\.pdf\\'" . pdf-view-mode)
-  ;; Required to avoid error messages if a pdf is open before launching an org file
-  :after org-latex-preview
   :bind
   (:map pdf-view-mode-map
 	("C-s"     . isearch-forward)
@@ -461,6 +459,8 @@ current buffer within the project or the current directory if not in a project."
   (pdf-view-display-size 'fit-page)
   (pdf-view-selection-style 'glyph)
   :config
+  ;; Required to avoid error messages if a pdf is open before launching an org file
+  (require 'org-latex-preview)
   (pdf-tools-install))
 
 (use-package prog-mode

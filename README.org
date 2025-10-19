@@ -626,8 +626,6 @@ Use =outline-minor-faces= to use a special face for outline sections.
   :ensure t
   :if (display-graphic-p)
   :mode  ("\\.pdf\\'" . pdf-view-mode)
-  ;; Required to avoid error messages if a pdf is open before launching an org file
-  :after org-latex-preview
   :bind
   (:map pdf-view-mode-map
 	("C-s"     . isearch-forward)
@@ -639,6 +637,8 @@ Use =outline-minor-faces= to use a special face for outline sections.
   (pdf-view-display-size 'fit-page)
   (pdf-view-selection-style 'glyph)
   :config
+  ;; Required to avoid error messages if a pdf is open before launching an org file
+  (require 'org-latex-preview)
   (pdf-tools-install))
 #+end_src
 
