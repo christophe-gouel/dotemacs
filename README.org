@@ -1363,7 +1363,20 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
 	       '(mathematics . "Solve this mathematical formula. Just output the solution in LaTeX without giving any explanation.")))
 #+end_src
 
-*** aider
+*** Agents
+
+**** agent-shell
+
+#+begin_src emacs-lisp
+(use-package acp
+  :vc (:url "https://github.com/xenodium/acp.el")
+  :defer t)
+(use-package agent-shell
+  :vc (:url "https://github.com/xenodium/agent-shell")
+  :defer t)
+#+end_src
+
+**** aider
 
 #+begin_src emacs-lisp
 (use-package aidermacs
@@ -1378,7 +1391,7 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
   :bind (("C-c a" . aidermacs-transient-menu)))
 #+end_src
 
-*** Editor Code Assistant
+**** Editor Code Assistant
 
 #+begin_src emacs-lisp
 (use-package eca
@@ -1585,7 +1598,6 @@ Take a screenshot and copy it to a file
   :vc (:url "https://github.com/emacs-vs/rainbow-csv"
        :rev :newest
        :branch "main")
-  :ensure t
   :hook
   ((csv-mode tsv-mode) . rainbow-csv-mode))
 #+end_src
@@ -2087,9 +2099,8 @@ Use =org-appear= for markup markers to appear automatically.
 
 #+begin_src emacs-lisp
 (use-package oxr
-  :ensure t
-  :after org
   :vc (:url "https://github.com/bdarcus/oxr")
+  :after org
   :bind (:map org-mode-map ("C-c )" . oxr-insert-ref)))
 #+end_src
 
@@ -2269,7 +2280,6 @@ If `DEVICE-NAME' is provided, it will be used instead of prompting the user."
 
 #+begin_src emacs-lisp
 (use-package whisper
-  :ensure t
   :vc (:url "https://github.com/natrys/whisper.el"
        :rev :newest
        :branch "main")

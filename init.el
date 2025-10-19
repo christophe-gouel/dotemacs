@@ -1016,6 +1016,13 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
   (add-to-list 'gptel-directives
 	       '(mathematics . "Solve this mathematical formula. Just output the solution in LaTeX without giving any explanation.")))
 
+(use-package acp
+  :vc (:url "https://github.com/xenodium/acp.el")
+  :defer t)
+(use-package agent-shell
+  :vc (:url "https://github.com/xenodium/agent-shell")
+  :defer t)
+
 (use-package aidermacs
   :ensure t
   :defer t
@@ -1621,9 +1628,8 @@ same directory as the working and insert a link to this file."
   :bind (:map org-mode-map ("C-c [" . org-cite-insert)))
 
 (use-package oxr
-  :ensure t
-  :after org
   :vc (:url "https://github.com/bdarcus/oxr")
+  :after org
   :bind (:map org-mode-map ("C-c )" . oxr-insert-ref)))
 
 (use-package ox
@@ -1763,7 +1769,6 @@ If `DEVICE-NAME' is provided, it will be used instead of prompting the user."
       (setq whisper--ffmpeg-input-device (format ":%s" rk/default-audio-device)))))
 
 (use-package whisper
-  :ensure t
   :vc (:url "https://github.com/natrys/whisper.el"
        :rev :newest
        :branch "main")
