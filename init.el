@@ -1219,11 +1219,63 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
           (message "Screenshot saved to %s and relative path copied to kill ring" relative-filename))
       (message "Screenshot failed."))))
 
+(use-package cdlatex
+  :ensure t
+  :config
+  (unbind-key "`" org-cdlatex-mode-map)
+  (unbind-key "'" org-cdlatex-mode-map)
+  (unbind-key "$" cdlatex-mode-map)
+  (unbind-key "`" cdlatex-mode-map)
+  (unbind-key "'" cdlatex-mode-map)
+  (unbind-key "(" cdlatex-mode-map)
+  (unbind-key "[" cdlatex-mode-map)
+  (unbind-key "{" cdlatex-mode-map)
+  ;; Allow tab to be used to indent when the cursor is at the beginning of the line
+  (defun my-cdlatex-latex-tab ()
+    "Indent in TeX when CDLaTeX is active, only in LaTeX mode.
+Returns t if it handled indentation."
+    (when (and (derived-mode-p 'latex-mode)
+               (or (bolp) (looking-back "^[ \t]+" nil)))
+      (LaTeX-indent-line)
+      t)) ; Return t to stop further tab processing
+  (defun my-cdlatex-markdown-tab ()
+    "For use in `cdlatex-tab-hook`: run `markdown-cycle` on TAB outside math mode in markdown."
+    (when (and (derived-mode-p 'markdown-mode)
+               (not (texmathp)))
+      (call-interactively #'markdown-cycle)
+      t)) ;; Return t to prevent further TAB handling
+  (defun my-slow-company ()
+    "Slow down company for a better use of CDLaTeX"
+    (make-local-variable 'company-idle-delay)
+		  (setq company-idle-delay 0.3))
+  :custom
+  (cdlatex-math-modify-prefix "§")
+  (cdlatex-use-dollar-to-ensure-math nil) ; Use \( rather than $
+  ;; Prevent cdlatex from defining LaTeX math sub and superscript everywhere
+  (cdlatex-sub-super-scripts-outside-math-mode nil)
+  (cdlatex-auto-help-delay 0.5)
+  (cdlatex-command-alist
+   '(("equ*" "Insert equation* env"   "" cdlatex-environment ("equation*") t nil)
+     ("fra" "Insert frame env"   "" cdlatex-environment ("frame") t nil)
+     ("frd" "Insert \\frac{\\partial }{\\partial }" "\\frac{\\partial ?}{\\partial }" cdlatex-position-cursor nil nil t)
+     ("frdl" "Insert \\frac{\\partial\\ln }{\\partial\\ln }" "\\frac{\\partial\\ln ?}{\\partial\\ln }" cdlatex-position-cursor nil nil t)
+     ("frat" "Insert \\frametitle{}" "\\frametitle{?}" cdlatex-position-cursor nil t nil)
+     ("frast" "Insert \\framesubtitle{}" "\\framesubtitle{?}" cdlatex-position-cursor nil t nil)
+     ("su" "Insert \\sum" "\\sum?" cdlatex-position-cursor nil nil t)
+     ("ln" "Insert \\ln" "\\ln?" cdlatex-position-cursor nil nil t)))
+  (cdlatex-takeover-dollar nil)
+  (cdlatex-takeover-parenthesis nil)
+  :hook
+  ((LaTeX-mode markdown-mode) . turn-on-cdlatex)
+  ((LaTeX-mode org-mode) . my-slow-company)
+  (org-mode . turn-on-org-cdlatex)
+  (cdlatex-tab . my-cdlatex-latex-tab)
+  (cdlatex-tab . my-cdlatex-markdown-tab))
+
 (use-package rainbow-csv
   :vc (:url "https://github.com/emacs-vs/rainbow-csv"
        :rev :newest
        :branch "main")
-  :ensure t
   :hook
   ((csv-mode tsv-mode) . rainbow-csv-mode))
 
@@ -1386,53 +1438,6 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
       (setopt preview-scale-function 0.7)
     (setopt preview-scale-function 1.5)))
 
-(use-package cdlatex
-  :ensure t
-  :config
-  ;; Allow tab to be used to indent when the cursor is at the beginning of the line
-  (defun my-cdlatex-latex-tab ()
-    "Indent in TeX when CDLaTeX is active, only in LaTeX mode.
-Returns t if it handled indentation."
-    (when (and (derived-mode-p 'latex-mode)
-               (or (bolp) (looking-back "^[ \t]+" nil)))
-      (LaTeX-indent-line)
-      t)) ; Return t to stop further tab processing
-  (defun my-cdlatex-markdown-tab ()
-    "For use in `cdlatex-tab-hook`: run `markdown-cycle` on TAB outside math mode in markdown."
-    (when (and (derived-mode-p 'markdown-mode)
-               (not (texmathp)))
-      (call-interactively #'markdown-cycle)
-      t)) ;; Return t to prevent further TAB handling
-  (defun my-slow-company ()
-    "Slow down company for a better use of CDLaTeX"
-    (make-local-variable 'company-idle-delay)
-		  (setq company-idle-delay 0.3))
-  (unless (equal system-type 'darwin)
-    (setq cdlatex-math-symbol-prefix (kbd "²"))) ; correspond to key "²"
-    ;; (setq cdlatex-math-symbol-prefix ?\262)) ; correspond to key "²"
-  :custom
-  (cdlatex-math-modify-prefix [f12])
-  (cdlatex-use-dollar-to-ensure-math nil) ; Use \( rather than $
-  ;; Prevent cdlatex from defining LaTeX math sub and superscript everywhere
-  (cdlatex-sub-super-scripts-outside-math-mode nil)
-  (cdlatex-auto-help-delay 0.5)
-  (cdlatex-command-alist
-   '(("equ*" "Insert equation* env"   "" cdlatex-environment ("equation*") t nil)
-     ("fra" "Insert frame env"   "" cdlatex-environment ("frame") t nil)
-     ("frd" "Insert \\frac{\\partial }{\\partial }" "\\frac{\\partial ?}{\\partial }" cdlatex-position-cursor nil nil t)
-     ("frdl" "Insert \\frac{\\partial\\ln }{\\partial\\ln }" "\\frac{\\partial\\ln ?}{\\partial\\ln }" cdlatex-position-cursor nil nil t)
-     ("frat" "Insert \\frametitle{}" "\\frametitle{?}" cdlatex-position-cursor nil t nil)
-     ("frast" "Insert \\framesubtitle{}" "\\framesubtitle{?}" cdlatex-position-cursor nil t nil)
-     ("su" "Insert \\sum" "\\sum?" cdlatex-position-cursor nil nil t)
-     ("ln" "Insert \\ln" "\\ln?" cdlatex-position-cursor nil nil t)))
-  ;; :bind (:map org-mode-map ("$" . cdlatex-dollar))
-  :hook
-  ((LaTeX-mode markdown-mode) . turn-on-cdlatex)
-  ((LaTeX-mode org-mode) . my-slow-company)
-  (org-mode . turn-on-org-cdlatex)
-  (cdlatex-tab . my-cdlatex-latex-tab)
-  (cdlatex-tab . my-cdlatex-markdown-tab))
-
 (use-package overleaf
   :ensure t
   :defer t
@@ -1585,10 +1590,8 @@ same directory as the working and insert a link to this file."
   (org-fold-core-style 'overlays) ; Slower folding style to prevent some bugs when unfolding
   (org-file-apps
    '((auto-mode . emacs) (directory . emacs)  ("\\.x?html?\\'" . default)))
-:config
-  (unless (equal system-type 'darwin)
-    (org-defkey org-cdlatex-mode-map "²" 'cdlatex-math-symbol))
-  (org-defkey org-cdlatex-mode-map "'" nil)
+  :config
+  (org-defkey org-cdlatex-mode-map (kbd "§") #'org-cdlatex-math-modify)
   ;; (if (equal system-type 'gnu/linux)
   ;;     (setopt org-format-latex-options
   ;; 	      (plist-put org-format-latex-options :scale 0.7))
