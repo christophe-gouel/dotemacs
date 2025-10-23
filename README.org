@@ -1373,7 +1373,28 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
   :defer t)
 (use-package agent-shell
   :vc (:url "https://github.com/xenodium/agent-shell")
-  :defer t)
+  :custom
+  ;; (agent-shell-openai-authentication
+  ;;  (agent-shell-openai-make-authentication :api-key (auth-source-pick-first-password :host "api.openai.com")))
+  (agent-shell-file-completion-enabled t)
+  :config
+  (setq agent-shell-openai-codex-environment
+	(agent-shell-make-environment-variables :inherit-env t)))
+(use-package agent-shell-sidebar
+  :after agent-shell
+  :vc (:url "https://github.com/cmacrae/agent-shell-sidebar")
+  :custom
+  (agent-shell-sidebar-default-config
+      (agent-shell-openai-make-codex-config))
+  :config
+  (defvar-keymap agent-shell-operation-map
+    :doc "Keymap for agent-shell operation"
+    :name "Agent-shell"
+    "f" '("focus"        . agent-shell-sidebar-toggle-focus)
+    "k" '("kill session" . agent-shell-sidebar-reset)
+    "s" '("switch agent" . agent-shell-sidebar-change-provider)
+    "t" '("toggle"       . agent-shell-sidebar-toggle))
+  :bind-keymap ("C-c q"  . agent-shell-operation-map))
 #+end_src
 
 **** aider
