@@ -580,11 +580,12 @@ current buffer within the project or the current directory if not in a project."
 
 #+begin_src emacs-lisp
 (use-package outline
-  :hook ((prog-mode text-mode) . outline-minor-mode)
+  :hook ((prog-mode LaTeX-mode markdown-mode) . outline-minor-mode)
   :custom
+  (outline-minor-mode-cycle t) ; Use TAB on heading to cycle
   (outline-minor-mode-use-buttons 'in-margins) ; add in-margin buttons to fold/unfold
-  :config
-  (unbind-key "RET" outline-overlay-button-map)
+  ;; :config
+  ;; (unbind-key "RET" outline-overlay-button-map)
   :bind (:map outline-minor-mode-map
 	      ([C-tab] . outline-cycle)
 	      ([S-tab] . outline-cycle-buffer)
