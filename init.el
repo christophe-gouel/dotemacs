@@ -2118,8 +2118,9 @@ the function will prompt the user to select a default audio device before runnin
    ";if" '(yas "if ($1) {\n  $2\n}")
    ";ie" '(yas "if ($1) {\n  $2\n} else {\n  $3\n}")
    ";p" " |>\n print(n = 1000)"
-   ";su" '(yas " |>\n  summarize($0)")
-   ";fi" '(yas " |>\n filter($0)"))
+   ";su" '(yas " |>\n  summarize(\n    .by = c($1),\n    $2\n )")
+   ";fi" '(yas " |>\n filter($0)")
+   ";lj" '(yas " |>\n left_join(\n $1,\n join_by($2)\n)"))
   (aas-set-snippets 'inferior-ess-r-mode
     ";str" " |> str()"))
 
@@ -2189,7 +2190,6 @@ the function will prompt the user to select a default audio device before runnin
     ("C-c C-j"    . ess-eval-line-and-step)
     ("C-<return>" . ess-eval-region-or-line-and-step)
     ("C-c C-x"    . ess-eval-symbol)
-    ("M-?"        . nil)
    :map inferior-ess-r-mode-map
     ("C-S-m"      . " |>")
     ("C-%"        . " %>%")
@@ -2234,28 +2234,31 @@ VIS has the same meaning as for `ess-eval-region'."
         (ess-eval-linewise (symbol-name symbol) vis)
       (message "No symbol at point to evaluate."))))
   (defun my-inferior-ess-init ()
-    "Workaround for https://github.com/emacs-ess/ESS/issues/1193"
-    (add-hook 'comint-preoutput-filter-functions #'xterm-color-filter -90 t)
-    (setq-local ansi-color-for-comint-mode nil)
+    "Treat properly OSC escape codes"
+    (add-hook 'comint-output-filter-functions
+	      #'comint-osc-process-output nil t)
     ;; (smartparens-mode 1)
     )
-
   (defun my-ess-remove-project-hook ()
     "Remove a useless hook added by ess to use its own project functions"
     (make-local-variable 'project-find-functions)
     (setq project-find-functions '(project-try-vc)))
+  ;; (defun ess-r-mode-outline-level ()
+  ;;   "R mode `outline-level` function."
+  ;;   (save-excursion
+  ;;     (beginning-of-line)
+  ;;     (if (looking-at "^[ \t]*\\(#+\\)\\s-")
+  ;; 	  (length (match-string 1))
+  ;; 	1000)))
   :hook
   (inferior-ess-mode . my-inferior-ess-init)
   ((ess-r-mode inferior-ess-mode) . my-ess-remove-project-hook)
   ;; Outlining like in RStudio
-  (ess-r-mode . (lambda ()
-		  (setq outline-regexp "^[ \t]*#+ +.*\\(----\\|====\\|####\\)")
-		  (defun outline-level ()
-		    (cond ((looking-at "^[ \t]*# ") 1)
-			  ((looking-at "^[ \t]*## ") 2)
-			  ((looking-at "^[ \t]*### ") 3)
-			  ((looking-at "^[ \t]*#### ") 4)
-			  (t 1000))))))
+  ;; (ess-r-mode .
+  ;; 	      (lambda ()
+  ;; 		(setq-local outline-regexp "^[ \t]*#+ +.*\\(----\\|====\\|####\\)")
+  ;; 		(setq-local outline-level #'ess-r-mode-outline-level)))
+  )
 
 (use-package ess-rscript
   :load-path "~/.emacs.d/lisp/"
