@@ -198,6 +198,19 @@
     (((background light)) (:foreground "black"))))
   (rainbow-delimiters-unmatched-face ((t (:background "yellow")))))
 
+(use-package tab-bar
+  :custom
+  (tab-bar-close-button-show nil)
+  (tab-bar-mode t)
+  (tab-bar-show 1))
+
+(use-package otpp
+  :ensure t
+  :after project
+  :defer t
+  :custom
+  (otpp-mode 1))
+
 (setopt custom-safe-themes t) ; consider all themes as safe
 
 (use-package modus-themes

@@ -276,6 +276,27 @@ Highlight the current line
   (rainbow-delimiters-unmatched-face ((t (:background "yellow")))))
 #+end_src
 
+** Tab bar
+
+#+begin_src emacs-lisp
+(use-package tab-bar
+  :custom
+  (tab-bar-close-button-show nil)
+  (tab-bar-mode t)
+  (tab-bar-show 1))
+#+end_src
+
+~ottp~ (One-tab-per-project) to synchronize tabs and projects.
+
+#+begin_src emacs-lisp
+(use-package otpp
+  :ensure t
+  :after project
+  :defer t
+  :custom
+  (otpp-mode 1))
+#+end_src
+
 ** Theme
 
 #+begin_src emacs-lisp
