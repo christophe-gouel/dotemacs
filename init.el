@@ -241,6 +241,10 @@
   :hook
   ;; Get proper coloring of compile buffers (does not seem to work under Windows, probably because cmd does not support ANSI colors)
   (compilation-filter . ansi-color-compilation-filter)
+  :config
+  ;; Remove Cucumber which messes with GAMS error detection
+  (setq compilation-error-regexp-alist
+	(remove 'cucumber compilation-error-regexp-alist))
   :custom
   ;; compilation buffer automatically scrolls and stops at first error
   (compilation-scroll-output 'first-error))
