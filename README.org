@@ -1377,15 +1377,24 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
   :bind
   (("C-c RET"        . gptel-send)
    ("C-c C-<return>" . gptel-send))
-  ;; :custom
-  ;; (gptel-use-curl nil)
   :config
+  (require 'gptel-integrations) ;; Integrate with tools from mcp.el
+  ;; LLM request options
   (setopt gptel-backend (gptel-make-gh-copilot "Copilot")
   	gptel-model 'gpt-5)
-  (add-to-list 'gptel-directives
-	       '(academic . "You are an editor specialized in academic paper in economics. You are here to help me generate the best text for my academic articles. I will provide you texts and I would like you to review them for any spelling, grammar, or punctuation errors. Do not stop at simple proofreading, if it is useful, propose to refine the content's structure, style, and clarity. Once you have finished editing the text, provide me with any necessary corrections or suggestions for improving the text. Please respect any LaTeX, org, or markdown command. Avoid passive form."))
-  (add-to-list 'gptel-directives
-	       '(mathematics . "Solve this mathematical formula. Just output the solution in LaTeX without giving any explanation.")))
+  :custom
+  ;; Chat UI options
+  (gptel-default-mode 'org-mode)
+  (gptel-highlight-methods '(face margin))
+  ;; Prompts
+  (gptel-directives
+   '((default . "You are a large language model living in Emacs and a helpful assistant. Use LaTeX for any mathematical answer. Respond concisely.")
+     (mathematics . "Solve this mathematical formula. Just output the solution in LaTeX without giving any explanation.")
+     (copy-editing . "You are an editor specialized in academic paper in economics. You are here to help me generate the best text for my academic articles. I will provide you texts and I would like you to review them for any spelling, grammar, or punctuation errors. Do not stop at simple proofreading, if it is useful, propose to refine the content's structure, style, and clarity. Once you have finished editing the text, provide me with any necessary corrections or suggestions for improving the text. Please respect any LaTeX, org, or markdown command. Avoid passive form.")))
+  :hook
+  (gptel-mode . gptel-highlight-mode)
+  (gptel-mode . (lambda() (org-indent-mode -1))))
+#+end_src
 
 #+begin_src emacs-lisp
 (use-package gptel-magit
@@ -1453,6 +1462,27 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
   :defer t
   :custom
   (eca-chat-custom-model "github-copilot/gpt-5"))
+#+end_src
+
+**** Tools
+
+#+begin_src emacs-lisp
+(use-package mcp
+  :ensure t
+  :after gptel
+  :custom (mcp-hub-servers
+           `(("filesystem" .
+	      (:command "npx"
+	       :args ("-y" "@modelcontextprotocol/server-filesystem" "/Users/cgouel/Documents/")))
+             ("fetch" . (:command "uvx" :args ("mcp-server-fetch")))
+	     ("R" .
+	      (:command "Rscript"
+	       :args ("-e" "btw::btw_mcp_server()")))
+	     ("github" .
+	      (:command "docker"
+	       :args ("run" "-i" "--rm" "-e" "GH_TOKEN" "ghcr.io/github/github-mcp-server")))))
+  :config (require 'mcp-hub)
+  :hook (after-init . mcp-hub-start-all-server))
 #+end_src
 
 ** eshell
@@ -2058,7 +2088,6 @@ same directory as the working and insert a link to this file."
   (org-hide-emphasis-markers t) ; remove markup markers
   (org-ellipsis " [+]")
   (org-highlight-latex-and-related '(native))
-  (org-startup-indented t) ; Indent text relative to section
   (org-startup-with-inline-images t)
   (org-startup-with-latex-preview t)
   (org-cycle-inline-images-display t)
@@ -2092,7 +2121,9 @@ same directory as the working and insert a link to this file."
   (keymap-set org-mode-map "M-o" org-style-map)
   :bind (:map org-mode-map
 	      ("C-c o" . org-open-at-point)
-	      ("M-g o" . consult-org-heading)))
+	      ("M-g o" . consult-org-heading))
+  :hook
+  (org-mode . org-indent-mode)) ;; Indent text relative to section
 #+end_src
 
 Use =org-appear= for markup markers to appear automatically.
