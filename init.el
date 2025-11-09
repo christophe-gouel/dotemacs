@@ -11,8 +11,6 @@
 (setopt debug-on-error t)
 
 (use-package package
-  :custom
-  (package-selected-packages nil)
   :config
   (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
   (defvar-keymap package-operation-map
@@ -437,6 +435,7 @@ current buffer within the project or the current directory if not in a project."
         backup-directory-alist '(("." . "~/.emacs.d/backup"))
         case-fold-search t ; recherche sans égard à la casse
         comment-column 0 ; Prevent indentation of lines starting with one comment
+	confirm-kill-processes nil ; Prevent from asking if I want to close a running process
         default-major-mode 'text-mode ; mode par défaut
         delete-by-moving-to-trash t ; Sent deleted files to trash
 	delete-selection-mode t               ; entrée efface texte sélectionné
@@ -1041,13 +1040,14 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
   :hook (magit-mode . gptel-magit-install))
 
 (use-package acp
-  :vc (:url "https://github.com/xenodium/acp.el")
+  :ensure t
   :defer t)
 (use-package agent-shell
-  :vc (:url "https://github.com/xenodium/agent-shell")
+  :ensure t
   :custom
   ;; (agent-shell-openai-authentication
   ;;  (agent-shell-openai-make-authentication :api-key (auth-source-pick-first-password :host "api.openai.com")))
+  ;; Inherit your Emacs environment for Codex, so login persists.
   (agent-shell-file-completion-enabled t)
   :config
   (setq agent-shell-openai-codex-environment
@@ -2072,6 +2072,8 @@ the function will prompt the user to select a default audio device before runnin
 
 (use-package poly-markdown
   :ensure t
+  :custom
+  (poly-markdown-enable-latex-math nil)
   :bind (:map polymode-eval-map ("p" . quarto-preview)))
 
 (use-package poly-R
