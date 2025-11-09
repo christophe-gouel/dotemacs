@@ -1387,6 +1387,13 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
 	       '(academic . "You are an editor specialized in academic paper in economics. You are here to help me generate the best text for my academic articles. I will provide you texts and I would like you to review them for any spelling, grammar, or punctuation errors. Do not stop at simple proofreading, if it is useful, propose to refine the content's structure, style, and clarity. Once you have finished editing the text, provide me with any necessary corrections or suggestions for improving the text. Please respect any LaTeX, org, or markdown command. Avoid passive form."))
   (add-to-list 'gptel-directives
 	       '(mathematics . "Solve this mathematical formula. Just output the solution in LaTeX without giving any explanation.")))
+
+#+begin_src emacs-lisp
+(use-package gptel-magit
+  :ensure t
+  :custom
+  (gptel-magit-model 'gpt-5-mini)
+  :hook (magit-mode . gptel-magit-install))
 #+end_src
 
 *** Agents

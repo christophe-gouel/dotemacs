@@ -1034,6 +1034,12 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
   (add-to-list 'gptel-directives
 	       '(mathematics . "Solve this mathematical formula. Just output the solution in LaTeX without giving any explanation.")))
 
+(use-package gptel-magit
+  :ensure t
+  :custom
+  (gptel-magit-model 'gpt-5-mini)
+  :hook (magit-mode . gptel-magit-install))
+
 (use-package acp
   :vc (:url "https://github.com/xenodium/acp.el")
   :defer t)
