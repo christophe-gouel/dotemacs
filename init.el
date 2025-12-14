@@ -446,11 +446,16 @@ current buffer within the project or the current directory if not in a project."
 	minibuffer-depth-indicate-mode t
         mouse-yank-at-point t     ; coller avec la souris
         ring-bell-function 'ignore ; disable the bell (useful for macOS)
-	save-place-mode t ; save place in files
+	save-place-mode nil ; save place in files
 	savehist-mode t ; save minibuffer history
 	set-mark-command-repeat-pop t ; repeat C-space (after C-u C-space)
         show-paren-mode t ; coupler les parenthèses
 	use-short-answers t)           ; Replace yes or no with y or n
+
+(defun insert-date ()
+  "Insert the current date at point."
+  (interactive)
+  (insert (format-time-string "%Y-%m-%d")))
 
 (setopt user-full-name "Christophe Gouel"
         user-mail-address "christophe.gouel@inrae.fr")
@@ -563,6 +568,8 @@ current buffer within the project or the current directory if not in a project."
   (keymap-set calc-alg-map "<f6>" #'casual-calc-tmenu))
 (with-eval-after-load 'compile
   (keymap-set compilation-mode-map "<f6>" #'casual-compile-tmenu))
+(with-eval-after-load 'csv-mode
+  (keymap-set csv-mode-map "<f6>" #'casual-csv-tmenu))
 (with-eval-after-load 'grep
   (keymap-set grep-mode-map "<f6>" #'casual-compile-tmenu))
 
@@ -891,6 +898,7 @@ current buffer within the project or the current directory if not in a project."
     "r" '("Run"                  . magit-run)
     "s" '("Git command"          . magit-git-command)
     "S" '("Git command (topdir)" . magit-git-command-topdir))
+  (add-hook 'magit-status-sections-hook #'magit-insert-worktrees t)
   ; Do not diff when committing
   (remove-hook 'server-switch-hook 'magit-commit-diff)
   (remove-hook 'with-editor-filter-visit-hook 'magit-commit-diff)
@@ -916,6 +924,9 @@ current buffer within the project or the current directory if not in a project."
 (use-package forge
   :after magit
   :ensure t)
+
+(add-hook 'after-save-hook
+          'executable-make-buffer-file-executable-if-script-p)
 
 (use-package chatgpt-shell
   :ensure t
@@ -1005,7 +1016,7 @@ Never replace a backslash followed by a percentage sign with just a percentage s
   (chatgpt-shell-openai-key
    (auth-source-pick-first-password :host "api.openai.com"))
   ;; Other options
-  (chatgpt-shell-model-version "gpt-5")
+  (chatgpt-shell-model-version "gpt-5.1")
   (chatgpt-shell-openai-reasoning-effort "low")
   (chatgpt-shell-prompt-header-proofread-region
    "Please help me proofread the following text and only reply with fixed text.
@@ -1034,7 +1045,7 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
   (gptel-highlight-methods '(face margin))
   ;; Prompts
   (gptel-directives
-   '((default . "You are a large language model living in Emacs and a helpful assistant. Use LaTeX for any mathematical answer. Respond concisely.")
+   '((default . "You are a large language model living in Emacs and a helpful assistant. Use LaTeX, not unicode, for any mathematical answer. Respond concisely.")
      (mathematics . "Solve this mathematical formula. Just output the solution in LaTeX without giving any explanation.")
      (copy-editing . "You are an editor specialized in academic paper in economics. You are here to help me generate the best text for my academic articles. I will provide you texts and I would like you to review them for any spelling, grammar, or punctuation errors. Do not stop at simple proofreading, if it is useful, propose to refine the content's structure, style, and clarity. Once you have finished editing the text, provide me with any necessary corrections or suggestions for improving the text. Please respect any LaTeX, org, or markdown command. Avoid passive form.")))
   :hook
@@ -1699,6 +1710,8 @@ same directory as the working and insert a link to this file."
   (org-cite-global-bibliography
    (list (substitute-in-file-name "${BIBINPUTS}/References.bib")))
   (org-cite-csl-styles-dir (substitute-in-file-name "${DROPBOX}/Bibliography/csl"))
+  (org-cite-export-processors
+        '((t csl "the-quarterly-journal-of-economics.csl")))
   :bind (:map org-mode-map ("C-c [" . org-cite-insert)))
 
 (use-package oxr
@@ -1709,6 +1722,7 @@ same directory as the working and insert a link to this file."
 (use-package ox
   :defer t
   :custom
+  (org-export-with-toc nil)
   ;; Option needed to export equations in proper format to odt/docx. Require the installation of latexml
   (org-mathml-convert-command "latexmlmath %i --presentationmathml=%o")
   (org-odt-preferred-output-format "docx")) ; require soffice to be on the PATH
@@ -2068,7 +2082,8 @@ the function will prompt the user to select a default audio device before runnin
   :config
   ;; Performance boost from https://www.reddit.com/r/emacs/comments/1447fy2/looking_for_help_in_improving_typescript_eglot/
   (fset #'jsonrpc--log-event #'ignore)
-  (dolist (pair '((markdown-mode  . ("marksman"))
+  (dolist (pair '(;; (ess-r-mode . ("air" "language-server"))
+		  (markdown-mode  . ("marksman"))
 		  (conf-toml-mode . ("tombi" "lsp"))))
     (add-to-list 'eglot-server-programs pair))
   :custom
