@@ -46,7 +46,8 @@
     ;; :custom
     ;; (exec-path-from-shell-arguments nil) ; Do not run an interactive shell (faster)
     :config
-    (dolist (var '("DROPBOX" "BIBINPUTS" "BSTINPUTS" "GH_TOKEN" "OPENAI_API_KEY" "ANTHROPIC_API_KEY" "OLLAMA_API_BASE"))
+    (dolist (var '("DROPBOX" "BIBINPUTS" "BSTINPUTS" ;; "GH_TOKEN"
+		   "OPENAI_API_KEY" "ANTHROPIC_API_KEY" "OLLAMA_API_BASE"))
       (add-to-list 'exec-path-from-shell-variables var))
     (exec-path-from-shell-initialize)))
 
@@ -182,7 +183,7 @@
 
 (use-package rainbow-delimiters
   :ensure t
-  :hook (prog-mode yaml-mode)
+  :hook (prog-mode yaml-mode lisp-data-mode)
   :custom-face
   (rainbow-delimiters-depth-1-face ((t (:foreground "red"))))
   (rainbow-delimiters-depth-2-face ((t (:foreground "orange"))))
@@ -2340,6 +2341,7 @@ VIS has the same meaning as for `ess-eval-region'."
   :bind (:map ess-r-mode-map ("C-c C-w" . ess-r-breakerofchains-run-to-point)))
 
 (use-package ess-view-data
+  ;; :load-path "~/Documents/git_projects/code/ess-view-data/"
   :ensure t
   :config
   (defun ess-view-data-kill-trace ()
@@ -2440,7 +2442,7 @@ This function is intended to be added to `after-save-hook`."
           ;; Refresh the correct buffer from disk
           (with-current-buffer current-buffer
             (revert-buffer nil t t)
-	    (flymake-start)))
+	    (flymake-start t)))
       (message "Error: 'air' executable not found."))))
 
 (add-hook 'after-save-hook #'run-air-formatter)
