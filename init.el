@@ -200,7 +200,23 @@
   :custom
   (tab-bar-close-button-show nil)
   (tab-bar-mode t)
-  (tab-bar-show 1))
+  ;; (tab-bar-show 1)
+  :config
+  (defun tab-create (name)
+    "Create the NAME tab."
+    (tab-new)
+    (tab-bar-rename-tab name))
+  (defun my-tab-bar-startup ()
+    "Create my default tab-bar setup."
+    (progn (tab-create ".emacs.d")
+	   (tab-create "notes"))
+    (tab-bar-switch-to-tab ".emacs.d")
+    (find-file "~/.emacs.d/README.org")
+    (tab-bar-switch-to-tab "notes")
+    (dired "~/Inrae EcoPub Dropbox/Christophe Gouel/notes/research")
+    (tab-bar-switch-to-tab "*default*"))
+  :hook
+  (after-init . my-tab-bar-startup))
 
 (use-package otpp
   :ensure t
