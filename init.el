@@ -152,6 +152,11 @@
 (use-package nerd-icons-xref
   :ensure t
   :hook (xref--xref-buffer-mode))
+;; (use-package nerd-icons-corfu
+;;   :ensure t
+;;   :after corfu
+;;   :config
+;;   (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
 
 (use-package ligature
   :ensure t
