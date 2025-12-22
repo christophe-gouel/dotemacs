@@ -635,25 +635,13 @@ current buffer within the project or the current directory if not in a project."
   :ensure t
   :hook
   (after-init . global-company-mode)
-  ;; (prog-mode . (lambda ()
-  ;; 		 (setq-local company-backends
-  ;; 			     '(company-capf
-  ;; 			       company-files
-  ;; 			       company-math-symbols-unicode
-  ;; 			       (company-dabbrev-code company-keywords)
-  ;; 			       company-dabbrev
-  ;; 			       :with
-  ;; 			       company-yasnippet))))
-  (text-mode . (lambda ()
+  ((markdown-mode org-mode) . (lambda ()
 		 (setq-local company-backends
 			     '(company-capf
 			       company-files
-			       company-latex-commands
-			       company-math-symbols-latex
-			       ;; company-ispell
+			       company-ispell
 			       (company-dabbrev-code company-keywords)
 			       company-dabbrev
-			       ;; :with
 			       company-yasnippet))))
   (TeX-mode . (lambda ()
 		(setq-local company-backends
@@ -661,12 +649,9 @@ current buffer within the project or the current directory if not in a project."
 			      company-files
 			      company-reftex-labels
 			      company-reftex-citations
-			      company-math-symbols-latex
-			      company-latex-commands
 			      company-ispell
 			      (company-dabbrev-code company-keywords)
 			      company-dabbrev
-			      ;; :with
 			      company-yasnippet))))
   :custom
   (company-show-quick-access t)
@@ -675,7 +660,6 @@ current buffer within the project or the current directory if not in a project."
 		      company-files
 		      (company-dabbrev-code company-keywords)
 		      company-dabbrev
-		      ;; :with
 		      company-yasnippet))
   ;; company configuration from
   ;; <https://github.com/radian-software/radian/blob/develop/emacs/radian.el>
@@ -713,11 +697,6 @@ current buffer within the project or the current directory if not in a project."
          ;; for windowed Emacs and RET is for terminal Emacs.
          ("<return>" . company-complete-selection)
          ("RET" . company-complete-selection)))
-
-(use-package company-math
-  :ensure t
-  :custom
-  (company-math-allow-latex-symbols-in-faces t)) ; use LaTeX symbols everywhere (avoid unicode symbols to dominate outside LaTeX mode)
 
 (use-package company-reftex
   :ensure t)
