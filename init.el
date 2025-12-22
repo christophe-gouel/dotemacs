@@ -1065,27 +1065,17 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
 (use-package agent-shell
   :ensure t
   :custom
-  ;; (agent-shell-openai-authentication
-  ;;  (agent-shell-openai-make-authentication :api-key (auth-source-pick-first-password :host "api.openai.com")))
-  ;; Inherit your Emacs environment for Codex, so login persists.
   (agent-shell-file-completion-enabled t)
   :config
   (setq agent-shell-openai-codex-environment
-	(agent-shell-make-environment-variables :inherit-env t)))
-(use-package agent-shell-sidebar
-  :after agent-shell
-  :vc (:url "https://github.com/cmacrae/agent-shell-sidebar")
-  :custom
-  (agent-shell-sidebar-default-config
-      (agent-shell-openai-make-codex-config))
-  :config
+	(agent-shell-make-environment-variables :inherit-env t))
   (defvar-keymap agent-shell-operation-map
     :doc "Keymap for agent-shell operation"
     :name "Agent-shell"
-    "f" '("focus"        . agent-shell-sidebar-toggle-focus)
-    "k" '("kill session" . agent-shell-sidebar-reset)
-    "s" '("switch agent" . agent-shell-sidebar-change-provider)
-    "t" '("toggle"       . agent-shell-sidebar-toggle))
+    "c" '("Compose"      . agent-shell-prompt-compose)
+    "q" '("Agent-shell"  . agent-shell)
+    "f" '("Send file"    . agent-shell-send-file)
+    "r" '("Send region" . agent-shell-send-region))
   :bind-keymap ("C-c q"  . agent-shell-operation-map))
 
 (use-package aidermacs
