@@ -1059,6 +1059,16 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
   (gptel-magit-model 'gpt-5-mini)
   :hook (magit-mode . gptel-magit-install))
 
+(use-package gptel-agent
+  :vc (:url "https://github.com/karthink/gptel-agent"
+       :rev :newest)
+  :config (gptel-agent-update))         ;Read files from agents directories
+
+(use-package gptel-quick
+  :vc (:url "https://github.com/karthink/gptel-quick")
+  :after embark
+  :bind (:map embark-general-map ("?" . gptel-quick)))
+
 (use-package acp
   :ensure t
   :defer t)

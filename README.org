@@ -1463,6 +1463,20 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
   :hook (magit-mode . gptel-magit-install))
 #+end_src
 
+#+begin_src emacs-lisp
+(use-package gptel-agent
+  :vc (:url "https://github.com/karthink/gptel-agent"
+       :rev :newest)
+  :config (gptel-agent-update))         ;Read files from agents directories
+#+end_src
+
+#+begin_src emacs-lisp
+(use-package gptel-quick
+  :vc (:url "https://github.com/karthink/gptel-quick")
+  :after embark
+  :bind (:map embark-general-map ("?" . gptel-quick)))
+#+end_src
+
 *** Agents
 
 **** agent-shell
