@@ -18,7 +18,7 @@
 (require 'consult)
 
 (defgroup consult-ripgrep-same-ext nil
-  "`'consult-ripgrep' restricted to current/related file extensions."
+  "Consult ripgrep restricted to current/related file extensions."
   :group 'consult)
 
 (defcustom consult-ripgrep-same-ext-extension-groups nil
@@ -55,17 +55,21 @@ current extension."
 
 ;;;###autoload
 (defun consult-ripgrep-same-ext (&optional dir initial)
-  "Run `consult-ripgrep' restricted to files with the same/related extension.
+  "Run `consult-ripgrep' restricted to files with the sameor related extension.
 
-Related extensions are configured via `consult-ripgrep-same-ext-extension-groups'.
+Related extensions are configured via
+`consult-ripgrep-same-ext-extension-groups'.
 
-Interactive behavior:
-- In file/Dired buffers: uses the implicit directory like `consult-ripgrep'.
-- In buffers like *scratch*: prompts for a directory explicitly.
+When called interactively:
+- In file or Dired buffers: uses the implicit directory like `consult-ripgrep'.
+- In buffers without an associated file, prompt for an extension.
 
-Non-interactive behavior:
+When called non-interactively:
 - Calls (consult-ripgrep DIR INITIAL) after temporarily extending
-  `consult-ripgrep-args'."
+  `consult-ripgrep-args'.
+
+DIR is the directory to search.
+INITIAL is the initial input string for the minibuffer."
   (interactive)
   (let* ((ext (or (consult-ripgrep-same-ext--current-extension)
                   (when (called-interactively-p 'interactive)

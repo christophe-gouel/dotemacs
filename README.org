@@ -1199,6 +1199,16 @@ Use =vertico-directory= to press =DEL= to jump back one directory instead of one
   (xref-show-definitions-function #'consult-xref))
 #+end_src
 
+#+begin_src emacs-lisp
+(use-package consult-ripgrep-same-ext.el
+  :load-path "~/.emacs.d/lisp/"
+  :custom
+  (consult-ripgrep-same-ext-extension-groups
+      '(("gms" "inc")))
+  :bind
+  ("M-s R" . consult-ripgrep-same-ext))
+#+end_src
+
 *** Embark
 
 Basic configuration, to check after some time

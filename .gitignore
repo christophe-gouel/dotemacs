@@ -38,3 +38,5 @@ speed-type/
 eca/
 history
 places
+/.agent-shell/
+/.gptel/

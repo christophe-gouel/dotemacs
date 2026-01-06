@@ -840,6 +840,14 @@ current buffer within the project or the current directory if not in a project."
   (xref-show-xrefs-function #'consult-xref)
   (xref-show-definitions-function #'consult-xref))
 
+(use-package consult-ripgrep-same-ext.el
+  :load-path "~/.emacs.d/lisp/"
+  :custom
+  (consult-ripgrep-same-ext-extension-groups
+      '(("gms" "inc")))
+  :bind
+  ("M-s R" . consult-ripgrep-same-ext))
+
 (use-package embark
   :ensure t
   :bind
