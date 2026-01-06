@@ -1125,12 +1125,13 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
 	     ("R" .
 	      (:command "Rscript"
 	       :args ("-e" "btw::btw_mcp_server()")))
-	     ;; ("github" . (:url "https://api.githubcopilot.com/mcp/"
-	     ;; 		  :headers (:authorization "Bearer GH_TOKEN")))
-	     ;; ("github" .
-	     ;;  (:command "docker"
-	     ;;   :args ("run" "-i" "--rm" "-e" "GH_TOKEN" "ghcr.io/github/github-mcp-server")))
-	     ))
+	     ("github" .
+	      (:url "https://api.githubcopilot.com/mcp/"
+	       :headers (("authorization" .
+			  ,(concat "Bearer "
+				   (auth-source-pick-first-password
+				    :host "api.github.com"
+				    ))))))))
   :config (require 'mcp-hub)
   :hook (after-init . mcp-hub-start-all-server))
 
