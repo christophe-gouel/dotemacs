@@ -1941,19 +1941,11 @@ the function will prompt the user to select a default audio device before runnin
   (add-to-list 'mode-line-misc-info '(:eval (my-guess-language-flag)) t)
   :hook (flyspell-mode . guess-language-mode))
 
-(defun my-unfill-paragraph ()
-  "Unfill paragraph."
-  (interactive)
-  (let ((fill-column (point-max)))
-  (fill-paragraph nil)))
-
-(defun my-unfill-region (start end)
-  "Unfill region."
-  (interactive "r")
-  (let ((fill-column (point-max)))
-    (fill-region start end nil)))
-
 (setq-default fill-column 80)
+(use-package unfill
+  :ensure t
+  :bind
+  ("M-q" . unfill-toggle))
 
 (use-package visual-fill-column
   :ensure t

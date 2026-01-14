@@ -475,6 +475,7 @@ Better default options for =ediff=:
 (use-package ediff-wind
   :defer t
   :custom
+  (ediff-ignore-similar-regions t) ; skip diffs that differ only in white space and line breaks.
   (ediff-split-window-function 'split-window-horizontally)
   (ediff-window-setup-function 'ediff-setup-windows-plain))
 #+end_src
@@ -1186,14 +1187,17 @@ Use =vertico-directory= to press =DEL= to jump back one directory instead of one
    ("M-p"   . consult-history))
   :custom
   ;; Remove registers from sources to avoid trigerring previews for Tramp
+  ;; (important not to mess up the ordering of sources)
   (consult-buffer-sources
-   '(consult--source-hidden-buffer consult--source-modified-buffer
-				   consult--source-buffer
-				   consult--source-recent-file
-				   consult--source-bookmark
-				   consult--source-project-buffer-hidden
-				   consult--source-project-recent-file-hidden
-				   consult--source-project-root-hidden))
+   '(consult-source-buffer
+     consult-source-hidden-buffer
+     consult-source-modified-buffer
+     consult-source-other-buffer
+     consult-source-recent-file
+     consult-source-bookmark
+     consult-source-project-buffer-hidden
+     consult-source-project-recent-file-hidden
+     consult-source-project-root-hidden))
   ;; xref interface is managed by consult-xref
   (xref-show-xrefs-function #'consult-xref)
   (xref-show-definitions-function #'consult-xref))
@@ -1457,7 +1461,7 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
   (gptel-highlight-methods '(face margin))
   ;; Prompts
   (gptel-directives
-   '((default . "You are a large language model living in Emacs and a helpful assistant. Use LaTeX, not unicode, for any mathematical answer. Respond concisely.")
+   '((default . "You are a large language model living in Emacs and a helpful assistant. Use LaTeX, not unicode, for any mathematical answer. Answer using org-mode syntax, in particular make sure that code blocks are inside org code blocks. Respond concisely.")
      (mathematics . "Solve this mathematical formula. Just output the solution in LaTeX without giving any explanation.")
      (copy-editing . "You are an editor specialized in academic paper in economics. You are here to help me generate the best text for my academic articles. I will provide you texts and I would like you to review them for any spelling, grammar, or punctuation errors. Do not stop at simple proofreading, if it is useful, propose to refine the content's structure, style, and clarity. Once you have finished editing the text, provide me with any necessary corrections or suggestions for improving the text. Please respect any LaTeX, org, or markdown command. Avoid passive form.")))
   :hook
@@ -2010,7 +2014,7 @@ Use svg for previews. Much slower than png, but it is not blurry on MacOS.
 
 *** Overleaf
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package overleaf
   :ensure t
   :defer t
@@ -2046,7 +2050,7 @@ Use svg for previews. Much slower than png, but it is not blurry on MacOS.
   (markdown-enable-math t)
   (markdown-enable-prefix-prompts nil)
   (markdown-header-scaling nil)
-  (markdown-hide-markup t)
+  (markdown-hide-markup nil)
   (markdown-hide-urls t)
   (markdown-fontify-code-blocks-natively t)
   (markdown-enable-highlighting-syntax t)
@@ -2167,8 +2171,8 @@ same directory as the working and insert a link to this file."
   (org-hide-emphasis-markers t) ; remove markup markers
   (org-ellipsis " [+]")
   (org-highlight-latex-and-related '(native))
-  (org-startup-with-inline-images t)
   (org-startup-with-latex-preview t)
+  (org-startup-with-link-previews t)
   (org-cycle-inline-images-display t)
   (org-imenu-depth 4)
   (org-blank-before-new-entry '((heading . auto) (plain-list-item . nil))) ; Control the insertion of blank line after M-Ret
@@ -2534,19 +2538,11 @@ the function will prompt the user to select a default audio device before runnin
 ** Word wrapping and paragraph filling
 
 #+begin_src emacs-lisp
-(defun my-unfill-paragraph ()
-  "Unfill paragraph."
-  (interactive)
-  (let ((fill-column (point-max)))
-  (fill-paragraph nil)))
-
-(defun my-unfill-region (start end)
-  "Unfill region."
-  (interactive "r")
-  (let ((fill-column (point-max)))
-    (fill-region start end nil)))
-
 (setq-default fill-column 80)
+(use-package unfill
+  :ensure t
+  :bind
+  ("M-q" . unfill-toggle))
 #+end_src
 
 Use =visual-fill-column= for text modes
@@ -2562,21 +2558,15 @@ Use =visual-fill-column= for text modes
     (interactive)
     (visual-line-mode 'toggle)
     (visual-fill-column-mode 'toggle)
-    ;; org-indent does not play nicely with adaptive-wrap-prefix-mode so we exclude
-    ;; the later in org
+    ;; org-indent does not play nicely with adaptive-wrap-prefix-mode so we
+    ;; exclude the later in org
     (unless (member major-mode '(org-mode))
       (visual-wrap-prefix-mode 'toggle)))
-
   (defun my-center-text ()
-  "Center text in visual fill column, unless in a polymode buffer."
-  (interactive)
-  (unless (bound-and-true-p polymode-mode)
-    (setq-local visual-fill-column-center-text t)))
-  ;; (defun my-center-text ()
-  ;;   "Center text in visual fill column."
-  ;;   (interactive)
-  ;;   (setq-local visual-fill-column-center-text t))
-
+    "Center text in visual fill column, unless in a polymode buffer."
+    (interactive)
+    (unless (bound-and-true-p polymode-mode)
+      (setq-local visual-fill-column-center-text t)))
   (defun my-uncenter-text ()
     "Uncenter text in visual fill column."
     (interactive)
