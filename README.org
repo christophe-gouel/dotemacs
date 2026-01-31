@@ -80,6 +80,15 @@ Remove warnings from package installation:
     (exec-path-from-shell-initialize)))
 #+end_src
 
+** Reload my config
+
+#+begin_src emacs-lisp
+(defun my-reload-my-emacs-config ()
+  "Reload my Emacs configuration."
+  (interactive)
+  (load-file "~/.emacs.d/init.el"))
+#+end_src
+
 * Emacs startup
 
 #+begin_src emacs-lisp
@@ -136,6 +145,7 @@ Enable tooltip
   (interactive)
   (set-face-attribute 'default nil :family "JetBrainsMono NF" :height 140)
   (plist-put org-latex-preview-appearance-options :zoom 1.5)
+  (set-frame-parameter nil 'fullscreen 'maximized)
   ;; (setopt org-format-latex-options
   ;;           (plist-put org-format-latex-options :scale 1.8)
   ;;         preview-scale-function 1.4)
@@ -145,6 +155,7 @@ Enable tooltip
   (interactive)
   (set-face-attribute 'default nil :family "JetBrainsMono" :height 109)
   (set-face-attribute 'variable-pitch nil :family "Noto Serif" :height 1.5)
+  (set-frame-parameter nil 'fullscreen 'maximized)
   ;; (setopt org-format-latex-options
   ;;         (plist-put org-format-latex-options :scale 1.5)
   ;;         preview-scale-function 1.5)
@@ -153,6 +164,7 @@ Enable tooltip
   "Adjust font for default screen."
   (interactive)
   (set-face-attribute 'default nil :family "JetBrainsMono NF" :height 120)
+  (set-frame-parameter nil 'fullscreen 'maximized)
   ;; (setopt org-format-latex-options
   ;;           (plist-put org-format-latex-options :scale 1.7)
   ;;         preview-scale-function 1.5)
@@ -347,6 +359,7 @@ Highlight the current line
   (global-auto-revert-mode)
   :custom
   (global-auto-revert-ignore-modes '(pdf-view-mode doc-view-mode)) ; Avoid reverting pdf files while LaTeX compiles
+  (auto-revert-use-notify nil) ; Prevent notifications for file updates
   (auto-revert-verbose nil)) ; Prevent autorevert from generating messages
 #+end_src
 
@@ -683,6 +696,7 @@ Use =outline-minor-faces= to use a special face for outline sections.
   :mode  ("\\.pdf\\'" . pdf-view-mode)
   :bind
   (:map pdf-view-mode-map
+	("S"       . pdf-view-roll-minor-mode)
 	("C-s"     . isearch-forward)
 	;; It is necessary to redeclare the 2 bindings below because they are overriden by consult
 	("M-g g"   . pdf-view-goto-page)
@@ -1208,7 +1222,8 @@ Use =vertico-directory= to press =DEL= to jump back one directory instead of one
   :load-path "~/.emacs.d/lisp/"
   :custom
   (consult-ripgrep-same-ext-extension-groups
-      '(("gms" "inc")))
+      '(("gms" "inc")
+	("R" "Rprofile")))
   :bind
   ("M-s R" . consult-ripgrep-same-ext))
 #+end_src
@@ -2930,6 +2945,7 @@ Use "M-C-TAB" for moving to next field to avoid conflict with autocompletion.
   (ess-nuke-trailing-whitespace-p t)
   (ess-assign-list '(" <-" " <<- " " = " " -> " " ->> "))
   (ess-style 'RStudio)  ; Set code indentation
+  (ess-r-outline-style 'RStudio)
   (ess-ask-for-ess-directory nil) ; Do not ask what is the project directory
   (inferior-R-args "--no-restore-history --no-save ")
   (ess-describe-at-point-method 'tooltip) ; Describe using a toolip rather than a separate buffer
@@ -2966,22 +2982,9 @@ VIS has the same meaning as for `ess-eval-region'."
     "Remove a useless hook added by ess to use its own project functions"
     (make-local-variable 'project-find-functions)
     (setq project-find-functions '(project-try-vc)))
-  ;; (defun ess-r-mode-outline-level ()
-  ;;   "R mode `outline-level` function."
-  ;;   (save-excursion
-  ;;     (beginning-of-line)
-  ;;     (if (looking-at "^[ \t]*\\(#+\\)\\s-")
-  ;; 	  (length (match-string 1))
-  ;; 	1000)))
   :hook
   (inferior-ess-mode . my-inferior-ess-init)
-  ((ess-r-mode inferior-ess-mode) . my-ess-remove-project-hook)
-  ;; Outlining like in RStudio
-  ;; (ess-r-mode .
-  ;; 	      (lambda ()
-  ;; 		(setq-local outline-regexp "^[ \t]*#+ +.*\\(----\\|====\\|####\\)")
-  ;; 		(setq-local outline-level #'ess-r-mode-outline-level)))
-  )
+  ((ess-r-mode inferior-ess-mode) . my-ess-remove-project-hook))
 #+end_src
 
 #+begin_src emacs-lisp

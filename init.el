@@ -51,6 +51,11 @@
       (add-to-list 'exec-path-from-shell-variables var))
     (exec-path-from-shell-initialize)))
 
+(defun my-reload-my-emacs-config ()
+  "Reload my Emacs configuration."
+  (interactive)
+  (load-file "~/.emacs.d/init.el"))
+
 (use-package dashboard
   :ensure t
   :custom
@@ -95,6 +100,7 @@
   (interactive)
   (set-face-attribute 'default nil :family "JetBrainsMono NF" :height 140)
   (plist-put org-latex-preview-appearance-options :zoom 1.5)
+  (set-frame-parameter nil 'fullscreen 'maximized)
   ;; (setopt org-format-latex-options
   ;;           (plist-put org-format-latex-options :scale 1.8)
   ;;         preview-scale-function 1.4)
@@ -104,6 +110,7 @@
   (interactive)
   (set-face-attribute 'default nil :family "JetBrainsMono" :height 109)
   (set-face-attribute 'variable-pitch nil :family "Noto Serif" :height 1.5)
+  (set-frame-parameter nil 'fullscreen 'maximized)
   ;; (setopt org-format-latex-options
   ;;         (plist-put org-format-latex-options :scale 1.5)
   ;;         preview-scale-function 1.5)
@@ -112,6 +119,7 @@
   "Adjust font for default screen."
   (interactive)
   (set-face-attribute 'default nil :family "JetBrainsMono NF" :height 120)
+  (set-frame-parameter nil 'fullscreen 'maximized)
   ;; (setopt org-format-latex-options
   ;;           (plist-put org-format-latex-options :scale 1.7)
   ;;         preview-scale-function 1.5)
@@ -253,6 +261,7 @@
   (global-auto-revert-mode)
   :custom
   (global-auto-revert-ignore-modes '(pdf-view-mode doc-view-mode)) ; Avoid reverting pdf files while LaTeX compiles
+  (auto-revert-use-notify nil) ; Prevent notifications for file updates
   (auto-revert-verbose nil)) ; Prevent autorevert from generating messages
 
 (use-package compile
@@ -350,6 +359,7 @@
 (use-package ediff-wind
   :defer t
   :custom
+  (ediff-ignore-similar-regions t) ; skip diffs that differ only in white space and line breaks.
   (ediff-split-window-function 'split-window-horizontally)
   (ediff-window-setup-function 'ediff-setup-windows-plain))
 
@@ -494,6 +504,7 @@ current buffer within the project or the current directory if not in a project."
   :mode  ("\\.pdf\\'" . pdf-view-mode)
   :bind
   (:map pdf-view-mode-map
+	("S"       . pdf-view-roll-minor-mode)
 	("C-s"     . isearch-forward)
 	;; It is necessary to redeclare the 2 bindings below because they are overriden by consult
 	("M-g g"   . pdf-view-goto-page)
@@ -828,14 +839,17 @@ current buffer within the project or the current directory if not in a project."
    ("M-p"   . consult-history))
   :custom
   ;; Remove registers from sources to avoid trigerring previews for Tramp
+  ;; (important not to mess up the ordering of sources)
   (consult-buffer-sources
-   '(consult--source-hidden-buffer consult--source-modified-buffer
-				   consult--source-buffer
-				   consult--source-recent-file
-				   consult--source-bookmark
-				   consult--source-project-buffer-hidden
-				   consult--source-project-recent-file-hidden
-				   consult--source-project-root-hidden))
+   '(consult-source-buffer
+     consult-source-hidden-buffer
+     consult-source-modified-buffer
+     consult-source-other-buffer
+     consult-source-recent-file
+     consult-source-bookmark
+     consult-source-project-buffer-hidden
+     consult-source-project-recent-file-hidden
+     consult-source-project-root-hidden))
   ;; xref interface is managed by consult-xref
   (xref-show-xrefs-function #'consult-xref)
   (xref-show-definitions-function #'consult-xref))
@@ -844,7 +858,8 @@ current buffer within the project or the current directory if not in a project."
   :load-path "~/.emacs.d/lisp/"
   :custom
   (consult-ripgrep-same-ext-extension-groups
-      '(("gms" "inc")))
+      '(("gms" "inc")
+	("R" "Rprofile")))
   :bind
   ("M-s R" . consult-ripgrep-same-ext))
 
@@ -1054,7 +1069,7 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
   (gptel-highlight-methods '(face margin))
   ;; Prompts
   (gptel-directives
-   '((default . "You are a large language model living in Emacs and a helpful assistant. Use LaTeX, not unicode, for any mathematical answer. Respond concisely.")
+   '((default . "You are a large language model living in Emacs and a helpful assistant. Use LaTeX, not unicode, for any mathematical answer. Answer using org-mode syntax, in particular make sure that code blocks are inside org code blocks. Respond concisely.")
      (mathematics . "Solve this mathematical formula. Just output the solution in LaTeX without giving any explanation.")
      (copy-editing . "You are an editor specialized in academic paper in economics. You are here to help me generate the best text for my academic articles. I will provide you texts and I would like you to review them for any spelling, grammar, or punctuation errors. Do not stop at simple proofreading, if it is useful, propose to refine the content's structure, style, and clarity. Once you have finished editing the text, provide me with any necessary corrections or suggestions for improving the text. Please respect any LaTeX, org, or markdown command. Avoid passive form.")))
   :hook
@@ -1512,20 +1527,6 @@ Returns t if it handled indentation."
       (setopt preview-scale-function 0.7)
     (setopt preview-scale-function 1.5)))
 
-(use-package overleaf
-  :ensure t
-  :defer t
-  :custom
-  (overleaf-use-nerdfont t "Use nerfont icons for the modeline.")
-  :config
-  (let ((cookie-file "~/.overleaf-cookies"))
-    (setq overleaf-save-cookies (overleaf-save-cookies-to-file cookie-file)
-	  overleaf-cookies (overleaf-read-cookies-from-file cookie-file)))
-  (with-eval-after-load 'latex
-    (keymap-set LaTeX-mode-map "C-c o" overleaf-command-map))
-  (with-eval-after-load 'bibtex
-    (keymap-set bibtex-mode-map "C-c o" overleaf-command-map)))
-
 (use-package markdown-mode
   :ensure t
   :mode
@@ -1543,7 +1544,7 @@ Returns t if it handled indentation."
   (markdown-enable-math t)
   (markdown-enable-prefix-prompts nil)
   (markdown-header-scaling nil)
-  (markdown-hide-markup t)
+  (markdown-hide-markup nil)
   (markdown-hide-urls t)
   (markdown-fontify-code-blocks-natively t)
   (markdown-enable-highlighting-syntax t)
@@ -1655,8 +1656,8 @@ same directory as the working and insert a link to this file."
   (org-hide-emphasis-markers t) ; remove markup markers
   (org-ellipsis " [+]")
   (org-highlight-latex-and-related '(native))
-  (org-startup-with-inline-images t)
   (org-startup-with-latex-preview t)
+  (org-startup-with-link-previews t)
   (org-cycle-inline-images-display t)
   (org-imenu-depth 4)
   (org-blank-before-new-entry '((heading . auto) (plain-list-item . nil))) ; Control the insertion of blank line after M-Ret
@@ -1958,21 +1959,15 @@ the function will prompt the user to select a default audio device before runnin
     (interactive)
     (visual-line-mode 'toggle)
     (visual-fill-column-mode 'toggle)
-    ;; org-indent does not play nicely with adaptive-wrap-prefix-mode so we exclude
-    ;; the later in org
+    ;; org-indent does not play nicely with adaptive-wrap-prefix-mode so we
+    ;; exclude the later in org
     (unless (member major-mode '(org-mode))
       (visual-wrap-prefix-mode 'toggle)))
-
   (defun my-center-text ()
-  "Center text in visual fill column, unless in a polymode buffer."
-  (interactive)
-  (unless (bound-and-true-p polymode-mode)
-    (setq-local visual-fill-column-center-text t)))
-  ;; (defun my-center-text ()
-  ;;   "Center text in visual fill column."
-  ;;   (interactive)
-  ;;   (setq-local visual-fill-column-center-text t))
-
+    "Center text in visual fill column, unless in a polymode buffer."
+    (interactive)
+    (unless (bound-and-true-p polymode-mode)
+      (setq-local visual-fill-column-center-text t)))
   (defun my-uncenter-text ()
     "Uncenter text in visual fill column."
     (interactive)
@@ -2266,6 +2261,7 @@ the function will prompt the user to select a default audio device before runnin
   (ess-nuke-trailing-whitespace-p t)
   (ess-assign-list '(" <-" " <<- " " = " " -> " " ->> "))
   (ess-style 'RStudio)  ; Set code indentation
+  (ess-r-outline-style 'RStudio)
   (ess-ask-for-ess-directory nil) ; Do not ask what is the project directory
   (inferior-R-args "--no-restore-history --no-save ")
   (ess-describe-at-point-method 'tooltip) ; Describe using a toolip rather than a separate buffer
@@ -2302,22 +2298,9 @@ VIS has the same meaning as for `ess-eval-region'."
     "Remove a useless hook added by ess to use its own project functions"
     (make-local-variable 'project-find-functions)
     (setq project-find-functions '(project-try-vc)))
-  ;; (defun ess-r-mode-outline-level ()
-  ;;   "R mode `outline-level` function."
-  ;;   (save-excursion
-  ;;     (beginning-of-line)
-  ;;     (if (looking-at "^[ \t]*\\(#+\\)\\s-")
-  ;; 	  (length (match-string 1))
-  ;; 	1000)))
   :hook
   (inferior-ess-mode . my-inferior-ess-init)
-  ((ess-r-mode inferior-ess-mode) . my-ess-remove-project-hook)
-  ;; Outlining like in RStudio
-  ;; (ess-r-mode .
-  ;; 	      (lambda ()
-  ;; 		(setq-local outline-regexp "^[ \t]*#+ +.*\\(----\\|====\\|####\\)")
-  ;; 		(setq-local outline-level #'ess-r-mode-outline-level)))
-  )
+  ((ess-r-mode inferior-ess-mode) . my-ess-remove-project-hook))
 
 (use-package ess-rscript
   :load-path "~/.emacs.d/lisp/"
