@@ -2204,7 +2204,10 @@ the function will prompt the user to select a default audio device before runnin
 	    (yas-expand-snippet "\\left\\\\{ $0 \\right\\\\}"))
     "sum" "\\sum"
     "Sum" (lambda () (interactive)
-	    (yas-expand-snippet "\\sum_{$1}^{$2} $0"))))
+	    (yas-expand-snippet "\\sum_{$1}^{$2} $0"))
+    ;; add accent snippets
+    :cond #'laas-object-on-left-condition
+    "'t" (lambda () (interactive) (laas-wrap-previous-object "text"))))
 
 (use-package symbol-overlay
   :ensure t

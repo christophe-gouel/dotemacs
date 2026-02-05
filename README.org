@@ -2875,7 +2875,10 @@ Use "M-C-TAB" for moving to next field to avoid conflict with autocompletion.
 	    (yas-expand-snippet "\\left\\\\{ $0 \\right\\\\}"))
     "sum" "\\sum"
     "Sum" (lambda () (interactive)
-	    (yas-expand-snippet "\\sum_{$1}^{$2} $0"))))
+	    (yas-expand-snippet "\\sum_{$1}^{$2} $0"))
+    ;; add accent snippets
+    :cond #'laas-object-on-left-condition
+    "'t" (lambda () (interactive) (laas-wrap-previous-object "text"))))
 #+end_src
 
 *** Symbol overlay
