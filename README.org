@@ -416,7 +416,8 @@ Prevent variable names from being unlispify:
      ("\\.zip\\'" . "zip %o -r -9 --filesync %i --exclude \\*/.DS_Store __MACOSX")
      ("\\.pax\\'" . "pax -wf %o %i")))
   (setq dired-guess-shell-alist-user
-	'(("\\.gms\\'" "gams")))
+	'(("\\.gms\\'" "gams")
+	  ("\\.qmd\\'" "quarto render")))
   :custom
   (dired-listing-switches
      "-l --almost-all --human-readable --group-directories-first --no-group")
@@ -1568,9 +1569,12 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
 	       :args ("-y" "@modelcontextprotocol/server-filesystem" "/Users/cgouel/Documents/")))
              ("fetch" . (:command "uvx" :args ("mcp-server-fetch")))
 	     ("git" . (:command "uvx" :args ("mcp-server-git")))
+	     ;; ("R" .
+	     ;;  (:command "Rscript"
+	     ;;   :args ("-e" "btw::btw_mcp_server()")))
 	     ("R" .
-	      (:command "Rscript"
-	       :args ("-e" "btw::btw_mcp_server()")))
+	      (:command "R"
+	       :args ("--quiet" "--slave" "-e" "MCPR::mcpr_server()")))
 	     ("github" .
 	      (:url "https://api.githubcopilot.com/mcp/"
 	       :headers (("authorization" .
