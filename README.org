@@ -1527,11 +1527,12 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
   (defvar-keymap agent-shell-operation-map
     :doc "Keymap for agent-shell operation"
     :name "Agent-shell"
-    "c" '("Compose"      . agent-shell-prompt-compose)
-    "a" '("Agent-shell"  . agent-shell)
-    "f" '("Send file"    . agent-shell-send-file)
-    "j" '("Jump"         . agent-shell-attention-jump)
-    "r" '("Send region"  . agent-shell-send-region))
+    "c" '("Compose"        . agent-shell-prompt-compose)
+    "a" '("Agent-shell"    . agent-shell)
+    "f" '("Send file"      . agent-shell-send-file)
+    "j" '("Jump"           . agent-shell-attention-jump)
+    "r" '("Send region"    . agent-shell-send-region)
+    "t" '("Toggle display" . agent-shell-toggle))
   :bind-keymap ("C-c a"  . agent-shell-operation-map))
 #+end_src
 
