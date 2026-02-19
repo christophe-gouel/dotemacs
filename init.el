@@ -302,7 +302,9 @@
      ("\\.pax\\'" . "pax -wf %o %i")))
   (setq dired-guess-shell-alist-user
 	'(("\\.gms\\'" "gams")
-	  ("\\.qmd\\'" "quarto render")))
+	  ("\\.qmd\\'" "quarto render")
+	  ("\\.tex\\'" "latexmk -pdf")
+	  ("\\.tex\\'" "texcount -merge")))
   :custom
   (dired-listing-switches
      "-l --almost-all --human-readable --group-directories-first --no-group")
@@ -1107,10 +1109,20 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
     :doc "Keymap for agent-shell operation"
     :name "Agent-shell"
     "c" '("Compose"      . agent-shell-prompt-compose)
-    "q" '("Agent-shell"  . agent-shell)
+    "a" '("Agent-shell"  . agent-shell)
     "f" '("Send file"    . agent-shell-send-file)
-    "r" '("Send region" . agent-shell-send-region))
-  :bind-keymap ("C-c q"  . agent-shell-operation-map))
+    "j" '("Jump"         . agent-shell-attention-jump)
+    "r" '("Send region"  . agent-shell-send-region))
+  :bind-keymap ("C-c a"  . agent-shell-operation-map))
+
+(use-package agent-shell-attention
+  :vc (:url "https://github.com/ultronozm/agent-shell-attention.el")
+  :after agent-shell
+  :custom
+  (agent-shell-attention-render-function       #'agent-shell-attention-render-active)
+  (agent-shell-attention-show-zeros t)
+  :config
+  (agent-shell-attention-mode))
 
 (use-package aidermacs
   :ensure t
@@ -1121,7 +1133,8 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
   :custom
   (aidermacs-use-architect-mode t)
   (aidermacs-default-model "sonnet")
-  :bind (("C-c a" . aidermacs-transient-menu)))
+  ;; :bind (("C-c a" . aidermacs-transient-menu))
+  )
 
 (use-package eca
   :ensure t
@@ -1138,9 +1151,6 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
 	       :args ("-y" "@modelcontextprotocol/server-filesystem" "/Users/cgouel/Documents/")))
              ("fetch" . (:command "uvx" :args ("mcp-server-fetch")))
 	     ("git" . (:command "uvx" :args ("mcp-server-git")))
-	     ;; ("R" .
-	     ;;  (:command "Rscript"
-	     ;;   :args ("-e" "btw::btw_mcp_server()")))
 	     ("R" .
 	      (:command "R"
 	       :args ("--quiet" "--slave" "-e" "MCPR::mcpr_server()")))
