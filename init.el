@@ -391,7 +391,9 @@
 
 (use-package wgrep
   :ensure t
-  :bind (:map grep-mode-map ("e" . wgrep-change-to-wgrep-mode)))
+  :bind (:map grep-mode-map ("e" . wgrep-change-to-wgrep-mode))
+  :custom
+  (wgrep-auto-save-buffer t))
 
 (use-package ripgrep
   :ensure t
@@ -441,11 +443,12 @@ current buffer within the project or the current directory if not in a project."
 (use-package minibuffer
   :custom
   ;; Better completion defaults (to activate if not using a minibuffer completion framework)
-  ;; (completion-auto-help 'always)
-  ;; (completion-auto-select 'second-tab)
-  ;; (completions-format 'one-column)
-  ;; (completions-max-height 20)
-  ;; (minibuffer-visible-completions t) ; allows to navigate in the minibuffer using arrow keys
+  (completions-detailed t)            ; Show annotations
+  (completion-auto-help 'always)
+  (completion-auto-select 'second-tab)
+  (completions-format 'one-column)
+  (completions-max-height 20)
+  (minibuffer-visible-completions t) ; allows to navigate in the minibuffer using arrow keys
   (read-file-name-completion-ignore-case t))
 
 (use-package outline
@@ -470,6 +473,7 @@ current buffer within the project or the current directory if not in a project."
         backup-directory-alist '(("." . "~/.emacs.d/backup"))
         case-fold-search t ; recherche sans égard à la casse
         comment-column 0 ; Prevent indentation of lines starting with one comment
+	completion-ignore-case t
 	confirm-kill-processes nil ; Prevent from asking if I want to close a running process
         default-major-mode 'text-mode ; mode par défaut
         delete-by-moving-to-trash t ; Sent deleted files to trash
@@ -486,6 +490,9 @@ current buffer within the project or the current directory if not in a project."
 	set-mark-command-repeat-pop t ; repeat C-space (after C-u C-space)
         show-paren-mode t ; coupler les parenthèses
 	use-short-answers t)           ; Replace yes or no with y or n
+;; Context menu with right-click
+(when (display-graphic-p)
+  (context-menu-mode))
 
 (defun insert-date ()
   "Insert the current date at point."
@@ -552,7 +559,9 @@ current buffer within the project or the current directory if not in a project."
   :defer t
   :custom
   (recentf-auto-cleanup 'never) ;; disable to avoid recentf from scanning remote files through tramp
-  (recentf-max-saved-items 100))
+  (recentf-max-saved-items 100)
+  :bind
+  ("M-g r" . recentf))
 
 (set-register ?b '(file . "~/Inrae EcoPub Dropbox/Christophe Gouel/Bibliography/Bibtex/References.bib"))
 (set-register ?d '(file . "~/Downloads"))
@@ -578,6 +587,14 @@ current buffer within the project or the current directory if not in a project."
 (use-package emacs-everywhere
   :ensure t
   :defer t)
+
+(use-package conflict-buttons
+  :ensure t
+  :hook (smerge-mode . (lambda ()
+                         (when (display-graphic-p)
+                           (conflict-buttons-mode 1))))
+  :custom
+  (conflict-buttons-style 'unicode))
 
 (setopt tramp-ssh-controlmaster-options
 	(concat
@@ -1102,18 +1119,22 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
   :ensure t
   :custom
   (agent-shell-file-completion-enabled t)
+  (agent-shell-prefer-viewport-interaction t)
+  (agent-shell-session-strategy 'prompt) ; new for a new session
   :config
   (setq agent-shell-openai-codex-environment
 	(agent-shell-make-environment-variables :inherit-env t))
   (defvar-keymap agent-shell-operation-map
     :doc "Keymap for agent-shell operation"
     :name "Agent-shell"
-    "c" '("Compose"        . agent-shell-prompt-compose)
     "a" '("Agent-shell"    . agent-shell)
+    "c" '("Compose"        . agent-shell-prompt-compose)
     "f" '("Send file"      . agent-shell-send-file)
     "j" '("Jump"           . agent-shell-attention-jump)
+    "n" '("New shell"      . agent-shell-new-shell)
     "r" '("Send region"    . agent-shell-send-region)
-    "t" '("Toggle display" . agent-shell-toggle))
+    "t" '("Toggle display" . agent-shell-toggle)
+    "u" '("Usage"          . agent-shell-show-usage))
   :bind-keymap ("C-c a"  . agent-shell-operation-map))
 
 (use-package agent-shell-attention
@@ -1989,7 +2010,7 @@ the function will prompt the user to select a default audio device before runnin
     (setq-local visual-fill-column-center-text nil))
   :bind ("C-c v" . my-visual-fill)
   :hook
-  ((bibtex-mode LaTeX-mode markdown-mode org-mode) . my-visual-fill)
+  ((bibtex-mode LaTeX-mode markdown-mode org-mode agent-shell-viewport-view-mode agent-shell-viewport-edit-mode) . my-visual-fill)
   ((org-mode LaTeX-mode) . my-center-text))
 
 (use-package yaml-mode
@@ -2245,6 +2266,11 @@ the function will prompt the user to select a default audio device before runnin
   :hook
   ;; Fix for auctex
   (TeX-update-style))
+
+(use-package xref
+  :ensure nil
+  :custom
+  (xref-search-program 'ripgrep))
 
 (use-package ess-site
   :ensure ess
