@@ -1112,9 +1112,6 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
   :after embark
   :bind (:map embark-general-map ("?" . gptel-quick)))
 
-(use-package acp
-  :ensure t
-  :defer t)
 (use-package agent-shell
   :ensure t
   :custom

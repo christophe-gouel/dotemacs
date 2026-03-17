@@ -1535,9 +1535,6 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
 **** agent-shell
 
 #+begin_src emacs-lisp
-(use-package acp
-  :ensure t
-  :defer t)
 (use-package agent-shell
   :ensure t
   :custom
