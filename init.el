@@ -662,6 +662,10 @@ current buffer within the project or the current directory if not in a project."
   :config
   (electric-pair-mode))
 
+(use-package surround
+  :ensure t
+  :bind-keymap ("C-(" . surround-keymap))
+
 (use-package prescient
   :ensure t
   :config

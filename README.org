@@ -936,6 +936,14 @@ Install =emacs-everywhere= so that Emacs can be used to input text in every apps
   (require 'smartparens-config))
 #+end_src
 
+Use ~surround~ to easily manipulate parenthetic expressions.
+
+#+begin_src emacs-lisp
+(use-package surround
+  :ensure t
+  :bind-keymap ("C-(" . surround-keymap))
+#+end_src
+
 ** Which-keys
 
 #+begin_src emacs-lisp :tangle no
