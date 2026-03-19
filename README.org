@@ -954,11 +954,9 @@ Install =emacs-everywhere= so that Emacs can be used to input text in every apps
 
 ~corfu~ still presents too many bugs with ~eglot~. I will try it later.
 
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
 (use-package corfu
   :ensure t
-  :init
-  (global-corfu-mode)
   :custom
   (corfu-indexed-mode t) ;; Add an index number to the choices
   (corfu-popupinfo-mode t) ;; Open a popup with short doc
@@ -1544,6 +1542,8 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
   :config
   (setq agent-shell-openai-codex-environment
 	(agent-shell-make-environment-variables :inherit-env t))
+  (setq agent-shell-anthropic-claude-environment
+	(agent-shell-make-environment-variables :inherit-env t))
   (defvar-keymap agent-shell-operation-map
     :doc "Keymap for agent-shell operation"
     :name "Agent-shell"
@@ -1555,7 +1555,11 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
     "r" '("Send region"    . agent-shell-send-region)
     "t" '("Toggle display" . agent-shell-toggle)
     "u" '("Usage"          . agent-shell-show-usage))
-  :bind-keymap ("C-c a"  . agent-shell-operation-map))
+  :bind-keymap ("C-c a"  . agent-shell-operation-map)
+  :hook
+  (agent-shell-viewport-edit-mode . (lambda ()
+				      (company-mode -1)
+				      (corfu-mode 1))))
 #+end_src
 
 #+begin_src emacs-lisp

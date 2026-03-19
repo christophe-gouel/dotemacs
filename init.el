@@ -662,6 +662,40 @@ current buffer within the project or the current directory if not in a project."
   :config
   (prescient-persist-mode))
 
+(use-package corfu
+  :ensure t
+  :custom
+  (corfu-indexed-mode t) ;; Add an index number to the choices
+  (corfu-popupinfo-mode t) ;; Open a popup with short doc
+  (corfu-auto t) ;; Completion is displayed automatically
+  (corfu-auto-delay 0.2)
+  ;; Optional customizations
+  ;; :custom
+  ;; (corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
+  ;; (corfu-quit-at-boundary nil)   ;; Never quit at completion boundary
+  ;; (corfu-quit-no-match nil)      ;; Never quit, even if there is no match
+  ;; (corfu-preview-current nil)    ;; Disable current candidate preview
+  ;; (corfu-preselect 'prompt)      ;; Preselect the prompt
+  ;; (corfu-on-exact-match 'insert) ;; Configure handling of exact matches
+
+  ;; Enable optional extension modes:
+  ;; (corfu-history-mode)
+  )
+
+(setopt
+ ;; Enable indentation+completion using the TAB key.
+ tab-always-indent 'complete
+ ;; Disable Ispell completion function.
+ text-mode-ispell-word-completion nil)
+
+;; (use-package emacs
+;;   :custom
+
+;;   ;; Hide commands in M-x which do not apply to the current mode.  Corfu
+;;   ;; commands are hidden, since they are not used via M-x. This setting is
+;;   ;; useful beyond Corfu.
+;;   (read-extended-command-predicate #'command-completion-default-include-p))
+
 (use-package company
   :ensure t
   :hook
@@ -1121,6 +1155,8 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
   :config
   (setq agent-shell-openai-codex-environment
 	(agent-shell-make-environment-variables :inherit-env t))
+  (setq agent-shell-anthropic-claude-environment
+	(agent-shell-make-environment-variables :inherit-env t))
   (defvar-keymap agent-shell-operation-map
     :doc "Keymap for agent-shell operation"
     :name "Agent-shell"
@@ -1132,7 +1168,11 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
     "r" '("Send region"    . agent-shell-send-region)
     "t" '("Toggle display" . agent-shell-toggle)
     "u" '("Usage"          . agent-shell-show-usage))
-  :bind-keymap ("C-c a"  . agent-shell-operation-map))
+  :bind-keymap ("C-c a"  . agent-shell-operation-map)
+  :hook
+  (agent-shell-viewport-edit-mode . (lambda ()
+				      (company-mode -1)
+				      (corfu-mode 1))))
 
 (use-package agent-shell-attention
   :vc (:url "https://github.com/ultronozm/agent-shell-attention.el")
