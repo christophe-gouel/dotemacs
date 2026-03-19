@@ -518,8 +518,7 @@ current buffer within the project or the current directory if not in a project."
 	("C-s"     . isearch-forward)
 	;; It is necessary to redeclare the 2 bindings below because they are overriden by consult
 	("M-g g"   . pdf-view-goto-page)
-	("M-g M-g" . pdf-view-goto-page)
-   :map pdf-outline-buffer-mode-map ("RET" . pdf-outline-follow-link-and-quit))
+	("M-g M-g" . pdf-view-goto-page))
   :custom
   (pdf-view-display-size 'fit-page)
   (pdf-view-selection-style 'glyph)
@@ -527,6 +526,12 @@ current buffer within the project or the current directory if not in a project."
   ;; Required to avoid error messages if a pdf is open before launching an org file
   (require 'org-latex-preview)
   (pdf-tools-install))
+;; (with-eval-after-load 'pdf-outline
+;;   (keymap-set pdf-outline-buffer-mode-map "<RET>" #'pdf-outline-follow-link-and-quit))
+(use-package pdf-outline
+  :ensure nil
+  :bind
+  (:map pdf-outline-buffer-mode-map ("RET" . pdf-outline-follow-link-and-quit)))
 
 (use-package prog-mode
   :defer t
