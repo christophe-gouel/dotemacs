@@ -2690,6 +2690,19 @@ Use built-in =flymake= for linting.
       (latexindent "--modifylinebreaks" "--yaml=modifyLineBreaks:textWrapOptions:columns:-1,defaultIndent:'  ',indentAfterItems:itemize:0;enumerate:0;description:0")))))
 #+end_src
 
+#+begin_src emacs-lisp
+(use-package apheleia
+  :ensure t
+  :config
+  (apheleia-global-mode +1)
+  (setf (alist-get 'latexindent apheleia-formatters)
+        '("latexindent" "--modifylinebreaks" "--yaml=modifyLineBreaks:textWrapOptions:columns:-1,defaultIndent:'  ',indentAfterItems:itemize:0;enumerate:0;description:0"))
+  (push '(r-air . ("air" "format" filepath)) apheleia-formatters)
+  (push '(ess-r-mode . r-air) apheleia-mode-alist)
+  (setq apheleia-mode-alist
+        (assq-delete-all 'bibtex-mode apheleia-mode-alist)))
+#+end_src
+
 *** Docker
 
 #+begin_src emacs-lisp
@@ -3184,7 +3197,7 @@ This function is intended to be added to `after-save-hook`."
 	    (flymake-start t)))
       (message "Error: 'air' executable not found."))))
 
-(add-hook 'after-save-hook #'run-air-formatter)
+;; (add-hook 'after-save-hook #'run-air-formatter)
 #+end_src
 
 *** GAMS

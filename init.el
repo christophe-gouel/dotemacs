@@ -2085,6 +2085,17 @@ the function will prompt the user to select a default audio device before runnin
    '(("LaTeX"
       (latexindent "--modifylinebreaks" "--yaml=modifyLineBreaks:textWrapOptions:columns:-1,defaultIndent:'  ',indentAfterItems:itemize:0;enumerate:0;description:0")))))
 
+(use-package apheleia
+  :ensure t
+  :config
+  (apheleia-global-mode +1)
+  (setf (alist-get 'latexindent apheleia-formatters)
+        '("latexindent" "--modifylinebreaks" "--yaml=modifyLineBreaks:textWrapOptions:columns:-1,defaultIndent:'  ',indentAfterItems:itemize:0;enumerate:0;description:0"))
+  (push '(r-air . ("air" "format" filepath)) apheleia-formatters)
+  (push '(ess-r-mode . r-air) apheleia-mode-alist)
+  (setq apheleia-mode-alist
+        (assq-delete-all 'bibtex-mode apheleia-mode-alist)))
+
 (use-package dockerfile-mode
   :ensure t
   :defer t)
@@ -2507,7 +2518,7 @@ This function is intended to be added to `after-save-hook`."
 	    (flymake-start t)))
       (message "Error: 'air' executable not found."))))
 
-(add-hook 'after-save-hook #'run-air-formatter)
+;; (add-hook 'after-save-hook #'run-air-formatter)
 
 (use-package gams-mode
   ;; :ensure t
