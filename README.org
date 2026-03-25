@@ -921,17 +921,9 @@ Install =emacs-everywhere= so that Emacs can be used to input text in every apps
 
 #+begin_src emacs-lisp
 (use-package elec-pair
+  :ensure nil
   :config
   (electric-pair-mode))
-#+end_src
-
-#+begin_src emacs-lisp :tangle no
-(use-package smartparens
-  :ensure smartparens  ;; install the package
-  :hook (prog-mode markdown-mode yaml-mode)
-  :config
-  ;; load default config
-  (require 'smartparens-config))
 #+end_src
 
 Use ~surround~ to easily manipulate parenthetic expressions.
@@ -2685,7 +2677,7 @@ Use built-in =flymake= for linting.
   (setq-default
    format-all-formatters
    '(("LaTeX"
-      (latexindent "--modifylinebreaks" "--yaml=modifyLineBreaks:textWrapOptions:columns:-1,defaultIndent:'  ',indentAfterItems:itemize:0;enumerate:0;description:0")))))
+      (latexindent "--modifylinebreaks" "--logfile=/dev/null" "--yaml=modifyLineBreaks:textWrapOptions:columns:-1,defaultIndent:'  ',indentAfterItems:itemize:0;enumerate:0;description:0")))))
 #+end_src
 
 #+begin_src emacs-lisp
@@ -3067,9 +3059,7 @@ VIS has the same meaning as for `ess-eval-region'."
   (defun my-inferior-ess-init ()
     "Treat properly OSC escape codes"
     (add-hook 'comint-output-filter-functions
-	      #'comint-osc-process-output nil t)
-    ;; (smartparens-mode 1)
-    )
+	      #'comint-osc-process-output nil t))
   (defun my-ess-remove-project-hook ()
     "Remove a useless hook added by ess to use its own project functions"
     (make-local-variable 'project-find-functions)
@@ -3239,7 +3229,7 @@ This function is intended to be added to `after-save-hook`."
   (gams-fill-column 90)
   (gams-default-pop-window-height 20)
   (gams-browse-url-function 'xwidget-webkit-browse-url)
-  ;; Remove the handling of parentheses by gams-mode to use smartparens instead
+  ;; Remove the handling of parentheses by gams-mode to use other Emacs packages instead
   (gams-close-paren-always nil)
   (gams-close-double-quotation-always nil)
   (gams-close-single-quotation-always nil)

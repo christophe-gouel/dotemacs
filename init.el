@@ -657,6 +657,7 @@ current buffer within the project or the current directory if not in a project."
   :defer t)
 
 (use-package elec-pair
+  :ensure nil
   :config
   (electric-pair-mode))
 
@@ -2403,9 +2404,7 @@ VIS has the same meaning as for `ess-eval-region'."
   (defun my-inferior-ess-init ()
     "Treat properly OSC escape codes"
     (add-hook 'comint-output-filter-functions
-	      #'comint-osc-process-output nil t)
-    ;; (smartparens-mode 1)
-    )
+	      #'comint-osc-process-output nil t))
   (defun my-ess-remove-project-hook ()
     "Remove a useless hook added by ess to use its own project functions"
     (make-local-variable 'project-find-functions)
@@ -2556,7 +2555,7 @@ This function is intended to be added to `after-save-hook`."
   (gams-fill-column 90)
   (gams-default-pop-window-height 20)
   (gams-browse-url-function 'xwidget-webkit-browse-url)
-  ;; Remove the handling of parentheses by gams-mode to use smartparens instead
+  ;; Remove the handling of parentheses by gams-mode to use other Emacs packages instead
   (gams-close-paren-always nil)
   (gams-close-double-quotation-always nil)
   (gams-close-single-quotation-always nil)
