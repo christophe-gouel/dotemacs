@@ -2083,16 +2083,29 @@ the function will prompt the user to select a default audio device before runnin
   (setq-default
    format-all-formatters
    '(("LaTeX"
-      (latexindent "--modifylinebreaks" "--yaml=modifyLineBreaks:textWrapOptions:columns:-1,defaultIndent:'  ',indentAfterItems:itemize:0;enumerate:0;description:0")))))
+      (latexindent "--modifylinebreaks" "--logfile=/dev/null" "--yaml=modifyLineBreaks:textWrapOptions:columns:-1,defaultIndent:'  ',indentAfterItems:itemize:0;enumerate:0;description:0")))))
 
 (use-package apheleia
   :ensure t
   :config
   (apheleia-global-mode +1)
+  ;; Existing formatters
   (setf (alist-get 'latexindent apheleia-formatters)
-        '("latexindent" "--modifylinebreaks" "--yaml=modifyLineBreaks:textWrapOptions:columns:-1,defaultIndent:'  ',indentAfterItems:itemize:0;enumerate:0;description:0"))
+        '("latexindent" "--modifylinebreaks" "--logfile=/dev/null"
+	  "--yaml=modifyLineBreaks:textWrapOptions:columns:-1,defaultIndent:'  ',indentAfterItems:itemize:0;enumerate:0;description:0"))
+  (setf (alist-get 'prettier-markdown apheleia-formatters)
+	'("apheleia-npx" "prettier" "--prose-wrap=never"
+	  "--stdin-filepath" filepath
+	  "--parser=markdown"
+	  (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
+  ;; Extra formatters
   (push '(r-air . ("air" "format" filepath)) apheleia-formatters)
-  (push '(ess-r-mode . r-air) apheleia-mode-alist)
+  ;; Mode associations
+  (dolist (elt '((r-mode        . r-air)
+                 (markdown-mode . prettier-markdown)))
+    (add-to-list 'apheleia-mode-alist elt))
+  ;; (push '(ess-r-mode . r-air) apheleia-mode-alist)
+  ;; (push '(markdown-mode . prettier-markdown) apheleia-mode-alist)
   (setq apheleia-mode-alist
         (assq-delete-all 'bibtex-mode apheleia-mode-alist)))
 
