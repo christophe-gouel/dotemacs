@@ -524,10 +524,8 @@ current buffer within the project or the current directory if not in a project."
   (pdf-view-selection-style 'glyph)
   :config
   ;; Required to avoid error messages if a pdf is open before launching an org file
-  (require 'org-latex-preview)
-  (pdf-tools-install))
-;; (with-eval-after-load 'pdf-outline
-;;   (keymap-set pdf-outline-buffer-mode-map "<RET>" #'pdf-outline-follow-link-and-quit))
+  ;; (require 'org-latex-preview)
+  (pdf-loader-install))
 (use-package pdf-outline
   :ensure nil
   :bind
