@@ -856,7 +856,6 @@ Install =emacs-everywhere= so that Emacs can be used to input text in every apps
 #+end_src
 
 * Keys
-
 ** Casual
 
 #+begin_src emacs-lisp
@@ -2697,11 +2696,9 @@ Use built-in =flymake= for linting.
   ;; Extra formatters
   (push '(r-air . ("air" "format" filepath)) apheleia-formatters)
   ;; Mode associations
-  (dolist (elt '((r-mode        . r-air)
+  (dolist (elt '((ess-r-mode        . r-air)
                  (markdown-mode . prettier-markdown)))
     (add-to-list 'apheleia-mode-alist elt))
-  ;; (push '(ess-r-mode . r-air) apheleia-mode-alist)
-  ;; (push '(markdown-mode . prettier-markdown) apheleia-mode-alist)
   (setq apheleia-mode-alist
         (assq-delete-all 'bibtex-mode apheleia-mode-alist)))
 #+end_src

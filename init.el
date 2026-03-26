@@ -2100,11 +2100,9 @@ the function will prompt the user to select a default audio device before runnin
   ;; Extra formatters
   (push '(r-air . ("air" "format" filepath)) apheleia-formatters)
   ;; Mode associations
-  (dolist (elt '((r-mode        . r-air)
+  (dolist (elt '((ess-r-mode        . r-air)
                  (markdown-mode . prettier-markdown)))
     (add-to-list 'apheleia-mode-alist elt))
-  ;; (push '(ess-r-mode . r-air) apheleia-mode-alist)
-  ;; (push '(markdown-mode . prettier-markdown) apheleia-mode-alist)
   (setq apheleia-mode-alist
         (assq-delete-all 'bibtex-mode apheleia-mode-alist)))
 
