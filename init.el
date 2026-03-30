@@ -531,6 +531,34 @@ current buffer within the project or the current directory if not in a project."
   :bind
   (:map pdf-outline-buffer-mode-map ("RET" . pdf-outline-follow-link-and-quit)))
 
+(when (equal window-system 'ns)
+  (use-package appine
+    :vc (:url "https://github.com/chaoswork/appine"
+         :rev :newest)
+    :defer nil
+    :custom
+    (appine-use-for-org-links t)
+    :config
+    (defun my-appine-open-url (url)
+      "Open URL in Appine.
+Use `appine-open-file' for local `file://' URLs."
+      (interactive "sURL: ")
+      (if (string-prefix-p "file://" url t)
+          (appine-open-file
+           (url-unhex-string
+            (replace-regexp-in-string "\\`file://\\(?:localhost\\)?"
+                                      ""
+                                      url)))
+        (appine-open-url url)))
+    (defvar-keymap appine-operation-map
+      :doc "Keymap for appine operation"
+      :name "Package"
+      "q" '("Run Appine" . appine)
+      "u" '("Open url"   . appine-open-url)
+      "f" '("Open file"  . appine-open-file)
+      "k" '("Kill"       . appine-kill))
+    :bind-keymap ("C-c q" . appine-operation-map)))
+
 (use-package prog-mode
   :defer t
   :hook
@@ -2552,7 +2580,8 @@ This function is intended to be added to `after-save-hook`."
   :custom
   (gams-fill-column 90)
   (gams-default-pop-window-height 20)
-  (gams-browse-url-function 'xwidget-webkit-browse-url)
+  ;; (gams-browse-url-function 'xwidget-webkit-browse-url)
+  (gams-browse-url-function #'my-appine-open-url)
   ;; Remove the handling of parentheses by gams-mode to use other Emacs packages instead
   (gams-close-paren-always nil)
   (gams-close-double-quotation-always nil)
