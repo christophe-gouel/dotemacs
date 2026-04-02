@@ -539,17 +539,6 @@ current buffer within the project or the current directory if not in a project."
     :custom
     (appine-use-for-org-links t)
     :config
-    (defun my-appine-open-url (url)
-      "Open URL in Appine.
-Use `appine-open-file' for local `file://' URLs."
-      (interactive "sURL: ")
-      (if (string-prefix-p "file://" url t)
-          (appine-open-file
-           (url-unhex-string
-            (replace-regexp-in-string "\\`file://\\(?:localhost\\)?"
-                                      ""
-                                      url)))
-        (appine-open-url url)))
     (defvar-keymap appine-operation-map
       :doc "Keymap for appine operation"
       :name "Package"
@@ -1178,7 +1167,8 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
   :config (gptel-agent-update))         ;Read files from agents directories
 
 (use-package gptel-quick
-  :vc (:url "https://github.com/karthink/gptel-quick")
+  :vc (:url "https://github.com/karthink/gptel-quick"
+       :rev :newest)
   :after embark
   :bind (:map embark-general-map ("?" . gptel-quick)))
 
@@ -1211,7 +1201,8 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
 				      (corfu-mode 1))))
 
 (use-package agent-shell-attention
-  :vc (:url "https://github.com/ultronozm/agent-shell-attention.el")
+  :vc (:url "https://github.com/ultronozm/agent-shell-attention.el"
+       :rev :newest)
   :after agent-shell
   :custom
   (agent-shell-attention-render-function       #'agent-shell-attention-render-active)
@@ -1839,7 +1830,7 @@ same directory as the working and insert a link to this file."
   :bind (:map org-mode-map ("C-c [" . org-cite-insert)))
 
 (use-package oxr
-  :vc (:url "https://github.com/bdarcus/oxr")
+  :vc (:url "https://github.com/bdarcus/oxr" :rev :newest)
   :after org
   :bind (:map org-mode-map ("C-c )" . oxr-insert-ref)))
 
@@ -2560,8 +2551,45 @@ This function is intended to be added to `after-save-hook`."
   ;; :ensure t
   ;; :load-path "~/Documents/git_projects/code/gams-mode"
   :vc (:url "https://github.com/ShiroTakeda/gams-mode"
-	    :rev :newest
-	    :branch "test")
+       :rev :newest
+       :branch "test")
+  :config
+  (defun my-gams-comment-dwim (&optional arg)
+    "Comment or uncomment DWIM in `gams-mode'.
+With no active region, use GAMS end-of-line comments.
+With a region starting in column 0, use `*' comments.
+With a region starting after column 0, use inline comments."
+    (interactive "*P")
+    (if (use-region-p)
+	(let* ((region-start (region-beginning))
+	       (line-comment-p
+		(save-excursion
+		  (goto-char region-start)
+		  (= (current-column) 0)))
+	       ;; Full-line `*` comments.
+	       (comment-start
+		(if line-comment-p
+		    "*"
+		  (or gams-inlinecom-symbol-start
+		      gams-inlinecom-symbol-start-default)))
+	       ;; Inline `...` comments.
+	       (comment-end
+		(if line-comment-p
+		    ""
+		  (or gams-inlinecom-symbol-end
+		      gams-inlinecom-symbol-end-default)))
+	       (comment-start-skip
+		(concat "[ \t]*" (regexp-quote comment-start) "[ \t]*"))
+	       (comment-style 'plain))
+	  (comment-dwim arg))
+      ;; End-of-line comments.
+      (let* ((comment-start (or gams-eolcom-symbol
+			       gams-eolcom-symbol-default))
+	     (comment-end "")
+	     (comment-start-skip
+	      (concat "[ \t]*" (regexp-quote comment-start) "[ \t]*"))
+	     (comment-style 'plain))
+	(comment-dwim arg))))
   :hook
   (gams-mode . (lambda ()
                  (outline-minor-mode)
@@ -2576,12 +2604,13 @@ This function is intended to be added to `after-save-hook`."
 	    (keymap-set gams-mode-map "^" (lambda() (interactive) (insert "**")))
 	    (keymap-set gams-mode-map "C-c C-o" 'gams-open-included-file) ; Normally bind to user-defined comment template
 	    (keymap-set gams-mode-map "C-l" nil)
+	    (keymap-set gams-mode-map "M-;" #'my-gams-comment-dwim)
 	    (keymap-set gams-mode-map "C-c =" 'gams-show-identifier-list)))
   :custom
   (gams-fill-column 90)
   (gams-default-pop-window-height 20)
   ;; (gams-browse-url-function 'xwidget-webkit-browse-url)
-  (gams-browse-url-function #'my-appine-open-url)
+  (gams-browse-url-function #'appine-open-url)
   ;; Remove the handling of parentheses by gams-mode to use other Emacs packages instead
   (gams-close-paren-always nil)
   (gams-close-double-quotation-always nil)
