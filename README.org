@@ -963,6 +963,12 @@ Use ~surround~ to easily manipulate parenthetic expressions.
 #+end_src
 
 * Auto-completion
+
+Hide commands in M-x which do not apply to the current mode.
+#+begin_src emacs-lisp
+(setopt read-extended-command-predicate #'command-completion-default-include-p)
+#+end_src
+
 ** Prescient
 
 #+begin_src emacs-lisp
@@ -1001,19 +1007,11 @@ Use ~surround~ to easily manipulate parenthetic expressions.
  tab-always-indent 'complete
  ;; Disable Ispell completion function.
  text-mode-ispell-word-completion nil)
-
-;; (use-package emacs
-;;   :custom
-
-;;   ;; Hide commands in M-x which do not apply to the current mode.  Corfu
-;;   ;; commands are hidden, since they are not used via M-x. This setting is
-;;   ;; useful beyond Corfu.
-;;   (read-extended-command-predicate #'command-completion-default-include-p))
 #+end_src
 
 ** Company
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package company
   :ensure t
   :hook

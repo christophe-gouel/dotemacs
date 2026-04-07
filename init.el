@@ -682,6 +682,8 @@ current buffer within the project or the current directory if not in a project."
   :ensure t
   :bind-keymap ("C-(" . surround-keymap))
 
+(setopt read-extended-command-predicate #'command-completion-default-include-p)
+
 (use-package prescient
   :ensure t
   :config

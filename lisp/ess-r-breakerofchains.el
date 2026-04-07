@@ -110,9 +110,7 @@ is a comment-only line (which should be considered as continuing the chain)."
 ;;;###autoload
 (defun ess-r-breakerofchains-run-to-point ()
   "Break the infix/pipe chain at point and evaluate up to that point."
-  (interactive)
-  (unless (derived-mode-p 'ess-r-mode)
-    (user-error "Current buffer is not an ESS R buffer"))
+  (interactive nil ess-r-mode)
   (save-excursion
     (let* ((chain-start (ess-r-breakerofchains--find-chain-start))
            (chain-end   (line-end-position))
