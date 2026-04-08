@@ -588,6 +588,13 @@ current buffer within the project or the current directory if not in a project."
 (set-register ?e '(file . "~/.emacs.d"))
 (set-register ?r '(file . "~/Inrae EcoPub Dropbox/Christophe Gouel/dropbox_projects/Review"))
 
+(use-package repeat
+  :ensure nil
+  :custom
+  (repeat-exit-timeout 5)
+  :hook
+  (after-init . repeat-mode))
+
 (setopt initial-scratch-message nil)
 
 (setopt
@@ -1121,7 +1128,7 @@ Never replace a backslash followed by a percentage sign with just a percentage s
   (chatgpt-shell-openai-key
    (auth-source-pick-first-password :host "api.openai.com"))
   ;; Other options
-  (chatgpt-shell-model-version "gpt-5.1")
+  (chatgpt-shell-model-version "gpt-5.2")
   (chatgpt-shell-openai-reasoning-effort "low")
   (chatgpt-shell-prompt-header-proofread-region
    "Please help me proofread the following text and only reply with fixed text.
@@ -1643,13 +1650,14 @@ Returns t if it handled indentation."
   ;; 	   ;; (shell-quote-argument (substitute-in-file-name "${BIBINPUTS}\\References.bib"))
   ;; 	   ))
   (markdown-asymmetric-header t)
+  (markdown-enable-highlighting-syntax t)
   (markdown-enable-math t)
   (markdown-enable-prefix-prompts nil)
   (markdown-header-scaling nil)
+  (markdown-fontify-code-blocks-natively t)
   (markdown-hide-markup nil)
   (markdown-hide-urls t)
-  (markdown-fontify-code-blocks-natively t)
-  (markdown-enable-highlighting-syntax t)
+  (markdown-list-indent-width 2)
   (markdown-max-image-size '(500 . 300))
   (markdown-special-ctrl-a/e 'on)
   :config
@@ -2119,10 +2127,11 @@ the function will prompt the user to select a default audio device before runnin
 	  "--parser=markdown"
 	  (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
   ;; Extra formatters
+  (push '(panache . ("panache" "format" "--stdin-filename" filepath)) apheleia-formatters)
   (push '(r-air . ("air" "format" filepath)) apheleia-formatters)
   ;; Mode associations
-  (dolist (elt '((ess-r-mode        . r-air)
-                 (markdown-mode . prettier-markdown)))
+  (dolist (elt '((ess-r-mode    . r-air)
+                 (markdown-mode . panache)))
     (add-to-list 'apheleia-mode-alist elt))
   (setq apheleia-mode-alist
         (assq-delete-all 'bibtex-mode apheleia-mode-alist)))
