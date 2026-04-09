@@ -214,6 +214,7 @@
   :custom
   (tab-bar-close-button-show nil)
   (tab-bar-mode t)
+  (tab-bar-history-mode t)
   ;; (tab-bar-show 1)
   :config
   (defun tab-create (name)
@@ -440,6 +441,9 @@ current buffer within the project or the current directory if not in a project."
   ;; matches any character between the words you give it.
   (search-whitespace-regexp ".*?"))
 
+(setopt save-interprogram-paste-before-kill t ; Save the clipboard before killing
+	kill-do-not-save-duplicates t) ; Do not save duplicates
+
 (use-package minibuffer
   :custom
   ;; Better completion defaults (to activate if not using a minibuffer completion framework)
@@ -468,31 +472,41 @@ current buffer within the project or the current directory if not in a project."
   :after outline
   :hook (outline-minor-mode))
 
-(setopt auto-compression-mode t ; auto-compress and decompress compressed files
-	auth-sources '("~/.authinfo") ; Define file that stores secrets
+(setopt auto-compression-mode t	 ; auto-compress and decompress compressed files
+	auth-sources '("~/.authinfo")	; Define file that stores secrets
         backup-directory-alist '(("." . "~/.emacs.d/backup"))
-        case-fold-search t ; recherche sans égard à la casse
+        case-fold-search t		; recherche sans égard à la casse
         comment-column 0 ; Prevent indentation of lines starting with one comment
 	completion-ignore-case t
 	confirm-kill-processes nil ; Prevent from asking if I want to close a running process
-        default-major-mode 'text-mode ; mode par défaut
-        delete-by-moving-to-trash t ; Sent deleted files to trash
-	delete-selection-mode t               ; entrée efface texte sélectionné
+        default-major-mode 'text-mode	; mode par défaut
+        delete-by-moving-to-trash t   ; Sent deleted files to trash
+	delete-selection-mode t	    ; entrée efface texte sélectionné
 	enable-recursive-minibuffers t
-        help-window-select t ; Jump to help window when it opens
-        jit-lock-chunk-size 50000 ; Number of characters used for fontification
+        help-window-select t	   ; Jump to help window when it opens
+        jit-lock-chunk-size 50000  ; Number of characters used for fontification
         large-file-warning-threshold 100000000 ; set large file threshold at 100 mb
 	minibuffer-depth-indicate-mode t
-        mouse-yank-at-point t     ; coller avec la souris
+        mouse-yank-at-point t		; coller avec la souris
         ring-bell-function 'ignore ; disable the bell (useful for macOS)
-	save-place-mode nil ; save place in files
-	savehist-mode t ; save minibuffer history
-	set-mark-command-repeat-pop t ; repeat C-space (after C-u C-space)
-        show-paren-mode t ; coupler les parenthèses
-	use-short-answers t)           ; Replace yes or no with y or n
+	save-place-mode nil	   ; save place in files
+	set-mark-command-repeat-pop t	; repeat C-space (after C-u C-space)
+        show-paren-mode t	      ; coupler les parenthèses
+	use-short-answers t)		; Replace yes or no with y or n
 ;; Context menu with right-click
 (when (display-graphic-p)
   (context-menu-mode))
+
+;; Skip fontification during input
+(setq redisplay-skip-fontification-on-input t)
+
+;; Don't render cursors and highlight regions in non-focused windows
+(setopt cursor-in-non-selected-windows nil
+	highlight-nonselected-windows nil)
+
+;; Disable bidirectional text scanning (useful only for right-to-left languages)
+(setopt bidi-paragraph-direction 'left-to-right) ; Forces directionality of text paragraphs in the buffer.
+(setq bidi-inhibit-bpa t) ; Inhibit the Bidirectional Parentheses Algorithm
 
 (defun insert-date ()
   "Insert the current date at point."
@@ -554,7 +568,7 @@ current buffer within the project or the current directory if not in a project."
   (prog-mode . (lambda() (setq-local show-trailing-whitespace t)))
   (prog-mode . (lambda() (display-fill-column-indicator-mode)))
   (prog-mode .
-    (lambda() (add-to-list 'write-file-functions 'delete-trailing-whitespace)))
+    (lambda() (add-to-list 'write-file-functions #'delete-trailing-whitespace)))
   ;; Make URLs in comments clickable
   (prog-mode . goto-address-prog-mode))
 
@@ -595,6 +609,20 @@ current buffer within the project or the current directory if not in a project."
   :hook
   (after-init . repeat-mode))
 
+(use-package savehist
+  :ensure nil
+  :custom
+  ;; Add more things to the kill ring
+  (savehist-additional-variables '(search-ring regexp-search-ring kill-ring))
+  :hook
+  (after-init . savehist-mode)
+  ;; Keep only plain strings in `kill-ring` by dropping non-string entries and text properties.
+  (savehist-save .
+		 (lambda ()
+		   (setq kill-ring
+			 (mapcar #'substring-no-properties
+				 (cl-remove-if-not #'stringp kill-ring))))))
+
 (setopt initial-scratch-message nil)
 
 (setopt
@@ -634,6 +662,8 @@ current buffer within the project or the current directory if not in a project."
 (use-package windmove
   :config
   (windmove-default-keybindings))
+
+(setopt window-combination-resize t)
 
 (use-package xwidget
   :defer t)
@@ -1012,8 +1042,8 @@ current buffer within the project or the current directory if not in a project."
     "S" '("Git command (topdir)" . magit-git-command-topdir))
   (add-hook 'magit-status-sections-hook #'magit-insert-worktrees t)
   ; Do not diff when committing
-  (remove-hook 'server-switch-hook 'magit-commit-diff)
-  (remove-hook 'with-editor-filter-visit-hook 'magit-commit-diff)
+  (remove-hook 'server-switch-hook #'magit-commit-diff)
+  (remove-hook 'with-editor-filter-visit-hook #'magit-commit-diff)
   :bind-keymap ("C-c g" . magit-prefix-map))
 
 (use-package magit-delta
@@ -1038,7 +1068,7 @@ current buffer within the project or the current directory if not in a project."
   :ensure t)
 
 (add-hook 'after-save-hook
-          'executable-make-buffer-file-executable-if-script-p)
+          #'executable-make-buffer-file-executable-if-script-p)
 
 (use-package chatgpt-shell
   :ensure t
@@ -2099,7 +2129,7 @@ the function will prompt the user to select a default audio device before runnin
   :hook
   (prog-mode)
   :config
-  (remove-hook 'flymake-diagnostic-functions 'flymake-proc-legacy-flymake)
+  (remove-hook 'flymake-diagnostic-functions #'flymake-proc-legacy-flymake)
   :bind
   (("M-n" . flymake-goto-next-error)
    ("M-p" . flymake-goto-prev-error)))
