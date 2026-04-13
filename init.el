@@ -1046,6 +1046,9 @@ current buffer within the project or the current directory if not in a project."
   (remove-hook 'with-editor-filter-visit-hook #'magit-commit-diff)
   :bind-keymap ("C-c g" . magit-prefix-map))
 
+(use-package git-commit
+  :config (remove-hook 'git-commit-setup-hook #'git-commit-setup-capf))
+
 (use-package magit-delta
   :ensure t
   :hook (magit-mode)
@@ -1168,8 +1171,14 @@ Output just the proofread text without any intro, comments, or explanations.
 Preserve in your response the original code formatting, including indentation, comments, unicode characters, and any special characters.
 Do not use unicode for en dashes and em dashes, but use '--' and '---'.
 Never replace a backslash followed by a percentage sign by a percentage sign only.")
-  (chatgpt-shell-render-latex t)
   :ensure-system-package curl)
+
+(use-package markdown-overlays
+  :ensure nil
+  :defer t
+  :custom
+  (markdown-overlays-highlight-blocks nil)
+  (markdown-overlays-render-latex nil))
 
 (use-package gptel
   :ensure t

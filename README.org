@@ -1402,6 +1402,14 @@ On macOS, for faster Git, install it with homebrew instead of using the default 
   :bind-keymap ("C-c g" . magit-prefix-map))
 #+end_src
 
+# TEMP
+Temporary fix until the problem is properly fixed in magit (error message that comes up with in-buffer completion in the commit message buffer)
+
+#+begin_src emacs-lisp
+(use-package git-commit
+  :config (remove-hook 'git-commit-setup-hook #'git-commit-setup-capf))
+#+end_src
+
 =magit-delta= allows to have syntax highlighting in magit diffs.
 
 #+begin_src emacs-lisp
@@ -1549,8 +1557,18 @@ Output just the proofread text without any intro, comments, or explanations.
 Preserve in your response the original code formatting, including indentation, comments, unicode characters, and any special characters.
 Do not use unicode for en dashes and em dashes, but use '--' and '---'.
 Never replace a backslash followed by a percentage sign by a percentage sign only.")
-  (chatgpt-shell-render-latex t)
   :ensure-system-package curl)
+#+end_src
+
+~markdown-overlays~ is a package inside ~shell-maker~ and that is used by ~chatgpt-shell~ and ~agent-shell~ to prettify markdown outputs. While it leads to nicer outputs, it seems that it also leads to bugs. Let's disable this temporarily.
+
+#+begin_src emacs-lisp
+(use-package markdown-overlays
+  :ensure nil
+  :defer t
+  :custom
+  (markdown-overlays-highlight-blocks nil)
+  (markdown-overlays-render-latex nil))
 #+end_src
 
 *** gptel
