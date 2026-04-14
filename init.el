@@ -1189,7 +1189,7 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
   (require 'gptel-integrations) ;; Integrate with tools from mcp.el
   ;; LLM request options
   (setopt gptel-backend (gptel-make-gh-copilot "Copilot")
-  	gptel-model 'gpt-5)
+  	gptel-model 'gpt-5.4)
   :custom
   ;; Chat UI options
   (gptel-default-mode 'org-mode)
@@ -1206,7 +1206,7 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
 (use-package gptel-magit
   :ensure t
   :custom
-  (gptel-magit-model 'gpt-5-mini)
+  (gptel-magit-model 'claude-haiku-4.5) ; Be careful: reasonning models can lead to errors
   :hook (magit-mode . gptel-magit-install))
 
 (use-package gptel-agent
