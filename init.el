@@ -1791,7 +1791,7 @@ same directory as the working and insert a link to this file."
   :load-path "~/.emacs.d/elpa/org-mode/lisp/"
   :mode ("\\.org\\'" . org-mode)
   :custom
-  (org-edit-src-content-indentation 0)
+  (org-src-content-indentation 0)
   (org-todo-keywords '((type "TODO(t)" "STARTED(s)" "WAITING(w)" "|" "DONE(d)")))
   (org-tag-alist '(("OFFICE" . ?o) ("COMPUTER" . ?c) ("HOME" . ?h) ("PROJECT" . ?p) ("CALL" . ?a) ("ERRANDS" . ?e) ("TASK" . ?t)))
   (org-confirm-babel-evaluate nil)
@@ -1838,14 +1838,34 @@ same directory as the working and insert a link to this file."
   (keymap-set org-mode-map "M-o" org-style-map)
   :bind (:map org-mode-map
 	      ("C-c o" . org-open-at-point)
-	      ("M-g o" . consult-org-heading))
+	      ("M-g o" . consult-org-heading)))
+
+(use-package org-indent
+  :ensure nil
+  :custom
+  (org-indent-indentation-per-level 1)
   :hook
-  (org-mode . org-indent-mode)) ;; Indent text relative to section
+  (org-mode . org-indent-mode))
 
 (use-package org-appear
   :ensure t
   :hook
   (org-mode . org-appear-mode))
+
+(use-package org-modern
+  :ensure t
+  :after org
+  :custom
+  ;; No styling of stars because it is incompatible with org-indent-mode
+  (org-modern-hide-stars nil)
+  (org-modern-star nil)
+  :config
+  (global-org-modern-mode))
+
+(use-package org-modern-intent
+    :vc (:url "https://github.com/jdtsmith/org-modern-indent" :rev :newest)
+    :hook
+    (org-mode . org-modern-indent-mode))
 
 (use-package org-latex-preview
   :custom
