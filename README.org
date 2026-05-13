@@ -1584,6 +1584,14 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
   ;; LLM request options
   (setopt gptel-backend (gptel-make-gh-copilot "Copilot")
   	gptel-model 'gpt-5.4)
+  ;; Chatbot INRAE
+  (gptel-make-openai "ARGO"
+    :host "chatbot.argo.inrae.fr"
+    :protocol "https"
+    :key (auth-source-pick-first-password :host "chatbot.argo.inrae.fr")
+    :endpoint "/api/chat/completions"
+    :stream t
+    :models '("chat-gpt-oss-120b" "assistant-inrae-expert" "chat-gpt-oss-20b" "assistant-inrae"))
   :custom
   ;; Chat UI options
   (gptel-default-mode 'org-mode)
@@ -1633,6 +1641,8 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
   (agent-shell-prefer-viewport-interaction t)
   (agent-shell-session-strategy 'prompt) ; new for a new session
   :config
+  (with-eval-after-load 'markdown-mode
+    (keymap-set agent-shell-viewport-edit-mode-map "M-o" markdown-mode-style-map))
   (setq agent-shell-openai-codex-environment
 	(agent-shell-make-environment-variables :inherit-env t))
   (setq agent-shell-anthropic-claude-environment
