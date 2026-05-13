@@ -229,11 +229,11 @@ Highlight the current line
 (use-package nerd-icons-xref
   :ensure t
   :hook (xref--xref-buffer-mode))
-;; (use-package nerd-icons-corfu
-;;   :ensure t
-;;   :after corfu
-;;   :config
-;;   (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
+(use-package nerd-icons-corfu
+  :ensure t
+  :after corfu
+  :config
+  (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
 #+end_src
 
 ** Ligatures
@@ -1024,7 +1024,50 @@ Hide commands in ~M-x~ which do not apply to the current mode.
 (setopt read-extended-command-predicate #'command-completion-default-include-p)
 #+end_src
 
-** Prescient
+** cape
+
+#+begin_src emacs-lisp
+(use-package cape
+  :ensure t
+  :bind ("M-+" . cape-prefix-map)
+  :init
+  ;; (add-hook 'completion-at-point-functions #'cape-dabbrev)
+  (add-hook 'completion-at-point-functions #'cape-file)
+  (add-hook 'completion-at-point-functions #'yasnippet-capf)
+  ;; (add-hook 'completion-at-point-functions #'cape-dict)
+  (add-hook 'completion-at-point-functions #'cape-elisp-block) ; Allow elisp completion in org and markdown code blocks
+  ;; (add-hook 'completion-at-point-functions #'cape-history)
+)
+#+end_src
+
+#+begin_src emacs-lisp
+(use-package yasnippet-capf
+  :vc (:url "https://github.com/elken/yasnippet-capf"
+       :rev :newest)
+  :after cape
+  :config
+  (add-to-list 'completion-at-point-functions #'yasnippet-capf))
+
+#+end_src
+** dabbrev
+
+~dabbrev~ configuration taken from [[https://github.com/minad/corfu]].
+
+#+begin_src emacs-lisp
+(use-package dabbrev
+  :ensure nil
+  ;; Swap M-/ and C-M-/
+  :bind (("M-/" . dabbrev-completion)
+         ("C-M-/" . dabbrev-expand))
+  :config
+  (add-to-list 'dabbrev-ignored-buffer-regexps "\\` ")
+  (add-to-list 'dabbrev-ignored-buffer-modes 'authinfo-mode)
+  (add-to-list 'dabbrev-ignored-buffer-modes 'doc-view-mode)
+  (add-to-list 'dabbrev-ignored-buffer-modes 'pdf-view-mode)
+  (add-to-list 'dabbrev-ignored-buffer-modes 'tags-table-mode))
+#+end_src
+
+** prescient
 
 #+begin_src emacs-lisp
 (use-package prescient
@@ -1032,7 +1075,17 @@ Hide commands in ~M-x~ which do not apply to the current mode.
   :config
   (prescient-persist-mode))
 #+end_src
-** Corfu
+
+#+begin_src emacs-lisp
+(use-package corfu-prescient
+  :ensure t
+  :custom
+  (corfu-prescient-enable-filtering nil) ; Use prescient only for sorting, not filtering
+  :config
+  (corfu-prescient-mode))
+#+end_src
+
+** corfu
 
 ~corfu~ still presents too many bugs with ~eglot~. I will try it later.
 
@@ -1044,18 +1097,21 @@ Hide commands in ~M-x~ which do not apply to the current mode.
   (corfu-popupinfo-mode t) ;; Open a popup with short doc
   (corfu-auto t) ;; Completion is displayed automatically
   (corfu-auto-delay 0.2)
-  ;; Optional customizations
-  ;; :custom
-  ;; (corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
+  (corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
   ;; (corfu-quit-at-boundary nil)   ;; Never quit at completion boundary
   ;; (corfu-quit-no-match nil)      ;; Never quit, even if there is no match
   ;; (corfu-preview-current nil)    ;; Disable current candidate preview
   ;; (corfu-preselect 'prompt)      ;; Preselect the prompt
   ;; (corfu-on-exact-match 'insert) ;; Configure handling of exact matches
-
-  ;; Enable optional extension modes:
-  ;; (corfu-history-mode)
-  )
+  :config
+  ;; Force corfu to use the default font to prevent the use of a variable pitch font with mixed-pitch
+  (dolist (face '(corfu-default
+                  corfu-current
+                  corfu-annotations
+                  corfu-deprecated))
+    (set-face-attribute face nil :family (face-attribute 'default :family)))
+  :hook
+  (after-init . global-corfu-mode))
 
 (setopt
  ;; Enable indentation+completion using the TAB key.
@@ -1064,102 +1120,7 @@ Hide commands in ~M-x~ which do not apply to the current mode.
  text-mode-ispell-word-completion nil)
 #+end_src
 
-** Company
-
-#+begin_src emacs-lisp :tangle no
-(use-package company
-  :ensure t
-  :hook
-  (after-init . global-company-mode)
-  ((markdown-mode org-mode) . (lambda ()
-		 (setq-local company-backends
-			     '(company-capf
-			       company-files
-			       company-ispell
-			       (company-dabbrev-code company-keywords)
-			       company-dabbrev
-			       company-yasnippet))))
-  (TeX-mode . (lambda ()
-		(setq-local company-backends
-			    '(company-capf
-			      company-files
-			      company-reftex-labels
-			      company-reftex-citations
-			      company-ispell
-			      (company-dabbrev-code company-keywords)
-			      company-dabbrev
-			      company-yasnippet))))
-  :custom
-  (company-show-quick-access t)
-  (company-idle-delay 0.2)
-  (company-backends '(company-capf
-		      company-files
-		      (company-dabbrev-code company-keywords)
-		      company-dabbrev
-		      company-yasnippet))
-  ;; company configuration from
-  ;; <https://github.com/radian-software/radian/blob/develop/emacs/radian.el>
-  :bind (;; Replace `completion-at-point' and `complete-symbol' with
-         ;; `company-manual-begin'. You might think this could be put
-         ;; in the `:bind*' declaration below, but it seems that
-         ;; `bind-key*' does not work with remappings.
-         ;; ([remap completion-at-point] . company-manual-begin)
-         ;; ([remap complete-symbol] . company-manual-begin)
-
-	 ("C-c y" . company-yasnippet)
-
-         ;; The following are keybindings that take effect whenever
-         ;; the completions menu is visible, even if the user has not
-         ;; explicitly interacted with Company.
-
-         :map company-active-map
-
-         ;; Make TAB always complete the current selection. Note that
-         ;; <tab> is for windowed Emacs and TAB is for terminal Emacs.
-         ("<tab>" . company-complete-selection)
-         ("TAB" . company-complete-selection)
-
-         ;; Prevent SPC from ever triggering a completion.
-         ("SPC" . nil)
-
-         ;; The following are keybindings that only take effect if the
-         ;; user has explicitly interacted with Company.
-
-         :map company-active-map
-         :filter (company-explicit-action-p)
-
-         ;; Make RET trigger a completion if and only if the user has
-         ;; explicitly interacted with Company. Note that <return> is
-         ;; for windowed Emacs and RET is for terminal Emacs.
-         ("<return>" . company-complete-selection)
-         ("RET" . company-complete-selection)))
-
-(use-package company-reftex
-  :ensure t)
-
-(use-package company-jedi
-  :ensure t)
-#+end_src
-
-Use =company-box= for a better position of the autocompletion when using copilot.
-#+begin_src emacs-lisp
-(use-package company-box
-  :ensure t
-  :hook (company-mode)
-  :custom
-  (company-box-doc-enable nil))
-#+end_src
-
-#+begin_src emacs-lisp
-(use-package company-prescient
-  :ensure t
-  :config
-  (company-prescient-mode))
-#+end_src
-
-** Vertico and friends (orderless, marginalia, consult)
-
-*** Vertico
+** vertico
 
 #+begin_src emacs-lisp
 (use-package vertico
@@ -1213,20 +1174,25 @@ Use =vertico-directory= to press =DEL= to jump back one directory instead of one
 (use-package vertico-prescient
   :ensure t
   :after vertico
-  :init
-  (vertico-prescient-mode))
+  :hook
+  (after-init . vertico-prescient-mode)
+  :custom
+  (vertico-prescient-enable-filtering nil))
 #+end_src
 
-*** =Orderless= for more flexible completion style
+** =Orderless= for more flexible completion style
 
 #+begin_src emacs-lisp
 (use-package orderless
   :ensure t
   :custom
-  (completion-styles '(orderless basic)))
+  (completion-styles '(orderless basic))
+  (completion-category-overrides '((file (styles partial-completion))))
+  :hook
+  (corfu-mode .  (lambda () (setq-local completion-styles '(basic)))))
 #+end_src
 
-*** Marginalia
+** marginalia
 
 #+begin_src emacs-lisp
 (use-package marginalia
@@ -1234,7 +1200,7 @@ Use =vertico-directory= to press =DEL= to jump back one directory instead of one
   :hook (after-init))
 #+end_src
 
-*** Consult
+** consult
 
 #+begin_src emacs-lisp
 (use-package consult
@@ -1324,7 +1290,7 @@ Use =vertico-directory= to press =DEL= to jump back one directory instead of one
   ("M-s R" . consult-ripgrep-same-ext))
 #+end_src
 
-*** Embark
+** embark
 
 Basic configuration, to check after some time
 #+begin_src emacs-lisp
@@ -1425,6 +1391,8 @@ Temporary fix until the problem is properly fixed in magit (error message that c
 (use-package diff-hl
   :defer t
   :after magit
+  :custom
+  (diff-hl-flydiff-mode 1)
   :hook
   ((latex-mode markdown-mode org-mode prog-mode) . diff-hl-mode)
   (dired-mode . diff-hl-dired-mode)
@@ -1442,7 +1410,12 @@ Support for syntax highlighting of Git configuration files
 #+begin_src emacs-lisp
 (use-package forge
   :after magit
-  :ensure t)
+  :ensure t
+  :hook
+  ;; ~forge-post-mode~ derives from ~markdown-mode~, which triggers formatting
+  ;; with ~apheleia~ but, since the post is immediately sent to the forge, the
+  ;; formating leads to conflicts. Better to deactivate it.
+  (forge-post-mode . (lambda () (apheleia-mode -1))))
 #+end_src
 
 * Shells
@@ -1618,7 +1591,7 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
 (use-package gptel-agent
   :vc (:url "https://github.com/karthink/gptel-agent"
        :rev :newest)
-  :config (gptel-agent-update))         ;Read files from agents directories
+  :config (gptel-agent-update))         ; Read files from agents directories
 #+end_src
 
 #+begin_src emacs-lisp
@@ -1658,11 +1631,7 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
     "r" '("Send region"    . agent-shell-send-region)
     "t" '("Toggle display" . agent-shell-toggle)
     "u" '("Usage"          . agent-shell-show-usage))
-  :bind-keymap ("C-c a"  . agent-shell-operation-map)
-  :hook
-  (agent-shell-viewport-edit-mode . (lambda ()
-				      (company-mode -1)
-				      (corfu-mode 1))))
+  :bind-keymap ("C-c a"  . agent-shell-operation-map))
 #+end_src
 
 #+begin_src emacs-lisp
@@ -1700,7 +1669,7 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
   :ensure t
   :defer t
   :custom
-  (eca-chat-custom-model "github-copilot/gpt-5"))
+  (eca-chat-custom-model "github-copilot/gpt-5.4"))
 #+end_src
 
 **** Tools
@@ -1971,7 +1940,7 @@ Returns t if it handled indentation."
   (cdlatex-takeover-parenthesis nil)
   :hook
   ((LaTeX-mode markdown-mode) . turn-on-cdlatex)
-  ((LaTeX-mode org-mode) . my-slow-company)
+  ;; ((LaTeX-mode org-mode) . my-slow-company)
   (org-mode . turn-on-org-cdlatex)
   (cdlatex-tab . my-cdlatex-latex-tab)
   (cdlatex-tab . my-cdlatex-markdown-tab))
@@ -3485,10 +3454,7 @@ I don't know why but =poly-gams= does not work with =use-package=, so I have to 
 ;; Set encoding to utf-8 to allows utf-8 characters in Python REPL (from
 ;; https://stackoverflow.com/questions/14172576/why-unicodeencodeerror-raised-only-in-emacss-python-shell)
   (setenv "PYTHONIOENCODING" "utf-8")
-  (defun my-python-mode-hook ()
-    (add-to-list 'company-backends 'company-jedi))
   :hook
-  (python-mode . my-python-mode-hook)
   (python-mode . flymake-mode))
 
 (use-package conda
