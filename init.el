@@ -1018,7 +1018,7 @@ current buffer within the project or the current directory if not in a project."
   :defer t
   :after magit
   :custom
-  (diff-hl-flydiff-mode 1)
+  (diff-hl-flydiff-mode 1)		; Allow diff-hl to work on the fly
   :hook
   ((latex-mode markdown-mode org-mode prog-mode) . diff-hl-mode)
   (dired-mode . diff-hl-dired-mode)
