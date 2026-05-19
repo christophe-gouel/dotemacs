@@ -745,6 +745,9 @@ current buffer within the project or the current directory if not in a project."
   ;; Swap M-/ and C-M-/
   :bind (("M-/" . dabbrev-completion)
          ("C-M-/" . dabbrev-expand))
+  :custom
+  ;; Make dabbrev search case-sensitively
+  (dabbrev-case-fold-search nil)
   :config
   (add-to-list 'dabbrev-ignored-buffer-regexps "\\` ")
   (add-to-list 'dabbrev-ignored-buffer-modes 'authinfo-mode)
@@ -845,7 +848,10 @@ current buffer within the project or the current directory if not in a project."
   (completion-styles '(orderless basic))
   (completion-category-overrides '((file (styles partial-completion))))
   :hook
-  (corfu-mode .  (lambda () (setq-local completion-styles '(basic)))))
+  ;; I don't want orderless in corfu, except for completing files in agent-shell
+  (corfu-mode .  (lambda ()
+		   (unless (member major-mode '(agent-shell-mode agent-shell-viewport-edit-mode))
+		     (setq-local completion-styles '(basic))))))
 
 (use-package marginalia
   :ensure t
