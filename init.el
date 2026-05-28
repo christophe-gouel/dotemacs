@@ -848,7 +848,7 @@ current buffer within the project or the current directory if not in a project."
   (completion-styles '(orderless basic))
   (completion-category-overrides '((file (styles partial-completion))))
   :hook
-  ;; I don't want orderless in corfu, except for completing files in agent-shell
+  ;; I don't want orderless in corfu, except for completion in agent-shell
   (corfu-mode .  (lambda ()
 		   (unless (member major-mode '(agent-shell-mode agent-shell-viewport-edit-mode))
 		     (setq-local completion-styles '(basic))))))
@@ -1230,18 +1230,6 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
   (agent-shell-attention-show-zeros t)
   :config
   (agent-shell-attention-mode))
-
-(use-package aidermacs
-  :ensure t
-  :defer t
-  :config
-  (unless (equal system-type 'windows-nt)
-    (setopt aidermacs-backend 'vterm))
-  :custom
-  (aidermacs-use-architect-mode t)
-  (aidermacs-default-model "sonnet")
-  ;; :bind (("C-c a" . aidermacs-transient-menu))
-  )
 
 (use-package eca
   :ensure t

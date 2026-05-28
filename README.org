@@ -1652,22 +1652,6 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
   (agent-shell-attention-mode))
 #+end_src
 
-**** aider
-
-#+begin_src emacs-lisp
-(use-package aidermacs
-  :ensure t
-  :defer t
-  :config
-  (unless (equal system-type 'windows-nt)
-    (setopt aidermacs-backend 'vterm))
-  :custom
-  (aidermacs-use-architect-mode t)
-  (aidermacs-default-model "sonnet")
-  ;; :bind (("C-c a" . aidermacs-transient-menu))
-  )
-#+end_src
-
 **** Editor Code Assistant
 
 #+begin_src emacs-lisp
