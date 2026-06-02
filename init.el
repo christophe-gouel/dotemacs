@@ -47,7 +47,7 @@
     ;; (exec-path-from-shell-arguments nil) ; Do not run an interactive shell (faster)
     :config
     (dolist (var '("DROPBOX" "BIBINPUTS" "BSTINPUTS" ;; "GH_TOKEN"
-		   "OPENAI_API_KEY" "ANTHROPIC_API_KEY" "OLLAMA_API_BASE"))
+		   "OPENAI_API_KEY" "ANTHROPIC_API_KEY" "INRAE_API_KEY" "OLLAMA_API_BASE"))
       (add-to-list 'exec-path-from-shell-variables var))
     (exec-path-from-shell-initialize)))
 
@@ -304,7 +304,7 @@
   (setq dired-guess-shell-alist-user
 	'(("\\.gms\\'" "gams")
 	  ("\\.qmd\\'" "quarto render")
-	  ("\\.tex\\'" "latexmk -pdf")
+	  ("\\.tex\\'" "latexmk -pdf --synctex=1")
 	  ("\\.tex\\'" "texcount -merge")))
   :custom
   (dired-listing-switches
@@ -850,7 +850,7 @@ current buffer within the project or the current directory if not in a project."
   :hook
   ;; I don't want orderless in corfu, except for completion in agent-shell
   (corfu-mode .  (lambda ()
-		   (unless (member major-mode '(agent-shell-mode agent-shell-viewport-edit-mode))
+		   (unless (member major-mode '(agent-shell-mode agent-shell-viewport-edit-mode eca-chat-mode))
 		     (setq-local completion-styles '(basic))))))
 
 (use-package marginalia
@@ -1233,9 +1233,31 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
 
 (use-package eca
   :ensure t
-  :defer t
   :custom
-  (eca-chat-custom-model "github-copilot/gpt-5.4"))
+  (eca-buttons-allow-mouse t)
+  (eca-chat-auto-add-cursor nil)
+  :config
+  (defvar-keymap eca-operation-map
+    :doc "Keymap for eca operation"
+    :name "Editor Code Assistant"
+    "a" '("Add context (user-prompt)" . eca-chat-add-context-to-user-prompt)
+    "c" '("Complete"                  . eca-complete)
+    "e" '("eca"                       . eca)
+    "E" '("New eca"                   . eca-chat-new)
+    "r" '("Rewrite"                   . eca-rewrite)
+    "s" '("Select a chat"             . eca-chat-select)
+    "t" '("Toggle"                    . eca-chat-toggle-window)
+    "T" '("Talk"                      . eca-chat-talk)
+    "w" '("Workspaces"                . eca-workspaces)
+    "." '("Transient"                 . eca-transient-menu))
+  :bind-keymap ("C-c e" . eca-operation-map)
+  :bind
+  (:map eca-chat-mode-map
+	("RET"      . eca-chat--key-pressed-newline)
+	("<return>" . eca-chat--key-pressed-newline)
+	("C-c C-c"  . eca-chat--key-pressed-return))
+  :hook
+  (eca-chat-finished . math-preview-all))
 
 (use-package mcp
   :ensure t
@@ -1292,9 +1314,13 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
 (use-package citar
   :ensure t
   :after (org nerd-icons)
+  :preface
+  (defun my-citar-capf-setup ()
+    (unless (derived-mode-p 'eca-chat-mode)
+      (citar-capf-setup)))
   :hook
   ;; Attention in LaTeX and Markdown the LSP prevents citar
-  ((LaTeX-mode markdown-mode org-mode) . citar-capf-setup)
+  ((LaTeX-mode markdown-mode org-mode) . my-citar-capf-setup)
   :config
   (defun citar-insert-citation-with-prefix-arg ()
     (interactive)
@@ -1543,7 +1569,6 @@ Returns t if it handled indentation."
 	  (TeX-command-region)))))
   :bind
   (:map TeX-mode-map
-	("C-c e"      . TeX-next-error)
 	("M-RET"      . latex-insert-item)
 	("S-<return>" . my-tex-frame)
 	("<f9>"       . my-tex-compile)
@@ -1670,7 +1695,7 @@ LANG is the programming language for the code block.
 EDIT, when non-nil, will edit the code block in an indirect buffer after insertion."
   (interactive
    (list (let ((completion-ignore-case nil))
-           (condition-case nil
+	   (condition-case nil
                (markdown-clean-language-string
                 (completing-read
                  "Programming language: "
