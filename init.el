@@ -46,7 +46,7 @@
     ;; :custom
     ;; (exec-path-from-shell-arguments nil) ; Do not run an interactive shell (faster)
     :config
-    (dolist (var '("DROPBOX" "BIBINPUTS" "BSTINPUTS" ;; "GH_TOKEN"
+    (dolist (var '("DROPBOX" "BIBINPUTS" "BSTINPUTS" "GITHUB_TOKEN"
 		   "OPENAI_API_KEY" "ANTHROPIC_API_KEY" "INRAE_API_KEY" "OLLAMA_API_BASE"))
       (add-to-list 'exec-path-from-shell-variables var))
     (exec-path-from-shell-initialize)))
