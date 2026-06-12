@@ -2265,6 +2265,10 @@ the function will prompt the user to select a default audio device before runnin
 		  (markdown-mode  . ("marksman"))
 		  (conf-toml-mode . ("tombi" "lsp"))))
     (add-to-list 'eglot-server-programs pair))
+  (defun my-latex-restore-auctex-flymake-backend ()
+    "Keep AUCTeX/ChkTeX Flymake diagnostics when Eglot is active."
+    (when (derived-mode-p 'latex-mode 'LaTeX-mode)
+      (add-hook 'flymake-diagnostic-functions #'LaTeX-flymake nil t)))
   :custom
   ;; Prevent eglot from reformatting code automatically
   (eglot-ignored-server-capabilities
@@ -2288,7 +2292,12 @@ the function will prompt the user to select a default audio device before runnin
 	 ("C-c l s" . eglot-shutdown)))
   :hook
   ((conf-toml-mode ess-r-mode LaTeX-mode markdown-mode) . eglot-ensure)
-  :ensure-system-package marksman)
+  (eglot-managed-mode . my-latex-restore-auctex-flymake-backend)
+  :ensure-system-package
+  (marksman
+   (Rscript . "Rscript -e \"install.packages('languageserver')\"")
+   (digestif . "curl --output %HOME%/.local/bin/digestif.cmd https://raw.githubusercontent.com/astoff/digestif/master/scripts/digestif.cmd")))
+
 
 (use-package poly-markdown
   :ensure t
@@ -2438,20 +2447,11 @@ the function will prompt the user to select a default audio device before runnin
    :map inferior-ess-mode-map
     ("<home>"     . comint-bol))
   :custom
-  (ess-roxy-str "#'")
-  (ess-roxy-template-alist
-   '(("description" . ".. content for \\description{} (no empty lines) ..")
-     ("details" . ".. content for \\details{} ..")
-     ("param" . "")
-     ("return" . "")))
-  (ess-nuke-trailing-whitespace-p t)
-  (ess-assign-list '(" <-" " <<- " " = " " -> " " ->> "))
-  (ess-style 'RStudio)  ; Set code indentation
-  (ess-r-outline-style 'RStudio)
   (ess-ask-for-ess-directory nil) ; Do not ask what is the project directory
-  (inferior-R-args "--no-restore-history --no-save ")
+  (ess-assign-list '(" <-" " <<- " " = " " -> " " ->> "))
   (ess-describe-at-point-method 'tooltip) ; Describe using a toolip rather than a separate buffer
-  ;; Font-locking
+  (ess-nuke-trailing-whitespace-p nil) ; Done now by an after-save-hook
+  ;; Font-locking (the more the better)
   (ess-R-font-lock-keywords
    '((ess-R-fl-keyword:keywords . t)
      (ess-R-fl-keyword:constants . t)
@@ -2465,6 +2465,16 @@ the function will prompt the user to select a default audio device before runnin
      (ess-fl-keyword:delimiters . t)
      (ess-fl-keyword:= . t)
      (ess-R-fl-keyword:F&T . t)))
+  (ess-r-outline-style 'RStudio)
+  (ess-roxy-str "#'")
+  (ess-roxy-template-alist
+   '(("description" . ".. content for \\description{} (no empty lines) ..")
+     ("details" . ".. content for \\details{} ..")
+     ("param" . "")
+     ("return" . "")))
+  (ess-style 'RStudio) ; Set code indentation
+  (ess-use-flymake nil) ; Useless with LSP
+  (inferior-R-args "--no-restore-history --no-save ")
   :config
   (defun ess-eval-symbol (&optional vis)
   "Send the symbol at point to the inferior ESS process.
