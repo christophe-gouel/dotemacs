@@ -639,10 +639,6 @@ current buffer within the project or the current directory if not in a project."
   (when (and (display-graphic-p) (not (server-running-p)))
     (server-start)))
 
-(use-package emacs-everywhere
-  :ensure t
-  :defer t)
-
 (use-package conflict-buttons
   :ensure t
   :hook (smerge-mode . (lambda ()
