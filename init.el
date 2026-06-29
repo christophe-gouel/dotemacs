@@ -1254,6 +1254,8 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
 	("<return>" . eca-chat--key-pressed-newline)
 	("C-c C-c"  . eca-chat--key-pressed-return))
   :hook
+  (eca-chat-mode . (lambda () (setq-local math-preview-tex-marks-inline
+   '(("\\(" "\\)" 0 nil nil)))))
   (eca-chat-finished . math-preview-all))
 
 (use-package mcp
@@ -2109,12 +2111,13 @@ the function will prompt the user to select a default audio device before runnin
   (defun my-visual-fill ()
     "Toggle visual fill column, visual line mode, and adaptive wrap mode."
     (interactive)
-    (visual-line-mode 'toggle)
-    (visual-fill-column-mode 'toggle)
-    ;; org-indent does not play nicely with adaptive-wrap-prefix-mode so we
-    ;; exclude the later in org
-    (unless (member major-mode '(org-mode))
-      (visual-wrap-prefix-mode 'toggle)))
+    (unless (member major-mode '(eca-chat-mode))
+      (visual-line-mode 'toggle)
+      (visual-fill-column-mode 'toggle)
+      ;; org-indent does not play nicely with adaptive-wrap-prefix-mode so we
+      ;; exclude the later in org
+      (unless (member major-mode '(org-mode))
+	(visual-wrap-prefix-mode 'toggle))))
   (defun my-center-text ()
     "Center text in visual fill column, unless in a polymode buffer."
     (interactive)
