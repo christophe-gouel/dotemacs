@@ -1348,6 +1348,7 @@ On macOS, for faster Git, install it with homebrew instead of using the default 
     "b" '("Branch"               . magit-branch)
     "c" '("Commit"               . magit-commit)
     "C" '("Clone"                . magit-clone)
+    "e" '("Ediff"                . magit-ediff)
     "d" '("Dispatch"             . magit-dispatch)
     "f" '("File dispatch"        . magit-file-dispatch)
     "F" '("Pull"                 . magit-pull)

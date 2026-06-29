@@ -985,6 +985,7 @@ current buffer within the project or the current directory if not in a project."
     "b" '("Branch"               . magit-branch)
     "c" '("Commit"               . magit-commit)
     "C" '("Clone"                . magit-clone)
+    "e" '("Ediff"                . magit-ediff)
     "d" '("Dispatch"             . magit-dispatch)
     "f" '("File dispatch"        . magit-file-dispatch)
     "F" '("Pull"                 . magit-pull)
