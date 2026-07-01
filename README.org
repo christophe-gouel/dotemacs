@@ -1663,7 +1663,8 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
     "e" '("eca"                       . eca)
     "E" '("New eca"                   . eca-chat-new)
     "r" '("Rewrite"                   . eca-rewrite)
-    "s" '("Select a chat"             . eca-chat-select)
+    "s" '("Switch to project-chat"    . eca-switch-to-project-chat)
+    "S" '("Switch to chat"            . eca-switch-to-chat)
     "t" '("Toggle"                    . eca-chat-toggle-window)
     "T" '("Talk"                      . eca-chat-talk)
     "w" '("Workspaces"                . eca-workspaces)
@@ -2731,13 +2732,14 @@ Use =visual-fill-column= for text modes
   (defun my-visual-fill ()
     "Toggle visual fill column, visual line mode, and adaptive wrap mode."
     (interactive)
+    (visual-line-mode 'toggle)
+    ;; To maximize the eca-chat window, don't use visual-fill-column-mode
     (unless (member major-mode '(eca-chat-mode))
-      (visual-line-mode 'toggle)
-      (visual-fill-column-mode 'toggle)
+      (visual-fill-column-mode 'toggle))
       ;; org-indent does not play nicely with adaptive-wrap-prefix-mode so we
       ;; exclude the later in org
       (unless (member major-mode '(org-mode))
-	(visual-wrap-prefix-mode 'toggle))))
+	(visual-wrap-prefix-mode 'toggle)))
   (defun my-center-text ()
     "Center text in visual fill column, unless in a polymode buffer."
     (interactive)
