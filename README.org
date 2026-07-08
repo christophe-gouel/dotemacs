@@ -405,7 +405,7 @@ Prevent variable names from being unlispify:
 (use-package dired
   :commands (dired dired-jump)
   :config
-  ; macOS ls is not the standard ls so we substitute it by GNU ls
+  ;; macOS ls is not the standard ls so we substitute it by GNU ls
   (when (and (eq system-type 'darwin) (executable-find "gls"))
     (setopt insert-directory-program "gls"))
   (setq dired-compress-files-alist
@@ -1378,7 +1378,7 @@ Temporary fix until the problem is properly fixed in magit (error message that c
 
 =magit-delta= allows to have syntax highlighting in magit diffs.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package magit-delta
   :ensure t
   :hook (magit-mode)
@@ -1389,8 +1389,7 @@ Temporary fix until the problem is properly fixed in magit (error message that c
 
 #+begin_src emacs-lisp
 (use-package diff-hl
-  :defer t
-  :after magit
+  :ensure t
   :custom
   (diff-hl-flydiff-mode 1)		; Allow diff-hl to work on the fly
   :hook
@@ -1579,6 +1578,8 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
   (gptel-mode . (lambda() (org-indent-mode -1))))
 #+end_src
 
+Enable automatic commits using gptel
+
 #+begin_src emacs-lisp
 (use-package gptel-magit
   :ensure t
@@ -1679,6 +1680,7 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
   :hook
   (eca-chat-mode . (lambda () (setq-local math-preview-tex-marks-inline
    '(("\\(" "\\)" 0 nil nil)))))
+  (eca-chat-mode . (lambda () (setq-local show-trailing-whitespace nil)))
   (eca-chat-finished . math-preview-all))
 #+end_src
 
@@ -2911,7 +2913,7 @@ Configuration from [[https://robert.kra.hn/posts/2023-02-22-copilot-emacs-setup/
 
 Support for Copilot Chat
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package copilot-chat
   :ensure t
   :defer t
@@ -3590,7 +3592,6 @@ Install =Jedi= server for =company-jedi=:
 ** Other installations
 
 Install
-- =delta= to have syntax highlighting in git diffs.
 - [[https://github.com/sharkdp/fd][fd]] to have a fast alternative to =find=.
 - =hunspell= for spell checking.
 - =ripgrep= to have a fast alternative to =grep=.
@@ -3598,14 +3599,7 @@ Install
 On Windows, they can be installed with Chocolatey (requires admin rights):
 
 #+begin_src shell
-choco install -y delta fd hunspell ripgrep
-#+end_src
-
-On Linux/Ubuntu
-
-#+begin_src shell
-sudo snap install git-delta-snap
-sudo snap alias git-delta-snap.delta delta
+choco install -y fd hunspell ripgrep
 #+end_src
 
 On Windows, one has to make sure that a recent version of =grep= and a POSIX version of =find= (not Windows version) are available in the PATH (both come with =git=). If it is not possible to move POSIX =find= before Windows =find= in the PATH, it is necessary to set the variable =find-program= in =custom.el=.

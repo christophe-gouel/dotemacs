@@ -290,7 +290,7 @@
 (use-package dired
   :commands (dired dired-jump)
   :config
-  ; macOS ls is not the standard ls so we substitute it by GNU ls
+  ;; macOS ls is not the standard ls so we substitute it by GNU ls
   (when (and (eq system-type 'darwin) (executable-find "gls"))
     (setopt insert-directory-program "gls"))
   (setq dired-compress-files-alist
@@ -1007,14 +1007,8 @@ current buffer within the project or the current directory if not in a project."
 (use-package git-commit
   :config (remove-hook 'git-commit-setup-hook #'git-commit-setup-capf))
 
-(use-package magit-delta
-  :ensure t
-  :hook (magit-mode)
-  :ensure-system-package (delta . git-delta))
-
 (use-package diff-hl
-  :defer t
-  :after magit
+  :ensure t
   :custom
   (diff-hl-flydiff-mode 1)		; Allow diff-hl to work on the fly
   :hook
@@ -1234,6 +1228,7 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
   :custom
   (eca-buttons-allow-mouse t)
   (eca-chat-auto-add-cursor nil)
+  (eca-chat-use-side-window t)
   :config
   (defvar-keymap eca-operation-map
     :doc "Keymap for eca operation"
@@ -1258,6 +1253,7 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
   :hook
   (eca-chat-mode . (lambda () (setq-local math-preview-tex-marks-inline
    '(("\\(" "\\)" 0 nil nil)))))
+  (eca-chat-mode . (lambda () (setq-local show-trailing-whitespace nil)))
   (eca-chat-finished . math-preview-all))
 
 (use-package mcp
@@ -2253,12 +2249,6 @@ the function will prompt the user to select a default audio device before runnin
     ("M-C-<down>"   . copilot-accept-completion-by-line)
     ("M-C-<return>" . my-copilot-complete-or-accept)
     ("M-C-g"        . copilot-clear-overlay))))
-
-(use-package copilot-chat
-  :ensure t
-  :defer t
-  ;; :hook (git-commit-setup . copilot-chat-insert-commit-message)
-  )
 
 (use-package eglot
   :config
