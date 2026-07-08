@@ -12,7 +12,8 @@
 
 (use-package package
   :config
-  (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
+  (add-to-list 'package-archives
+             '("melpa" . "https://snapshots.melpa.org/packages/") t)
   (defvar-keymap package-operation-map
     :doc "Keymap for package operation"
     :name "Package"
