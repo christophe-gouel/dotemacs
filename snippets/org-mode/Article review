@@ -7,7 +7,9 @@
 #+AUTHOR:
 #+DATE: `(format-time-string "%Y-%m-%d")`
 #+OPTIONS: toc:nil num:nil
+#+LATEX_CLASS_OPTIONS: [a4paper, 11pt]
 #+LATEX_HEADER: \usepackage{fullpage}
+#+LATEX_HEADER: \hypersetup{bookmarksopen=false,citecolor=red,urlcolor=blue,linkcolor=red,filecolor=blue,colorlinks=true}
 
 * Summary
 
