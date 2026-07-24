@@ -300,8 +300,7 @@ Highlight the current line
   :custom
   (tab-bar-close-button-show nil)
   (tab-bar-mode t)
-  (tab-bar-history-mode t)
-  ;; (tab-bar-show 1)
+  (tab-bar-history-mode nil)
   :config
   (defun tab-create (name)
     "Create the NAME tab."
@@ -882,6 +881,15 @@ Use ~savehist-mode~ to save minibuffer and other history.
 ** smerge
 
 #+begin_src emacs-lisp
+(use-package smerge
+  :ensure nil
+  :hook
+  (smerge-mode . smerge-refine)) ; Refine diffs by words
+#+end_src
+
+Add buttons to solve conflicts with the mouse
+
+#+begin_src emacs-lisp
 (use-package conflict-buttons
   :ensure t
   :hook (smerge-mode . (lambda ()
@@ -1182,7 +1190,7 @@ Use =vertico-directory= to press =DEL= to jump back one directory instead of one
   :hook
   ;; I don't want orderless in corfu, except for completion in agent-shell
   (corfu-mode .  (lambda ()
-		   (unless (member major-mode '(agent-shell-mode agent-shell-viewport-edit-mode eca-chat-mode))
+		   (unless (member major-mode '(agent-shell-mode agent-shell-viewport-edit-mode))
 		     (setq-local completion-styles '(basic))))))
 #+end_src
 
@@ -2780,7 +2788,7 @@ Use built-in =flymake= for linting.
 #+begin_src emacs-lisp
 (use-package flymake
   :custom
-  (flymake-no-changes-timeout nil)
+  (flymake-no-changes-timeout 0.1)
   :hook
   (prog-mode)
   :config

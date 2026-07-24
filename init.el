@@ -215,8 +215,7 @@
   :custom
   (tab-bar-close-button-show nil)
   (tab-bar-mode t)
-  (tab-bar-history-mode t)
-  ;; (tab-bar-show 1)
+  (tab-bar-history-mode nil)
   :config
   (defun tab-create (name)
     "Create the NAME tab."
@@ -640,6 +639,11 @@ current buffer within the project or the current directory if not in a project."
   (when (and (display-graphic-p) (not (server-running-p)))
     (server-start)))
 
+(use-package smerge
+  :ensure nil
+  :hook
+  (smerge-mode . smerge-refine)) ; Refine diffs by words
+
 (use-package conflict-buttons
   :ensure t
   :hook (smerge-mode . (lambda ()
@@ -844,7 +848,7 @@ current buffer within the project or the current directory if not in a project."
   :hook
   ;; I don't want orderless in corfu, except for completion in agent-shell
   (corfu-mode .  (lambda ()
-		   (unless (member major-mode '(agent-shell-mode agent-shell-viewport-edit-mode eca-chat-mode))
+		   (unless (member major-mode '(agent-shell-mode agent-shell-viewport-edit-mode))
 		     (setq-local completion-styles '(basic))))))
 
 (use-package marginalia
@@ -2144,7 +2148,7 @@ the function will prompt the user to select a default audio device before runnin
 
 (use-package flymake
   :custom
-  (flymake-no-changes-timeout nil)
+  (flymake-no-changes-timeout 0.1)
   :hook
   (prog-mode)
   :config
