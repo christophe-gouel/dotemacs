@@ -722,13 +722,10 @@ current buffer within the project or the current directory if not in a project."
   :ensure t
   :bind ("M-+" . cape-prefix-map)
   :init
-  ;; (add-hook 'completion-at-point-functions #'cape-dabbrev)
   (add-hook 'completion-at-point-functions #'cape-file)
   (add-hook 'completion-at-point-functions #'yasnippet-capf)
-  ;; (add-hook 'completion-at-point-functions #'cape-dict)
-  (add-hook 'completion-at-point-functions #'cape-elisp-block) ; Allow elisp completion in org and markdown code blocks
-  ;; (add-hook 'completion-at-point-functions #'cape-history)
-)
+  ;; Allow elisp completion in org and markdown code blocks
+  (add-hook 'completion-at-point-functions #'cape-elisp-block))
 
 (use-package yasnippet-capf
   :vc (:url "https://github.com/elken/yasnippet-capf"
@@ -1315,9 +1312,17 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
   (defun my-citar-capf-setup ()
     (unless (derived-mode-p 'eca-chat-mode)
       (citar-capf-setup)))
+  (defun my-citar-capf-priority ()
+    "Ensure `citar-capf' is tried before the Eglot completion function.
+Eglot adds its capf buffer-locally, which shadows the global
+`citar-capf'.  Re-adding `citar-capf' buffer-locally with a negative
+depth puts it first; it returns nil outside citation contexts, so the
+LSP completion still applies everywhere else."
+    (when (derived-mode-p 'markdown-mode)
+      (add-hook 'completion-at-point-functions #'citar-capf -100 t)))
   :hook
-  ;; Attention in LaTeX and Markdown the LSP prevents citar
-  ((LaTeX-mode markdown-mode org-mode) . my-citar-capf-setup)
+  ((markdown-mode org-mode) . my-citar-capf-setup)
+  (eglot-managed-mode . my-citar-capf-priority)
   :config
   (defun citar-insert-citation-with-prefix-arg ()
     (interactive)
