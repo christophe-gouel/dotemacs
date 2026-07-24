@@ -1957,6 +1957,13 @@ same directory as the working and insert a link to this file."
   (add-to-list 'math-preview-tex-marks '("\\begin{align*}" "\\end{align*}" 0 nil nil))
   (add-to-list 'math-preview-tex-marks '("\\begin{gather}" "\\end{gather}" 0 nil nil))
   (add-to-list 'math-preview-tex-marks '("\\begin{gather*}" "\\end{gather*}" 0 nil nil))
+  ;; Extend TeX macros
+  (add-to-list 'math-preview-tex-macros '("E"      . "\\mathrm{E}\\,"))
+  (add-to-list 'math-preview-tex-macros '("argmax" . "\\mathrm{arg}\\,\\max"))
+  (add-to-list 'math-preview-tex-macros '("argmin" . "\\mathrm{arg}\\,\\min"))
+  (add-to-list 'math-preview-tex-macros '("dd"     . "\\mathop{}\\!\\mathrm{d}"))
+  (add-to-list 'math-preview-tex-macros '("e"      . "\\mathrm{e}"))
+  ;; math-preview key map
   (defvar-keymap math-preview-operation-map
     :doc "Keymap for math-preview operation"
     :name "Math-preview"
