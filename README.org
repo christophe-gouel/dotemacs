@@ -50,6 +50,12 @@
   :ensure nil)
 #+end_src
 
+By default =package-vc= ignores the =:make= and =:shell-command= keywords of a package specification, because they run arbitrary code at install time. Org has to be built after checkout (see [[*Org]]), so opt that one package in explicitly rather than setting the option to =t=:
+
+#+begin_src emacs-lisp
+(setopt package-vc-allow-build-commands '(org-mode))
+#+end_src
+
 To use the keyword =:ensure-system-package= that installs system commands automatically. The keyword itself ships with Emacs, but its backend =system-packages= does not, and the bundled file only soft-requires it, so =:ensure= the backend from this declaration:
 
 #+begin_src emacs-lisp
@@ -2300,16 +2306,21 @@ same directory as the working and insert a link to this file."
 
 ** Org
 
-#+begin_src emacs-lisp :tangle no
-(package-vc-install
- '(org-mode :url "https://code.tecosaur.net/tec/org-mode" :branch "dev"))
-#+end_src
+Use Timothy Cheeseman's =dev= branch of Org, which provides =org-latex-preview=.  It is installed from source by =package-vc=, which needs three things beyond the repository URL:
+
+- =:rev :newest= tracks the tip of the branch.  Without it =use-package= defaults =:rev= to =:last-release=, which would look for a release tag instead of following =dev=.
+- =:lisp-dir "lisp"= puts =elpa/org-mode/lisp/= on the =load-path= from the generated autoloads, so the dev version shadows the built-in Org from startup.
+- =:make "autoloads"= generates =org-loaddefs.el= and =org-version.el=, which are not in the repository.  =package-vc= runs it before byte-compiling, and needs =package-vc-allow-build-commands= to be set (see [[*Package management]]).  The build shells out to =emacs= through =PATH=, so this must stay after =exec-path-from-shell= has run.
 
 #+begin_src emacs-lisp
 ; Before loading org-mode, disable org-persist which creates problems
 (setq org-element-cache-persistent nil)
 (use-package org
-  :load-path "~/.emacs.d/elpa/org-mode/lisp/"
+  :vc (org-mode :url "https://code.tecosaur.net/tec/org-mode"
+                :branch "dev"
+                :rev :newest
+                :lisp-dir "lisp"
+                :make "autoloads")
   :mode ("\\.org\\'" . org-mode)
   :custom
   (org-src-content-indentation 0)

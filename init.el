@@ -32,6 +32,8 @@
 (use-package use-package
   :ensure nil)
 
+(setopt package-vc-allow-build-commands '(org-mode))
+
 (use-package use-package-ensure-system-package
   :ensure system-packages)
 
@@ -1777,7 +1779,11 @@ same directory as the working and insert a link to this file."
 ; Before loading org-mode, disable org-persist which creates problems
 (setq org-element-cache-persistent nil)
 (use-package org
-  :load-path "~/.emacs.d/elpa/org-mode/lisp/"
+  :vc (org-mode :url "https://code.tecosaur.net/tec/org-mode"
+                :branch "dev"
+                :rev :newest
+                :lisp-dir "lisp"
+                :make "autoloads")
   :mode ("\\.org\\'" . org-mode)
   :custom
   (org-src-content-indentation 0)
