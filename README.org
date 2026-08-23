@@ -28,6 +28,7 @@
 
 #+begin_src emacs-lisp
 (use-package package
+  :ensure nil
   :config
   (add-to-list 'package-archives
              '("melpa" . "https://snapshots.melpa.org/packages/") t)
@@ -45,17 +46,15 @@
     "V" '("upgrade all vc" . package-vc-upgrade-all))
   :bind-keymap ("C-c p" . package-operation-map))
 
-(use-package use-package)
+(use-package use-package
+  :ensure nil)
 #+end_src
 
-To use the keyword =:ensure-system-package= that install system command automatically:
+To use the keyword =:ensure-system-package= that installs system commands automatically. The keyword itself ships with Emacs, but its backend =system-packages= does not, and the bundled file only soft-requires it, so =:ensure= the backend from this declaration:
 
 #+begin_src emacs-lisp
-(use-package use-package-ensure-system-package)
-
-(use-package system-packages
-  :ensure t
-  :defer t)
+(use-package use-package-ensure-system-package
+  :ensure system-packages)
 #+end_src
 
 Remove warnings from package installation:
@@ -194,6 +193,7 @@ Highlight the current line
 
 #+begin_src emacs-lisp
 (use-package hl-line
+  :ensure nil
   :config
   (global-hl-line-mode +1)
   :custom
@@ -883,7 +883,7 @@ Use ~savehist-mode~ to save minibuffer and other history.
 ** smerge
 
 #+begin_src emacs-lisp
-(use-package smerge
+(use-package smerge-mode
   :ensure nil
   :hook
   (smerge-mode . smerge-refine)) ; Refine diffs by words
@@ -1071,15 +1071,6 @@ Hide commands in ~M-x~ which do not apply to the current mode.
   (prescient-persist-mode))
 #+end_src
 
-#+begin_src emacs-lisp
-(use-package corfu-prescient
-  :ensure t
-  :custom
-  (corfu-prescient-enable-filtering nil) ; Use prescient only for sorting, not filtering
-  :config
-  (corfu-prescient-mode))
-#+end_src
-
 ** corfu
 
 #+begin_src emacs-lisp
@@ -1111,6 +1102,16 @@ Hide commands in ~M-x~ which do not apply to the current mode.
  tab-always-indent 'complete
  ;; Disable Ispell completion function.
  text-mode-ispell-word-completion nil)
+#+end_src
+
+#+begin_src emacs-lisp
+(use-package corfu-prescient
+  :ensure t
+  :after corfu
+  :custom
+  (corfu-prescient-enable-filtering nil) ; Use prescient only for sorting, not filtering
+  :config
+  (corfu-prescient-mode))
 #+end_src
 
 ** vertico
@@ -1276,8 +1277,8 @@ Use =vertico-directory= to press =DEL= to jump back one directory instead of one
 #+end_src
 
 #+begin_src emacs-lisp
-(use-package consult-ripgrep-same-ext.el
-  :load-path "~/.emacs.d/lisp/"
+(use-package consult-ripgrep-same-ext
+  :load-path "~/.emacs.d/user-lisp/"
   :custom
   (consult-ripgrep-same-ext-extension-groups
       '(("gms" "inc")
@@ -1370,6 +1371,8 @@ Temporary fix until the problem is properly fixed in magit (error message that c
 
 #+begin_src emacs-lisp
 (use-package git-commit
+  :ensure nil                           ; ships inside the magit package
+  :defer t
   :config (remove-hook 'git-commit-setup-hook #'git-commit-setup-capf))
 #+end_src
 
@@ -2393,10 +2396,10 @@ Use ~org-appear~  for markup markers to appear automatically.
   (global-org-modern-mode))
 #+end_src
 
-Use ~org-modern-intent~ to style blocks, because the styling of ~org-modern~ is not compatible with ~org-indent-mode~.
+Use ~org-modern-indent~ to style blocks, because the styling of ~org-modern~ is not compatible with ~org-indent-mode~.
 
 #+begin_src emacs-lisp
-(use-package org-modern-intent
+(use-package org-modern-indent
     :vc (:url "https://github.com/jdtsmith/org-modern-indent" :rev :newest)
     :hook
     (org-mode . org-modern-indent-mode))
@@ -2676,7 +2679,7 @@ the function will prompt the user to select a default audio device before runnin
 
 #+begin_src emacs-lisp
 (use-package flyspell
-  :ensure t
+  :ensure nil
   :hook ((LaTeX-mode markdown-mode org-mode) . flyspell-mode)
   :config
   (setq ispell-program-name (executable-find "hunspell")
@@ -3211,14 +3214,14 @@ VIS has the same meaning as for `ess-eval-region'."
 
 #+begin_src emacs-lisp
 (use-package ess-rscript
-  :load-path "~/.emacs.d/lisp/"
+  :load-path "~/.emacs.d/user-lisp/"
   :after ess-site
   :bind (:map ess-r-mode-map ("<f9>" . ess-rscript)))
 #+end_src
 
 #+begin_src emacs-lisp
-(use-package ess-r-breakerofchains.el
-  :load-path "~/.emacs.d/lisp/"
+(use-package ess-r-breakerofchains
+  :load-path "~/.emacs.d/user-lisp/"
   :after ess-site
   :bind (:map ess-r-mode-map ("C-c C-w" . ess-r-breakerofchains-run-to-point)))
 #+end_src

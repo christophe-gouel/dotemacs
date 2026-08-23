@@ -11,6 +11,7 @@
 (setopt debug-on-error t)
 
 (use-package package
+  :ensure nil
   :config
   (add-to-list 'package-archives
              '("melpa" . "https://snapshots.melpa.org/packages/") t)
@@ -28,13 +29,11 @@
     "V" '("upgrade all vc" . package-vc-upgrade-all))
   :bind-keymap ("C-c p" . package-operation-map))
 
-(use-package use-package)
+(use-package use-package
+  :ensure nil)
 
-(use-package use-package-ensure-system-package)
-
-(use-package system-packages
-  :ensure t
-  :defer t)
+(use-package use-package-ensure-system-package
+  :ensure system-packages)
 
 (add-to-list 'display-buffer-alist
              '("\\`\\*\\(Warnings\\|Compile-Log\\)\\*\\'"
@@ -133,6 +132,7 @@
   (add-to-list 'mixed-pitch-fixed-pitch-faces 'markdown-table-face))
 
 (use-package hl-line
+  :ensure nil
   :config
   (global-hl-line-mode +1)
   :custom
@@ -641,7 +641,7 @@ current buffer within the project or the current directory if not in a project."
   (when (and (display-graphic-p) (not (server-running-p)))
     (server-start)))
 
-(use-package smerge
+(use-package smerge-mode
   :ensure nil
   :hook
   (smerge-mode . smerge-refine)) ; Refine diffs by words
@@ -752,13 +752,6 @@ current buffer within the project or the current directory if not in a project."
   :config
   (prescient-persist-mode))
 
-(use-package corfu-prescient
-  :ensure t
-  :custom
-  (corfu-prescient-enable-filtering nil) ; Use prescient only for sorting, not filtering
-  :config
-  (corfu-prescient-mode))
-
 (use-package corfu
   :ensure t
   :custom
@@ -787,6 +780,14 @@ current buffer within the project or the current directory if not in a project."
  tab-always-indent 'complete
  ;; Disable Ispell completion function.
  text-mode-ispell-word-completion nil)
+
+(use-package corfu-prescient
+  :ensure t
+  :after corfu
+  :custom
+  (corfu-prescient-enable-filtering nil) ; Use prescient only for sorting, not filtering
+  :config
+  (corfu-prescient-mode))
 
 (use-package vertico
   :ensure t
@@ -924,8 +925,8 @@ current buffer within the project or the current directory if not in a project."
   (xref-show-xrefs-function #'consult-xref)
   (xref-show-definitions-function #'consult-xref))
 
-(use-package consult-ripgrep-same-ext.el
-  :load-path "~/.emacs.d/lisp/"
+(use-package consult-ripgrep-same-ext
+  :load-path "~/.emacs.d/user-lisp/"
   :custom
   (consult-ripgrep-same-ext-extension-groups
       '(("gms" "inc")
@@ -1000,6 +1001,8 @@ current buffer within the project or the current directory if not in a project."
   :bind-keymap ("C-c g" . magit-prefix-map))
 
 (use-package git-commit
+  :ensure nil                           ; ships inside the magit package
+  :defer t
   :config (remove-hook 'git-commit-setup-hook #'git-commit-setup-capf))
 
 (use-package diff-hl
@@ -1848,7 +1851,7 @@ same directory as the working and insert a link to this file."
   :config
   (global-org-modern-mode))
 
-(use-package org-modern-intent
+(use-package org-modern-indent
     :vc (:url "https://github.com/jdtsmith/org-modern-indent" :rev :newest)
     :hook
     (org-mode . org-modern-indent-mode))
@@ -2057,7 +2060,7 @@ the function will prompt the user to select a default audio device before runnin
   (whisper-use-threads (/ (num-processors) 2)))
 
 (use-package flyspell
-  :ensure t
+  :ensure nil
   :hook ((LaTeX-mode markdown-mode org-mode) . flyspell-mode)
   :config
   (setq ispell-program-name (executable-find "hunspell")
@@ -2500,12 +2503,12 @@ VIS has the same meaning as for `ess-eval-region'."
   ((ess-r-mode inferior-ess-mode) . my-ess-remove-project-hook))
 
 (use-package ess-rscript
-  :load-path "~/.emacs.d/lisp/"
+  :load-path "~/.emacs.d/user-lisp/"
   :after ess-site
   :bind (:map ess-r-mode-map ("<f9>" . ess-rscript)))
 
-(use-package ess-r-breakerofchains.el
-  :load-path "~/.emacs.d/lisp/"
+(use-package ess-r-breakerofchains
+  :load-path "~/.emacs.d/user-lisp/"
   :after ess-site
   :bind (:map ess-r-mode-map ("C-c C-w" . ess-r-breakerofchains-run-to-point)))
 
