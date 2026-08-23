@@ -821,7 +821,8 @@ current buffer within the project or the current directory if not in a project."
   (after-init . vertico-multiform-mode))
 
 (use-package vertico-posframe
-  :ensure t)
+  :ensure t
+  :defer t)
 
 (use-package vertico-directory
   :after vertico
@@ -1179,6 +1180,7 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
 (use-package gptel-agent
   :vc (:url "https://github.com/karthink/gptel-agent"
        :rev :newest)
+  :after gptel
   :config (gptel-agent-update))         ; Read files from agents directories
 
 (use-package gptel-quick
@@ -2784,7 +2786,8 @@ With a region starting after column 0, use inline comments."
     (setenv "WORKON_HOME" "~/.cache/pypoetry/virtualenvs")))
 
 (use-package pydoc
-  :ensure t)
+  :ensure t
+  :defer t)
 
 (use-package numpydoc
   :ensure t
