@@ -302,7 +302,10 @@
      ("\\.pax\\'" . "pax -wf %o %i")))
   (setq dired-guess-shell-alist-user
 	'(("\\.gms\\'" "gams")
+	  ("\\.qmd\\'" "quarto preview")
 	  ("\\.qmd\\'" "quarto render")
+	  ("\\.md\\'"  "quarto preview")
+	  ("\\.md\\'"  "quarto render")
 	  ("\\.tex\\'" "latexmk -pdf --synctex=1")
 	  ("\\.tex\\'" "texcount -merge")))
   :custom
