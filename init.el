@@ -670,19 +670,11 @@ current buffer within the project or the current directory if not in a project."
   :defer t)
 
 (use-package casual
-  :ensure t)
-(with-eval-after-load 'bibtex
-  (keymap-set bibtex-mode-map "<f6>" #'casual-bibtex-tmenu))
-(with-eval-after-load 'calc
-  (keymap-set calc-mode-map "<f6>" #'casual-calc-tmenu))
-(with-eval-after-load 'calc-ext
-  (keymap-set calc-alg-map "<f6>" #'casual-calc-tmenu))
-(with-eval-after-load 'compile
-  (keymap-set compilation-mode-map "<f6>" #'casual-compile-tmenu))
-(with-eval-after-load 'csv-mode
-  (keymap-set csv-mode-map "<f6>" #'casual-csv-tmenu))
-(with-eval-after-load 'grep
-  (keymap-set grep-mode-map "<f6>" #'casual-compile-tmenu))
+  :ensure t
+  :config
+  (casual-init)
+  :custom
+  (casual-keybinding-primary "<f6>"))
 
 ;; Remove a bug appearing on Linux GTK and preventing the use of S-space (https://lists.gnu.org/archive/html/bug-gnu-emacs/2021-07/msg00071.html)
 (when (equal window-system 'pgtk)
