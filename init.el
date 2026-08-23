@@ -215,7 +215,6 @@
   :custom
   (tab-bar-close-button-show nil)
   (tab-bar-mode t)
-  (tab-bar-history-mode nil)
   :config
   (defun tab-create (name)
     "Create the NAME tab."
