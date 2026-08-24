@@ -591,7 +591,8 @@ current buffer within the project or the current directory if not in a project."
   (project-compilation-buffer-name-function #'project-prefixed-buffer-name)
   :config
   ;; this binds `magit-project-status' to `project-prefix-map' when project.el is loaded.
-  (require 'magit-extras))
+  (keymap-set project-prefix-map "m" #'magit-project-status)
+  (add-to-list 'project-switch-commands '(magit-project-status "Magit") t))
 
 (use-package recentf
   :defer t
