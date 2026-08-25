@@ -2264,13 +2264,17 @@ the function will prompt the user to select a default audio device before runnin
   (prog-mode . copilot-mode)
   :bind
   (("C-M-c"         . my-copilot-change-activation)
-   :map copilot-mode-map
+   :map copilot-completion-map
    (("M-C-<next>"   . copilot-next-completion)
     ("M-C-<prior>"  . copilot-previous-completion)
     ("M-C-<right>"  . copilot-accept-completion-by-word)
     ("M-C-<down>"   . copilot-accept-completion-by-line)
     ("M-C-<return>" . my-copilot-complete-or-accept)
-    ("M-C-g"        . copilot-clear-overlay))))
+    ("M-C-g"        . copilot-clear-overlay)
+    ("<tab>"        . nil)
+    ("TAB"          . nil)
+    ("C-<tab>"      . nil)
+    ("C-TAB"        . nil))))
 
 (use-package eglot
   :config
