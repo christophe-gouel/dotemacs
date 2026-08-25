@@ -1286,7 +1286,7 @@ Use =vertico-directory= to press =DEL= to jump back one directory instead of one
 
 #+begin_src emacs-lisp
 (use-package consult-ripgrep-same-ext
-  :load-path "~/.emacs.d/user-lisp/"
+  :ensure nil ; local package
   :custom
   (consult-ripgrep-same-ext-extension-groups
       '(("gms" "inc")
@@ -2466,7 +2466,7 @@ Use ~org-modern-indent~ to style blocks, because the styling of ~org-modern~ is 
   :after org
   :custom
   (org-cite-global-bibliography
-   (list (substitute-in-file-name "${BIBINPUTS}/References.bib")))
+   (list (substitute-in-file-name "${DROPBOX}/Bibliography/Bibtex/References.bib")))
   (org-cite-csl-styles-dir (substitute-in-file-name "${DROPBOX}/Bibliography/csl"))
   (org-cite-export-processors
         '((t csl "the-quarterly-journal-of-economics.csl")))
@@ -3228,14 +3228,14 @@ VIS has the same meaning as for `ess-eval-region'."
 
 #+begin_src emacs-lisp
 (use-package ess-rscript
-  :load-path "~/.emacs.d/user-lisp/"
+  :ensure nil ; local package
   :after ess-site
   :bind (:map ess-r-mode-map ("<f9>" . ess-rscript)))
 #+end_src
 
 #+begin_src emacs-lisp
 (use-package ess-r-breakerofchains
-  :load-path "~/.emacs.d/user-lisp/"
+  :ensure nil ; local package
   :after ess-site
   :bind (:map ess-r-mode-map ("C-c C-w" . ess-r-breakerofchains-run-to-point)))
 #+end_src

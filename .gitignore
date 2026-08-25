@@ -40,3 +40,5 @@ history
 places
 /.agent-shell/
 /.gptel/
+/user-lisp/.user-lisp-autoloads.el
+*.elc

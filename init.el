@@ -930,7 +930,7 @@ current buffer within the project or the current directory if not in a project."
   (xref-show-definitions-function #'consult-xref))
 
 (use-package consult-ripgrep-same-ext
-  :load-path "~/.emacs.d/user-lisp/"
+  :ensure nil ; local package
   :custom
   (consult-ripgrep-same-ext-extension-groups
       '(("gms" "inc")
@@ -1721,22 +1721,22 @@ EDIT, when non-nil, will edit the code block in an indirect buffer after inserti
     "Copy a screenshot into a time stamped unique-named file in the
 same directory as the working and insert a link to this file."
     (interactive)
-    (setq filename
-          (concat
-           (make-temp-name
-            (concat (file-name-nondirectory (buffer-file-name))
-                    "_screenshots/"
-                    (format-time-string "%Y-%m-%d_%a_%kh%Mm_")) ) ".png"))
-    (unless (file-exists-p (file-name-directory filename))
-      (make-directory (file-name-directory filename)))
-    ;; copy the screenshot to file
-    (shell-command
-     (concat "powershell -command \"Add-Type -AssemblyName System.Windows.Forms;if ($([System.Windows.Forms.Clipboard]::ContainsImage())) {$image = [System.Windows.Forms.Clipboard]::GetImage();[System.Drawing.Bitmap]$image.Save('" filename "',[System.Drawing.Imaging.ImageFormat]::Png); Write-Output 'clipboard content saved as file'} else {Write-Output 'clipboard does not contain image data'}\""))
-    ;; insert into file if correctly taken
-    (if (file-exists-p filename)
-	(insert (concat "![](" filename ")")))
-    (markdown-display-inline-images)
-    (newline))
+    (let ((filename
+           (concat
+            (make-temp-name
+             (concat (file-name-nondirectory (buffer-file-name))
+                     "_screenshots/"
+                     (format-time-string "%Y-%m-%d_%a_%kh%Mm_")) ) ".png")))
+      (unless (file-exists-p (file-name-directory filename))
+        (make-directory (file-name-directory filename)))
+      ;; copy the screenshot to file
+      (shell-command
+       (concat "powershell -command \"Add-Type -AssemblyName System.Windows.Forms;if ($([System.Windows.Forms.Clipboard]::ContainsImage())) {$image = [System.Windows.Forms.Clipboard]::GetImage();[System.Drawing.Bitmap]$image.Save('" filename "',[System.Drawing.Imaging.ImageFormat]::Png); Write-Output 'clipboard content saved as file'} else {Write-Output 'clipboard does not contain image data'}\""))
+      ;; insert into file if correctly taken
+      (if (file-exists-p filename)
+          (insert (concat "![](" filename ")")))
+      (markdown-display-inline-images)
+      (newline)))
   ;; Code to use RefTeX to input references in markdown
   ;; from https://gist.github.com/kleinschmidt/5ab0d3c423a7ee013a2c01b3919b009a
   (defvar markdown-cite-format
@@ -1890,7 +1890,7 @@ same directory as the working and insert a link to this file."
   :after org
   :custom
   (org-cite-global-bibliography
-   (list (substitute-in-file-name "${BIBINPUTS}/References.bib")))
+   (list (substitute-in-file-name "${DROPBOX}/Bibliography/Bibtex/References.bib")))
   (org-cite-csl-styles-dir (substitute-in-file-name "${DROPBOX}/Bibliography/csl"))
   (org-cite-export-processors
         '((t csl "the-quarterly-journal-of-economics.csl")))
@@ -2512,12 +2512,12 @@ VIS has the same meaning as for `ess-eval-region'."
   ((ess-r-mode inferior-ess-mode) . my-ess-remove-project-hook))
 
 (use-package ess-rscript
-  :load-path "~/.emacs.d/user-lisp/"
+  :ensure nil ; local package
   :after ess-site
   :bind (:map ess-r-mode-map ("<f9>" . ess-rscript)))
 
 (use-package ess-r-breakerofchains
-  :load-path "~/.emacs.d/user-lisp/"
+  :ensure nil ; local package
   :after ess-site
   :bind (:map ess-r-mode-map ("C-c C-w" . ess-r-breakerofchains-run-to-point)))
 
