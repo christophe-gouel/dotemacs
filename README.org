@@ -26,6 +26,12 @@
 
 ** Package management
 
+Tangle this block to obtain statistics about ~use-package~ loading time. Run ~use-package-report~ after restart to obtain the stats.
+
+#+begin_src emacs-lisp :tangle no
+(setopt use-package-compute-statistics t)
+#+end_src
+
 #+begin_src emacs-lisp
 (use-package package
   :ensure nil
