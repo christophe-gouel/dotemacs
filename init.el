@@ -27,7 +27,9 @@
     "U" '("upgrade all"    . package-upgrade-all)
     "v" '("upgrade vc"     . package-vc-upgrade)
     "V" '("upgrade all vc" . package-vc-upgrade-all))
-  :bind-keymap ("C-c p" . package-operation-map))
+  :bind-keymap ("C-c p" . package-operation-map)
+  :custom
+  (package-autosuggest-mode t))
 
 (use-package use-package
   :ensure nil)
@@ -77,6 +79,7 @@
 (setopt blink-cursor-blinks 0 ; curseur clignote indéfiniment
         display-time-24hr-format t ; Affichage de l'heure format 24h
         column-number-mode t ; affichage du numéro de la colonne
+	pixel-scroll-mode t
         prettify-symbols-unprettify-at-point t
 	window-resize-pixelwise t)
 (when (display-graphic-p)
@@ -192,6 +195,8 @@
   ;; Enables ligature checks globally in all buffers. You can also do it
   ;; per mode with `ligature-mode'.
   (global-ligature-mode t))
+
+(setopt mode-line-compact 'long)
 
 (use-package doom-modeline
   :ensure t
@@ -448,16 +453,22 @@ current buffer within the project or the current directory if not in a project."
 (setopt save-interprogram-paste-before-kill t ; Save the clipboard before killing
 	kill-do-not-save-duplicates t) ; Do not save duplicates
 
-(use-package minibuffer
-  :custom
-  ;; Better completion defaults (to activate if not using a minibuffer completion framework)
-  (completions-detailed t)            ; Show annotations
-  (completion-auto-help 'always)
-  (completion-auto-select 'second-tab)
-  (completions-format 'one-column)
-  (completions-max-height 20)
-  (minibuffer-visible-completions t) ; allows to navigate in the minibuffer using arrow keys
-  (read-file-name-completion-ignore-case t))
+(setopt completion-auto-help 'always
+        completion-auto-select 'second-tab
+        completion-eager-update t
+	completion-show-help nil
+        completions-detailed t      ; Show annotations
+	completions-format 'one-column
+        completions-group t
+        completions-max-height 10
+	enable-recursive-minibuffers t
+	minibuffer-depth-indicate-mode t
+	minibuffer-visible-completions t ; Allows navigating minibuffer completions with arrow keys
+        read-file-name-completion-ignore-case t)
+
+(setopt mouse-drag-and-drop-region t
+	mouse-drag-and-drop-region-cross-program t
+	mouse-yank-at-point t)
 
 (use-package outline
   :hook ((prog-mode LaTeX-mode markdown-mode) . outline-minor-mode)
@@ -486,17 +497,17 @@ current buffer within the project or the current directory if not in a project."
         default-major-mode 'text-mode	; mode par défaut
         delete-by-moving-to-trash t   ; Sent deleted files to trash
 	delete-selection-mode t	    ; entrée efface texte sélectionné
-	enable-recursive-minibuffers t
         help-window-select t	   ; Jump to help window when it opens
         jit-lock-chunk-size 50000  ; Number of characters used for fontification
         large-file-warning-threshold 100000000 ; set large file threshold at 100 mb
-	minibuffer-depth-indicate-mode t
-        mouse-yank-at-point t		; coller avec la souris
         ring-bell-function 'ignore ; disable the bell (useful for macOS)
 	save-place-mode nil	   ; save place in files
 	set-mark-command-repeat-pop t	; repeat C-space (after C-u C-space)
+	shell-command-prompt-show-cwd t ; Show current directory in shell-command prompt
         show-paren-mode t	      ; coupler les parenthèses
-	use-short-answers t)		; Replace yes or no with y or n
+	use-short-answers t		; Replace yes or no with y or n
+	vc-follow-symlinks t        ; Follow symlinks to version controlled files without asking
+	view-read-only t)		; View read-only files in read-only mode
 ;; Context menu with right-click
 (when (display-graphic-p)
   (context-menu-mode))
