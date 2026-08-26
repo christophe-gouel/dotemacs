@@ -497,6 +497,7 @@ current buffer within the project or the current directory if not in a project."
         default-major-mode 'text-mode	; mode par défaut
         delete-by-moving-to-trash t   ; Sent deleted files to trash
 	delete-selection-mode t	    ; entrée efface texte sélectionné
+	exchange-point-and-mark-highlight-region nil ; Don't highlight region when exchanging point and mark
         help-window-select t	   ; Jump to help window when it opens
         jit-lock-chunk-size 50000  ; Number of characters used for fontification
         large-file-warning-threshold 100000000 ; set large file threshold at 100 mb
@@ -687,10 +688,10 @@ current buffer within the project or the current directory if not in a project."
 
 (use-package casual
   :ensure t
-  :config
-  (casual-init)
   :custom
-  (casual-keybinding-primary "<f6>"))
+  (casual-keybinding-primary "<f6>")
+  :hook
+  (after-init . casual-init))
 
 ;; Remove a bug appearing on Linux GTK and preventing the use of S-space (https://lists.gnu.org/archive/html/bug-gnu-emacs/2021-07/msg00071.html)
 (when (equal window-system 'pgtk)
