@@ -564,8 +564,8 @@ current buffer within the project or the current directory if not in a project."
 (when (equal window-system 'ns)
   (use-package appine
     :vc (:url "https://github.com/chaoswork/appine"
-         :rev :newest)
-    :defer nil
+              :rev :newest)
+    :defer 2
     :custom
     (appine-use-for-org-links t)
     :config

@@ -773,7 +773,7 @@ Use =outline-minor-faces= to use a special face for outline sections.
   (use-package appine
     :vc (:url "https://github.com/chaoswork/appine"
          :rev :newest)
-    :defer nil
+    :defer 2
     :custom
     (appine-use-for-org-links t)
     :config
