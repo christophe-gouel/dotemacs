@@ -75,6 +75,8 @@
   (dashboard-setup-startup-hook))
 
 (tooltip-mode 1)
+(unless (display-graphic-p)
+  (tty-tip-mode))
 
 (setopt blink-cursor-blinks 0 ; curseur clignote indéfiniment
         display-time-24hr-format t ; Affichage de l'heure format 24h
@@ -500,6 +502,7 @@ current buffer within the project or the current directory if not in a project."
 	exchange-point-and-mark-highlight-region nil ; Don't highlight region when exchanging point and mark
         help-window-select t	   ; Jump to help window when it opens
         jit-lock-chunk-size 50000  ; Number of characters used for fontification
+	kill-region-dwim 'emacs-word
         large-file-warning-threshold 100000000 ; set large file threshold at 100 mb
         ring-bell-function 'ignore ; disable the bell (useful for macOS)
 	save-place-mode nil	   ; save place in files
@@ -564,7 +567,7 @@ current buffer within the project or the current directory if not in a project."
 (when (equal window-system 'ns)
   (use-package appine
     :vc (:url "https://github.com/chaoswork/appine"
-              :rev :newest)
+         :rev :newest)
     :defer 2
     :custom
     (appine-use-for-org-links t)
@@ -676,6 +679,12 @@ current buffer within the project or the current directory if not in a project."
 	tramp-verbose 3)
 (when (equal system-type 'windows-nt)
     (setopt tramp-default-method "plink"))
+
+(use-package treesit
+  :ensure nil
+  :defer t
+  :custom
+  (treesit-auto-install-grammar 'always))
 
 (use-package windmove
   :config
