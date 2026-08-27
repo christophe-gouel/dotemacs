@@ -2301,8 +2301,10 @@ the function will prompt the user to select a default audio device before runnin
   :config
   ;; Performance boost from https://www.reddit.com/r/emacs/comments/1447fy2/looking_for_help_in_improving_typescript_eglot/
   (fset #'jsonrpc--log-event #'ignore)
-  (dolist (pair '(;; (ess-r-mode . ("air" "language-server"))
-		  (markdown-mode  . ("marksman"))
+  ;; Combine 2 LSP for R
+  ;; (setf (alist-get '(R-mode ess-r-mode) eglot-server-programs)
+  ;; 	'("rass" "--" "R" "--slave" "-e" "languageserver::run()" "--" "jarl" "server"))
+  (dolist (pair '((markdown-mode  . ("marksman"))
 		  (conf-toml-mode . ("tombi" "lsp"))))
     (add-to-list 'eglot-server-programs pair))
   (defun my-latex-restore-auctex-flymake-backend ()
@@ -2334,10 +2336,15 @@ the function will prompt the user to select a default audio device before runnin
   ((conf-toml-mode ess-r-mode LaTeX-mode markdown-mode) . eglot-ensure)
   (eglot-managed-mode . my-latex-restore-auctex-flymake-backend)
   :ensure-system-package
-  (marksman
+  (marksman	; Markdown LSP
+   ;; LaTeX LSP
+   (digestif . "curl --output %HOME%/.local/bin/digestif.cmd https://raw.githubusercontent.com/astoff/digestif/master/scripts/digestif.cmd")
+   ;; Fast LSP linter for R
+   (jarl . "curl --proto '=https' --tlsv1.2 -LsSf https://github.com/etiennebacher/jarl/releases/latest/download/jarl-installer.sh | sh")
+   ;; R LSP
    (Rscript . "Rscript -e \"install.packages('languageserver')\"")
-   (digestif . "curl --output %HOME%/.local/bin/digestif.cmd https://raw.githubusercontent.com/astoff/digestif/master/scripts/digestif.cmd")))
-
+   ;; LSP multiplexer
+   (rass . "pipx install rassumfrassum")))
 
 (use-package poly-markdown
   :ensure t
