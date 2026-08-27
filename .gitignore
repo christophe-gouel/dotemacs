@@ -42,3 +42,4 @@ places
 /.gptel/
 /user-lisp/.user-lisp-autoloads.el
 *.elc
+/tree-sitter/
