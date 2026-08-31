@@ -2986,9 +2986,7 @@ Support for Copilot Chat
 #+begin_src emacs-lisp :tangle no
 (use-package copilot-chat
   :ensure t
-  :defer t
-  ;; :hook (git-commit-setup . copilot-chat-insert-commit-message)
-  )
+  :defer t)
 #+end_src
 
 *** Language Server Protocol
