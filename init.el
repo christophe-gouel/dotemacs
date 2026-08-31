@@ -2666,7 +2666,8 @@ This function is intended to be added to `after-save-hook`."
   :vc (:url "https://github.com/ShiroTakeda/gams-mode"
        :rev :newest
        :branch "test")
-  :config
+  :defer t
+  :preface
   (defun my-gams-comment-dwim (&optional arg)
     "Comment or uncomment DWIM in `gams-mode'.
 With no active region, use GAMS end-of-line comments.
@@ -2703,41 +2704,54 @@ With a region starting after column 0, use inline comments."
 	      (concat "[ \t]*" (regexp-quote comment-start) "[ \t]*"))
 	     (comment-style 'plain))
 	(comment-dwim arg))))
+  (defun my-gams-outline-level ()
+    "Compute the outline level of a `gams-mode' heading from its stars."
+    (save-excursion
+      (looking-at outline-regexp)
+      (let ((match (match-string 0)))
+	(- (length match) (length (string-replace "*" "" match))))))
+  (defun my-gams-insert-power ()
+    "Insert `**', the GAMS power operator."
+    (interactive)
+    (insert "**"))
+  (defun my-gams-setup ()
+    "Set up outline headings and personal keys in a `gams-mode' buffer."
+    ;; `outline-minor-mode' itself is enabled by the `prog-mode' hook set up in
+    ;; [[*Outline]]; only the GAMS-specific heading pattern is needed here.
+    (setq-local outline-regexp "^\\*+ +.*----")
+    (setq-local outline-level #'my-gams-outline-level)
+    ;; `gams-mode' calls `gams-mode-key-update' in its body, which rebuilds
+    ;; `gams-mode-map' on every activation, so these have to be reapplied here
+    ;; rather than in `:config'.
+    (keymap-set gams-mode-map "^" #'my-gams-insert-power)
+    (keymap-set gams-mode-map "C-c C-o" #'gams-open-included-file) ; Normally bind to user-defined comment template
+    (keymap-set gams-mode-map "C-l" nil)
+    (keymap-set gams-mode-map "M-;" #'my-gams-comment-dwim)
+    (keymap-set gams-mode-map "C-c =" #'gams-show-identifier-list))
   :hook
-  (gams-mode . (lambda ()
-                 (outline-minor-mode)
-                 (setq-local outline-regexp "^\*+ +.*----")
-               (defun outline-level ()
-                 (save-excursion
-                   (looking-at outline-regexp)
-                   (let ((match (match-string 0)))
-                     (- (length match) (length (replace-regexp-in-string "\*" "" match))))))))
-  (gams-mode .
-	  (lambda ()
-	    (keymap-set gams-mode-map "^" (lambda() (interactive) (insert "**")))
-	    (keymap-set gams-mode-map "C-c C-o" 'gams-open-included-file) ; Normally bind to user-defined comment template
-	    (keymap-set gams-mode-map "C-l" nil)
-	    (keymap-set gams-mode-map "M-;" #'my-gams-comment-dwim)
-	    (keymap-set gams-mode-map "C-c =" 'gams-show-identifier-list)))
+  (gams-mode . my-gams-setup)
   :custom
-  (gams-fill-column 90)
-  (gams-default-pop-window-height 20)
   ;; (gams-browse-url-function 'xwidget-webkit-browse-url)
   (gams-browse-url-function #'appine-open-url)
+  (gams-default-pop-window-height 20)
   ;; Remove the handling of parentheses by gams-mode to use other Emacs packages instead
-  (gams-close-paren-always nil)
   (gams-close-double-quotation-always nil)
+  (gams-close-paren-always nil)
   (gams-close-single-quotation-always nil)
+  (gams-fill-column 90)
   ;; Indent
   (gams-indent-number 2)
   (gams-indent-number-loop 2)
   (gams-indent-number-mpsge 2)
   (gams-indent-number-equation 2))
 
-(unless (package-installed-p 'poly-gams)
-  (package-install 'poly-gams))
-(require 'poly-gams)
-(add-to-list 'auto-mode-alist '("\\.inc\\'" . poly-gams-mode))
+(use-package poly-gams
+  ;; :load-path "~/Documents/git_projects/code/poly-gams"
+  ;; :ensure t
+  :vc (:url "https://github.com/christophe-gouel/poly-gams"
+       :rev :newest
+       :branch "dev")
+  :mode ("\\.inc\\'" . poly-gams-mode))
 
 (use-package julia-mode
   :ensure t
