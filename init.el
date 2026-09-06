@@ -347,13 +347,12 @@
    dirvish-side-attributes
    '(vc-state nerd-icons collapse file-size))
   :config
-  ;; Workaround for an upstream regression (commit 5152c80a, the fix for
+  ;; TEMP: Workaround for an upstream regression (commit 5152c80a, the fix for
   ;; issue #371): the guard in `dirvish-pre-redisplay-h' suspends attribute
-  ;; rendering while the minibuffer is selected, so during `dirvish-narrow'
-  ;; the stale icon overlays pile up on a single line instead of being
-  ;; cleaned and redrawn. Also render for the window that owns the active
-  ;; minibuffer, which keeps the multi-frame feedback-loop fix intact.
-  ;; Remove once fixed upstream.
+  ;; rendering while the minibuffer is selected, so during `dirvish-narrow' the
+  ;; stale icon overlays pile up on a single line instead of being cleaned and
+  ;; redrawn. Also render for the window that owns the active minibuffer, which
+  ;; keeps the multi-frame feedback-loop fix intact. Remove once fixed upstream.
   (defun my/dirvish-render-in-minibuffer-a (orig-fn window)
     "Around advice for `dirvish-pre-redisplay-h' (ORIG-FN, WINDOW).
 Also refresh the dirvish WINDOW that owns the active minibuffer."
@@ -677,6 +676,8 @@ current buffer within the project or the current directory if not in a project."
 
 (use-package smerge-mode
   :ensure nil
+  :bind
+  ("C-c ^ x" . smerge-refine-exchange-point)
   :hook
   (smerge-mode . smerge-refine)) ; Refine diffs by words
 
