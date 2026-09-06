@@ -475,6 +475,22 @@ Prevent variable names from being unlispify:
    '(vc-state subtree-state nerd-icons collapse file-size file-time)
    dirvish-side-attributes
    '(vc-state nerd-icons collapse file-size))
+  :config
+  ;; Workaround for an upstream regression (commit 5152c80a, the fix for
+  ;; issue #371): the guard in `dirvish-pre-redisplay-h' suspends attribute
+  ;; rendering while the minibuffer is selected, so during `dirvish-narrow'
+  ;; the stale icon overlays pile up on a single line instead of being
+  ;; cleaned and redrawn. Also render for the window that owns the active
+  ;; minibuffer, which keeps the multi-frame feedback-loop fix intact.
+  ;; Remove once fixed upstream.
+  (defun my/dirvish-render-in-minibuffer-a (orig-fn window)
+    "Around advice for `dirvish-pre-redisplay-h' (ORIG-FN, WINDOW).
+Also refresh the dirvish WINDOW that owns the active minibuffer."
+    (if (and (minibuffer-window-active-p (frame-selected-window))
+             (eq window (minibuffer-selected-window)))
+        (dirvish--redisplay)
+      (funcall orig-fn window)))
+  (advice-add 'dirvish-pre-redisplay-h :around #'my/dirvish-render-in-minibuffer-a)
   :bind
   (("C-x D" . dirvish)
    :map dirvish-mode-map               ; Dirvish inherits `dired-mode-map'
