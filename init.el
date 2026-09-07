@@ -221,6 +221,7 @@
   (rainbow-delimiters-unmatched-face ((t (:background "yellow")))))
 
 (use-package tab-bar
+  :ensure nil
   :custom
   (tab-bar-close-button-show nil)
   (tab-bar-mode t)
@@ -239,7 +240,7 @@
     (dired "~/Inrae EcoPub Dropbox/Christophe Gouel/notes/research")
     (tab-bar-switch-to-tab "*default*"))
   (defun my-start-review ()
-    "Start a review: create a tab, switch to it, and open the review folder"
+    "Start a review: create a tab, switch to it, and open the review folder."
     (interactive)
     (tab-create "review")
     (tab-bar-switch-to-tab "review")
@@ -1189,16 +1190,13 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
 
 (use-package gptel
   :ensure t
-  :bind
-  (("C-c RET"        . gptel-send)
-   ("C-c C-<return>" . gptel-send))
   :config
   (require 'gptel-integrations) ;; Integrate with tools from mcp.el
   ;; LLM request options
   (setopt gptel-backend (gptel-make-gh-copilot "Copilot")
-  	gptel-model 'gpt-5.4)
+	  gptel-model 'gpt-5.6-luna)
   ;; Chatbot INRAE
-  (gptel-make-openai "ARGO"
+   (gptel-make-openai "ARGO"
     :host "chatbot.argo.inrae.fr"
     :protocol "https"
     :key (auth-source-pick-first-password :host "chatbot.argo.inrae.fr")
@@ -1214,9 +1212,92 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
    '((default . "You are a large language model living in Emacs and a helpful assistant. Use LaTeX, not unicode, for any mathematical answer. Answer using org-mode syntax, in particular make sure that code blocks are inside org code blocks. Respond concisely.")
      (mathematics . "Solve this mathematical formula. Just output the solution in LaTeX without giving any explanation.")
      (copy-editing . "You are an editor specialized in academic paper in economics. You are here to help me generate the best text for my academic articles. I will provide you texts and I would like you to review them for any spelling, grammar, or punctuation errors. Do not stop at simple proofreading, if it is useful, propose to refine the content's structure, style, and clarity. Once you have finished editing the text, provide me with any necessary corrections or suggestions for improving the text. Please respect any LaTeX, org, or markdown command. Avoid passive form.")))
+  :bind
+  (("C-c RET"        . gptel-send)
+   ("C-c C-<return>" . gptel-send))
   :hook
   (gptel-mode . gptel-highlight-mode)
   (gptel-mode . (lambda() (org-indent-mode -1))))
+
+(use-package gptel-rewrite
+  :defer t
+  :custom
+  (gptel-rewrite-default-action 'merge)
+  :config
+  (defconst gptel-proofread-instruction
+    "Help me proofread this text.
+Detect the language of the text and respect it in the output.
+If the text is in English, assume that it is in American English, unless indicated otherwise.
+The aim of this text is for academic publication in the field of economics.
+Output just the text without any intro, comments, or explanations.
+Preserve the original formatting, coding, any special characters, comments, and indentation in your response.
+Avoid using unicode for en dashes and em dashes, using '--' and '---' respectively.
+Never replace a backslash followed by a percentage sign with just a percentage sign."
+    "Instruction used by `gptel-proofread-paragraph-or-region'.")
+
+  (defconst gptel-copy-edit-instruction
+    "Help me copy edit this text. Reorganize sentences for better flow and clarity without altering the original meaning.
+Detect the language of the text and respect it in the output.
+If the text is in English, assume that it is in American English, unless indicated otherwise.
+The aim of this text is for academic publication in the field of economics.
+Output just the text without any intro, comments, or explanations.
+Preserve the original formatting, coding, any special characters, comments, and indentation in your response.
+Avoid using unicode for en dashes and em dashes, using '--' and '---' respectively.
+Never replace a backslash followed by a percentage sign with just a percentage sign."
+    "Instruction used by `gptel-copy-edit-paragraph-or-region'.")
+
+  (defun mark-paragraph-noblank ()
+    "Mark the current paragraph, excluding any leading or trailing blank lines."
+    (interactive)
+    ;; Mark the current paragraph or org element, because org defines paragraphs
+    ;; differently from other text modes.
+    (if (derived-mode-p 'org-mode)
+	(org-mark-element)
+      (mark-paragraph))
+    ;; Adjust start and end to avoid including blank lines, then make the
+    ;; adjusted bounds the active region.
+    (let ((start (region-beginning))
+	  (end (region-end)))
+      (save-excursion
+	(goto-char start)
+	(while (and (< (point) end)
+		    (looking-at-p "[[:blank:]]*$"))
+	  (forward-line 1))
+	(setq start (point))
+	(goto-char end)
+	(while (and (> (point) start)
+		    (save-excursion
+		      (forward-line -1)
+		      (looking-at-p "[[:blank:]]*$")))
+	  (forward-line -1))
+	(skip-chars-backward "\n")
+	(setq end (point)))
+      (goto-char start)
+      (push-mark end nil t)
+      (activate-mark)))
+
+  (defun gptel--rewrite-paragraph-or-region (instruction)
+    "Rewrite the active region or current paragraph with INSTRUCTION.
+
+The rewrite is delegated to `gptel-rewrite', so the result is previewed as a
+pending rewrite."
+    (unless (use-region-p)
+      (mark-paragraph-noblank))
+    (let ((gptel--rewrite-message instruction))
+      (gptel--suffix-rewrite instruction)))
+
+  (defun gptel-proofread-paragraph-or-region ()
+    "Proofread the active region or current paragraph with `gptel-rewrite'."
+    (interactive)
+    (gptel--rewrite-paragraph-or-region gptel-proofread-instruction))
+
+  (defun gptel-copy-edit-paragraph-or-region ()
+    "Copy edit the active region or current paragraph with `gptel-rewrite'."
+    (interactive)
+    (gptel--rewrite-paragraph-or-region gptel-copy-edit-instruction))
+  :bind
+   ("C-c b p"        . gptel-proofread-paragraph-or-region)
+   ("C-c b e"        . gptel-copy-edit-paragraph-or-region))
 
 (use-package gptel-magit
   :ensure t
