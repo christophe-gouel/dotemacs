@@ -333,6 +333,14 @@ Highlight the current line
     (tab-bar-switch-to-tab "notes")
     (dired "~/Inrae EcoPub Dropbox/Christophe Gouel/notes/research")
     (tab-bar-switch-to-tab "*default*"))
+  (defun my-start-review ()
+    "Start a review: create a tab, switch to it, and open the review folder"
+    (interactive)
+    (tab-create "review")
+    (tab-bar-switch-to-tab "review")
+    (dired "~/Inrae EcoPub Dropbox/Christophe Gouel/dropbox_projects/Review")
+    (forward-paragraph)
+    (delete-other-windows))
   :hook
   (after-init . my-tab-bar-startup))
 #+end_src
