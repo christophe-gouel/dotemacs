@@ -227,7 +227,12 @@
   (tab-bar-mode t)
   :config
   (defun tab-create (name)
-    "Create the NAME tab."
+    "Create a tab named NAME."
+    (interactive
+     (list (completing-read
+            "Tab name: "
+            (mapcar (lambda (tab) (alist-get 'name tab)) (tab-bar-tabs))
+            nil nil nil nil "new tab")))
     (tab-new)
     (tab-bar-rename-tab name))
   (defun my-tab-bar-startup ()
@@ -247,6 +252,8 @@
     (dired "~/Inrae EcoPub Dropbox/Christophe Gouel/dropbox_projects/Review")
     (forward-paragraph)
     (delete-other-windows))
+  :bind
+  ("C-x t 2" . tab-create)
   :hook
   (after-init . my-tab-bar-startup))
 
