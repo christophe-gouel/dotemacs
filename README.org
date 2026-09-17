@@ -89,7 +89,7 @@ Remove warnings from package installation:
     ;; (exec-path-from-shell-arguments nil) ; Do not run an interactive shell (faster)
     :config
     (dolist (var '("DROPBOX" "BIBINPUTS" "BSTINPUTS" "GITHUB_TOKEN"
-		   "OPENAI_API_KEY" "ANTHROPIC_API_KEY" "INRAE_API_KEY" "OLLAMA_API_BASE"))
+		   "OPENAI_API_KEY" "ANTHROPIC_API_KEY" "INRAE_API_KEY" "ALBERT_API_KEY" "OLLAMA_API_BASE"))
       (add-to-list 'exec-path-from-shell-variables var))
     (exec-path-from-shell-initialize)))
 #+end_src
@@ -1506,6 +1506,30 @@ Make script files (with shebang like ~#!/bin/bash~, ~#!/bin/sh~) executable auto
 
 ** LLM
 
+#+begin_src emacs-lisp
+  (defconst my-proofread-instruction
+    "Help me proofread this text.
+Detect the language of the text and respect it in the output.
+If the text is in English, assume that it is in American English, unless indicated otherwise.
+The aim of this text is for academic publication in the field of economics.
+Output just the text without any intro, comments, or explanations.
+Preserve the original formatting, coding, any special characters, comments, and indentation in your response.
+Avoid using unicode for en dashes and em dashes, using '--' and '---' respectively.
+Never replace a backslash followed by a percentage sign with just a percentage sign."
+    "Instruction used by IA to proofread text.")
+
+  (defconst my-copyedit-instruction
+    "Help me copyedit this text. Reorganize sentences for better flow and clarity without altering the original meaning.
+Detect the language of the text and respect it in the output.
+If the text is in English, assume that it is in American English, unless indicated otherwise.
+The aim of this text is for academic publication in the field of economics.
+Output just the text without any intro, comments, or explanations.
+Preserve the original formatting, coding, any special characters, comments, and indentation in your response.
+Avoid using unicode for en dashes and em dashes, using '--' and '---' respectively.
+Never replace a backslash followed by a percentage sign with just a percentage sign."
+    "Instruction used by IA to copyedit text.")
+#+end_src
+
 *** chatgpt-shell
 
 #+begin_src emacs-lisp
@@ -1544,20 +1568,13 @@ If the original code was indented, preserve the same amount of spacing in your r
                      (chatgpt-shell-quick-insert
                       (append context
                               (list (cons query output))))))))
-  (defun chatgpt-shell-copy-edit-paragraph-or-region ()
-    "Copy edit text from region or current paragraph using ChatGPT.
+  (defun chatgpt-shell-copyedit-paragraph-or-region ()
+    "Copyedit text from region or current paragraph using ChatGPT.
 
-This function uses the existing proofreading capability but adjusts the prompt for copy-editing tasks targeted at academic publications in economics."
+This function uses the existing proofreading capability but adjusts the prompt for copyediting tasks targeted at academic publications in economics."
     (interactive)
     (let ((chatgpt-shell-prompt-header-proofread-region
-           "Please help me copy edit the following text. Reorganize sentences for better flow and clarity without altering the original meaning.
-The aim of this text is for academic publication in the field of economics.
-Detect the language of the text and respect it in your output.
-If the text is in English, assume that it is in American English, unless indicated otherwise.
-Only output the copy-edited text without any introductory, concluding comments, or explanations.
-Preserve the original formatting, coding, any special characters, comments, and indentation in your response.
-Avoid using unicode for en dashes and em dashes, using '--' and '---' respectively.
-Never replace a backslash followed by a percentage sign with just a percentage sign."))
+	   my-copyedit-instruction))
       ;; Call the original proofreading function with the adjusted prompt
       (chatgpt-shell-proofread-paragraph-or-region)))
   (advice-add 'chatgpt-shell-proofread-paragraph-or-region
@@ -1571,7 +1588,7 @@ Never replace a backslash followed by a percentage sign with just a percentage s
     "a" '("ask"                    . chatgpt-shell-prompt)
     "c" '("compose"                . chatgpt-shell-prompt-compose)
     "d" '("document DWIM"          . chatgpt-shell-document-dwim)
-    "e" '("copy-edit"              . chatgpt-shell-copy-edit-paragraph-or-region)
+    "e" '("copyedit"              . chatgpt-shell-copy-edit-paragraph-or-region)
     "i" '("quick insert"           . chatgpt-shell-quick-insert)
     "j" '("open shell"             . chatgpt-shell)
     "p" '("proofread"              . chatgpt-shell-proofread-paragraph-or-region)
@@ -1647,7 +1664,7 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
   (gptel-directives
    '((default . "You are a large language model living in Emacs and a helpful assistant. Use LaTeX, not unicode, for any mathematical answer. Answer using org-mode syntax, in particular make sure that code blocks are inside org code blocks. Respond concisely.")
      (mathematics . "Solve this mathematical formula. Just output the solution in LaTeX without giving any explanation.")
-     (copy-editing . "You are an editor specialized in academic paper in economics. You are here to help me generate the best text for my academic articles. I will provide you texts and I would like you to review them for any spelling, grammar, or punctuation errors. Do not stop at simple proofreading, if it is useful, propose to refine the content's structure, style, and clarity. Once you have finished editing the text, provide me with any necessary corrections or suggestions for improving the text. Please respect any LaTeX, org, or markdown command. Avoid passive form.")))
+     (copyediting . "You are an editor specialized in academic paper in economics. You are here to help me generate the best text for my academic articles. I will provide you texts and I would like you to review them for any spelling, grammar, or punctuation errors. Do not stop at simple proofreading, if it is useful, propose to refine the content's structure, style, and clarity. Once you have finished editing the text, provide me with any necessary corrections or suggestions for improving the text. Please respect any LaTeX, org, or markdown command. Avoid passive form.")))
   :bind
   (("C-c RET"        . gptel-send)
    ("C-c C-<return>" . gptel-send))
@@ -1662,28 +1679,6 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
   :custom
   (gptel-rewrite-default-action 'merge)
   :config
-  (defconst gptel-proofread-instruction
-    "Help me proofread this text.
-Detect the language of the text and respect it in the output.
-If the text is in English, assume that it is in American English, unless indicated otherwise.
-The aim of this text is for academic publication in the field of economics.
-Output just the text without any intro, comments, or explanations.
-Preserve the original formatting, coding, any special characters, comments, and indentation in your response.
-Avoid using unicode for en dashes and em dashes, using '--' and '---' respectively.
-Never replace a backslash followed by a percentage sign with just a percentage sign."
-    "Instruction used by `gptel-proofread-paragraph-or-region'.")
-
-  (defconst gptel-copy-edit-instruction
-    "Help me copy edit this text. Reorganize sentences for better flow and clarity without altering the original meaning.
-Detect the language of the text and respect it in the output.
-If the text is in English, assume that it is in American English, unless indicated otherwise.
-The aim of this text is for academic publication in the field of economics.
-Output just the text without any intro, comments, or explanations.
-Preserve the original formatting, coding, any special characters, comments, and indentation in your response.
-Avoid using unicode for en dashes and em dashes, using '--' and '---' respectively.
-Never replace a backslash followed by a percentage sign with just a percentage sign."
-    "Instruction used by `gptel-copy-edit-paragraph-or-region'.")
-
   (defun mark-paragraph-noblank ()
     "Mark the current paragraph, excluding any leading or trailing blank lines."
     (interactive)
@@ -1727,15 +1722,15 @@ pending rewrite."
   (defun gptel-proofread-paragraph-or-region ()
     "Proofread the active region or current paragraph with `gptel-rewrite'."
     (interactive)
-    (gptel--rewrite-paragraph-or-region gptel-proofread-instruction))
+    (gptel--rewrite-paragraph-or-region my-proofread-instruction))
 
-  (defun gptel-copy-edit-paragraph-or-region ()
-    "Copy edit the active region or current paragraph with `gptel-rewrite'."
+  (defun gptel-copyedit-paragraph-or-region ()
+    "Copyedit the active region or current paragraph with `gptel-rewrite'."
     (interactive)
-    (gptel--rewrite-paragraph-or-region gptel-copy-edit-instruction))
+    (gptel--rewrite-paragraph-or-region my-copyedit-instruction))
   :bind
    ("C-c b p"        . gptel-proofread-paragraph-or-region)
-   ("C-c b e"        . gptel-copy-edit-paragraph-or-region))
+   ("C-c b e"        . gptel-copyedit-paragraph-or-region))
 #+end_src
 
 Enable automatic commits using gptel
@@ -1815,16 +1810,30 @@ Enable automatic commits using gptel
   :ensure t
   :custom
   (eca-buttons-allow-mouse t)
+  ;; Chat
   (eca-chat-auto-add-cursor nil)
+  (eca-chat-hide-markdown-markup nil)
   (eca-chat-use-side-window t)
+  ;; Rewrite
+  (eca-rewrite-finished-action 'merge)
   :config
+  (defun my-eca-proofread ()
+    "Proofread the current text with ECA."
+    (interactive)
+    (eca-rewrite my-proofread-instruction))
+  (defun my-eca-copyedit ()
+    "Copyedit the current text with ECA."
+    (interactive)
+    (eca-rewrite my-copyedit-instruction))
   (defvar-keymap eca-operation-map
     :doc "Keymap for eca operation"
     :name "Editor Code Assistant"
     "a" '("Add context (user-prompt)" . eca-chat-add-context-to-user-prompt)
-    "c" '("Complete"                  . eca-complete)
+    "c" '("Copy-edit"                 . my-eca-copyedit)
     "e" '("eca"                       . eca)
     "E" '("New eca"                   . eca-chat-new)
+    "i" '("Inline"                    . eca-inline-prompt)
+    "p" '("Proofread"                 . my-eca-proofread)
     "r" '("Rewrite"                   . eca-rewrite)
     "s" '("Switch to project-chat"    . eca-switch-to-project-chat)
     "S" '("Switch to chat"            . eca-switch-to-chat)
