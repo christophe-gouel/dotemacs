@@ -938,7 +938,7 @@ current buffer within the project or the current directory if not in a project."
    ("C-x 5 b" . consult-buffer-other-frame)
    ("C-x r b" . consult-bookmark)
    ;; M-s bindings in `search-map'
-   ("M-s d" . consult-find)
+   ("M-s f" . consult-find)
    ("M-s g" . consult-grep)
    ("M-s G" . consult-git-grep)
    ("M-s r" . consult-ripgrep)
