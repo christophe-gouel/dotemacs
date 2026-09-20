@@ -1317,6 +1317,36 @@ pending rewrite."
   :after embark
   :bind (:map embark-general-map ("?" . gptel-quick)))
 
+(defun my-markdown-link-to-region (&optional absolute)
+  "Copy a markdown link to the region or current line to the kill ring.
+The link uses GitHub-style line anchors, e.g.
+[init.el:L10-L25](init.el#L10-L25), to give AI agents outside Emacs a
+precise location. The path is relative to the current project root when
+available; with prefix argument ABSOLUTE, use the absolute path."
+  (interactive "P")
+  (let* ((file (or buffer-file-name
+                   (user-error "Buffer is not visiting a file")))
+         (start (if (use-region-p) (region-beginning) (point)))
+         (end (if (use-region-p) (region-end) (point)))
+         (line-start (line-number-at-pos start))
+         ;; Exclude the last line when the region ends at its beginning
+         (line-end (line-number-at-pos
+                    (if (and (> end start)
+                             (save-excursion (goto-char end) (bolp)))
+                        (1- end)
+                      end)))
+         (project (project-current))
+         (path (if (or absolute (not project))
+                   file
+                 (file-relative-name file (project-root project))))
+         (anchor (if (= line-start line-end)
+                     (format "L%d" line-start)
+                   (format "L%d-L%d" line-start line-end)))
+         (link (format "[%s:%s](%s#%s)"
+                      (file-name-nondirectory file) anchor path anchor)))
+    (kill-new link)
+    (message "Copied %s" link)))
+
 (use-package agent-shell
   :ensure t
   :custom
@@ -1342,16 +1372,6 @@ pending rewrite."
     "t" '("Toggle display" . agent-shell-toggle)
     "u" '("Usage"          . agent-shell-show-usage))
   :bind-keymap ("C-c a"  . agent-shell-operation-map))
-
-(use-package agent-shell-attention
-  :vc (:url "https://github.com/ultronozm/agent-shell-attention.el"
-       :rev :newest)
-  :after agent-shell
-  :custom
-  (agent-shell-attention-render-function       #'agent-shell-attention-render-active)
-  (agent-shell-attention-show-zeros t)
-  :config
-  (agent-shell-attention-mode))
 
 (use-package eca
   :ensure t
@@ -1380,6 +1400,7 @@ pending rewrite."
     "e" '("eca"                       . eca)
     "E" '("New eca"                   . eca-chat-new)
     "i" '("Inline"                    . eca-inline-prompt)
+    "l" '("Link to region"            . my-markdown-link-to-region)
     "p" '("Proofread"                 . my-eca-proofread)
     "r" '("Rewrite"                   . eca-rewrite)
     "s" '("Switch to project-chat"    . eca-switch-to-project-chat)
