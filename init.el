@@ -226,6 +226,7 @@
   (tab-bar-close-button-show nil)
   (tab-bar-mode t)
   :config
+  (unbind-key "C-<tab>" tab-bar-mode-map)
   (defun tab-create (name)
     "Create a tab named NAME."
     (interactive
@@ -1399,7 +1400,7 @@ available; with prefix argument ABSOLUTE, use the absolute path."
     "c" '("Copy-edit"                 . my-eca-copyedit)
     "e" '("eca"                       . eca)
     "E" '("New eca"                   . eca-chat-new)
-    "i" '("Inline"                    . eca-inline-prompt)
+    "i" '("Inline"                    . eca-chat-inline-prompt)
     "l" '("Link to region"            . my-markdown-link-to-region)
     "p" '("Proofread"                 . my-eca-proofread)
     "r" '("Rewrite"                   . eca-rewrite)
@@ -2324,6 +2325,7 @@ the function will prompt the user to select a default audio device before runnin
 (use-package flymake
   :custom
   (flymake-no-changes-timeout 0.1)
+  (flymake-show-diagnostics-at-end-of-line 2)
   :hook
   (prog-mode)
   :config
