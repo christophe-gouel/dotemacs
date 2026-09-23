@@ -695,6 +695,7 @@ current buffer within the project or the current directory if not in a project."
   :ensure nil
   :bind
   ("C-c ^ x" . smerge-refine-exchange-point)
+  (:map smerge-mode-map ("C-c ^ x" . smerge-refine-exchange-point))
   :hook
   (smerge-mode . smerge-refine)) ; Refine diffs by words
 
