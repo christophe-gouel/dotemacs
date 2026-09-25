@@ -516,10 +516,14 @@ current buffer within the project or the current directory if not in a project."
 	      ([S-tab] . outline-cycle-buffer)
 	      ([backtab] . outline-cycle-buffer)))
 
+(defun my-outline-minor-faces-mode-maybe ()
+  (unless (derived-mode-p 'markdown-ts-mode)
+    (outline-minor-faces-mode)))
+
 (use-package outline-minor-faces
   :ensure t
   :after outline
-  :hook (outline-minor-mode))
+  :hook (outline-minor-mode . my-outline-minor-faces-mode-maybe))
 
 (setopt auto-compression-mode t	 ; auto-compress and decompress compressed files
 	auth-sources '("~/.authinfo")	; Define file that stores secrets
@@ -1070,7 +1074,7 @@ current buffer within the project or the current directory if not in a project."
   :custom
   (diff-hl-flydiff-mode 1)		; Allow diff-hl to work on the fly
   :hook
-  ((latex-mode markdown-mode org-mode prog-mode) . diff-hl-mode)
+  ((latex-mode markdown-mode markdown-ts-mode org-mode prog-mode) . diff-hl-mode)
   (dired-mode . diff-hl-dired-mode)
   (magit-post-refresh . diff-hl-magit-post-refresh))
 
@@ -1204,13 +1208,6 @@ Preserve in your response the original code formatting, including indentation, c
 Do not use unicode for en dashes and em dashes, but use '--' and '---'.
 Never replace a backslash followed by a percentage sign by a percentage sign only.")
   :ensure-system-package curl)
-
-(use-package markdown-overlays
-  :ensure nil
-  :defer t
-  :custom
-  (markdown-overlays-highlight-blocks nil)
-  (markdown-overlays-render-latex nil))
 
 (use-package gptel
   :ensure t
@@ -1488,10 +1485,10 @@ Eglot adds its capf buffer-locally, which shadows the global
 `citar-capf'.  Re-adding `citar-capf' buffer-locally with a negative
 depth puts it first; it returns nil outside citation contexts, so the
 LSP completion still applies everywhere else."
-    (when (derived-mode-p 'markdown-mode)
+    (when (derived-mode-p 'markdown-mode 'markdown-ts-mode)
       (add-hook 'completion-at-point-functions #'citar-capf -100 t)))
   :hook
-  ((markdown-mode org-mode) . my-citar-capf-setup)
+  ((markdown-mode markdown-ts-mode org-mode) . my-citar-capf-setup)
   (eglot-managed-mode . my-citar-capf-priority)
   :config
   (defun citar-insert-citation-with-prefix-arg ()
@@ -1662,7 +1659,7 @@ Returns t if it handled indentation."
   (cdlatex-takeover-dollar nil)
   (cdlatex-takeover-parenthesis nil)
   :hook
-  ((LaTeX-mode markdown-mode) . turn-on-cdlatex)
+  ((LaTeX-mode markdown-mode markdown-ts-mode) . turn-on-cdlatex)
   ;; ((LaTeX-mode org-mode) . my-slow-company)
   (org-mode . turn-on-org-cdlatex)
   (cdlatex-tab . my-cdlatex-latex-tab)
@@ -2105,7 +2102,7 @@ same directory as the working and insert a link to this file."
 
 (use-package lte
   :ensure t
-  :hook ((org-mode markdown-mode) . lte-truncate-table-mode))
+  :hook ((org-mode markdown-mode markdown-ts-mode) . lte-truncate-table-mode))
 
 (use-package texfrag
   :ensure t
@@ -2234,7 +2231,7 @@ the function will prompt the user to select a default audio device before runnin
 
 (use-package flyspell
   :ensure nil
-  :hook ((LaTeX-mode markdown-mode org-mode) . flyspell-mode)
+  :hook ((LaTeX-mode markdown-mode markdown-ts-mode org-mode) . flyspell-mode)
   :config
   (setq ispell-program-name (executable-find "hunspell")
 	flyspell-issue-welcome-flag nil
@@ -2314,7 +2311,7 @@ the function will prompt the user to select a default audio device before runnin
     (setq-local visual-fill-column-center-text nil))
   :bind ("C-c v" . my-visual-fill)
   :hook
-  ((bibtex-mode LaTeX-mode markdown-mode org-mode agent-shell-viewport-view-mode agent-shell-viewport-edit-mode) . my-visual-fill)
+  ((bibtex-mode LaTeX-mode markdown-mode markdown-ts-mode org-mode agent-shell-viewport-view-mode agent-shell-viewport-edit-mode) . my-visual-fill)
   ((org-mode LaTeX-mode) . my-center-text))
 
 (use-package yaml-mode
@@ -2361,8 +2358,9 @@ the function will prompt the user to select a default audio device before runnin
   (push '(panache . ("panache" "format" "--stdin-filename" filepath)) apheleia-formatters)
   (push '(r-air . ("air" "format" filepath)) apheleia-formatters)
   ;; Mode associations
-  (dolist (elt '((ess-r-mode    . r-air)
-                 (markdown-mode . panache)))
+  (dolist (elt '((ess-r-mode       . r-air)
+                 (markdown-mode    . panache)
+                 (markdown-ts-mode . panache)))
     (add-to-list 'apheleia-mode-alist elt))
   (setq apheleia-mode-alist
         (assq-delete-all 'bibtex-mode apheleia-mode-alist)))
@@ -2448,8 +2446,9 @@ the function will prompt the user to select a default audio device before runnin
   ;; Combine 2 LSP for R
   ;; (setf (alist-get '(R-mode ess-r-mode) eglot-server-programs)
   ;; 	'("rass" "--" "R" "--slave" "-e" "languageserver::run()" "--" "jarl" "server"))
-  (dolist (pair '((markdown-mode  . ("marksman"))
-		  (conf-toml-mode . ("tombi" "lsp"))))
+  (dolist (pair '((markdown-mode     . ("marksman"))
+		  (markdown-ts-mode  . ("marksman"))
+		  (conf-toml-mode    . ("tombi" "lsp"))))
     (add-to-list 'eglot-server-programs pair))
   (defun my-latex-restore-auctex-flymake-backend ()
     "Keep AUCTeX/ChkTeX Flymake diagnostics when Eglot is active."
@@ -2477,7 +2476,8 @@ the function will prompt the user to select a default audio device before runnin
 	 ("C-c l R" . eglot-reconnect)
 	 ("C-c l s" . eglot-shutdown)))
   :hook
-  ((conf-toml-mode ess-r-mode LaTeX-mode markdown-mode) . eglot-ensure)
+  ((conf-toml-mode ess-r-mode LaTeX-mode markdown-mode markdown-ts-mode) .
+   eglot-ensure)
   (eglot-managed-mode . my-latex-restore-auctex-flymake-backend)
   :ensure-system-package
   (marksman	; Markdown LSP
@@ -2532,7 +2532,7 @@ the function will prompt the user to select a default audio device before runnin
 (use-package aas
   :ensure t
   :hook
-  ((LaTeX-mode markdown-mode org-mode ess-r-mode inferior-ess-r-mode) . aas-activate-for-major-mode)
+  ((LaTeX-mode markdown-mode markdown-ts-mode org-mode ess-r-mode inferior-ess-r-mode) . aas-activate-for-major-mode)
   :config
   (defmacro aas-set-shared-r-snippets (&rest args)
     `(progn
@@ -2544,6 +2544,9 @@ the function will prompt the user to select a default audio device before runnin
   (aas-set-snippets 'markdown-mode
     "ùù" '(yas "\\$$0\\$")
     "ùm" '(yas "\\$\\$$0\\$\\$")) ; For GFM it is important to remove spaces and linebreaks after and before the $
+  (aas-set-snippets 'markdown-ts-mode
+    "ùù" '(yas "\\$$0\\$")
+    "ùm" '(yas "\\$\\$$0\\$\\$"))
   (aas-set-shared-r-snippets
    ";fo" '(yas "for ($1 in $2) {\n  $3\n}")
    ";fu" '(yas "function($1) {\n  $2\n}")
@@ -2558,7 +2561,7 @@ the function will prompt the user to select a default audio device before runnin
 
 (use-package laas
   :ensure t
-  :hook ((LaTeX-mode markdown-mode org-mode) . laas-mode)
+  :hook ((LaTeX-mode markdown-mode markdown-ts-mode org-mode) . laas-mode)
   :custom
   (laas-enable-auto-space nil)
   :config
@@ -2566,8 +2569,7 @@ the function will prompt the user to select a default audio device before runnin
   (defun laas-mathp ()
     "Determine whether point is within a LaTeX maths block."
     (cond
-     ((derived-mode-p 'latex-mode) (texmathp))
-     ((derived-mode-p 'markdown-mode) (texmathp))
+     ((derived-mode-p 'latex-mode 'markdown-mode 'markdown-ts-mode) (texmathp))
      ((derived-mode-p 'org-mode) (laas-org-mathp))
      (t (message "LaTeX-auto-activated snippets does not currently support math in any of %s"
 		 (aas--modes-to-activate major-mode))

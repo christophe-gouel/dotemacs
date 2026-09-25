@@ -712,10 +712,14 @@ For the completion options, most are used only if using the minibuffer completio
 Use =outline-minor-faces= to use a special face for outline sections.
 
 #+begin_src emacs-lisp
+(defun my-outline-minor-faces-mode-maybe ()
+  (unless (derived-mode-p 'markdown-ts-mode)
+    (outline-minor-faces-mode)))
+
 (use-package outline-minor-faces
   :ensure t
   :after outline
-  :hook (outline-minor-mode))
+  :hook (outline-minor-mode . my-outline-minor-faces-mode-maybe))
 #+end_src
 
 ** Other Emacs settings
@@ -1473,7 +1477,7 @@ Temporary fix until the problem is properly fixed in magit (error message that c
   :custom
   (diff-hl-flydiff-mode 1)		; Allow diff-hl to work on the fly
   :hook
-  ((latex-mode markdown-mode org-mode prog-mode) . diff-hl-mode)
+  ((latex-mode markdown-mode markdown-ts-mode org-mode prog-mode) . diff-hl-mode)
   (dired-mode . diff-hl-dired-mode)
   (magit-post-refresh . diff-hl-magit-post-refresh))
 #+end_src
@@ -1631,7 +1635,9 @@ Never replace a backslash followed by a percentage sign by a percentage sign onl
 
 ~markdown-overlays~ is a package inside ~shell-maker~ and that is used by ~chatgpt-shell~ and ~agent-shell~ to prettify markdown outputs. While it leads to nicer outputs, it seems that it also leads to bugs. Let's disable this temporarily.
 
-#+begin_src emacs-lisp
+I think that no it is no longer used in these packages
+
+#+begin_src emacs-lisp :tangle no
 (use-package markdown-overlays
   :ensure nil
   :defer t
@@ -1982,10 +1988,10 @@ Eglot adds its capf buffer-locally, which shadows the global
 `citar-capf'.  Re-adding `citar-capf' buffer-locally with a negative
 depth puts it first; it returns nil outside citation contexts, so the
 LSP completion still applies everywhere else."
-    (when (derived-mode-p 'markdown-mode)
+    (when (derived-mode-p 'markdown-mode 'markdown-ts-mode)
       (add-hook 'completion-at-point-functions #'citar-capf -100 t)))
   :hook
-  ((markdown-mode org-mode) . my-citar-capf-setup)
+  ((markdown-mode markdown-ts-mode org-mode) . my-citar-capf-setup)
   (eglot-managed-mode . my-citar-capf-priority)
   :config
   (defun citar-insert-citation-with-prefix-arg ()
@@ -2170,7 +2176,7 @@ Returns t if it handled indentation."
   (cdlatex-takeover-dollar nil)
   (cdlatex-takeover-parenthesis nil)
   :hook
-  ((LaTeX-mode markdown-mode) . turn-on-cdlatex)
+  ((LaTeX-mode markdown-mode markdown-ts-mode) . turn-on-cdlatex)
   ;; ((LaTeX-mode org-mode) . my-slow-company)
   (org-mode . turn-on-org-cdlatex)
   (cdlatex-tab . my-cdlatex-latex-tab)
@@ -2477,7 +2483,7 @@ same directory as the working and insert a link to this file."
     (let ((reftex-cite-format markdown-cite-format)
           (reftex-cite-key-separator "; @"))
       (reftex-citation)))
-  (keymap-set markdown-mode-map "M-o" markdown-mode-style-map)
+  (keymap-set markdown-mode-map "M-o" #'markdown-mode-style-map)
   :hook
   ;; Code borrowed from auctex to prettify symbols in markdown
   (markdown-mode
@@ -2503,6 +2509,16 @@ same directory as the working and insert a link to this file."
   :hook
   (markdown-mode . pandoc-mode)
   (pandoc-mode . pandoc-load-default-settings))
+#+end_src
+
+#+begin_src emacs-lisp
+(use-package markdown-ts-mode
+  :ensure nil
+  :mode ("\\.md\\'" "\\.mdx\\'" "\\.markdown\\'" "\\.qmd\\'")
+  :config
+  (require 'markdown-ts-mode-x)
+  (keymap-set markdown-ts-mode-map "M-o" #'markdown-ts-emphasize)
+)
 #+end_src
 
 ** Org
@@ -2743,7 +2759,7 @@ Activate export to beamer and markdown
 #+begin_src emacs-lisp
 (use-package lte
   :ensure t
-  :hook ((org-mode markdown-mode) . lte-truncate-table-mode))
+  :hook ((org-mode markdown-mode markdown-ts-mode) . lte-truncate-table-mode))
 #+end_src
 
 ** Preview of mathematical formulas
@@ -2892,7 +2908,7 @@ the function will prompt the user to select a default audio device before runnin
 #+begin_src emacs-lisp
 (use-package flyspell
   :ensure nil
-  :hook ((LaTeX-mode markdown-mode org-mode) . flyspell-mode)
+  :hook ((LaTeX-mode markdown-mode markdown-ts-mode org-mode) . flyspell-mode)
   :config
   (setq ispell-program-name (executable-find "hunspell")
 	flyspell-issue-welcome-flag nil
@@ -2981,7 +2997,7 @@ Use =visual-fill-column= for text modes
     (setq-local visual-fill-column-center-text nil))
   :bind ("C-c v" . my-visual-fill)
   :hook
-  ((bibtex-mode LaTeX-mode markdown-mode org-mode agent-shell-viewport-view-mode agent-shell-viewport-edit-mode) . my-visual-fill)
+  ((bibtex-mode LaTeX-mode markdown-mode markdown-ts-mode org-mode agent-shell-viewport-view-mode agent-shell-viewport-edit-mode) . my-visual-fill)
   ((org-mode LaTeX-mode) . my-center-text))
 #+end_src
 
@@ -3046,8 +3062,9 @@ Use built-in =flymake= for linting.
   (push '(panache . ("panache" "format" "--stdin-filename" filepath)) apheleia-formatters)
   (push '(r-air . ("air" "format" filepath)) apheleia-formatters)
   ;; Mode associations
-  (dolist (elt '((ess-r-mode    . r-air)
-                 (markdown-mode . panache)))
+  (dolist (elt '((ess-r-mode       . r-air)
+                 (markdown-mode    . panache)
+                 (markdown-ts-mode . panache)))
     (add-to-list 'apheleia-mode-alist elt))
   (setq apheleia-mode-alist
         (assq-delete-all 'bibtex-mode apheleia-mode-alist)))
@@ -3161,8 +3178,9 @@ Support for Copilot Chat
   ;; Combine 2 LSP for R
   ;; (setf (alist-get '(R-mode ess-r-mode) eglot-server-programs)
   ;; 	'("rass" "--" "R" "--slave" "-e" "languageserver::run()" "--" "jarl" "server"))
-  (dolist (pair '((markdown-mode  . ("marksman"))
-		  (conf-toml-mode . ("tombi" "lsp"))))
+  (dolist (pair '((markdown-mode     . ("marksman"))
+		  (markdown-ts-mode  . ("marksman"))
+		  (conf-toml-mode    . ("tombi" "lsp"))))
     (add-to-list 'eglot-server-programs pair))
   (defun my-latex-restore-auctex-flymake-backend ()
     "Keep AUCTeX/ChkTeX Flymake diagnostics when Eglot is active."
@@ -3190,7 +3208,8 @@ Support for Copilot Chat
 	 ("C-c l R" . eglot-reconnect)
 	 ("C-c l s" . eglot-shutdown)))
   :hook
-  ((conf-toml-mode ess-r-mode LaTeX-mode markdown-mode) . eglot-ensure)
+  ((conf-toml-mode ess-r-mode LaTeX-mode markdown-mode markdown-ts-mode) .
+   eglot-ensure)
   (eglot-managed-mode . my-latex-restore-auctex-flymake-backend)
   :ensure-system-package
   (marksman	; Markdown LSP
@@ -3260,7 +3279,7 @@ Use "M-C-TAB" for moving to next field to avoid conflict with autocompletion.
 (use-package aas
   :ensure t
   :hook
-  ((LaTeX-mode markdown-mode org-mode ess-r-mode inferior-ess-r-mode) . aas-activate-for-major-mode)
+  ((LaTeX-mode markdown-mode markdown-ts-mode org-mode ess-r-mode inferior-ess-r-mode) . aas-activate-for-major-mode)
   :config
   (defmacro aas-set-shared-r-snippets (&rest args)
     `(progn
@@ -3272,6 +3291,9 @@ Use "M-C-TAB" for moving to next field to avoid conflict with autocompletion.
   (aas-set-snippets 'markdown-mode
     "ùù" '(yas "\\$$0\\$")
     "ùm" '(yas "\\$\\$$0\\$\\$")) ; For GFM it is important to remove spaces and linebreaks after and before the $
+  (aas-set-snippets 'markdown-ts-mode
+    "ùù" '(yas "\\$$0\\$")
+    "ùm" '(yas "\\$\\$$0\\$\\$"))
   (aas-set-shared-r-snippets
    ";fo" '(yas "for ($1 in $2) {\n  $3\n}")
    ";fu" '(yas "function($1) {\n  $2\n}")
@@ -3288,7 +3310,7 @@ Use "M-C-TAB" for moving to next field to avoid conflict with autocompletion.
 #+begin_src emacs-lisp
 (use-package laas
   :ensure t
-  :hook ((LaTeX-mode markdown-mode org-mode) . laas-mode)
+  :hook ((LaTeX-mode markdown-mode markdown-ts-mode org-mode) . laas-mode)
   :custom
   (laas-enable-auto-space nil)
   :config
@@ -3296,8 +3318,7 @@ Use "M-C-TAB" for moving to next field to avoid conflict with autocompletion.
   (defun laas-mathp ()
     "Determine whether point is within a LaTeX maths block."
     (cond
-     ((derived-mode-p 'latex-mode) (texmathp))
-     ((derived-mode-p 'markdown-mode) (texmathp))
+     ((derived-mode-p 'latex-mode 'markdown-mode 'markdown-ts-mode) (texmathp))
      ((derived-mode-p 'org-mode) (laas-org-mathp))
      (t (message "LaTeX-auto-activated snippets does not currently support math in any of %s"
 		 (aas--modes-to-activate major-mode))
