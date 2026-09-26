@@ -1830,8 +1830,21 @@ Returns t if it handled indentation."
       (setopt preview-scale-function 0.7)
     (setopt preview-scale-function 1.5)))
 
+(defun markdown-prettify-symbols-compose-p (start end match)
+  "Return non-nil when the matched symbol is not in a Markdown table.
+Avoid prettifying symbols in Markdown tables, as it can break the visual
+alignement of the tables."
+  (and (not (save-excursion
+              (goto-char start)
+              (cond
+               ((derived-mode-p 'markdown-ts-mode)
+                (markdown-ts-at-table-p start))
+               ((derived-mode-p 'markdown-mode)
+                (markdown-table-at-point-p)))))
+       (TeX--prettify-symbols-compose-p start end match)))
+
 (defun markdown-prettify-symbols ()
-  "Export prettify-symbols-alist from TeX to Markdown."
+  "Export `prettify-symbols-alist` from TeX to Markdown."
   (require 'tex-mode)
   (require 'tex)
   ;; Necessary to remove endash and emdash to avoid problems in md tables
@@ -1840,7 +1853,7 @@ Returns t if it handled indentation."
 			      (member (car entry) '("--" "---")))
 			    tex--prettify-symbols-alist))
   (add-function :override (local 'prettify-symbols-compose-predicate)
-		#'TeX--prettify-symbols-compose-p)
+		#'markdown-prettify-symbols-compose-p)
   ;; Refresh composition so the buffer-local settings take effect.
   (prettify-symbols-mode t))
 

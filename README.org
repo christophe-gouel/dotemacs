@@ -2402,8 +2402,21 @@ Use svg for previews. Much slower than png, but it is not blurry on MacOS.
 Code borrowed from ~auctex~ to prettify symbols in Markdown
 
 #+begin_src emacs-lisp
+(defun markdown-prettify-symbols-compose-p (start end match)
+  "Return non-nil when the matched symbol is not in a Markdown table.
+Avoid prettifying symbols in Markdown tables, as it can break the visual
+alignement of the tables."
+  (and (not (save-excursion
+              (goto-char start)
+              (cond
+               ((derived-mode-p 'markdown-ts-mode)
+                (markdown-ts-at-table-p start))
+               ((derived-mode-p 'markdown-mode)
+                (markdown-table-at-point-p)))))
+       (TeX--prettify-symbols-compose-p start end match)))
+
 (defun markdown-prettify-symbols ()
-  "Export prettify-symbols-alist from TeX to Markdown."
+  "Export `prettify-symbols-alist` from TeX to Markdown."
   (require 'tex-mode)
   (require 'tex)
   ;; Necessary to remove endash and emdash to avoid problems in md tables
@@ -2412,7 +2425,7 @@ Code borrowed from ~auctex~ to prettify symbols in Markdown
 			      (member (car entry) '("--" "---")))
 			    tex--prettify-symbols-alist))
   (add-function :override (local 'prettify-symbols-compose-predicate)
-		#'TeX--prettify-symbols-compose-p)
+		#'markdown-prettify-symbols-compose-p)
   ;; Refresh composition so the buffer-local settings take effect.
   (prettify-symbols-mode t))
 #+end_src
