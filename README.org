@@ -2399,7 +2399,25 @@ Use svg for previews. Much slower than png, but it is not blurry on MacOS.
 
 ** Markdown
 
+Code borrowed from ~auctex~ to prettify symbols in Markdown
+
 #+begin_src emacs-lisp
+(defun markdown-prettify-symbols ()
+  "Export prettify-symbols-alist from TeX to Markdown."
+  (require 'tex-mode)
+  (require 'tex)
+  ;; Necessary to remove endash and emdash to avoid problems in md tables
+  (setq-local prettify-symbols-alist
+	      (cl-remove-if (lambda (entry)
+			      (member (car entry) '("--" "---")))
+			    tex--prettify-symbols-alist))
+  (add-function :override (local 'prettify-symbols-compose-predicate)
+		#'TeX--prettify-symbols-compose-p)
+  ;; Refresh composition so the buffer-local settings take effect.
+  (prettify-symbols-mode t))
+#+end_src
+
+#+begin_src emacs-lisp :tangle no
 (use-package markdown-mode
   :ensure t
   :mode
@@ -2485,20 +2503,7 @@ same directory as the working and insert a link to this file."
       (reftex-citation)))
   (keymap-set markdown-mode-map "M-o" #'markdown-mode-style-map)
   :hook
-  ;; Code borrowed from auctex to prettify symbols in markdown
-  (markdown-mode
-   .
-   (lambda()
-     (require 'tex-mode)
-     (require 'tex)
-     ;; Necessary to remove endash and emdash to avoid problems in tables
-     (setq-local prettify-symbols-alist
-		 (cl-remove-if (lambda (entry)
-				 (member (car entry) '("--" "---")))
-			       tex--prettify-symbols-alist))
-     (add-function :override (local 'prettify-symbols-compose-predicate)
-		   #'TeX--prettify-symbols-compose-p)
-     (prettify-symbols-mode t)))
+  (markdown-mode . markdown-prettify-symbols)
   (markdown-mode . markdown-display-inline-images)
   :bind (:map markdown-mode-map
 	      ("C-c [" . my-markdown-reftex-citation)
@@ -2518,7 +2523,8 @@ same directory as the working and insert a link to this file."
   :config
   (require 'markdown-ts-mode-x)
   (keymap-set markdown-ts-mode-map "M-o" #'markdown-ts-emphasize)
-)
+  :hook
+  (markdown-ts-mode . markdown-prettify-symbols))
 #+end_src
 
 ** Org

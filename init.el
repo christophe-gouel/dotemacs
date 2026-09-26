@@ -1830,115 +1830,28 @@ Returns t if it handled indentation."
       (setopt preview-scale-function 0.7)
     (setopt preview-scale-function 1.5)))
 
-(use-package markdown-mode
-  :ensure t
-  :mode
-  ("\\.md\\'" . markdown-mode) ; Required because poly-markdown appropriates md files
-  ("README\\.md\\'" . gfm-mode)
-  :custom
-  ;; (markdown-command
-  ;;  (concat "pandoc"
-  ;; 	   " --from=markdown --to=html"
-  ;; 	   " --standalone --mathjax"
-  ;; 	   ;; " --citeproc --bibliography="
-  ;; 	   ;; (shell-quote-argument (substitute-in-file-name "${BIBINPUTS}\\References.bib"))
-  ;; 	   ))
-  (markdown-asymmetric-header t)
-  (markdown-enable-highlighting-syntax t)
-  (markdown-enable-math t)
-  (markdown-enable-prefix-prompts nil)
-  (markdown-header-scaling nil)
-  (markdown-fontify-code-blocks-natively t)
-  (markdown-hide-markup nil)
-  (markdown-hide-urls t)
-  (markdown-list-indent-width 2)
-  (markdown-max-image-size '(500 . 300))
-  (markdown-special-ctrl-a/e 'on)
+(defun markdown-prettify-symbols ()
+  "Export prettify-symbols-alist from TeX to Markdown."
+  (require 'tex-mode)
+  (require 'tex)
+  ;; Necessary to remove endash and emdash to avoid problems in md tables
+  (setq-local prettify-symbols-alist
+	      (cl-remove-if (lambda (entry)
+			      (member (car entry) '("--" "---")))
+			    tex--prettify-symbols-alist))
+  (add-function :override (local 'prettify-symbols-compose-predicate)
+		#'TeX--prettify-symbols-compose-p)
+  ;; Refresh composition so the buffer-local settings take effect.
+  (prettify-symbols-mode t))
+
+(use-package markdown-ts-mode
+  :ensure nil
+  :mode ("\\.md\\'" "\\.mdx\\'" "\\.markdown\\'" "\\.qmd\\'")
   :config
-  (defun my-markdown-insert-gfm-code-block-braces (&optional lang edit)
-  "Insert a GFM code block with LANG, always using braces for the code block.
-This function temporarily sets `markdown-code-block-braces' to t
-before calling the original `markdown-insert-gfm-code-block'.
-
-LANG is the programming language for the code block.
-EDIT, when non-nil, will edit the code block in an indirect buffer after insertion."
-  (interactive
-   (list (let ((completion-ignore-case nil))
-	   (condition-case nil
-               (markdown-clean-language-string
-                (completing-read
-                 "Programming language: "
-                 (markdown-gfm-get-corpus)
-                 nil 'confirm (car markdown-gfm-used-languages)
-                 'markdown-gfm-language-history))
-             (quit "")))
-         current-prefix-arg))
-  (let ((markdown-code-block-braces t))
-    (markdown-insert-gfm-code-block lang edit)))
-  ;; Code to import screenshots in markdown files
-  ;; from <https://www.nistara.net/post/2022-11-14-emacs-markdown-screenshots> and
-  ;; <https://stackoverflow.com/questions/17435995/paste-an-image-on-clipboard-to-emacs-org-mode-file-without-saving-it/31868530#31868530>
-  (defun my-markdown-screenshot ()
-    "Copy a screenshot into a time stamped unique-named file in the
-same directory as the working and insert a link to this file."
-    (interactive)
-    (let ((filename
-           (concat
-            (make-temp-name
-             (concat (file-name-nondirectory (buffer-file-name))
-                     "_screenshots/"
-                     (format-time-string "%Y-%m-%d_%a_%kh%Mm_")) ) ".png")))
-      (unless (file-exists-p (file-name-directory filename))
-        (make-directory (file-name-directory filename)))
-      ;; copy the screenshot to file
-      (shell-command
-       (concat "powershell -command \"Add-Type -AssemblyName System.Windows.Forms;if ($([System.Windows.Forms.Clipboard]::ContainsImage())) {$image = [System.Windows.Forms.Clipboard]::GetImage();[System.Drawing.Bitmap]$image.Save('" filename "',[System.Drawing.Imaging.ImageFormat]::Png); Write-Output 'clipboard content saved as file'} else {Write-Output 'clipboard does not contain image data'}\""))
-      ;; insert into file if correctly taken
-      (if (file-exists-p filename)
-          (insert (concat "![](" filename ")")))
-      (markdown-display-inline-images)
-      (newline)))
-  ;; Code to use RefTeX to input references in markdown
-  ;; from https://gist.github.com/kleinschmidt/5ab0d3c423a7ee013a2c01b3919b009a
-  (defvar markdown-cite-format
-    '(
-      (?\C-m . "@%l")
-      (?p . "[@%l]")
-      (?t . "@%l")
-      (?y . "[-@%l]"))
-    "Markdown citation formats")
-  (defun my-markdown-reftex-citation ()
-    "Wrap reftex-citation with local variables for markdown format"
-    (interactive)
-    (let ((reftex-cite-format markdown-cite-format)
-          (reftex-cite-key-separator "; @"))
-      (reftex-citation)))
-  (keymap-set markdown-mode-map "M-o" markdown-mode-style-map)
+  (require 'markdown-ts-mode-x)
+  (keymap-set markdown-ts-mode-map "M-o" #'markdown-ts-emphasize)
   :hook
-  ;; Code borrowed from auctex to prettify symbols in markdown
-  (markdown-mode
-   .
-   (lambda()
-     (require 'tex-mode)
-     (require 'tex)
-     ;; Necessary to remove endash and emdash to avoid problems in tables
-     (setq-local prettify-symbols-alist
-		 (cl-remove-if (lambda (entry)
-				 (member (car entry) '("--" "---")))
-			       tex--prettify-symbols-alist))
-     (add-function :override (local 'prettify-symbols-compose-predicate)
-		   #'TeX--prettify-symbols-compose-p)
-     (prettify-symbols-mode t)))
-  (markdown-mode . markdown-display-inline-images)
-  :bind (:map markdown-mode-map
-	      ("C-c [" . my-markdown-reftex-citation)
-	      ("C-c C-s e" . my-markdown-insert-gfm-code-block-braces)))
-
-(use-package pandoc-mode
-  :ensure t
-  :hook
-  (markdown-mode . pandoc-mode)
-  (pandoc-mode . pandoc-load-default-settings))
+  (markdown-ts-mode . markdown-prettify-symbols))
 
 ; Before loading org-mode, disable org-persist which creates problems
 (setq org-element-cache-persistent nil)
