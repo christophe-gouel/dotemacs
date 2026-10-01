@@ -1398,6 +1398,8 @@ available; with prefix argument ABSOLUTE, use the absolute path."
   :custom
   (eca-buttons-allow-mouse t)
   ;; Chat
+  (eca-chat-mode-line-format
+   '(:trust :spacer :context-bar :usage " " :workspace-folders :spacer :init-progress "  "	:bg-jobs " " :elapsed-time))
   (eca-chat-auto-add-cursor nil)
   (eca-chat-hide-markdown-markup nil)
   (eca-chat-use-side-window t)
