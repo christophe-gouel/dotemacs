@@ -199,9 +199,19 @@ Use =mixed-pitch= to have a proportional font for text and a monospace font for 
 #+begin_src emacs-lisp
 (use-package mixed-pitch
   :ensure t
-  :hook (org-mode LaTeX-mode)
+  :hook (LaTeX-mode markdown-ts-mode markdown-ts-view-mode org-mode)
   :config
-  (add-to-list 'mixed-pitch-fixed-pitch-faces 'markdown-table-face))
+  (dolist (face '(markdown-table-face
+                  ;; Faces used by the YAML parser injected into markdown-ts-mode.
+                  font-lock-bracket-face
+                  font-lock-comment-face
+                  font-lock-delimiter-face
+                  font-lock-escape-face
+                  font-lock-misc-punctuation-face
+                  font-lock-number-face
+                  font-lock-property-use-face
+                  font-lock-warning-face))
+    (add-to-list 'mixed-pitch-fixed-pitch-faces face)))
 #+end_src
 
 ** Highlight lines
@@ -1033,14 +1043,14 @@ Add buttons to solve conflicts with the mouse
 ;; Remove a bug appearing on Linux GTK and preventing the use of S-space (https://lists.gnu.org/archive/html/bug-gnu-emacs/2021-07/msg00071.html)
 (when (equal window-system 'pgtk)
   (setopt pgtk-use-im-context-on-new-connection nil))
-(keymap-global-set "C-x C-b" 'ibuffer)
-(keymap-global-set "C-<apps>" 'menu-bar-mode) ; for Windows
-(keymap-global-set "C-<menu>" 'menu-bar-mode) ; For Linux
-(keymap-global-set "<f5>" 'revert-buffer)
+(keymap-global-set "C-x C-b" #'ibuffer)
+(keymap-global-set "C-<apps>" #'menu-bar-mode) ; for Windows
+(keymap-global-set "C-<menu>" #'menu-bar-mode) ; For Linux
+(keymap-global-set "<f5>" #'revert-buffer)
 ;; Replace upcase-word, downcase-word, and capitalize-word by DWIM versions
-(keymap-global-set "M-u" 'upcase-dwim)
-(keymap-global-set "M-l" 'downcase-dwim)
-(keymap-global-set "M-c" 'capitalize-dwim)
+(keymap-global-set "M-u" #'upcase-dwim)
+(keymap-global-set "M-l" #'downcase-dwim)
+(keymap-global-set "M-c" #'capitalize-dwim)
 ;; Unbind "C-z" that minimizes emacs
 (global-unset-key (kbd "C-z"))
 #+end_src
@@ -1054,8 +1064,8 @@ Add buttons to solve conflicts with the mouse
    mac-function-modifier 'control
    mac-option-modifier 'meta
    mac-right-option-modifier 'none)
-  (keymap-global-set "<home>" 'move-beginning-of-line)
-  (keymap-global-set "<end>" 'move-end-of-line))
+  (keymap-global-set "<home>" #'move-beginning-of-line)
+  (keymap-global-set "<end>" #'move-end-of-line))
 #+end_src
 
 ** Keycast
@@ -2403,39 +2413,43 @@ Code borrowed from ~auctex~ to prettify symbols in Markdown
 
 #+begin_src emacs-lisp
 (defun markdown-prettify-symbols-compose-p (start end match)
-  "Return non-nil when the matched symbol is not in a Markdown table.
-Avoid prettifying symbols in Markdown tables, as it can break the visual
-alignement of the tables."
-  (and (not (save-excursion
-              (goto-char start)
-              (cond
-               ((derived-mode-p 'markdown-ts-mode)
-                (markdown-ts-at-table-p start))
-               ((derived-mode-p 'markdown-mode)
-                (markdown-table-at-point-p)))))
+  "Return non-nil when the matched symbol is in TeX math outside a table."
+  (and (save-excursion
+         (goto-char start)
+         (and (texmathp)
+              (not (cond
+                    ((derived-mode-p 'markdown-ts-mode)
+                     (markdown-ts-at-table-p start))
+                    ((derived-mode-p 'markdown-mode)
+                     (markdown-table-at-point-p))))))
        (TeX--prettify-symbols-compose-p start end match)))
 
 (defun markdown-prettify-symbols ()
   "Export `prettify-symbols-alist` from TeX to Markdown."
   (require 'tex-mode)
   (require 'tex)
-  ;; Necessary to remove endash and emdash to avoid problems in md tables
-  (setq-local prettify-symbols-alist
-	      (cl-remove-if (lambda (entry)
-			      (member (car entry) '("--" "---")))
-			    tex--prettify-symbols-alist))
+  ;; If not conditioning on math mode, it is necessary to remove some symbols:
+  ;; - endash and emdash to avoid problems in md tables
+  ;; - double backticks to avoid problems with code blocks
+  ;; - double single quotes: no special meaning in Markdown but used for quotes
+  ;;   in TeX
+  ;; (setq-local prettify-symbols-alist
+  ;; 	      (cl-remove-if (lambda (entry)
+  ;; 			      (member (car entry) '("--" "---" "``" "''")))
+  ;; 			    tex--prettify-symbols-alist))
+  (setq-local prettify-symbols-alist tex--prettify-symbols-alist)
   (add-function :override (local 'prettify-symbols-compose-predicate)
 		#'markdown-prettify-symbols-compose-p)
   ;; Refresh composition so the buffer-local settings take effect.
   (prettify-symbols-mode t))
 #+end_src
 
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
 (use-package markdown-mode
   :ensure t
-  :mode
-  ("\\.md\\'" . markdown-mode) ; Required because poly-markdown appropriates md files
-  ("README\\.md\\'" . gfm-mode)
+  ;; :mode
+  ;; ("\\.md\\'" . markdown-mode) ; Required because poly-markdown appropriates md files
+  ;; ("README\\.md\\'" . gfm-mode)
   :custom
   ;; (markdown-command
   ;;  (concat "pandoc"
@@ -2514,7 +2528,7 @@ same directory as the working and insert a link to this file."
     (let ((reftex-cite-format markdown-cite-format)
           (reftex-cite-key-separator "; @"))
       (reftex-citation)))
-  (keymap-set markdown-mode-map "M-o" #'markdown-mode-style-map)
+  (keymap-set markdown-mode-map "M-o" markdown-mode-style-map)
   :hook
   (markdown-mode . markdown-prettify-symbols)
   (markdown-mode . markdown-display-inline-images)
@@ -2992,7 +3006,9 @@ Use =visual-fill-column= for text modes
   :ensure t
   :custom
   (visual-fill-column-width 100)
-  (visual-fill-column-enable-sensible-window-split t) ; Avoid Emacs from splitting buffers vertically because it thinks the buffer is too narrow
+  ;; Avoid Emacs from splitting buffers vertically because it thinks the buffer
+  ;; is too narrow
+  (visual-fill-column-enable-sensible-window-split t)
   :config
   (defun my-visual-fill ()
     "Toggle visual fill column, visual line mode, and adaptive wrap mode."
@@ -3016,8 +3032,10 @@ Use =visual-fill-column= for text modes
     (setq-local visual-fill-column-center-text nil))
   :bind ("C-c v" . my-visual-fill)
   :hook
-  ((bibtex-mode LaTeX-mode markdown-mode markdown-ts-mode org-mode agent-shell-viewport-view-mode agent-shell-viewport-edit-mode) . my-visual-fill)
-  ((org-mode LaTeX-mode) . my-center-text))
+  ((bibtex-mode LaTeX-mode markdown-mode markdown-ts-mode markdown-ts-view-mode
+    org-mode agent-shell-viewport-view-mode agent-shell-viewport-edit-mode) .
+    my-visual-fill)
+  ((LaTeX-mode org-mode markdown-ts-mode markdown-ts-view-mode) . my-center-text))
 #+end_src
 
 ** YAML
@@ -3081,9 +3099,8 @@ Use built-in =flymake= for linting.
   (push '(panache . ("panache" "format" "--stdin-filename" filepath)) apheleia-formatters)
   (push '(r-air . ("air" "format" filepath)) apheleia-formatters)
   ;; Mode associations
-  (dolist (elt '((ess-r-mode       . r-air)
-                 (markdown-mode    . panache)
-                 (markdown-ts-mode . panache)))
+  (dolist (elt '((ess-r-mode    . r-air)
+                 (markdown-mode . panache)))
     (add-to-list 'apheleia-mode-alist elt))
   (setq apheleia-mode-alist
         (assq-delete-all 'bibtex-mode apheleia-mode-alist)))
@@ -3187,7 +3204,7 @@ Support for Copilot Chat
   :defer t)
 #+end_src
 
-*** Language Server Protocol
+*** Language Server Protocol (LSP)
 
 #+begin_src emacs-lisp
 (use-package eglot
@@ -3197,8 +3214,9 @@ Support for Copilot Chat
   ;; Combine 2 LSP for R
   ;; (setf (alist-get '(R-mode ess-r-mode) eglot-server-programs)
   ;; 	'("rass" "--" "R" "--slave" "-e" "languageserver::run()" "--" "jarl" "server"))
-  (dolist (pair '((markdown-mode     . ("marksman"))
-		  (markdown-ts-mode  . ("marksman"))
+  (dolist (pair '(
+		  ;; ((markdown-mode markdown-ts-mode) . ("marksman"))
+		  ((markdown-mode markdown-ts-mode) . ("panache" "lsp"))
 		  (conf-toml-mode    . ("tombi" "lsp"))))
     (add-to-list 'eglot-server-programs pair))
   (defun my-latex-restore-auctex-flymake-backend ()

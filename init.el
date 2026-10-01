@@ -134,9 +134,19 @@
 
 (use-package mixed-pitch
   :ensure t
-  :hook (org-mode LaTeX-mode)
+  :hook (LaTeX-mode markdown-ts-mode markdown-ts-view-mode org-mode)
   :config
-  (add-to-list 'mixed-pitch-fixed-pitch-faces 'markdown-table-face))
+  (dolist (face '(markdown-table-face
+                  ;; Faces used by the YAML parser injected into markdown-ts-mode.
+                  font-lock-bracket-face
+                  font-lock-comment-face
+                  font-lock-delimiter-face
+                  font-lock-escape-face
+                  font-lock-misc-punctuation-face
+                  font-lock-number-face
+                  font-lock-property-use-face
+                  font-lock-warning-face))
+    (add-to-list 'mixed-pitch-fixed-pitch-faces face)))
 
 (use-package hl-line
   :ensure nil
@@ -744,14 +754,14 @@ current buffer within the project or the current directory if not in a project."
 ;; Remove a bug appearing on Linux GTK and preventing the use of S-space (https://lists.gnu.org/archive/html/bug-gnu-emacs/2021-07/msg00071.html)
 (when (equal window-system 'pgtk)
   (setopt pgtk-use-im-context-on-new-connection nil))
-(keymap-global-set "C-x C-b" 'ibuffer)
-(keymap-global-set "C-<apps>" 'menu-bar-mode) ; for Windows
-(keymap-global-set "C-<menu>" 'menu-bar-mode) ; For Linux
-(keymap-global-set "<f5>" 'revert-buffer)
+(keymap-global-set "C-x C-b" #'ibuffer)
+(keymap-global-set "C-<apps>" #'menu-bar-mode) ; for Windows
+(keymap-global-set "C-<menu>" #'menu-bar-mode) ; For Linux
+(keymap-global-set "<f5>" #'revert-buffer)
 ;; Replace upcase-word, downcase-word, and capitalize-word by DWIM versions
-(keymap-global-set "M-u" 'upcase-dwim)
-(keymap-global-set "M-l" 'downcase-dwim)
-(keymap-global-set "M-c" 'capitalize-dwim)
+(keymap-global-set "M-u" #'upcase-dwim)
+(keymap-global-set "M-l" #'downcase-dwim)
+(keymap-global-set "M-c" #'capitalize-dwim)
 ;; Unbind "C-z" that minimizes emacs
 (global-unset-key (kbd "C-z"))
 
@@ -761,8 +771,8 @@ current buffer within the project or the current directory if not in a project."
    mac-function-modifier 'control
    mac-option-modifier 'meta
    mac-right-option-modifier 'none)
-  (keymap-global-set "<home>" 'move-beginning-of-line)
-  (keymap-global-set "<end>" 'move-end-of-line))
+  (keymap-global-set "<home>" #'move-beginning-of-line)
+  (keymap-global-set "<end>" #'move-end-of-line))
 
 (use-package keycast
   :ensure t
@@ -1831,31 +1841,132 @@ Returns t if it handled indentation."
     (setopt preview-scale-function 1.5)))
 
 (defun markdown-prettify-symbols-compose-p (start end match)
-  "Return non-nil when the matched symbol is not in a Markdown table.
-Avoid prettifying symbols in Markdown tables, as it can break the visual
-alignement of the tables."
-  (and (not (save-excursion
-              (goto-char start)
-              (cond
-               ((derived-mode-p 'markdown-ts-mode)
-                (markdown-ts-at-table-p start))
-               ((derived-mode-p 'markdown-mode)
-                (markdown-table-at-point-p)))))
+  "Return non-nil when the matched symbol is in TeX math outside a table."
+  (and (save-excursion
+         (goto-char start)
+         (and (texmathp)
+              (not (cond
+                    ((derived-mode-p 'markdown-ts-mode)
+                     (markdown-ts-at-table-p start))
+                    ((derived-mode-p 'markdown-mode)
+                     (markdown-table-at-point-p))))))
        (TeX--prettify-symbols-compose-p start end match)))
 
 (defun markdown-prettify-symbols ()
   "Export `prettify-symbols-alist` from TeX to Markdown."
   (require 'tex-mode)
   (require 'tex)
-  ;; Necessary to remove endash and emdash to avoid problems in md tables
-  (setq-local prettify-symbols-alist
-	      (cl-remove-if (lambda (entry)
-			      (member (car entry) '("--" "---")))
-			    tex--prettify-symbols-alist))
+  ;; If not conditioning on math mode, it is necessary to remove some symbols:
+  ;; - endash and emdash to avoid problems in md tables
+  ;; - double backticks to avoid problems with code blocks
+  ;; - double single quotes: no special meaning in Markdown but used for quotes
+  ;;   in TeX
+  ;; (setq-local prettify-symbols-alist
+  ;; 	      (cl-remove-if (lambda (entry)
+  ;; 			      (member (car entry) '("--" "---" "``" "''")))
+  ;; 			    tex--prettify-symbols-alist))
+  (setq-local prettify-symbols-alist tex--prettify-symbols-alist)
   (add-function :override (local 'prettify-symbols-compose-predicate)
 		#'markdown-prettify-symbols-compose-p)
   ;; Refresh composition so the buffer-local settings take effect.
   (prettify-symbols-mode t))
+
+(use-package markdown-mode
+  :ensure t
+  ;; :mode
+  ;; ("\\.md\\'" . markdown-mode) ; Required because poly-markdown appropriates md files
+  ;; ("README\\.md\\'" . gfm-mode)
+  :custom
+  ;; (markdown-command
+  ;;  (concat "pandoc"
+  ;; 	   " --from=markdown --to=html"
+  ;; 	   " --standalone --mathjax"
+  ;; 	   ;; " --citeproc --bibliography="
+  ;; 	   ;; (shell-quote-argument (substitute-in-file-name "${BIBINPUTS}\\References.bib"))
+  ;; 	   ))
+  (markdown-asymmetric-header t)
+  (markdown-enable-highlighting-syntax t)
+  (markdown-enable-math t)
+  (markdown-enable-prefix-prompts nil)
+  (markdown-header-scaling nil)
+  (markdown-fontify-code-blocks-natively t)
+  (markdown-hide-markup nil)
+  (markdown-hide-urls t)
+  (markdown-list-indent-width 2)
+  (markdown-max-image-size '(500 . 300))
+  (markdown-special-ctrl-a/e 'on)
+  :config
+  (defun my-markdown-insert-gfm-code-block-braces (&optional lang edit)
+  "Insert a GFM code block with LANG, always using braces for the code block.
+This function temporarily sets `markdown-code-block-braces' to t
+before calling the original `markdown-insert-gfm-code-block'.
+
+LANG is the programming language for the code block.
+EDIT, when non-nil, will edit the code block in an indirect buffer after insertion."
+  (interactive
+   (list (let ((completion-ignore-case nil))
+	   (condition-case nil
+               (markdown-clean-language-string
+                (completing-read
+                 "Programming language: "
+                 (markdown-gfm-get-corpus)
+                 nil 'confirm (car markdown-gfm-used-languages)
+                 'markdown-gfm-language-history))
+             (quit "")))
+         current-prefix-arg))
+  (let ((markdown-code-block-braces t))
+    (markdown-insert-gfm-code-block lang edit)))
+  ;; Code to import screenshots in markdown files
+  ;; from <https://www.nistara.net/post/2022-11-14-emacs-markdown-screenshots> and
+  ;; <https://stackoverflow.com/questions/17435995/paste-an-image-on-clipboard-to-emacs-org-mode-file-without-saving-it/31868530#31868530>
+  (defun my-markdown-screenshot ()
+    "Copy a screenshot into a time stamped unique-named file in the
+same directory as the working and insert a link to this file."
+    (interactive)
+    (let ((filename
+           (concat
+            (make-temp-name
+             (concat (file-name-nondirectory (buffer-file-name))
+                     "_screenshots/"
+                     (format-time-string "%Y-%m-%d_%a_%kh%Mm_")) ) ".png")))
+      (unless (file-exists-p (file-name-directory filename))
+        (make-directory (file-name-directory filename)))
+      ;; copy the screenshot to file
+      (shell-command
+       (concat "powershell -command \"Add-Type -AssemblyName System.Windows.Forms;if ($([System.Windows.Forms.Clipboard]::ContainsImage())) {$image = [System.Windows.Forms.Clipboard]::GetImage();[System.Drawing.Bitmap]$image.Save('" filename "',[System.Drawing.Imaging.ImageFormat]::Png); Write-Output 'clipboard content saved as file'} else {Write-Output 'clipboard does not contain image data'}\""))
+      ;; insert into file if correctly taken
+      (if (file-exists-p filename)
+          (insert (concat "![](" filename ")")))
+      (markdown-display-inline-images)
+      (newline)))
+  ;; Code to use RefTeX to input references in markdown
+  ;; from https://gist.github.com/kleinschmidt/5ab0d3c423a7ee013a2c01b3919b009a
+  (defvar markdown-cite-format
+    '(
+      (?\C-m . "@%l")
+      (?p . "[@%l]")
+      (?t . "@%l")
+      (?y . "[-@%l]"))
+    "Markdown citation formats")
+  (defun my-markdown-reftex-citation ()
+    "Wrap reftex-citation with local variables for markdown format"
+    (interactive)
+    (let ((reftex-cite-format markdown-cite-format)
+          (reftex-cite-key-separator "; @"))
+      (reftex-citation)))
+  (keymap-set markdown-mode-map "M-o" markdown-mode-style-map)
+  :hook
+  (markdown-mode . markdown-prettify-symbols)
+  (markdown-mode . markdown-display-inline-images)
+  :bind (:map markdown-mode-map
+	      ("C-c [" . my-markdown-reftex-citation)
+	      ("C-c C-s e" . my-markdown-insert-gfm-code-block-braces)))
+
+(use-package pandoc-mode
+  :ensure t
+  :hook
+  (markdown-mode . pandoc-mode)
+  (pandoc-mode . pandoc-load-default-settings))
 
 (use-package markdown-ts-mode
   :ensure nil
@@ -2213,7 +2324,9 @@ the function will prompt the user to select a default audio device before runnin
   :ensure t
   :custom
   (visual-fill-column-width 100)
-  (visual-fill-column-enable-sensible-window-split t) ; Avoid Emacs from splitting buffers vertically because it thinks the buffer is too narrow
+  ;; Avoid Emacs from splitting buffers vertically because it thinks the buffer
+  ;; is too narrow
+  (visual-fill-column-enable-sensible-window-split t)
   :config
   (defun my-visual-fill ()
     "Toggle visual fill column, visual line mode, and adaptive wrap mode."
@@ -2237,8 +2350,10 @@ the function will prompt the user to select a default audio device before runnin
     (setq-local visual-fill-column-center-text nil))
   :bind ("C-c v" . my-visual-fill)
   :hook
-  ((bibtex-mode LaTeX-mode markdown-mode markdown-ts-mode org-mode agent-shell-viewport-view-mode agent-shell-viewport-edit-mode) . my-visual-fill)
-  ((org-mode LaTeX-mode) . my-center-text))
+  ((bibtex-mode LaTeX-mode markdown-mode markdown-ts-mode markdown-ts-view-mode
+    org-mode agent-shell-viewport-view-mode agent-shell-viewport-edit-mode) .
+    my-visual-fill)
+  ((LaTeX-mode org-mode markdown-ts-mode markdown-ts-view-mode) . my-center-text))
 
 (use-package yaml-mode
   :ensure t
@@ -2284,9 +2399,8 @@ the function will prompt the user to select a default audio device before runnin
   (push '(panache . ("panache" "format" "--stdin-filename" filepath)) apheleia-formatters)
   (push '(r-air . ("air" "format" filepath)) apheleia-formatters)
   ;; Mode associations
-  (dolist (elt '((ess-r-mode       . r-air)
-                 (markdown-mode    . panache)
-                 (markdown-ts-mode . panache)))
+  (dolist (elt '((ess-r-mode    . r-air)
+                 (markdown-mode . panache)))
     (add-to-list 'apheleia-mode-alist elt))
   (setq apheleia-mode-alist
         (assq-delete-all 'bibtex-mode apheleia-mode-alist)))
@@ -2372,8 +2486,9 @@ the function will prompt the user to select a default audio device before runnin
   ;; Combine 2 LSP for R
   ;; (setf (alist-get '(R-mode ess-r-mode) eglot-server-programs)
   ;; 	'("rass" "--" "R" "--slave" "-e" "languageserver::run()" "--" "jarl" "server"))
-  (dolist (pair '((markdown-mode     . ("marksman"))
-		  (markdown-ts-mode  . ("marksman"))
+  (dolist (pair '(
+		  ;; ((markdown-mode markdown-ts-mode) . ("marksman"))
+		  ((markdown-mode markdown-ts-mode) . ("panache" "lsp"))
 		  (conf-toml-mode    . ("tombi" "lsp"))))
     (add-to-list 'eglot-server-programs pair))
   (defun my-latex-restore-auctex-flymake-backend ()
