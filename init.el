@@ -1971,6 +1971,13 @@ same directory as the working and insert a link to this file."
 (use-package markdown-ts-mode
   :ensure nil
   :mode ("\\.md\\'" "\\.mdx\\'" "\\.markdown\\'" "\\.qmd\\'")
+  :custom-face
+  (markdown-ts-heading-1 ((t (:inherit org-level-1))))
+  (markdown-ts-heading-2 ((t (:inherit org-level-2))))
+  (markdown-ts-heading-3 ((t (:inherit org-level-3))))
+  (markdown-ts-heading-4 ((t (:inherit org-level-4))))
+  (markdown-ts-heading-5 ((t (:inherit org-level-5))))
+  (markdown-ts-heading-6 ((t (:inherit org-level-6))))
   :config
   (require 'markdown-ts-mode-x)
   (keymap-set markdown-ts-mode-map "M-o" #'markdown-ts-emphasize)
