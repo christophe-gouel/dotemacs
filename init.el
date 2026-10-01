@@ -278,7 +278,15 @@
 (setopt custom-safe-themes t) ; consider all themes as safe
 
 (use-package modus-themes
+  :ensure nil
   :init
+  ;; TEMP: To remove when Emacs is updated with new Modus theme that includes
+  ;; faces for `markdown-ts-mode` headings.
+  ;; `:ensure' considers bundled packages installed, so explicitly replace
+  ;; the active built-in package with the GNU ELPA version.
+  (unless (package-get-descriptor 'modus-themes 'installed)
+    (package-refresh-contents)
+    (package-upgrade 'modus-themes))
   (load-theme 'modus-vivendi-deuteranopia)
   :custom
   (modus-themes-italic-constructs t)
@@ -1971,13 +1979,13 @@ same directory as the working and insert a link to this file."
 (use-package markdown-ts-mode
   :ensure nil
   :mode ("\\.md\\'" "\\.mdx\\'" "\\.markdown\\'" "\\.qmd\\'")
-  :custom-face
-  (markdown-ts-heading-1 ((t (:inherit org-level-1))))
-  (markdown-ts-heading-2 ((t (:inherit org-level-2))))
-  (markdown-ts-heading-3 ((t (:inherit org-level-3))))
-  (markdown-ts-heading-4 ((t (:inherit org-level-4))))
-  (markdown-ts-heading-5 ((t (:inherit org-level-5))))
-  (markdown-ts-heading-6 ((t (:inherit org-level-6))))
+  ;; :custom-face
+  ;; (markdown-ts-heading-1 ((t (:inherit org-level-1))))
+  ;; (markdown-ts-heading-2 ((t (:inherit org-level-2))))
+  ;; (markdown-ts-heading-3 ((t (:inherit org-level-3))))
+  ;; (markdown-ts-heading-4 ((t (:inherit org-level-4))))
+  ;; (markdown-ts-heading-5 ((t (:inherit org-level-5))))
+  ;; (markdown-ts-heading-6 ((t (:inherit org-level-6))))
   :config
   (require 'markdown-ts-mode-x)
   (keymap-set markdown-ts-mode-map "M-o" #'markdown-ts-emphasize)
