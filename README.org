@@ -672,6 +672,10 @@ current buffer within the project or the current directory if not in a project."
 (use-package isearch
   :defer t
   :custom
+  ;; Allow some movements while in isearch (M-<, M->, C-v, M-v)
+  (isearch-allow-motion t)
+  ;; Allow scrolling inside isearch (including outside matches)
+  (isearch-allow-scroll 'unlimited)
   ;; Display a counter of the matches
   (isearch-lazy-count t)
   (lazy-count-prefix-format "(%s/%s) ")
