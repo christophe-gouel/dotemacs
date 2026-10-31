@@ -640,7 +640,11 @@ current buffer within the project or the current directory if not in a project."
       "u" '("Open url"   . appine-open-url)
       "f" '("Open file"  . appine-open-file)
       "k" '("Kill"       . appine-kill))
-    :bind-keymap ("C-c q" . appine-operation-map)))
+    :bind-keymap ("C-c q" . appine-operation-map)
+    :bind
+    (:map appine-active-map
+	  ("b" . appine-web-go-back)
+	  ("c" . appine-close-tab))))
 
 (use-package prog-mode
   :defer t
@@ -1061,6 +1065,7 @@ current buffer within the project or the current directory if not in a project."
   :ensure t
   :custom
   (magit-diff-refine-hunk (quote all))
+  (magit-ediff-dwim-show-on-hunks t)
   (magit-format-file-function #'magit-format-file-nerd-icons)
   (magit-pull-or-fetch t)
   (magit-view-git-manual-method 'man)	; Allow to view Git man pages inside Emacs
@@ -1100,7 +1105,8 @@ current buffer within the project or the current directory if not in a project."
   (diff-hl-flydiff-mode 1)		; Allow diff-hl to work on the fly
   :hook
   ((latex-mode markdown-mode markdown-ts-mode org-mode prog-mode) . diff-hl-mode)
-  (dired-mode . diff-hl-dired-mode)
+  ;; TEMP: remove as long as issue https://github.com/dgutov/diff-hl/issues/295 is not solve
+  ;; (dired-mode . diff-hl-dired-mode)
   (magit-post-refresh . diff-hl-magit-post-refresh))
 
 (use-package git-modes
@@ -1846,7 +1852,7 @@ Returns t if it handled indentation."
   :ensure nil
   :after latex
   :custom
-  (preview-auto-cache-preamble t)
+  (preview-auto-cache-preamble nil)
   (preview-auto-reveal t)
   (preview-default-option-list '("displaymath" "textmath"))
   (preview-default-preamble

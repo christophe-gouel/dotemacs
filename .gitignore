@@ -43,3 +43,4 @@ places
 /user-lisp/.user-lisp-autoloads.el
 *.elc
 /tree-sitter/
+*.db
