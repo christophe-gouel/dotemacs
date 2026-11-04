@@ -2579,7 +2579,7 @@ same directory as the working and insert a link to this file."
 
 ** Org
 
-Use Timothy Cheeseman's =dev= branch of Org, which provides =org-latex-preview=.  It is installed from source by =package-vc=, which needs three things beyond the repository URL:
+Use =dev= branch of Org, which provides =org-latex-preview=.  It is installed from source by =package-vc=, which needs three things beyond the repository URL:
 
 - =:rev :newest= tracks the tip of the branch.  Without it =use-package= defaults =:rev= to =:last-release=, which would look for a release tag instead of following =dev=.
 - =:lisp-dir "lisp"= puts =elpa/org-mode/lisp/= on the =load-path= from the generated autoloads, so the dev version shadows the built-in Org from startup.
@@ -2589,11 +2589,11 @@ Use Timothy Cheeseman's =dev= branch of Org, which provides =org-latex-preview=.
 ; Before loading org-mode, disable org-persist which creates problems
 (setq org-element-cache-persistent nil)
 (use-package org
-  :vc (org-mode :url "https://code.tecosaur.net/tec/org-mode"
+  :vc (org-mode :url "https://git.savannah.gnu.org/git/emacs/org-mode.git"
                 :branch "dev"
                 :rev :newest
                 :lisp-dir "lisp"
-                :make "autoloads")
+		:make "autoloads")
   :mode ("\\.org\\'" . org-mode)
   :custom
   (org-src-content-indentation 0)
@@ -2691,8 +2691,6 @@ Use ~org-modern-indent~ to style blocks, because the styling of ~org-modern~ is 
 
 *** LaTeX preview
 
-**** New LaTeX preview
-
 #+begin_src emacs-lisp
 (use-package org-latex-preview
   :custom
@@ -2710,21 +2708,9 @@ Use ~org-modern-indent~ to style blocks, because the styling of ~org-modern~ is 
 [DEFAULT-PACKAGES]
 [PACKAGES]
 \\usepackage{xcolor}")
-  ;; (org-latex-preview-process-default 'dvipng)
   :config
-  (plist-put org-latex-preview-appearance-options :zoom 1.4)
+  (plist-put org-latex-preview-appearance-options :zoom 1)
   :hook (org-mode . org-latex-preview-mode))
-#+end_src
-
-**** Old preview
-
-=org-fragtog= for an automatic toggling of LaTeX fragments.
-
-#+begin_src emacs-lisp :tangle no
-(use-package org-fragtog
-  :ensure t
-  :hook
-  (org-mode . org-fragtog-mode))
 #+end_src
 
 *** Bibliographic references and cross-references in org

@@ -824,6 +824,7 @@ current buffer within the project or the current directory if not in a project."
   :config
   (add-to-list 'completion-at-point-functions #'yasnippet-capf))
 
+
 (use-package dabbrev
   :ensure nil
   ;; Swap M-/ and C-M-/
@@ -1125,7 +1126,7 @@ current buffer within the project or the current directory if not in a project."
 (add-hook 'after-save-hook
           #'executable-make-buffer-file-executable-if-script-p)
 
-(defconst my-proofread-instruction
+  (defconst my-proofread-instruction
     "Help me proofread this text.
 Detect the language of the text and respect it in the output.
 If the text is in English, assume that it is in American English, unless indicated otherwise.
@@ -2003,11 +2004,11 @@ same directory as the working and insert a link to this file."
 ; Before loading org-mode, disable org-persist which creates problems
 (setq org-element-cache-persistent nil)
 (use-package org
-  :vc (org-mode :url "https://code.tecosaur.net/tec/org-mode"
+  :vc (org-mode :url "https://git.savannah.gnu.org/git/emacs/org-mode.git"
                 :branch "dev"
                 :rev :newest
                 :lisp-dir "lisp"
-                :make "autoloads")
+		:make "autoloads")
   :mode ("\\.org\\'" . org-mode)
   :custom
   (org-src-content-indentation 0)
@@ -2102,9 +2103,8 @@ same directory as the working and insert a link to this file."
 [DEFAULT-PACKAGES]
 [PACKAGES]
 \\usepackage{xcolor}")
-  ;; (org-latex-preview-process-default 'dvipng)
   :config
-  (plist-put org-latex-preview-appearance-options :zoom 1.4)
+  (plist-put org-latex-preview-appearance-options :zoom 1)
   :hook (org-mode . org-latex-preview-mode))
 
 (use-package oc
