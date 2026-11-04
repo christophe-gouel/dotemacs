@@ -3429,6 +3429,8 @@ Use "M-C-TAB" for moving to next field to avoid conflict with autocompletion.
 
 #+begin_src emacs-lisp
 (use-package ess-site
+  ;; TEMP: to remove in the absence of pb
+  ;; :load-path "~/Documents/git_projects/code/ESS/lisp"
   :ensure ess
   :mode
   ("renv.lock"   . js-json-mode)

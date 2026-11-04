@@ -2681,6 +2681,8 @@ the function will prompt the user to select a default audio device before runnin
   (xref-search-program 'ripgrep))
 
 (use-package ess-site
+  ;; TEMP: to remove in the absence of pb
+  ;; :load-path "~/Documents/git_projects/code/ESS/lisp"
   :ensure ess
   :mode
   ("renv.lock"   . js-json-mode)
