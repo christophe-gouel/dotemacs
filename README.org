@@ -1922,11 +1922,11 @@ available; with prefix argument ABSOLUTE, use the absolute path."
     "w" '("Workspaces"                . eca-workspaces)
     "." '("Transient"                 . eca-transient-menu))
   :bind-keymap ("C-c e" . eca-operation-map)
-  :bind
-  (:map eca-chat-mode-map
-	("RET"      . eca-chat--key-pressed-newline)
-	("<return>" . eca-chat--key-pressed-newline)
-	("C-c C-c"  . eca-chat--key-pressed-return))
+  ;; :bind
+  ;; (:map eca-chat-mode-map
+  ;; 	("RET"      . eca-chat--key-pressed-newline)
+  ;; 	("<return>" . eca-chat--key-pressed-newline)
+  ;; 	("C-c C-c"  . eca-chat--key-pressed-return))
   :hook
   (eca-chat-mode . (lambda () (setq-local math-preview-tex-marks-inline
    '(("\\(" "\\)" 0 nil nil)))))
