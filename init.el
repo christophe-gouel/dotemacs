@@ -1093,7 +1093,9 @@ current buffer within the project or the current directory if not in a project."
   ; Do not diff when committing
   (remove-hook 'server-switch-hook #'magit-commit-diff)
   (remove-hook 'with-editor-filter-visit-hook #'magit-commit-diff)
-  :bind-keymap ("C-c g" . magit-prefix-map))
+  :bind-keymap ("C-c g" . magit-prefix-map)
+  :hook
+  (magit-diff-mode . visual-line-mode))
 
 (use-package git-commit
   :ensure nil                           ; ships inside the magit package
