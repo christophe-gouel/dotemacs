@@ -106,31 +106,13 @@
   "Adjust font for 27 inch screen."
   (interactive)
   (set-face-attribute 'default nil :family "JetBrainsMono NF" :height 140)
-  (plist-put org-latex-preview-appearance-options :zoom 1.5)
-  (set-frame-parameter nil 'fullscreen 'maximized)
-  ;; (setopt org-format-latex-options
-  ;;           (plist-put org-format-latex-options :scale 1.8)
-  ;;         preview-scale-function 1.4)
-  )
-(defun my-screen-linux ()
-  "Adjust font for Linux screen."
-  (interactive)
-  (set-face-attribute 'default nil :family "JetBrainsMono" :height 109)
-  (set-face-attribute 'variable-pitch nil :family "Noto Serif" :height 1.5)
-  (set-frame-parameter nil 'fullscreen 'maximized)
-  ;; (setopt org-format-latex-options
-  ;;         (plist-put org-format-latex-options :scale 1.5)
-  ;;         preview-scale-function 1.5)
-  )
+  ;; (plist-put org-latex-preview-appearance-options :zoom 1.5)
+  (set-frame-parameter nil 'fullscreen 'maximized))
 (defun my-screen-default ()
   "Adjust font for default screen."
   (interactive)
   (set-face-attribute 'default nil :family "JetBrainsMono NF" :height 120)
-  (set-frame-parameter nil 'fullscreen 'maximized)
-  ;; (setopt org-format-latex-options
-  ;;           (plist-put org-format-latex-options :scale 1.7)
-  ;;         preview-scale-function 1.5)
-  )
+  (set-frame-parameter nil 'fullscreen 'maximized))
 
 (use-package mixed-pitch
   :ensure t
