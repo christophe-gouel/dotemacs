@@ -1798,6 +1798,10 @@ Returns t if it handled indentation."
   (reftex-save-parse-info t)
   (reftex-use-multiple-selection-buffers t))
 
+(use-package ediff-tex-fold
+  :ensure nil ; local package
+  :after ediff)
+
 (use-package tex-fold
   :ensure nil
   :hook

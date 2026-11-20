@@ -2331,6 +2331,14 @@ Returns t if it handled indentation."
   (reftex-use-multiple-selection-buffers t))
 #+end_src
 
+Keep TeX buffers unfolded throughout an Ediff comparison.
+
+#+begin_src emacs-lisp
+(use-package ediff-tex-fold
+  :ensure nil ; local package
+  :after ediff)
+#+end_src
+
 #+begin_src emacs-lisp
 (use-package tex-fold
   :ensure nil
