@@ -1992,7 +1992,7 @@ same directory as the working and insert a link to this file."
   (markdown-ts-mode . markdown-prettify-symbols))
 
 ; Before loading org-mode, disable org-persist which creates problems
-(setq org-element-cache-persistent nil)
+;; (setq org-element-cache-persistent nil)
 (use-package org
   :vc (org-mode :url "https://git.savannah.gnu.org/git/emacs/org-mode.git"
                 :branch "dev"

@@ -2573,6 +2573,8 @@ same directory as the working and insert a link to this file."
 
 ** Org
 
+Temporary: to remove when =org-latex-preview= is built-in in Emacs.
+
 Use =dev= branch of Org, which provides =org-latex-preview=.  It is installed from source by =package-vc=, which needs three things beyond the repository URL:
 
 - =:rev :newest= tracks the tip of the branch.  Without it =use-package= defaults =:rev= to =:last-release=, which would look for a release tag instead of following =dev=.
@@ -2581,7 +2583,7 @@ Use =dev= branch of Org, which provides =org-latex-preview=.  It is installed fr
 
 #+begin_src emacs-lisp
 ; Before loading org-mode, disable org-persist which creates problems
-(setq org-element-cache-persistent nil)
+;; (setq org-element-cache-persistent nil)
 (use-package org
   :vc (org-mode :url "https://git.savannah.gnu.org/git/emacs/org-mode.git"
                 :branch "dev"
