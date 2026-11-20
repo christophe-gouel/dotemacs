@@ -1069,6 +1069,8 @@ current buffer within the project or the current directory if not in a project."
   (magit-ediff-dwim-show-on-hunks t)
   (magit-format-file-function #'magit-format-file-nerd-icons)
   (magit-pull-or-fetch t)
+  ;; What is hidden when magit opens
+  (magit-section-initial-visibility-alist '((file . hide) (stashes . hide)))
   (magit-view-git-manual-method 'man)	; Allow to view Git man pages inside Emacs
   :config
   (defvar-keymap magit-prefix-map
