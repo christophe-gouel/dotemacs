@@ -1462,6 +1462,7 @@ available; with prefix argument ABSOLUTE, use the absolute path."
   :config (require 'mcp-hub)
   :hook (after-init . mcp-hub-start-all-server))
 
+
 (use-package eshell-git-prompt
   :ensure t
   :defer 2
@@ -1713,6 +1714,7 @@ Returns t if it handled indentation."
   (LaTeX-default-options "12pt")
   (TeX-PDF-mode t)
   (TeX-electric-sub-and-superscript 1)
+  ;; Disable some chktex options
   (LaTeX-flymake-chktex-options
    '("-n3")) ; You should enclose the previous parenthesis with ‘{}’.
 
