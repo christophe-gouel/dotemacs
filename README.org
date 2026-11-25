@@ -3092,7 +3092,7 @@ Use built-in =flymake= for linting.
   :ensure t
   :config
   (apheleia-global-mode +1)
-  ;; Existing formatters
+  ;; Configure existing formatters
   (setf (alist-get 'latexindent apheleia-formatters)
         '("latexindent" "--modifylinebreaks" "--logfile=/dev/null"
 	  "--yaml=modifyLineBreaks:textWrapOptions:columns:-1,defaultIndent:'  ',indentAfterItems:itemize:0;enumerate:0;description:0"))
@@ -3101,7 +3101,7 @@ Use built-in =flymake= for linting.
 	  "--stdin-filepath" filepath
 	  "--parser=markdown"
 	  (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
-  ;; Extra formatters
+  ;; Add extra formatters
   (push '(panache . ("panache" "format" "--stdin-filename" filepath)) apheleia-formatters)
   (push '(r-air . ("air" "format" filepath)) apheleia-formatters)
   ;; Mode associations
@@ -3237,18 +3237,15 @@ Support for Copilot Chat
     (add-to-list 'eglot-server-programs pair))
   (defun my-latex-restore-auctex-flymake-backend ()
     "Keep AUCTeX/ChkTeX Flymake diagnostics when Eglot is active."
-    (when (derived-mode-p 'latex-mode 'LaTeX-mode)
-      (add-hook 'flymake-diagnostic-functions #'LaTeX-flymake nil t)))
+    (when (and (eglot-managed-p)
+               (derived-mode-p 'latex-mode 'LaTeX-mode))
+      (add-hook 'flymake-diagnostic-functions #'LaTeX-flymake nil t)
+      ;; Eglot starts Flymake before this hook restores the AUCTeX backend.
+      (when flymake-mode
+        (flymake-start))))
   :custom
-  ;; Prevent eglot from reformatting code automatically
-  (eglot-ignored-server-capabilities
-   '(
-     ;; :documentFormattingProvider
-     ;; :documentRangeFormattingProvider
-     ;; :documentOnTypeFormattingProvider ; On-type formatting (very bad for R)
-     :documentSymbolProvider ; List symbols in buffer (Make the R LSP fail)
-     ))
-  ;; Set the buffer size to 0 to improve performances (https://www.gnu.org/software/emacs/manual/html_mono/eglot.html#Performance)
+  ;; Set the buffer size to 0 to improve performances
+  ;; (https://www.gnu.org/software/emacs/manual/html_mono/eglot.html#Performance)
   (eglot-events-buffer-config '(:size 0 :format full))
   :bind
   (("C-c l" . eglot)
@@ -3499,11 +3496,11 @@ VIS has the same meaning as for `ess-eval-region'."
         (ess-eval-linewise (symbol-name symbol) vis)
       (message "No symbol at point to evaluate."))))
   (defun my-inferior-ess-init ()
-    "Treat properly OSC escape codes"
+    "Treat properly OSC escape codes."
     (add-hook 'comint-output-filter-functions
 	      #'comint-osc-process-output nil t))
   (defun my-ess-remove-project-hook ()
-    "Remove a useless hook added by ess to use its own project functions"
+    "Remove a useless hook added by ess to use its own project functions."
     (make-local-variable 'project-find-functions)
     (setq project-find-functions '(project-try-vc)))
   (defun my-ess-eglot-setup ()
@@ -3629,26 +3626,6 @@ buffer with C-c C-a C-a C-a ...."
   ;; (ess-r-post-run . essgd-start)
   ;; Change the default font to black so that the labels are visible with a dark theme and a white background
   (essgd-mode . (lambda () (face-remap-add-relative 'default :foreground "black"))))
-#+end_src
-
-To style code with =air= on save (from [[https://francoismichonneau.net/2025/02/air-with-emacs-ess/]]):
-#+begin_src emacs-lisp
-(defun run-air-formatter ()
-  "Run the Air formatter on the current `.R` file and refresh the buffer.
-This function is intended to be added to `after-save-hook`."
-  (interactive)
-  (when (and (stringp buffer-file-name)
-             (string-match "\\.R$" buffer-file-name))
-    (if (executable-find "air")
-        (let ((current-buffer (current-buffer)))
-          (start-process "air-format" nil "air" "format" buffer-file-name)
-          ;; Refresh the correct buffer from disk
-          (with-current-buffer current-buffer
-            (revert-buffer nil t t)
-	    (flymake-start t)))
-      (message "Error: 'air' executable not found."))))
-
-;; (add-hook 'after-save-hook #'run-air-formatter)
 #+end_src
 
 *** GAMS
