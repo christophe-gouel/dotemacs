@@ -2429,7 +2429,18 @@ the function will prompt the user to select a default audio device before runnin
   :bind ("C-c d" . docker)
   :ensure-system-package docker)
 
-(setq eldoc-echo-area-use-multiline-p nil)
+(use-package eldoc
+  :ensure nil
+  :defer t
+  :custom
+  ;; ElDoc in buffer should not change with the point
+  (eldoc-display-functions
+        '(eldoc-display-in-echo-area
+          (lambda (docs interactive)
+	    (when interactive
+	      (eldoc-display-in-buffer docs interactive)))))
+  ;; Don't allow ElDoc to resize the minibuffer
+  (eldoc-echo-area-use-multiline-p nil))
 
 (use-package copilot
   :ensure t

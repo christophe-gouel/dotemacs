@@ -3129,9 +3129,19 @@ Use built-in =flymake= for linting.
 
 *** Eldoc
 
-Prevent =eldoc= from showing the function doc in the minibuffer when the cursor is on the function
 #+begin_src emacs-lisp
-(setq eldoc-echo-area-use-multiline-p nil)
+(use-package eldoc
+  :ensure nil
+  :defer t
+  :custom
+  ;; ElDoc in buffer should not change with the point
+  (eldoc-display-functions
+        '(eldoc-display-in-echo-area
+          (lambda (docs interactive)
+	    (when interactive
+	      (eldoc-display-in-buffer docs interactive)))))
+  ;; Don't allow ElDoc to resize the minibuffer
+  (eldoc-echo-area-use-multiline-p nil))
 #+end_src
 
 *** GitHub copilot
