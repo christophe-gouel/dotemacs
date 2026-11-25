@@ -1512,6 +1512,16 @@ LSP completion still applies everywhere else."
   ((markdown-mode markdown-ts-mode org-mode) . my-citar-capf-setup)
   (eglot-managed-mode . my-citar-capf-priority)
   :config
+  ;; WORKAROUND (2026-11-25): `citar-capf' uses
+  ;; `citar-markdown-citation-key-regexp', defined in citar-markdown.el, which
+  ;; it does not require.  That file is otherwise only loaded through its
+  ;; autoloaded functions, so until some citar markdown command has run,
+  ;; completion signals (void-variable citar-markdown-citation-key-regexp) in
+  ;; markdown, org, and LaTeX buffers alike.  Upstream regression from
+  ;; https://github.com/emacs-citar/citar/pull/899.
+  ;; REMOVE after upgrading citar past the merge of
+  ;; https://github.com/emacs-citar/citar/pull/900.
+  (require 'citar-markdown)
   (defun citar-insert-citation-with-prefix-arg ()
     (interactive)
     (let ((current-prefix-arg '(4)))
