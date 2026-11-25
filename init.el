@@ -2754,9 +2754,17 @@ VIS has the same meaning as for `ess-eval-region'."
     "Remove a useless hook added by ess to use its own project functions"
     (make-local-variable 'project-find-functions)
     (setq project-find-functions '(project-try-vc)))
+  (defun my-ess-eglot-setup ()
+    "Remove LSP functions that bug with R."
+    (setq-local eglot-ignored-server-capabilities
+		'(:documentFormattingProvider
+		  :documentOnTypeFormattingProvider
+		  :documentRangeFormattingProvider
+		  :documentSymbolProvider)))
   :hook
-  (inferior-ess-mode . my-inferior-ess-init)
-  ((ess-r-mode inferior-ess-mode) . my-ess-remove-project-hook))
+  (ess-mode . my-ess-eglot-setup)
+  ((ess-r-mode inferior-ess-mode) . my-ess-remove-project-hook)
+  (inferior-ess-mode . my-inferior-ess-init))
 
 (use-package ess-rscript
   :ensure nil ; local package
