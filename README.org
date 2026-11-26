@@ -2601,6 +2601,8 @@ text itself keeps its heading face."
   :config
   (require 'markdown-ts-mode-x)
   (keymap-set markdown-ts-mode-map "M-o" #'markdown-ts-emphasize)
+  (autoload 'markdown-insert-link "markdown-mode" nil t)
+  (keymap-set markdown-ts-mode-map "C-c C-l" #'markdown-insert-link)
   :hook
   (markdown-ts-mode . markdown-prettify-symbols)
   (markdown-ts-mode . my-markdown-ts-fontify-pandoc-attributes))
