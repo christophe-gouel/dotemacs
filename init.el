@@ -85,7 +85,7 @@
         prettify-symbols-unprettify-at-point t
 	window-resize-pixelwise t)
 (when (display-graphic-p)
-  ;; Cursor (in terminal mode, to be set in terminal options)
+  ;; Cursor (in a terminal, to be set in terminal options)
   (setopt cursor-type 'bar) ; curseur étroit
   ;; Fonts and unicode characters
   ;;   Main font
@@ -96,7 +96,8 @@
     (set-face-attribute 'default nil :family "JetBrainsMono" :height 120)
     (set-face-attribute 'fixed-pitch nil :family "JetBrainsMono" :height 1.0))
   (set-face-attribute 'variable-pitch nil :family "Noto Serif" :height 1.0)
-  ;;   Additional font for some unicode characters missing in prettify symbols and for emojis
+  ;;   Additional font for some unicode characters missing in prettify symbols
+  ;;   and for emojis
   (when (member "XITS Math" (font-family-list))
     (set-fontset-font t 'unicode (font-spec :name "XITS Math") nil 'prepend))
   (when (member "Apple Color Emoji" (font-family-list))
@@ -106,7 +107,6 @@
   "Adjust font for 27 inch screen."
   (interactive)
   (set-face-attribute 'default nil :family "JetBrainsMono NF" :height 140)
-  ;; (plist-put org-latex-preview-appearance-options :zoom 1.5)
   (set-frame-parameter nil 'fullscreen 'maximized))
 (defun my-screen-default ()
   "Adjust font for default screen."
@@ -273,6 +273,8 @@
   :custom
   (modus-themes-italic-constructs t)
   (modus-themes-bold-constructs t)
+  ;; Enable mixed-fonts to preserve monospace fonts when needed
+  (modus-themes-mixed-fonts t)
   (modus-themes-to-toggle
    '(modus-operandi-deuteranopia modus-vivendi-deuteranopia))
   (modus-themes-common-palette-overrides
@@ -1997,11 +1999,33 @@ same directory as the working and insert a link to this file."
 (use-package markdown-ts-mode
   :ensure nil
   :mode ("\\.md\\'" "\\.mdx\\'" "\\.markdown\\'" "\\.qmd\\'")
+  :preface
+  (defface my-markdown-ts-pandoc-attribute
+    '((t :inherit (markdown-ts-delimiter fixed-pitch)))
+    "Face for Pandoc fenced divs and attribute blocks.")
+  (defun my-markdown-ts-fontify-pandoc-attributes ()
+    "Fontify Pandoc fenced divs and attribute blocks as markup.
+The Markdown grammar parses neither Quarto fenced divs such as
+`::: {.notes}', nor span attributes such as `[text]{.smallcaps}', nor
+heading attributes such as `## Title {.smaller}', so those carry no face
+at all and would follow the variable-pitch default set by
+`mixed-pitch-mode'.  Only the attribute block is fontified: the heading
+text itself keeps its heading face."
+    (font-lock-add-keywords
+     nil
+     ;; The third pattern is non-greedy and anchored at the end of the line so
+     ;; that braces appearing earlier in the heading, e.g. in a code span or in
+     ;; inline math, are left alone.
+     '(("^[ \t]*\\(:::+.*\\)$" 1 'my-markdown-ts-pandoc-attribute t)
+       ("\\]\\({[^}\n]*}\\)" 1 'my-markdown-ts-pandoc-attribute t)
+       ("^#+[ \t].*?\\({[^}\n]*}\\)[ \t]*$" 1 'my-markdown-ts-pandoc-attribute t))
+     'append))
   :config
   (require 'markdown-ts-mode-x)
   (keymap-set markdown-ts-mode-map "M-o" #'markdown-ts-emphasize)
   :hook
-  (markdown-ts-mode . markdown-prettify-symbols))
+  (markdown-ts-mode . markdown-prettify-symbols)
+  (markdown-ts-mode . my-markdown-ts-fontify-pandoc-attributes))
 
 ; Before loading org-mode, disable org-persist which creates problems
 ;; (setq org-element-cache-persistent nil)
